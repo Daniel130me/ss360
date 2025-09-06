@@ -1,0 +1,18 @@
+-- image-deletion-run: 2025-08-27T10:06:58+02:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-08-27T11:10:19+02:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-08-27T11:25:00+02:00
+oldImgs: []
+newImgs: ["\/ss360\/uploads\/lesson_images\/ln_68aece8baa0a61.47545799.png","\/ss360\/uploads\/lesson_images\/ln_68aece91a43818.42742163.png"]
+newBasenames: ["ln_68aece8baa0a61.47545799.png","ln_68aece91a43818.42742163.png"]
+-- image-deletion-run: 2025-08-27T11:26:33+02:00
+oldImgs: ["\/ss360\/uploads\/lesson_images\/ln_68aece8baa0a61.47545799.png","\/ss360\/uploads\/lesson_images\/ln_68aece91a43818.42742163.png"]
+newImgs: ["\/ss360\/uploads\/lesson_images\/ln_68aece8baa0a61.47545799.png"]
+newBasenames: ["ln_68aece8baa0a61.47545799.png"]
+keep (still referenced): ln_68aece8baa0a61.47545799.png
+file-not-found: C:\xampp\htdocs\ss360\uploads\lesson_images\ln_68aece91a43818.42742163.png

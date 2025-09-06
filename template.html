@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Report Card</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+    font-family: 'Times New Roman', Times, serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.report-card {
+    width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #000000;
+}
+
+header {
+    text-align: center;
+    border-bottom: 2px solid #000000;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+header .logo {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 10px;
+}
+
+header h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+header p {
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.student-info, .remarks {
+    margin-bottom: 20px;
+}
+
+.student-info p, .remarks p {
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.data-line {
+    display: inline-block;
+    border-bottom: 1px solid #000;
+    width: 150px;
+    padding-bottom: 2px;
+}
+
+.grades table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+/* .grades.no_border table, .grades th, .grades td {
+    border: none;
+}
+.grades table, .grades th, .grades td {
+    border: 1px solid #898989;
+} */
+
+.grades th, .grades td {
+    text-align: left;
+    padding: 2px;
+    font-size: 14px;
+}
+
+.grades th {
+    background-color: #f2f2f2;
+}
+
+    </style>
+</head>
+<body>
+    <div class="report-card">
+        <header>
+            <img src="logo-placeholder.png" alt="School Logo" class="logo">
+            <h1>CELEBRITY INTERNATIONAL SCHOOL</h1>
+            <p>ADDRESS: 22 PHASE II HOUSING ESTATE LOKONGOMA 1ST GATE LOKOJA</p>
+        </header>
+        
+        <section class="student-info">
+            <p><strong>NAME OF STUDENT:</strong> <span class="data-line">John Doe</span> <strong>AGE:</strong> <span class="data-line">15</span><strong>CLASS:</strong> <span class="data-line">SS1</span> </p>
+            <p><strong>NO IN CLASS:</strong> <span class="data-line">12</span> <strong>NO OF ATTENDANCE:</strong> <span class="data-line">45</span></p>
+            <p><strong>NO OF TIMES SCHOOL OPENED:</strong> <span class="data-line">50</span> <strong>NEXT TERM BEGINS:</strong> <span class="data-line">Sept 10</span></p>
+        </section>
+        
+        <section class="grades">
+            <table>
+                <thead>
+                    <tr>
+                        <th>SUBJECTS</th>
+                        <th>CA1</th>
+                        <th>CA2</th>
+                        <th>CA3</th>
+                        <th>PRACTICAL</th>
+                        <th>EXAM</th>
+                        <th>TOTAL</th>
+                        <th>TOTAL(%)</th>
+                        <th>GRADE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-top: 1px solid #787878;">
+                        <td>ENGLISH</td>
+                        <td>10</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>7</td>
+                        <td>37</td>
+                        <td>46</td>
+                        <td>46%</td>
+                        <td>D</td>
+                    </tr>
+                    <tr style="border-top: 1px solid #787878;">
+                        <td>MATHEMATICS</td>
+                        <td>9</td>
+                        <td>8</td>
+                        <td>6</td>
+                        <td>5</td>
+                        <td>47</td>
+                        <td>75</td>
+                        <td>87%</td>
+                        <td>A</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        <section class="grades no_border" style="display: flex; justify-content: space-between;">
+            <div class="">
+                <table class="">
+                    <thead>
+                        <tr>
+                            <th>EFFECTIVE GENERAL BEHAVIOUR</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>PUNCTUALITY</td>
+                            <td>20%</td>
+                        </tr>
+                        <tr>
+                            <td>CLASSROOM ATTENDANCE</td>
+                            <td>20%</td>
+                        </tr>
+                        <tr>
+                            <td>RESPONSE TO ASSIGNMENT</td>
+                            <td>20%</td>
+                        </tr>
+                        <tr>
+                            <td>NEATENESS</td>
+                            <td>20%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>PSYCHOMOTIVE SKILLS</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>PUNCTUALITY</td>
+                            <td>20%</td>
+                        </tr>
+                        <tr>
+                            <td>CLASSROOM ATTENDANCE</td>
+                            <td>20%</td>
+                        </tr>
+                        <tr>
+                            <td>RESPONSE TO ASSIGNMENT</td>
+                            <td>20%</td>
+                        </tr>
+                        <tr>
+                            <td>NEATENESS</td>
+                            <td>20%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <section class="remarks">
+            <p><strong>TOTAL MARK SCORED:</strong> <span class="data-line">180</span> <strong>PERCENTAGE:</strong> <span class="data-line">90%</span></p>
+            <p><strong>FORM MASTER’S REMARK:</strong> <span class="data-line">Excellent performance</span> <strong>SIGNATURE:</strong> <span class="data-line">Mr. Smith</span></p>
+            <p><strong>PRINCIPAL’S REMARK:</strong> <span class="data-line">Keep up the good work</span></p>
+            <p><strong>SIGNATURE & STAMP:</strong> <span class="data-line">Mrs. Johnson</span></p>
+            <p><strong>NEXT TERM FEE(N):</strong> <span class="data-line">30,000</span> <strong>OUTSTANDING FEE(N):</strong> <span class="data-line">5,000</span></p>
+        </section>
+    </div>
+</body>
+</html>

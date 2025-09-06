@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home1/gxzpywmy/public_html/website_d6c54162/
+    - /bin/cp -R * $DEPLOYPATH

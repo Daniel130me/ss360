@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Company | Dashboard</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="dist/css/adminlte.css?v=2">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.2.2/css/fixedColumns.dataTables.min.css">
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings:
+        'FILL' 0,
+        'wght' 300,
+        'GRAD' 0,
+        'opsz' 20
+    }
+  </style>
+</head>
+
+<body class="hold-transition sidebar-mini">
+  <div class="wrapper">
+
+    <!-- Navbar -->
+    <nav class="main-header navbar border-bottom-0 navbar-expand justify-content-between bg1">
+      <!-- <div class=""> -->
+
+      <!-- Left navbar links -->
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="muted-text fas fa-bars"></i></a>
+        </li>
+      </ul>
+
+      <!-- Right navbar links -->
+      <ul class="navbar-nav align-items-center">
+        <li class="nav-item">
+          <a class="nav-link muted-text">
+            <i class="fas fa-th-large mr-2"></i>15:23
+          </a>
+        </li>
+        <li class="nav-item">
+          <div class="user-panel d-flex align-items-center">
+            <div class="image">
+              <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+            </div>
+            <div class="info d-none d-sm-inline-block">
+              <p style="font-size: 14px;" class="mb-0 d-block">Alexander Pierce</p>
+              <p style="font-size: 12px;" class="d-block mb-0 muted-text">kosokodaniel@gmail.com</p>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <!-- </div> -->
+    </nav>
+    <!-- /.navbar -->
+
+    <!-- Main Sidebar Container -->
+    <!-- Main Sidebar Container -->
+    <aside class="main-sidebar sidebar-light-primary elevation-4">
+      <!-- Brand Logo -->
+      <div href="../../index3.html" class="px-15 pt-15 border-bottom" style="padding-bottom: 30px;">
+        <img src="dist/img/Logo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-5 w-100">
+      </div>
+      <div href="../../index3.html" class="py-2 px-15">
+        <p class="font-weight-bold text-tertiary">Nuck and Cranny Montessori High School</p>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+
+
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+          <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <!-- Add icons to the links using the .nav-icon class
+               with font-awesome or any other icon font library -->
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <p class="d-flex">
+                  <i class="material-symbols-outlined pr-2">dashboard</i>
+                  Dashboard
+                </p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link d-flex">
+                <i class="material-symbols-outlined pr-2">tune</i>
+                <p>
+                  School Setup
+                </p>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="#" class="nav-link d-flex">
+                <i class="material-symbols-outlined pr-2">person</i>
+                <p>
+                  Profile
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="../layout/top-nav.html" class="nav-link d-flex">
+                    <i class="material-symbols-outlined pr-2">fiber_manual_record</i>
+                    <p>My Profile</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="../layout/top-nav.html" class="nav-link d-flex">
+                    <i class="material-symbols-outlined pr-2">fiber_manual_record</i>
+                    <p>Edit My Profile</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link d-flex">
+                <i class="material-symbols-outlined pr-2">supervisor_account</i>
+                <p>
+                  Staff
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="../layout/top-nav.html" class="nav-link d-flex">
+                    <i class="material-symbols-outlined pr-2">fiber_manual_record</i>
+                    <p>All Staff</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="../layout/top-nav.html" class="nav-link d-flex">
+                    <i class="material-symbols-outlined pr-2">fiber_manual_record</i>
+                    <p>Register New Staff</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link d-flex">
+                <i class="material-symbols-outlined pr-2">supervisor_account</i>
+                <p>
+                  Students
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="../layout/top-nav.html" class="nav-link d-flex">
+                    <i class="material-symbols-outlined pr-2">fiber_manual_record</i>
+                    <p>All Students</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="../layout/top-nav.html" class="nav-link d-flex">
+                    <i class="material-symbols-outlined pr-2">fiber_manual_record</i>
+                    <p>Register New Student</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link d-flex">
+                <i class="material-symbols-outlined pr-2">supervisor_account</i>
+                <p>
+                  Parents
+                </p>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="#" class="nav-link d-flex">
+                <i class="material-symbols-outlined pr-2">app_registration</i>
+                <p>
+                  Classes
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="../layout/top-nav.html" class="nav-link d-flex">
+                    <i class="material-symbols-outlined pr-2">fiber_manual_record</i>
+                    <p>All Clasess</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="../layout/top-nav.html" class="nav-link d-flex">
+                    <i class="material-symbols-outlined pr-2">fiber_manual_record</i>
+                    <p>Create New Class</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link d-flex">
+                <i class="material-symbols-outlined pr-2">responsive_layout</i>
+                <p>
+                  Subjects
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="../layout/top-nav.html" class="nav-link d-flex">
+                    <i class="material-symbols-outlined pr-2">fiber_manual_record</i>
+                    <p>All Subjects</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="../layout/top-nav.html" class="nav-link d-flex">
+                    <i class="material-symbols-outlined pr-2">fiber_manual_record</i>
+                    <p>Create New Subject</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link d-flex">
+                <i class="material-symbols-outlined pr-2">signal_cellular_alt</i>
+                <p>
+                  Scores
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="post.html" class="nav-link d-flex">
+                    <i class="material-symbols-outlined pr-2">fiber_manual_record</i>
+                    <p>Post Scores</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="../layout/top-nav.html" class="nav-link d-flex">
+                    <i class="material-symbols-outlined pr-2">fiber_manual_record</i>
+                    <p>View SCores</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link d-flex">
+                <i class="material-symbols-outlined pr-2">add_chart</i>
+                <p>
+                  Assessments
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="../layout/top-nav.html" class="nav-link d-flex">
+                    <i class="material-symbols-outlined pr-2">fiber_manual_record</i>
+                    <p>Create Assessment</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="../layout/top-nav.html" class="nav-link d-flex">
+                    <i class="material-symbols-outlined pr-2">fiber_manual_record</i>
+                    <p>View Assessments</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link d-flex">
+                <i class="material-symbols-outlined pr-2">payment</i>
+                <p>
+                  Payments
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="../layout/top-nav.html" class="nav-link d-flex">
+                    <i class="material-symbols-outlined pr-2">fiber_manual_record</i>
+                    <p>Create Payments</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="../layout/top-nav.html" class="nav-link d-flex">
+                    <i class="material-symbols-outlined pr-2">fiber_manual_record</i>
+                    <p>View Payments</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link d-flex">
+                <i class="material-symbols-outlined pr-2">table</i>
+                <p>
+                  Attendance
+                </p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link d-flex">
+                <i class="material-symbols-outlined pr-2">calendar_month</i>
+                <p>
+                  School Calendar
+                </p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link d-flex">
+                <i class="material-symbols-outlined pr-2">location_away</i>
+                <p>
+                  Hostel
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="../layout/top-nav.html" class="nav-link d-flex">
+                    <i class="material-symbols-outlined pr-2">fiber_manual_record</i>
+                    <p>All Hostels</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="../layout/top-nav.html" class="nav-link d-flex">
+                    <i class="material-symbols-outlined pr-2">fiber_manual_record</i>
+                    <p>Check-in/out</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="../layout/top-nav.html" class="nav-link d-flex">
+                    <i class="material-symbols-outlined pr-2">fiber_manual_record</i>
+                    <p>Records</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link d-flex">
+                <i class="material-symbols-outlined pr-2">tune</i>
+                <p>
+                  Transportation
+                </p>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+      </div>
+      <!-- /.sidebar -->
+    </aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper" style="background-color: #f4f7fa; padding-bottom: 100px;">
+
+
+      <!-- Main content -->
+      <div class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="py-2 px-15 bg-white" style="border-radius: 10px;">
+                <h2 class="mx-0 mt-0 mb-sm-1 mb-2" style="font-size: 23px;">Profile</h2>
+                <ol class="breadcrumb p-0 bg-white mb-0">
+                  <li class="breadcrumb-item font-14">
+                    <a href="#" class="d-flex" style="margin-left: -2px;">
+                      <i class="material-symbols-outlined" style="font-size: 19px;">home</i>Home</a>
+                  </li>
+                  <li class="breadcrumb-item active font-14">My Profile</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid mt-4">
+          <div class="row">
+            <div class="col-sm-3">
+              <div class="py-3 px-15 bg-white" style="border-radius: 10px;">
+                <div class="mb-3">
+                  <img src="dist/img/user.jpg" alt="AdminLTE Logo" class="brand-image img-circle elevation-5 w-100">
+                </div>
+                <div class="mb-3">
+                  <p class="font-weight-bold">Oluwagbenga Kosoko</p>
+                  <a href="#" class="font-14 text-tertiary2">Jss1 BumbleBee</a>
+                </div>
+                <div class="d-flex flex-wrap">
+                  <button class="btn btn-sm btn-primary mr-3">Edit Profile</button>
+                  <button class="btn btn-sm text-primary pl-0">Change Password</button>
+                </div>
+              </div>
+              <div class="mt-4 py-3 px-15 bg-white" style="border-radius: 10px;">
+                <div>
+                  <p class="font-weight-bold text-muted">Basic Data</p>
+                  <div class="mb-2">
+                    <p class="font-weight-bold small muted-text">Name</p>
+                    <p class="">Kosoko Oluwagbenga</p>
+                  </div>
+                  <div class="mb-2">
+                    <p class="font-weight-bold small muted-text">Class</p>
+                    <p class="">Jss1 BumbleBee</p>
+                  </div>
+                  <div class="mb-2">
+                    <p class="font-weight-bold small muted-text">Gender</p>
+                    <p class="">Male</p>
+                  </div>
+                  <div>
+                    <p class="font-weight-bold small muted-text">Date</p>
+                    <p class="">12th Nov. 2024</p>
+                  </div>
+                
+                </div>
+                <hr class="divide-line">
+                <div>
+                  <p class="font-weight-bold text-muted">Contact Information</p>
+                  <div class="mb-2">
+                    <p class="font-weight-bold small muted-text">Phone</p>
+                    <p class="">+23480997584</p>
+                  </div>
+                  <div class="mb-2">
+                    <p class="font-weight-bold small muted-text">Email</p>
+                    <p class="">koso@gmail.com</p>
+                  </div>
+                </div>
+                <hr class="divide-line">
+                <div>
+                  <p class="font-weight-bold text-muted">Parent Information</p>
+                  <div class="mb-2">
+                    <p class="font-weight-bold small muted-text">Phone</p>
+                    <p class="">+23480997584</p>
+                  </div>
+                  <div class="mb-2">
+                    <p class="font-weight-bold small muted-text">Email</p>
+                    <p class="">koso@gmail.com</p>
+                  </div>
+                  <div class="mb-2">
+                    <p class="font-weight-bold small muted-text">Address</p>
+                    <p class="">5, London Barber Delta State, Nigeria</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-9">
+              <!-- <div class="py-2 px-15 bg-white" style="border-radius: 10px;"> -->
+              <div class="card">
+                <div class="card-header">
+                  <ul class="nav nav-pills menu-scrollbar" id="pills-tab" role="tablist"
+                    style="flex-wrap: nowrap; overflow: auto; width: 100%; white-space: nowrap">
+                    <li class="nav-item" role="presentation">
+                      <button class="pill-link link-primary active" id="pills-emp-info-tab" data-toggle="pill"
+                        data-target="#pills-emp-info" type="button" role="tab" aria-controls="pills-emp-info"
+                        aria-selected="true">Scores & Grade</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <button class="pill-link link-primary" id="pills-attendance-history-tab" data-toggle="pill"
+                        data-target="#pills-attendance-history" type="button" role="tab"
+                        aria-controls="pills-attendance-history" aria-selected="false">Attendance</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <button class="pill-link link-primary" id="pills-shift-record-tab" data-toggle="pill"
+                        data-target="#pills-shift-record" type="button" role="tab" aria-controls="pills-shift-record"
+                        aria-selected="false">SMS/Email</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <button class="pill-link link-primary" id="pills-assessment-tab" data-toggle="pill"
+                        data-target="#pills-assessment" type="button" role="tab" aria-controls="pills-assessment"
+                        aria-selected="false">Assessments</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <button class="pill-link link-primary" id="pills-hostels-tab" data-toggle="pill"
+                        data-target="#pills-hostels" type="button" role="tab" aria-controls="pills-hostels"
+                        aria-selected="false">Hostels</button>
+                    </li>
+                  </ul>
+
+                  <!-- /.card-tools -->
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                  <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-emp-info" role="tabpanel"
+                      aria-labelledby="pills-emp-info-tab">
+                      <div class="mb-4 info-container">
+                        <div style="width:180px; border: 1px solid #fde8dc; background-image: linear-gradient(45deg, white, #FDF2ED); padding: 5px 10px; border-radius: 5px;">
+                          <p class="text-tertiary2 font-weight-bold">-N20,000</p>
+                            <p class="text-muted">Damage Bill <span class="text-tertiary2 ml-2">Pay Now</span></p>
+                        </div>
+                      </div>
+                      <hr class="divide-line">
+                      <div>
+                        <p class="font-weight-bold text-muted mb-3">Payment Record</p>
+                        <table id="user_table" class="display nowrap" style="width:100%">
+                          <thead>
+                            <tr>
+                              <th></th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>
+                                <p>Tuition Fee</p>
+                                <a href="" class="text-muted">View</a>
+                                <a href="" class="text-muted ml-2">Pay</a>
+                              </td>
+                              <td>
+                                <p>Total - <span>20,000</span></p>
+                                <p>Paid - <span class="text-success">20,000</span></p>
+                                <p>Balance - <span class="text-danger">20,000</span></p>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <p>Hostel Fee</p>
+                                <a href="" class="text-muted">View</a>
+                                <a href="" class="text-muted ml-2">Pay</a>
+                              </td>
+                              <td>
+                                <p>Total - <span>20,000</span></p>
+                                <p>Paid - <span class="text-success">20,000</span></p>
+                                <p>Balance - <span class="text-danger">20,000</span></p>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-attendance-history" role="tabpanel"
+                      aria-labelledby="pills-attendance-history-tab">
+                      <p>2</p>
+                    </div>
+                    <div class="tab-pane fade" id="pills-shift-record" role="tabpanel"
+                      aria-labelledby="pills-shift-record-tab">
+                      <p>3</p>
+                    </div>
+                    <div class="tab-pane fade" id="pills-assessment" role="tabpanel"
+                      aria-labelledby="pills-assessment-tab">
+                      <p>4</p>
+                    </div>
+                    <div class="tab-pane fade" id="pills-hostels" role="tabpanel" aria-labelledby="pills-hostels-tab">
+                      <p>5</p>
+                    </div>
+                  </div>
+
+
+                </div>
+                <!-- /.card-body -->
+              </div>
+              <!-- </div> -->
+            </div>
+          </div>
+        </div>
+        <!-- <div class="container-fluid">
+          <div class="row">
+            <div class="col-sm-8">
+              <div class="card">
+                <div class="card-body">
+                  <p> lcklk edkl ldk</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="card">
+                <div class="card-body">
+                  <p> lcklk edkl ldk</p>
+                </div>
+              </div>
+            </div>
+          </div> -->
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+
+  </div>
+  <!-- ./wrapper -->
+
+  <!-- REQUIRED SCRIPTS -->
+
+  <!-- jQuery -->
+  <script src="plugins/jquery/jquery.min.js"></script>
+  <!-- Bootstrap 4 -->
+  <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- AdminLTE App -->
+  <script src="dist/js/adminlte.min.js"></script>
+  <!-- <script src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
+
+
+  <script>
+    $(document).ready(function () {
+      $(document).ready(function () {
+        $('#user_table').DataTable({
+          // scrollY: 200,
+          // scrollX: true,
+        });
+      });
+      $('#attendance_table').DataTable({
+        scrollY: '50vh',
+        scrollX: true,
+        scrollCollapse: true,
+        paging: false,
+        fixedColumns: {
+          left: 2,
+          right: 0
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>
