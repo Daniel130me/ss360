@@ -27,7 +27,7 @@ $date = date('Y-m-d H:i:s'); // Get current date and time
 header('Content-Type: application/json'); // Set content type for all responses
 
 switch ($action) {
-      case 'get_parent_billing':
+    case 'get_parent_billing':
         try {
             // Get filters from POST
             $student_id = isset($_POST['student_id']) ? intval($_POST['student_id']) : 0;
@@ -97,7 +97,7 @@ switch ($action) {
             echo json_encode(['success' => false, 'message' => 'Error fetching billing data.']);
         }
         break;
-        
+
     case 'get_payment_breakdown':
         try {
             $student_id = isset($_POST['student_id']) ? intval($_POST['student_id']) : 0;
@@ -152,51 +152,45 @@ switch ($action) {
                 ];
             }
             $stmt->close();
-            // Also include any bill_record rows for this student/filters that may not have payment_log entries
-            // This ensures unpaid/assigned bills are shown alongside payment entries.
-            $bwhere = 'br.student_id = ? AND br.school_id = ? AND br.session_id = ? AND br.term_id = ?';
-            $btypes = 'iiii';
-            $bparams = [$student_id, $school_id, $session_id, $term_id];
-            if ($class_id) {
-                $bwhere .= ' AND br.class_id = ?';
-                $btypes .= 'i';
-                $bparams[] = $class_id;
-            }
-            $bsql = "SELECT br.id as bill_id, br.amount_due, br.bill_type, bt.bill_name, br.datecreated FROM bill_record br LEFT JOIN bill_type bt ON br.bill_type = bt.id WHERE $bwhere ORDER BY br.datecreated DESC, br.id DESC";
-            $bstmt = $conn->prepare($bsql);
-            if ($bstmt !== false) {
-                $bind_names = [];
-                $bind_names[] = &$btypes;
-                foreach ($bparams as $k => $v) $bind_names[] = &$bparams[$k];
-                call_user_func_array([$bstmt, 'bind_param'], $bind_names);
-                $bstmt->execute();
-                $bres = $bstmt->get_result();
 
-                // Build a set of bill_ids already present from payment logs
-                $present = [];
-                foreach ($data as $drow) {
-                    if (!empty($drow['bill_id'])) $present[intval($drow['bill_id'])] = true;
+            // If there are no payment entries, optionally return outstanding bills for context
+            if (empty($data)) {
+                // Try to return bill records for the student in the filters
+                $bwhere = 'br.student_id = ? AND br.school_id = ? AND br.session_id = ? AND br.term_id = ?';
+                $btypes = 'iiii';
+                $bparams = [$student_id, $school_id, $session_id, $term_id];
+                if ($class_id) {
+                    $bwhere .= ' AND br.class_id = ?';
+                    $btypes .= 'i';
+                    $bparams[] = $class_id;
                 }
-
-                while ($brow = $bres->fetch_assoc()) {
-                    $bid = intval($brow['bill_id']);
-                    if (isset($present[$bid])) continue; // skip bills already represented by payment entries
-                    $data[] = [
-                        'id' => 0,
-                        'bill_id' => $bid,
-                        'bill_name' => $brow['bill_name'] ?? null,
-                        'amount_due' => floatval($brow['amount_due']),
-                        'date_paid' => null,
-                        'amount_newly_paid' => 0,
-                        'total_amount_paid' => 0,
-                        'balance' => floatval($brow['amount_due']),
-                        'payment_method' => null,
-                        'description' => 'No payment yet',
-                        'createdby' => null,
-                        'datecreated' => $brow['datecreated'] ?? null
-                    ];
+                $bsql = "SELECT br.id as bill_id, br.amount_due, bt.bill_name FROM bill_record br LEFT JOIN bill_type bt ON br.bill_type = bt.id WHERE $bwhere ORDER BY br.datecreated DESC, br.id DESC";
+                $bstmt = $conn->prepare($bsql);
+                if ($bstmt !== false) {
+                    $bind_names = [];
+                    $bind_names[] = &$btypes;
+                    foreach ($bparams as $k => $v) $bind_names[] = &$bparams[$k];
+                    call_user_func_array([$bstmt, 'bind_param'], $bind_names);
+                    $bstmt->execute();
+                    $bres = $bstmt->get_result();
+                    while ($brow = $bres->fetch_assoc()) {
+                        $data[] = [
+                            'id' => 0,
+                            'bill_id' => intval($brow['bill_id']),
+                            'bill_name' => $brow['bill_name'] ?? null,
+                            'amount_due' => floatval($brow['amount_due']),
+                            'date_paid' => null,
+                            'amount_newly_paid' => 0,
+                            'total_amount_paid' => 0,
+                            'balance' => floatval($brow['amount_due']),
+                            'payment_method' => null,
+                            'description' => 'No payment yet',
+                            'createdby' => null,
+                            'datecreated' => null
+                        ];
+                    }
+                    $bstmt->close();
                 }
-                $bstmt->close();
             }
 
             echo json_encode(['success' => true, 'data' => $data]);
@@ -205,7 +199,7 @@ switch ($action) {
             echo json_encode(['success' => false, 'message' => 'Error fetching payment breakdown.']);
         }
         break;
-        
+
     case 'email_receipt_pdf_data':
         // Send PDF as attachment (base64, not saved to disk)
         $input = json_decode(file_get_contents('php://input'), true);
@@ -1649,7 +1643,7 @@ switch ($action) {
             echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
         }
         break;
-        case 'get_invoice':
+    case 'get_invoice':
         // Return structured JSON for a bill invoice preview
         try {
             $bill_id = isset($_POST['bill_id']) ? intval($_POST['bill_id']) : 0;
@@ -1733,6 +1727,48 @@ switch ($action) {
             ]]);
         } catch (Exception $e) {
             echo json_encode(['success' => false, 'message' => 'Server error']);
+        }
+        break;
+
+    case 'delete_record':
+        try {
+            $bill_id = isset($_POST['bill_id']) ? intval($_POST['bill_id']) : 0;
+
+            if (!$bill_id) {
+                echo json_encode(['success' => false, 'message' => 'Missing required identifiers.']);
+                break;
+            }
+
+            // Check if any payment has been made against this bill record.
+            // This is more robust than checking against other parameters from the client.
+            $checkSql = "SELECT id FROM payment_log WHERE bill_id = ? AND school_id = ? LIMIT 1";
+            $stmt = $conn->prepare($checkSql);
+            if (!$stmt) throw new Exception('Prepare failed: ' . $conn->error);
+            $stmt->bind_param("ii", $bill_id, $school_id);
+            $stmt->execute();
+            $res = $stmt->get_result();
+            $exists = $res->fetch_assoc();
+            $stmt->close();
+
+            if ($exists) {
+                echo json_encode(['success' => false, 'message' => 'Cannot delete this bill because a payment has already been recorded for it.']);
+                break;
+            }
+
+            // Delete the bill permanently.
+            $del = $conn->prepare("DELETE FROM bill_record WHERE id = ? AND school_id = ?");
+            if (!$del) throw new Exception('Prepare failed: ' . $conn->error);
+            $del->bind_param("ii", $bill_id, $school_id);
+            $ok = $del->execute();
+
+            if ($ok && $del->affected_rows > 0) {
+                echo json_encode(['success' => true, 'message' => 'Bill deleted successfully.']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Bill not found or already deleted.']);
+            }
+        } catch (Exception $e) {
+            error_log('delete_record error: ' . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Server error.']);
         }
         break;
 

@@ -19,7 +19,7 @@ function recalculate_balance(data) {
 
     // Ensure balance doesn't go below zero
     if (newBalance < 0) {
-        newBalance = 0;record_payment
+        newBalance = 0; record_payment
     }
 
     // Update the display with the newly formatted balance
@@ -116,20 +116,19 @@ $(document).ready(function () {
             }
         });
     });
-   
     // --- Unified Payment Receipt Modal Logic ---
     function showPaymentReceiptModal({ billId, paymentId = null, studentId = null, last = false }) {
         const $modal = $('#paymentReceiptPreviewModal');
         const $content = $('#paymentReceiptContent');
         $content.html('<div class="text-center text-muted p-5"><i class="fas fa-spinner fa-spin fa-2x"></i><br>Loading receipt...</div>');
         $modal.modal('show');
-    
+
         let ajaxData = { bill_id: billId };
         const termId = $('.term_btn.select_btn.active').attr('data-id') || $('#select_term_field').val();
         const sessionId = $('#select_session_field').val();
         if (termId) ajaxData.term_id = termId;
         if (sessionId) ajaxData.session_id = sessionId;
-    
+
         let action = 'get_payment_receipt';
         if (last) {
             action = 'get_last_payment_receipt';
@@ -138,7 +137,7 @@ $(document).ready(function () {
             ajaxData.payment_id = paymentId;
         }
         ajaxData.action = action;
-    
+
         $.ajax({
             url: '../billing_controller.php',
             method: 'POST',
@@ -155,19 +154,19 @@ $(document).ready(function () {
                 const bill = d.bill || {};
                 const billType = d.bill_type || {};
                 const payment = d.payment || {};
-                
+
                 let breakdown = [];
                 try {
                     breakdown = bill.bill_items ? JSON.parse(bill.bill_items) : [];
                 } catch (e) { breakdown = []; }
-    
+
                 const formatDate = dt => {
                     if (!dt) return '-';
                     const date = new Date(dt);
                     if (isNaN(date.getTime())) return dt;
                     return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
                 }
-    
+
                 let breakdownHtml = '';
                 if (breakdown.length > 0) {
                     breakdown.forEach(function (item) {
@@ -179,14 +178,14 @@ $(document).ready(function () {
                                 amt = item[desc];
                             }
                         }
-                        if(desc){
+                        if (desc) {
                             breakdownHtml += `<tr class="item"><td>${desc}</td><td class="text-right">${money(amt)}</td></tr>`;
                         }
                     });
                 } else if (billType.bill_name) {
-                     breakdownHtml += `<tr class="item"><td>${billType.bill_name}</td><td class="text-right">${money(bill.amount)}</td></tr>`;
+                    breakdownHtml += `<tr class="item"><td>${billType.bill_name}</td><td class="text-right">${money(bill.amount)}</td></tr>`;
                 }
-    
+
                 const html = `
                 <div id="printableReceipt" class="receipt-box">
                     <style>
@@ -340,10 +339,10 @@ $(document).ready(function () {
         // For example, reload the DataTable or trigger any dependent logic
         if (typeof fetchAndDisplayEstimatedIncome === 'function') fetchAndDisplayEstimatedIncome();
         if ($.fn.DataTable.isDataTable('#student_payment_recordTable')) {
-                $('#student_payment_recordTable').DataTable().ajax.reload();
-            }else{
-                data_student()
-            }
+            $('#student_payment_recordTable').DataTable().ajax.reload();
+        } else {
+            data_student()
+        }
     });
 
     // Print and Download buttons for receipt (shared)
@@ -631,13 +630,13 @@ $(document).ready(function () {
     // --- Quick Assign Modal: Step-by-step wizard for better UX ---
     (function setupQuickAssignWizard() {
         const $modal = $('#quickAssignBillModal');
-    const $step1 = $('#quick-assign-bill-tab');
-    const $step2 = $('#quick-preview-bill-tab');
-    const $btn1 = $('#quick-step-btn-1');
-    const $btn2 = $('#quick-step-btn-2');
-    const $next = $('#quick-wizard-next');
-    const $back = $('#quick-wizard-back');
-    const $assignNow = $('#quick-assign-now');
+        const $step1 = $('#quick-assign-bill-tab');
+        const $step2 = $('#quick-preview-bill-tab');
+        const $btn1 = $('#quick-step-btn-1');
+        const $btn2 = $('#quick-step-btn-2');
+        const $next = $('#quick-wizard-next');
+        const $back = $('#quick-wizard-back');
+        const $assignNow = $('#quick-assign-now');
 
         function showQuickStep(step) {
             // reset classes
@@ -683,8 +682,8 @@ $(document).ready(function () {
         });
 
         // Step button clicks
-    $btn1.on('click', function () { showQuickStep(1); });
-    $btn2.on('click', function () { showQuickStep(2); });
+        $btn1.on('click', function () { showQuickStep(1); });
+        $btn2.on('click', function () { showQuickStep(2); });
 
         // Prevent direct clicking of the tab nav links; route through wizard validation
         $('#quick-assign-bill-tab-link, #quick-preview-bill-tab-link').on('click', function (e) {
@@ -715,8 +714,8 @@ $(document).ready(function () {
         });
 
         // Hide assign now until step 3
-    // Remove assign button from footer, will be injected into preview step
-    $assignNow.hide();
+        // Remove assign button from footer, will be injected into preview step
+        $assignNow.hide();
     })();
     // Setup for Assign Bill Form (Invoice) with add/remove and live calculation
     setupInvoiceForm({
@@ -817,7 +816,7 @@ $(document).ready(function () {
     //         }
     //     });
     // });
-     $('#selectBillTypeModal').on('change', function () {
+    $('#selectBillTypeModal').on('change', function () {
         const billTypeId = $(this).val();
         if (!billTypeId) return;
         $.ajax({
@@ -916,8 +915,8 @@ $(document).ready(function () {
 
     // Show/hide student payment record table and message based on class selection
     data_student();
-    
-     $('#select_class_field').on('change', function () {
+
+    $('#select_class_field').on('change', function () {
         var classVal = $(this).val();
         if (!classVal) {
             $('#select-class-message').show();
@@ -939,7 +938,7 @@ $(document).ready(function () {
             // Always reload DataTable when showing
             if ($.fn.DataTable.isDataTable('#student_payment_recordTable')) {
                 $('#student_payment_recordTable').DataTable().ajax.reload();
-            }else{
+            } else {
                 data_student()
             }
             fetchAndDisplayEstimatedIncome();
@@ -951,10 +950,51 @@ $(document).ready(function () {
     $('#select_session_field').on('change', function () {
         if ($.fn.DataTable.isDataTable('#student_payment_recordTable')) {
             $('#student_payment_recordTable').DataTable().ajax.reload();
-        }else {
+        } else {
             data_student()
         }
         fetchAndDisplayEstimatedIncome();
+    });
+    // let billToDelete = null;
+    $('#confirmDeleteBillButton').on('click', function () {
+        if (!billToDelete) return;
+        const $btn = $(this).prop('disabled', true).text('Deleting...');
+        $.ajax({
+            url: '../billing_controller.php',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'delete_record',
+                bill_id: billToDelete.bill_id,
+                student_id: billToDelete.student_id,
+                class_id: billToDelete.class_id,
+                session_id: billToDelete.session_id,
+                term_id: billToDelete.term_id
+            },
+            success: function (res) {
+                if (res && res.success) {
+                    toastr.success(res.message || 'Record deleted');
+                    $btn.prop('disabled', false).text('Delete');
+                    $('#confirmDeleteBillModal').modal('hide');
+                    // reload datatable if present
+                    if ($.fn.DataTable.isDataTable('#student_payment_recordTable')) {
+                        $('#student_payment_recordTable').DataTable().ajax.reload();
+                    } else {
+                        data_student();
+                    }
+                    fetchAndDisplayEstimatedIncome();
+                    // billToDelete = null;
+                } else {
+                    const msg = (res && res.message) ? res.message : 'Unable to delete bill.';
+                    $('#confirmDeleteBillAlert').html('<div class="alert alert-warning">' + msg + '</div>');
+                    $btn.prop('disabled', false).text('Delete');
+                }
+            },
+            error: function () {
+                $('#confirmDeleteBillAlert').html('<div class="alert alert-danger">Server error while deleting.</div>');
+                $btn.prop('disabled', false).text('Delete');
+            }
+        });
     });
 
     // $('.term_btn').on('click', function () {
@@ -1195,15 +1235,15 @@ $(document).ready(function () {
         totalId: '#quick_assign_total_amount'
     });
     // data_student()
-      function data_student() {
+    function data_student() {
         //   alert(!$('#select_class_field').val())
-          
+
         // ...existing code...
-                    if (!$('#select_class_field').val()) {
-                        $('#student_payment_recordTable').hide();
-                        return false;
-                    }
-                    // alert("lkj")
+        if (!$('#select_class_field').val()) {
+            $('#student_payment_recordTable').hide();
+            return false;
+        }
+        // alert("lkj")
         // if ($.fn.DataTable.isDataTable('#student_payment_recordTable')) {
         //         // $('#student_payment_recordTable').DataTable().ajax.reload();
         // }
@@ -1226,15 +1266,15 @@ $(document).ready(function () {
                     };
                 },
                 dataSrc: function (json) {
-                    console.log("rec",json)
+                    console.log("rec", json)
                     // If no class is selected, return empty array to prevent loading
                     if (!$('#select_class_field').val()) {
-            //             console.log("jjjklones")
-            //             if ($.fn.DataTable.isDataTable('#student_payment_recordTable')) {
-            //     console.log("wearehere mongo")
-            //     $('#student_payment_recordTable').DataTable().clear().draw();
-            // }
-            //             $('#student_payment_recordTable').hide();
+                        //             console.log("jjjklones")
+                        //             if ($.fn.DataTable.isDataTable('#student_payment_recordTable')) {
+                        //     console.log("wearehere mongo")
+                        //     $('#student_payment_recordTable').DataTable().clear().draw();
+                        // }
+                        //             $('#student_payment_recordTable').hide();
                         return [];
                     }
                     return json.data || [];
@@ -1304,6 +1344,7 @@ $(document).ready(function () {
                         // console.log("data", data)
                         // console.log("type", type)
                         // console.log("row", row)
+
                         if (row.bill_type) {
                             return `
                                 <div class="btn-group" role="group" aria-label="Actions">
@@ -1312,6 +1353,7 @@ $(document).ready(function () {
                                     <button class="btn btn-xs btn-primary record-payment ${row.balance == 0 && 'd-none'}" data-amountdue="${row.amount_due}" data-balance="${row.balance}" data-id="${row.id}" data-student_id="${row.student_id}">Record Payment</button>
                                     <button class="btn btn-xs btn-success ${row.amount_paid == 0 && 'd-none'} generate-last-receipt" data-bill_id="${row.id}" data-student_id="${row.student_id}">Generate Last Receipt</button>
                                     <button class="btn btn-xs btn-primary preview-invoice-btn" data-bill_id="${row.id}">View Invoice</button>
+                                    <button class="btn btn-xs btn-danger delete-bill-btn ${row.amount_paid != 0 && 'd-none'}" data-bill_id="${row.id}" data-student_id="${row.student_id}">Delete Record</button>
                                 </div>
                             `;
                         } else {
@@ -1329,7 +1371,7 @@ $(document).ready(function () {
                 }
             ]
         });
-        
+
         // ...existing code...
     }
 
@@ -1340,7 +1382,7 @@ $(document).ready(function () {
         studentRecordFilter = $(this).data('filter');
         if ($.fn.DataTable && $('#student_payment_recordTable').length) {
             $('#student_payment_recordTable').DataTable().ajax.reload();
-        }else{
+        } else {
             data_student()
         }
     });
@@ -1471,18 +1513,18 @@ $(document).ready(function () {
     $(document).on('click', '.record-payment', function () {
         const billId = $(this).data('id');
         const studentId = $(this).data('student_id');
-        console.log("this",this)
+        console.log("this", this)
         $('#payment_student_id').val(studentId);
         $('#payment_bill_id').val(billId);
         $('#amount_due_record_payment').html(money($(this).data('amountdue')));
         $('#amount_balance_record_payment').html(money($(this).data('balance')));
-        $('#payment_amount').attr("data-current_balance",money($(this).data('balance')));
+        $('#payment_amount').attr("data-current_balance", money($(this).data('balance')));
         // Optionally reset form fields
         $('#recordPaymentForm')[0].reset();
         $('#recordPaymentModal').modal('show');
     });
 
-    
+
 
     // Handle form submission
     $('#recordPaymentForm').on('submit', function (e) {
@@ -1626,10 +1668,10 @@ $(document).ready(function () {
 
         // Reload the DataTable
         if ($.fn.DataTable.isDataTable('#student_payment_recordTable')) {
-                $('#student_payment_recordTable').DataTable().ajax.reload();
-            } else {
-                data_student();
-            }
+            $('#student_payment_recordTable').DataTable().ajax.reload();
+        } else {
+            data_student();
+        }
         fetchAndDisplayEstimatedIncome();
 
     });
@@ -2313,7 +2355,7 @@ $(document).ready(function () {
         // Click handlers for the step buttons (navigate if valid)
         $stepBtn1.on('click', function () { showStep(1); });
         $stepBtn2.on('click', function () { showStep(2); });
-        $stepBtn3.on('click', function () { 
+        $stepBtn3.on('click', function () {
             // Jump to step 3; showStep will generate preview and validate
             showStep(3);
         });
@@ -2431,7 +2473,7 @@ $(document).ready(function () {
                     // --- Reload the main DataTable ---
                     if ($.fn.DataTable.isDataTable('#student_payment_recordTable')) {
                         $('#student_payment_recordTable').DataTable().ajax.reload();
-                    }else{
+                    } else {
                         data_student()
                     }
                     fetchAndDisplayEstimatedIncome();
@@ -2979,7 +3021,7 @@ $(document).ready(function () {
                     // Reload the DataTable and expected income section
                     if ($.fn.DataTable.isDataTable('#student_payment_recordTable')) {
                         $('#student_payment_recordTable').DataTable().ajax.reload();
-                    }else{
+                    } else {
                         data_student()
                     }
                     fetchAndDisplayEstimatedIncome();
@@ -3213,7 +3255,7 @@ $(document).ready(function () {
                     // Reload the DataTable and expected income section
                     if ($.fn.DataTable.isDataTable('#student_payment_recordTable')) {
                         $('#student_payment_recordTable').DataTable().ajax.reload();
-                    }else{
+                    } else {
                         data_student()
                     }
                     fetchAndDisplayEstimatedIncome();
@@ -3346,7 +3388,7 @@ $(document).on('click', '.preview-invoice-btn', function (e) {
                                 </div>
                             </div>
                         </div>
-                        <div class="card-footer bg-white text-right"><small class="text-muted">Bill ID: ${escapeHtml(String(bill.id || '').padStart(8,'0'))} • Date: ${escapeHtml(String(bill.datecreated || ''))}</small></div>
+                        <div class="card-footer bg-white text-right"><small class="text-muted">Bill ID: ${escapeHtml(String(bill.id || '').padStart(8, '0'))} • Date: ${escapeHtml(String(bill.datecreated || ''))}</small></div>
                     </div>
                 `;
 
@@ -3475,99 +3517,113 @@ function payment_breakdown_modal() {
     });
 }
 
- // Print handler for invoice modal
-    $(document).on('click', '#printInvoiceButton', function () {
-        const el = document.getElementById('printableInvoice');
-        if (!el) return;
-        const w = window.open('', '', 'height=700,width=900');
-        w.document.write('<html><head><title>Print Invoice</title>');
-        w.document.write('<link rel="stylesheet" href="../dist/css/adminlte.css">');
-        w.document.write('</head><body>');
-        w.document.write(el.outerHTML);
-        w.document.write('</body></html>');
-        w.document.close();
-        w.focus();
-        setTimeout(function () { w.print(); w.close(); }, 500);
-    });
-    $(document).on('click', '#downloadInvoiceButton', function () {
-        const element = document.getElementById('printableInvoice');
-        if (!element) return;
-        html2pdf().from(element).set({ margin: 0.5, filename: 'invoice.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4' } }).save();
-    });
+// Print handler for invoice modal
+$(document).on('click', '#printInvoiceButton', function () {
+    const el = document.getElementById('printableInvoice');
+    if (!el) return;
+    const w = window.open('', '', 'height=700,width=900');
+    w.document.write('<html><head><title>Print Invoice</title>');
+    w.document.write('<link rel="stylesheet" href="../dist/css/adminlte.css">');
+    w.document.write('</head><body>');
+    w.document.write(el.outerHTML);
+    w.document.write('</body></html>');
+    w.document.close();
+    w.focus();
+    setTimeout(function () { w.print(); w.close(); }, 500);
+});
+$(document).on('click', '#downloadInvoiceButton', function () {
+    const element = document.getElementById('printableInvoice');
+    if (!element) return;
+    html2pdf().from(element).set({ margin: 0.5, filename: 'invoice.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4' } }).save();
+});
+// Share invoice handler: Web Share API with upload + email fallback
+$(document).on('click', '#shareInvoiceButton', function () {
+    const element = document.getElementById('printableInvoice');
+    if (!element) return toastr.error('No invoice to share.');
+    // Show loading
+    const $btn = $(this);
+    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Sharing...');
+    html2pdf().from(element).outputPdf('blob').then(function (pdfBlob) {
+        const file = new File([pdfBlob], 'invoice.pdf', { type: 'application/pdf' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            navigator.share({ files: [file], title: 'Payment Invoice', text: 'Here is your payment invoice.' }).then(function () {
+                $btn.prop('disabled', false).html('<i class="fas fa-share-alt"></i> Share');
+                toastr.success('Shared successfully!');
+            }).catch(function (err) {
+                $btn.prop('disabled', false).html('<i class="fas fa-share-alt"></i> Share');
+                if (err && err.name !== 'AbortError') fallbackShare();
+            });
+        } else {
+            fallbackShare();
+        }
 
-    // Share invoice handler: Web Share API with upload + email fallback
-    $(document).on('click', '#shareInvoiceButton', function () {
-        const element = document.getElementById('printableInvoice');
-        if (!element) return toastr.error('No invoice to share.');
-        // Show loading
-        const $btn = $(this);
-        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Sharing...');
-        html2pdf().from(element).outputPdf('blob').then(function (pdfBlob) {
-            const file = new File([pdfBlob], 'invoice.pdf', { type: 'application/pdf' });
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                navigator.share({ files: [file], title: 'Payment Invoice', text: 'Here is your payment invoice.' }).then(function () {
+        function fallbackShare() {
+            var formData = new FormData();
+            formData.append('action', 'upload_invoice_pdf');
+            formData.append('file', pdfBlob, 'invoice.pdf');
+            $.ajax({
+                url: '../billing_controller.php',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function (res) {
                     $btn.prop('disabled', false).html('<i class="fas fa-share-alt"></i> Share');
-                    toastr.success('Shared successfully!');
-                }).catch(function (err) {
-                    $btn.prop('disabled', false).html('<i class="fas fa-share-alt"></i> Share');
-                    if (err && err.name !== 'AbortError') fallbackShare();
-                });
-            } else {
-                fallbackShare();
-            }
-
-            function fallbackShare() {
-                var formData = new FormData();
-                formData.append('action', 'upload_invoice_pdf');
-                formData.append('file', pdfBlob, 'invoice.pdf');
-                $.ajax({
-                    url: '../billing_controller.php',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    dataType: 'json',
-                    success: function (res) {
-                        $btn.prop('disabled', false).html('<i class="fas fa-share-alt"></i> Share');
-                        let shareHtml = '<div class="text-center mb-2">Share this invoice:</div>' +
-                            '<div class="d-flex justify-content-center">' +
-                            (res.success && res.url ? '<a href="https://wa.me/?text=' + encodeURIComponent('Here is your payment invoice: ' + res.url) + '" target="_blank" class="btn btn-success mr-2"><i class="fab fa-whatsapp"></i> WhatsApp</a>' : '') +
-                            '<button class="btn btn-primary" id="emailShareBtn"><i class="fas fa-envelope"></i> Email</button>' +
-                            '</div>';
-                        let $modal = $('#shareInvoiceModal');
-                        if ($modal.length === 0) {
-                            $('body').append('<div class="modal fade" id="shareInvoiceModal" tabindex="-1" role="dialog"><div class="modal-dialog modal-dialog-centered" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Share Invoice</h5><button type="button" class="close" data-dismiss="modal"><span>&times;</span></button></div><div class="modal-body" id="shareInvoiceModalBody"></div></div></div></div>');
-                            $modal = $('#shareInvoiceModal');
-                        }
-                        $('#shareInvoiceModalBody').html(shareHtml);
-                        $modal.modal('show');
-
-                        $modal.off('click', '#emailShareBtn').on('click', '#emailShareBtn', function () {
-                            let email = prompt('Enter recipient email:');
-                            if (!email) return;
-                            const reader = new FileReader();
-                            reader.onload = function (e) {
-                                const base64data = e.target.result.split(',')[1];
-                                $.ajax({
-                                    url: '../billing_controller.php',
-                                    type: 'POST',
-                                    data: JSON.stringify({ action: 'email_receipt_pdf_data', email: email, pdf_base64: base64data }),
-                                    contentType: 'application/json',
-                                    dataType: 'json',
-                                    success: function (resp) {
-                                        if (resp.success) toastr.success('Invoice sent via email!'); else toastr.error(resp.message || 'Failed to send email.');
-                                    },
-                                    error: function () { toastr.error('Failed to send email.'); }
-                                });
-                            };
-                            reader.readAsDataURL(pdfBlob);
-                        });
-                    },
-                    error: function () {
-                        $btn.prop('disabled', false).html('<i class="fas fa-share-alt"></i> Share');
-                        toastr.error('Failed to upload invoice for sharing.');
+                    let shareHtml = '<div class="text-center mb-2">Share this invoice:</div>' +
+                        '<div class="d-flex justify-content-center">' +
+                        (res.success && res.url ? '<a href="https://wa.me/?text=' + encodeURIComponent('Here is your payment invoice: ' + res.url) + '" target="_blank" class="btn btn-success mr-2"><i class="fab fa-whatsapp"></i> WhatsApp</a>' : '') +
+                        '<button class="btn btn-primary" id="emailShareBtn"><i class="fas fa-envelope"></i> Email</button>' +
+                        '</div>';
+                    let $modal = $('#shareInvoiceModal');
+                    if ($modal.length === 0) {
+                        $('body').append('<div class="modal fade" id="shareInvoiceModal" tabindex="-1" role="dialog"><div class="modal-dialog modal-dialog-centered" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Share Invoice</h5><button type="button" class="close" data-dismiss="modal"><span>&times;</span></button></div><div class="modal-body" id="shareInvoiceModalBody"></div></div></div></div>');
+                        $modal = $('#shareInvoiceModal');
                     }
-                });
-            }
-        });
+                    $('#shareInvoiceModalBody').html(shareHtml);
+                    $modal.modal('show');
+
+                    $modal.off('click', '#emailShareBtn').on('click', '#emailShareBtn', function () {
+                        let email = prompt('Enter recipient email:');
+                        if (!email) return;
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            const base64data = e.target.result.split(',')[1];
+                            $.ajax({
+                                url: '../billing_controller.php',
+                                type: 'POST',
+                                data: JSON.stringify({ action: 'email_receipt_pdf_data', email: email, pdf_base64: base64data }),
+                                contentType: 'application/json',
+                                dataType: 'json',
+                                success: function (resp) {
+                                    if (resp.success) toastr.success('Invoice sent via email!'); else toastr.error(resp.message || 'Failed to send email.');
+                                },
+                                error: function () { toastr.error('Failed to send email.'); }
+                            });
+                        };
+                        reader.readAsDataURL(pdfBlob);
+                    });
+                },
+                error: function () {
+                    $btn.prop('disabled', false).html('<i class="fas fa-share-alt"></i> Share');
+                    toastr.error('Failed to upload invoice for sharing.');
+                }
+            });
+        }
     });
+});
+
+// Delete bill flow: show confirmation modal, then send AJAX to billing_controller.php?action=delete_record
+let billToDelete = null;
+$(document).on('click', '.delete-bill-btn', function () {
+    billToDelete = {
+        bill_id: $(this).data('bill_id'),
+        student_id: $(this).data('student_id'),
+        class_id: $('#select_class_field').val() || '',
+        session_id: $('#select_session_field').val() || '',
+        term_id: $('.term_btn.select_btn.active').attr('data-id') || ''
+    };
+    $('#confirmDeleteBillAlert').html('');
+    $('#confirmDeleteBillModal').modal('show');
+});
+

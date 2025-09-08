@@ -967,27 +967,6 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
             </div>
         </div>
     </div>
-    <!-- Delete Assigned Bill Modal -->
-    <div class="modal fade" id="deleteAssignedBillModal" tabindex="-1" role="dialog" aria-labelledby="deleteAssignedBillModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteAssignedBillModalLabel">Confirm Delete Assigned Bill</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to permanently delete this assigned bill? This action cannot be undone.</p>
-                    <p class="text-muted small">Note: deletion will be blocked if any payment record exists for the same bill, student, class, session and term.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteAssignedBill">Delete</button>
-                </div>
-            </div>
-        </div>
-    </div>
     <!-- Add this after your other modals -->
     <div class="modal fade" id="quickAssignBillModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
@@ -1385,6 +1364,27 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
             </div>
         </div>
     </div>
+    <!-- Delete Bill Confirmation Modal -->
+    <div class="modal fade" id="confirmDeleteBillModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteBillModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteBillModalLabel">Confirm Delete</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">Are you sure you want to delete this bill record? This action will be blocked if any payments exist.</p>
+                    <div id="confirmDeleteBillAlert" class="mt-2"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" id="confirmDeleteBillButton" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- ./wrapper -->
 
     <!-- REQUIRED SCRIPTS -->
@@ -1416,7 +1416,7 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
     <!-- Summernote -->
     <script src="../plugins/summernote/summernote-bs4.min.js"></script>
     <script src="../dist/js/skul.js?v=w3q125sj"></script>
-    <script src="../dist/js/accounts.js?v=11ajk"></script>
+    <script src="../dist/js/accounts.js?v=11aj"></script>
     <!-- date-range-picker -->
     <script src="../plugins/moment/moment.min.js"></script>
     <script src="../plugins/daterangepicker/daterangepicker.js"></script>

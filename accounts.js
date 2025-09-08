@@ -1,4 +1,3 @@
-alert('kkkkk')
 function money(val) {
     return '₦' + Number(val || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
@@ -20,7 +19,7 @@ function recalculate_balance(data) {
 
     // Ensure balance doesn't go below zero
     if (newBalance < 0) {
-        newBalance = 0;record_payment
+        newBalance = 0;
     }
 
     // Update the display with the newly formatted balance
@@ -3489,6 +3488,3 @@ $(document).ready(function () {
         });
     });
 });
-
-
-
