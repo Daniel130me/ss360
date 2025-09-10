@@ -77,6 +77,7 @@ include_once("model/functions.php");
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="../plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="../plugins/toastr/toastr.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="../plugins/select2/css/select2.min.css">
     <link rel="stylesheet" href="../dist/css/adminlte.css">
@@ -428,6 +429,9 @@ include_once("model/functions.php");
                                         <button class="btn btn-primary w-100 col-md-3 col-12" data-toggle="modal"
                                             data-target="#qrScannerModal">Open QR Scanner</button>
                                     </div>
+                                    <div class="row mx-0 mb-3">
+                                        <button class="btn btn-primary w-100 col-md-3 col-12" id="takemyattendance">Take My Attendance</button>
+                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-12 col-md-3" style="margin-bottom: -25px;">
@@ -614,13 +618,13 @@ include_once("model/functions.php");
         <!-- Select2 -->
         <!-- Include Instascan library -->
         <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
-        <script src="../dist/js/staff_attendance.js?v=005"></script>
         <script>
-        // $("#att_log_scan").DataTable({
-        //     scrollX: true,
-
-        // })
+            var maplat = <?php echo explode(',',$_SESSION['maplocation'])[0] ?>;
+            var maplong = <?php echo explode(',',$_SESSION['maplocation'])[1] ?>;
+            var mapradius = <?php echo $_SESSION['radius'] ?>;
         </script>
+        <script src="../dist/js/staff_attendance.js?v=001"></script>
+       
 </body>
 
 </html>

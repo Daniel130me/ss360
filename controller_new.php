@@ -659,7 +659,7 @@ switch ($action) {
                 $_SESSION['change_class'] = $row['change_class'];
                 $_SESSION['add_class'] = $row['add_class'];
 
-                $selectschholname = mysqli_query($conn, "SELECT phone1,email,address, amount, session_id,term_id,back_pic, url, school_name, logo FROM school WHERE id='{$_SESSION['school_id']}'");
+                $selectschholname = mysqli_query($conn, "SELECT maplocation,radius,phone1,email,address, amount, session_id,term_id,back_pic, url, school_name, logo FROM school WHERE id='{$_SESSION['school_id']}'");
                 $row_sch = mysqli_fetch_array($selectschholname);
                 $_SESSION['school_name'] = $row_sch['school_name'];
                 $_SESSION['logo'] = $row_sch['logo'];
@@ -671,6 +671,8 @@ switch ($action) {
                 $_SESSION['session_id'] = $row_sch['session_id'];
                 $_SESSION['term_id'] = $row_sch['term_id'];
                 $_SESSION['sub_amount'] = $row_sch['amount'];
+                $_SESSION['maplocation'] = $row_sch['maplocation'];
+                $_SESSION['radius'] = $row_sch['radius'];
                 $_SESSION['report'] = false;
 
                 echo json_encode(array('status' => '1', 'location' => isset($_SESSION['location']) ? $_SESSION['location'] : 'dashboard'));

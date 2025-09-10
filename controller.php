@@ -93,6 +93,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $school_id = $_SESSION['school_id'];
         $userid = $_SESSION['userid'];
         $school_open = test_input($_POST['school_open']);
+        $maplocation = test_input($_POST['latitude']).','.test_input($_POST['longitude']);
+        $radius = test_input($_POST['radius']);
 
         // Check if the record exists
         $query = "SELECT * FROM skul_settings WHERE session_id='$session' AND term_id='$term_id' AND school_id='$school_id'";
@@ -162,9 +164,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Update the school table with the new session and term IDs
-        mysqli_query($conn, "UPDATE school SET session_id='$session', term_id='$term_id' WHERE id='$school_id'");
+        mysqli_query($conn, "UPDATE school SET maplocation='$maplocation', radius='$radius', session_id='$session', term_id='$term_id' WHERE id='$school_id'");
         $_SESSION['session_id'] = $session;
         $_SESSION['term_id'] = $term_id;
+        $_SESSION['maplocation'] = $maplocation;
+        $_SESSION['radius'] = $radius;
     }
     if ($action == 'update_school_subject') {
         $school_id = $_SESSION['school_id'];

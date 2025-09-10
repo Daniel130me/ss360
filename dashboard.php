@@ -38,7 +38,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Dashboard | <?= get_staff_fullname_by_id($_SESSION['userid'])?></title>
+    <title>Dashboard | <?= get_staff_fullname_by_id($_SESSION['userid']) ?></title>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
@@ -174,13 +174,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             <span class="material-symbols-outlined mr-2">lock</span> Change PIN
                         </a>
                         <?php
-                            if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
-                            ?>
-                        <a href="my_payment" class="dropdown-item text-muted d-flex">
-                            <span class="material-symbols-outlined mr-2">payments</span> Billing
-                        </a>
+                        if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
+                        ?>
+                            <a href="my_payment" class="dropdown-item text-muted d-flex">
+                                <span class="material-symbols-outlined mr-2">payments</span> Billing
+                            </a>
                         <?php
-                            }?>
+                        } ?>
                         <a href="logout" class="dropdown-item text-muted d-flex">
                             <span class="material-symbols-outlined mr-2">logout</span> Logout
                         </a>
@@ -199,8 +199,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <img src="../uploads/<?= $_SESSION['logo'] ?>" alt="<?= $_SESSION['school_name'] ?>" class="brand-image" style="opacity: .8">
                 <span class="brand-text font-weight-light" style="visibility: hidden;">Rus</span>
             </a>
-           
-            
+
+
             <!-- <div href="" class="px-15 pt-15 border-bottom" style="padding-bottom: 30px;">
                 <img src="../uploads/<= $_SESSION['logo'] ?>" style="height: 200px; object-fit:cover;" alt="Logo"
                     class="brand-image img-circle elevation-5 w-100">
@@ -271,8 +271,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </p>
                             </a>
                         </li>
-                        
-                        
+
+
                         <li class="nav-item">
                             <a href="post_scores" class="nav-link">
                                 <p class="d-flex">
@@ -526,97 +526,96 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                                 <!-- /.card-footer -->
                             </div>
-                            <div class="card">
-                                <div class="card-header">
-                                    <p class="card-title">Quick Links</p>
+                            <div class="card-body p-0">
 
-                                    <div class="card-tools">
-                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                            <i class="fas fa-minus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <!-- /.card-header -->
-                                <div class="card-body p-0">
-
-                                    <ul class="users-list clearfix px-2">
-                                        <?php
-                                        if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
-                                        ?>
-                                            <li style="width: 70px;">
-                                                <a href="settings" class="btn btn-circle btn-primary mb-1">
-                                                    <i class="material-symbols-outlined">tune</i>
-                                                </a>
-                                                <a href="settings" class="users-list-name">Settings</a>
-                                            </li>
-                                            <li style="width: 70px;">
-                                                <a href="my_payment" class="btn btn-circle btn-primary mb-1">
-                                                    <span class="material-symbols-outlined mr-2">payments</span>
-                                                </a>
-                                                <a href="settings" class="users-list-name">Billing</a>
-                                            </li>
-                                        <?php } ?>
-                                        <li style="width: 78px;">
-                                            <a href="profile" class="btn btn-circle btn-primary mb-1">
-                                                <i class="material-symbols-outlined">person</i>
+                                <ul class="users-list clearfix px-2">
+                                    <?php
+                                    if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
+                                    ?>
+                                        <li style="width: 70px;">
+                                            <a href="settings" class="btn btn-circle btn-primary mb-1">
+                                                <i class="material-symbols-outlined">tune</i>
                                             </a>
-                                            <a href="profile" class="users-list-name">My Profile</a>
+                                            <a href="settings" class="users-list-name">Settings</a>
                                         </li>
                                         <li style="width: 70px;">
-                                            <a href="staff" class="btn btn-circle btn-primary mb-1">
-                                                <i class="material-symbols-outlined">supervisor_account</i>
+                                            <a href="my_payment" class="btn btn-circle btn-primary mb-1">
+                                                <span class="material-symbols-outlined mr-2">payments</span>
                                             </a>
-                                            <a href="staff" class="users-list-name">Staff</a>
+                                            <a href="settings" class="users-list-name">Billing</a>
                                         </li>
+                                    <?php } ?>
+                                    <li style="width: 78px;">
+                                        <a href="profile" class="btn btn-circle btn-primary mb-1">
+                                            <i class="material-symbols-outlined">person</i>
+                                        </a>
+                                        <a href="profile" class="users-list-name">My Profile</a>
+                                    </li>
+                                    <li style="width: 70px;">
+                                        <a href="staff" class="btn btn-circle btn-primary mb-1">
+                                            <i class="material-symbols-outlined">supervisor_account</i>
+                                        </a>
+                                        <a href="staff" class="users-list-name">Staff</a>
+                                    </li>
 
-                                        <li style="width: 73px;">
-                                            <a href="students" class="btn btn-circle btn-primary mb-1">
-                                                <i class="material-symbols-outlined">supervisor_account</i>
-                                            </a>
-                                            <a href="students" class="users-list-name">Students</a>
-                                        </li>
+                                    <li style="width: 73px;">
+                                        <a href="students" class="btn btn-circle btn-primary mb-1">
+                                            <i class="material-symbols-outlined">supervisor_account</i>
+                                        </a>
+                                        <a href="students" class="users-list-name">Students</a>
+                                    </li>
 
-                                        <li style="width: 70px;">
-                                            <a href="class" class="btn btn-circle btn-primary mb-1">
-                                                <i class="material-symbols-outlined">app_registration</i>
-                                            </a>
-                                            <a href="class" class="users-list-name">Classes</a>
-                                        </li>
-                                        <li style="width: 70px;">
-                                            <a href="students" class="btn btn-circle btn-primary mb-1">
-                                                <i class="material-symbols-outlined">responsive_layout</i>
-                                            </a>
-                                            <a href="students" class="users-list-name">Subjects</a>
-                                        </li>
-                                        <li style="width: 87px;">
-                                            <a href="post_scores" class="btn btn-circle btn-primary mb-1">
-                                                <i class="material-symbols-outlined">add_chart</i>
-                                            </a>
-                                            <a href="post_scores" class="users-list-name">Post Scores</a>
-                                        </li>
-                                        <li style="width: 90px;">
-                                            <a href="view_scores" class="btn btn-circle btn-primary mb-1">
-                                                <i class="material-symbols-outlined">signal_cellular_alt</i>
-                                            </a>
-                                            <a href="view_scores" class="users-list-name">View Scores</a>
-                                        </li>
-                                        <li style="width: 90px;">
-                                            <a href="reports" class="btn btn-circle btn-primary mb-1">
-                                                <i class="material-symbols-outlined">add_chart</i>
-                                            </a>
-                                            <a href="reports" class="users-list-name">Reports</a>
-                                        </li>
-                                        <li style="width: 90px;">
-                                            <a href="assessment" class="btn btn-circle btn-primary mb-1">
-                                                <i class="material-symbols-outlined">app_registration</i>
-                                            </a>
-                                            <a href="assessment" class="users-list-name">Assessments</a>
-                                        </li>
+                                    <li style="width: 70px;">
+                                        <a href="class" class="btn btn-circle btn-primary mb-1">
+                                            <i class="material-symbols-outlined">app_registration</i>
+                                        </a>
+                                        <a href="class" class="users-list-name">Classes</a>
+                                    </li>
+                                    <li style="width: 70px;">
+                                        <a href="students" class="btn btn-circle btn-primary mb-1">
+                                            <i class="material-symbols-outlined">responsive_layout</i>
+                                        </a>
+                                        <a href="students" class="users-list-name">Subjects</a>
+                                    </li>
+                                    <li style="width: 87px;">
+                                        <a href="post_scores" class="btn btn-circle btn-primary mb-1">
+                                            <i class="material-symbols-outlined">add_chart</i>
+                                        </a>
+                                        <a href="post_scores" class="users-list-name">Post Scores</a>
+                                    </li>
+                                    <li style="width: 90px;">
+                                        <a href="view_scores" class="btn btn-circle btn-primary mb-1">
+                                            <i class="material-symbols-outlined">signal_cellular_alt</i>
+                                        </a>
+                                        <a href="view_scores" class="users-list-name">View Scores</a>
+                                    </li>
+                                    <li style="width: 90px;">
+                                        <a href="reports" class="btn btn-circle btn-primary mb-1">
+                                            <i class="material-symbols-outlined">add_chart</i>
+                                        </a>
+                                        <a href="reports" class="users-list-name">Reports</a>
+                                    </li>
+                                    <li style="width: 90px;">
+                                        <a href="assessment" class="btn btn-circle btn-primary mb-1">
+                                            <i class="material-symbols-outlined">app_registration</i>
+                                        </a>
+                                        <a href="assessment" class="users-list-name">Assessments</a>
+                                    </li>
+                                    <li style="width: 90px;">
+                                        <a href="payments" class="btn btn-circle btn-primary mb-1">
+                                            <i class="material-symbols-outlined">payments</i>
+                                        </a>
+                                        <a href="payments" class="users-list-name">Payments</a>
+                                    </li>
+                                    <li style="width: 90px;">
+                                        <a href="staff_attendance" class="btn btn-circle btn-primary mb-1">
+                                            <i class="material-symbols-outlined">add_chart</i>
+                                        </a>
+                                        <a href="staff_attendance" class="users-list-name">Staff Attendance</a>
+                                    </li>
 
-                                    </ul>
-                                    <!-- /.users-list -->
-                                </div>
-                                <!-- /.card-footer -->
+                                </ul>
+                                <!-- /.users-list -->
                             </div>
                         </div>
                         <!-- Left col -->

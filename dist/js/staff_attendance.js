@@ -442,6 +442,91 @@ function confirmAttendance(encodedData) {
     }
 }
 
+// Send geolocation-based attendance to server
+function sendGeoAttendance(lat, lng) {
+    return $.ajax({
+        url: '../record_staff_attendance.php',
+        method: 'POST',
+        dataType: 'json',
+        data: {
+            action: 'geo_staff_attendance',
+            lat: lat,
+            lng: lng
+        }
+    });
+}
+
+// --- Geolocation attendance handler ---
+// Target coordinates (user-provided). Update here if needed.
+const GEO_TARGET_LAT = maplat;
+const GEO_TARGET_LNG = maplong;
+const GEO_ACCEPT_RADIUS_M = mapradius; // meters
+// alert(maplong)
+
+function _toRad(deg){ return deg * Math.PI / 180; }
+function _haversineDistance(lat1, lon1, lat2, lon2){
+    const R = 6371000;
+    const dLat = _toRad(lat2 - lat1);
+    const dLon = _toRad(lon2 - lon1);
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(_toRad(lat1)) * Math.cos(_toRad(lat2)) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+}
+// alert('men')
+// toastr.success('we are one')
+function _showMsg(msg, type='info'){
+    if (window.toastr && typeof toastr[type] === 'function') toastr[type](msg);
+    else alert(msg);
+}
+
+// Attach handler: when '#takemyattendance' is clicked, check location then post
+$(document).on('click', '#takemyattendance', function(e){
+    e.preventDefault();
+    if (!navigator.geolocation){
+        _showMsg('Geolocation is not supported by your browser', 'error');
+        return;
+    }
+    navigator.geolocation.getCurrentPosition(function(position){
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        const dist = _haversineDistance(lat, lng, GEO_TARGET_LAT, GEO_TARGET_LNG);
+        if (dist <= GEO_ACCEPT_RADIUS_M){
+            _showMsg('You are within the allowed area. Recording attendance...', 'info');
+            if (typeof sendGeoAttendance === 'function'){
+                sendGeoAttendance(lat, lng).done(function(res){
+                    if (res && res.status == 1){
+                        _showMsg(res.message || 'Attendance recorded', 'success');
+                        if (window.attendanceTable && typeof attendanceTable.ajax !== 'undefined') attendanceTable.ajax.reload(null, false);
+                    } else if (res && res.status == 2){
+                        _showMsg(res.message || 'Attendance already completed', 'info');
+                        if (window.attendanceTable && typeof attendanceTable.ajax !== 'undefined') attendanceTable.ajax.reload(null, false);
+                    } else {
+                        _showMsg(res.message || 'Unable to record attendance', 'error');
+                    }
+                }).fail(function(){
+                    _showMsg('Server error while recording attendance', 'error');
+                });
+            } else {
+                _showMsg('Attendance function missing', 'error');
+            }
+        } else {
+            _showMsg('Kindly stay within the allowed area to take attendance.');
+            // alert('Your location: Lat ' + lat + '\nLng ' + lng + '\nDistance: ' + Math.round(dist) + ' m');
+        }
+    }, function(err){
+        let msg = '';
+        switch(err.code){
+            case err.PERMISSION_DENIED: msg = 'Permission denied. Please allow location access.'; break;
+            case err.POSITION_UNAVAILABLE: msg = 'Location unavailable.'; break;
+            case err.TIMEOUT: msg = 'Location request timed out.'; break;
+            default: msg = 'Error getting location.'; break;
+        }
+        _showMsg(msg, 'error');
+    }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+});
+
 function showError(message) {
     const qrResult = document.getElementById('qr-result');
     qrResult.className = 'mt-3 alert alert-danger';

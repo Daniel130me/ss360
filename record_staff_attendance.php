@@ -32,6 +32,8 @@ function get_mode_label($mode)
             return 'Manual';
         case 1:
             return 'QR';
+        case 2:
+            return 'Self';
         default:
             return '-';
     }
@@ -130,6 +132,85 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(['status' => 0, 'message' => 'DB error']);
             }
             exit;
+        }
+    }
+    // Geolocation staff attendance: same logic as QR but with mode=2
+    if ($action === 'geo_staff_attendance') {
+        // Use logged-in user as staff
+        $staff_id = intval($user_id);
+        $lat = isset($_POST['lat']) ? $_POST['lat'] : null;
+        $lng = isset($_POST['lng']) ? $_POST['lng'] : null;
+        $now = date('Y-m-d H:i:s');
+        $today = date('Y-m-d');
+        $mode = 2; // Geolocation
+        $current_time = date('H:i');
+
+        // Get current record
+        $sql = "SELECT id, check_in, check_out FROM staff_attendance WHERE staff_id='$staff_id' AND school_id='$school_id' AND date='$today'";
+        $result = mysqli_query($conn, $sql);
+
+        $status = 'Absent';
+        $status_map = ['Present' => 1, 'Absent' => 0, 'Late' => 2, 'Half Day' => 3];
+        if (mysqli_num_rows($result) > 0) {
+            $row = mysqli_fetch_assoc($result);
+            $att_id = $row['id'];
+            $db_check_in = $row['check_in'];
+            $db_check_out = $row['check_out'];
+            // If no check-in, set check-in
+            if (empty($db_check_in)) {
+                $db_check_in = $current_time;
+                $db_check_out = null;
+                $status = ($db_check_in > '08:00') ? 'Late' : 'Present';
+                $status_val = $status_map[$status];
+                $sql2 = "UPDATE staff_attendance SET check_in='$db_check_in', check_out=NULL, status='$status_val', mode='$mode', updated_at='$now', updated_by='$user_id' WHERE id='$att_id'";
+                if (mysqli_query($conn, $sql2)) {
+                    echo json_encode(['status' => 1, 'message' => 'Check-in recorded']);
+                } else {
+                    echo json_encode(['status' => 0, 'message' => 'DB error: ' . mysqli_error($conn)]);
+                }
+                exit;
+            }
+            // If check-in exists but no check-out, set check-out
+            if (!empty($db_check_in) && empty($db_check_out)) {
+                $db_check_out = $current_time;
+                $status = ($db_check_in > '08:00') ? 'Late' : 'Present';
+                $status_val = $status_map[$status];
+                $sql2 = "UPDATE staff_attendance SET check_out='$db_check_out', status='$status_val', mode='$mode', updated_at='$now', updated_by='$user_id' WHERE id='$att_id'";
+                if (mysqli_query($conn, $sql2)) {
+                    echo json_encode(['status' => 1, 'message' => 'Check-out recorded']);
+                } else {
+                    echo json_encode(['status' => 0, 'message' => 'DB error: ' . mysqli_error($conn)]);
+                }
+                exit;
+            }
+            // If both check-in and check-out exist, prevent further marking
+            echo json_encode(['status' => 2, 'message' => 'Attendance already completed for today.']);
+            exit;
+        } else {
+            // Insert new record with check-in
+             $db_check_in = $current_time;
+            $status = ($db_check_in > '08:00') ? 'Late' : 'Present';
+            $status_val = $status_map[$status];
+            $sql2 = "INSERT INTO staff_attendance (staff_id, school_id, date, check_in, status, mode, created_at, updated_at, updated_by) VALUES ('$staff_id', '$school_id', '$today', '$db_check_in', '$status_val', '$mode', '$now', '$now', '$user_id')";
+            if (mysqli_query($conn, $sql2)) {
+                echo json_encode(['status' => 1, 'message' => 'Check-in recorded']);
+            } else {
+                echo json_encode(['status' => 0, 'message' => 'DB error: ' . mysqli_error($conn)]);
+            }
+            exit;
+            // $db_check_in = $current_time;
+            // $status = ($db_check_in > '08:00') ? 'Late' : 'Present';
+            // $status_val = $status_map[$status];
+            // echo $sql2 = "INSERT INTO staff_attendance (staff_id, school_id, date, check_in, status, mode, created_at, updated_at, updated_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            // $stmt2 = $conn->prepare($sql2);
+            // $stmt2->bind_param('iissiiisi', $staff_id, $school_id, $today, $db_check_in, $status_val, $mode, $now, $now, $user_id);
+            // $ok = $stmt2->execute();
+            // if ($ok) {
+            //     echo json_encode(['status' => 1, 'message' => 'Check-in recorded']);
+            // } else {
+            //     echo json_encode(['status' => 0, 'message' => 'DB error']);
+            // }
+            // exit;
         }
     }
     if ($action === 'manual_staff_attendance') {
