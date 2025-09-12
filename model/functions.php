@@ -922,6 +922,16 @@ function get_assessment_score($assessment_id, $student_id) {
     return 0;
 }
 
+function get_school_id_by_url($url) {
+    global $conn;
+    $query = "SELECT id FROM school WHERE url = '$url'";
+    $result = mysqli_query($conn, $query);
+    if ($row = mysqli_fetch_assoc($result)) {
+        return (int)$row['id'];
+    }
+    return 0;
+}
+
 // function get_total_obtainables($studentid, $term_id, $session_id, $class_id) {
 //     global $conn;
 //     $select = mysqli_query($conn, "SELECT COUNT(*) as subject_count FROM skulscores 

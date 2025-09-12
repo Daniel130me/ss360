@@ -505,6 +505,7 @@ switch ($action) {
         $phone = test_input($_POST['phone']);
         $password = test_input($_POST['password']);
         $remember = isset($_POST['remember']) ? true : false;
+        $school_id = get_school_id_by_url($_SESSION['url']);
 
         // Try staff login first
         $result = mysqli_query($conn, "SELECT * FROM staff WHERE phone = '$phone'");
@@ -512,7 +513,7 @@ switch ($action) {
         if (mysqli_num_rows($result) < 1) {
             // Try student login
             $student_sql = "SELECT id,status, photo, firstname, lastname, class_id, school_id, phone, passw
-                           FROM students WHERE admission_no = '$phone'";
+                           FROM students WHERE admission_no = '$phone' AND school_id = '$school_id'";
             $student_result = mysqli_query($conn, $student_sql);
 
             if (mysqli_num_rows($student_result) > 0) {
@@ -576,7 +577,7 @@ switch ($action) {
             }
 
             // Try parent login if student login failed
-            $parent_sql = "SELECT id,status,email,school_id,passw,firstname, lastname FROM parent WHERE phone = '$phone'";
+            $parent_sql = "SELECT id,status,email,school_id,passw,firstname, lastname FROM parent WHERE phone = '$phone' AND school_id='$school_id'";
             $result = mysqli_query($conn, $parent_sql);
             if (mysqli_num_rows($result) > 0) { // if parent
                 $row = mysqli_fetch_array($result);
