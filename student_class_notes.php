@@ -52,7 +52,11 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
             background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%);
             min-height: 100vh;
         }
-         .hero-section {
+        .user-panel img {
+            border: 2px solid #6366f1;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.15);
+        }
+        .hero-section {
             background: linear-gradient(120deg, #000000 0%, #818cf8 100%);
             color: #fff;
             /* border-radius: 24px; */
@@ -72,6 +76,17 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
         .hero-section p {
             font-size: 1.2rem;
             opacity: 0.95;
+        }
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            right: -60px;
+            top: -60px;
+            width: 180px;
+            height: 180px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 50%;
+            z-index: 0;
         }
          .fade-in {
             opacity: 0;
@@ -95,7 +110,13 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
 
             <!-- Main content -->
             <div class="content fade-in p-0">
-                <div class="hero-section">
+                <div class="hero-section d-flex flex-column align-items-center justify-content-center" style="position: relative;">
+                    <div style="position: absolute; top: 20px; right: 30px; z-index:1;">
+                        <a href="logout" title="Logout" style="color: #fff;">
+                            <span class="material-symbols-outlined" style="font-size: 2.2rem; vertical-align: middle;">logout</span>
+                        </a>
+                    </div>
+                    <img src="<?php echo isset($_SESSION['photo']) ? '../uploads/'.$_SESSION['photo'] : '../dist/img/avatar.png'; ?>" alt="Profile" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; box-shadow: 0 2px 8px rgba(99,102,241,0.15); margin-bottom: 18px; border: 3px solid #fff;">
                     <h1>Notes</h1>
                     <p>Find all class notes here.</p>
                 </div>

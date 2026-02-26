@@ -12,22 +12,62 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
 if (isset($_GET['id'])) {
     $assessment_id = $_GET['id'];
 }
+if (isset($_GET['page'])) {
+    $page = max(1, intval($_GET['page']));
+} else {
+    $page = 1;
+}
+$per_page = 5; // number of questions per page
+$offset = ($page - 1) * $per_page;
 
-// select all data in assessment table
+// select assessment data
 $sql = "SELECT * FROM assessment WHERE id = '$assessment_id'";
 $result = mysqli_query($conn, $sql);
 $assessment_data = mysqli_fetch_assoc($result);
 
-// After fetching assessment data, get questions and options
-$questions_sql = "SELECT * FROM questions WHERE ass_id = '$assessment_id'";
+if (!$assessment_data) {
+    $assessment_data = [
+        'id' => null,
+        'subject_id' => null,
+        'assessment_type' => 1,
+        'instruction' => '',
+        'duration' => 20,
+        'duration_set' => 1,
+        'deadline_date' => '',
+        'deadline_time' => '00:00:00',
+        'deadline_set' => 0,
+        'class_ids' => '',
+        'desired_score' => 0,
+        'round_off_decimal' => 0,
+        'term' => 1,
+        'score_destination' => '6'
+    ];
+}
+
+// total questions count for pagination
+$count_sql = "SELECT COUNT(*) as cnt FROM questions WHERE ass_id = '$assessment_id' and deleted=0";
+$count_res = mysqli_query($conn, $count_sql);
+$total_questions = 0;
+if ($count_row = mysqli_fetch_assoc($count_res)) {
+    $total_questions = intval($count_row['cnt']);
+}
+$total_pages = max(1, ceil($total_questions / $per_page));
+
+// fetch only the first page (or requested page) of questions
+$questions_sql = "SELECT * FROM questions WHERE ass_id = '$assessment_id' and deleted=0 ORDER BY id LIMIT $offset, $per_page";
 $questions_result = mysqli_query($conn, $questions_sql);
 $has_questions = mysqli_num_rows($questions_result) > 0;
+// echo "ll";
+// exit;
 
-// Store questions and their options
+// Store questions and their options (only current page)
 $questions_data = array();
+// For question numbering
+$start_question_num = $offset + 1;
+$q_index = 0;
 while ($question = mysqli_fetch_assoc($questions_result)) {
     $question_id = $question['id'];
-    $options_sql = "SELECT * FROM options WHERE question_id = '$question_id'";
+    $options_sql = "SELECT * FROM options WHERE question_id = '$question_id' and deleted=0";
     $options_result = mysqli_query($conn, $options_sql);
     $options = array();
     while ($option = mysqli_fetch_assoc($options_result)) {
@@ -35,8 +75,10 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
     }
     $questions_data[] = array(
         'question' => $question,
-        'options' => $options
+        'options' => $options,
+        'number' => $start_question_num + $q_index
     );
+    $q_index++;
 }
 // var_dump($questions_data)
 ?>
@@ -57,25 +99,21 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
     <!-- Theme style -->
     <link rel="stylesheet" href="../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
     <!-- Select2 -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
-    <!-- summernote -->
-    <link rel="stylesheet" href="../plugins/summernote/summernote-bs4.min.css">
-    <!-- <link rel="stylesheet" href="../plugins/select2/css/select2.min.css"> -->
+    <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" /> -->
+    <link rel="stylesheet" href="../plugins/select2/css/select2.min.css">
+
     <!-- daterange picker -->
     <link rel="stylesheet" href="../plugins/daterangepicker/daterangepicker.css">
     <link rel="stylesheet" href="../plugins/toastr/toastr.min.css">
+    <link rel="stylesheet" href="../plugins/summernote/summernote-bs4.min.css">
     <link rel="stylesheet" href="../dist/css/adminlte.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.2.2/css/fixedColumns.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
+    <!--<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">-->
+    <!--<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.2.2/css/fixedColumns.dataTables.min.css">-->
+    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">-->
     <style>
         .accent_active {
             background-color: #007bff;
             color: white;
-        }
-
-        .select2-container {
-            display: none !important;
         }
     </style>
 </head>
@@ -86,13 +124,14 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
         <!-- Navbar -->
         <nav class="main-header navbar border-bottom-0 navbar-expand justify-content-between bg1">
             <!-- <div class=""> -->
-            <!-- <div> -->
 
             <!-- Left navbar links -->
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i
+                            class="muted-text fas fa-bars"></i></a>
                 </li>
+
             </ul>
 
             <!-- Right navbar links -->
@@ -135,11 +174,10 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                 </li>
             </ul>
             <!-- </div> -->
-            <!-- </div> -->
-
         </nav>
         <!-- /.navbar -->
 
+        <!-- Main Sidebar Container -->
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-light-primary elevation-4">
             <!-- Brand Logo -->
@@ -254,10 +292,36 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="lesson_note" class="nav-link active">
+                            <a href="staff_attendance" class="nav-link">
                                 <p class="d-flex">
-                                    <i class="material-symbols-outlined pr-2">list</i>
-                                    Lesson Note
+                                    <i class="material-symbols-outlined pr-2">add_chart</i>
+                                    Staff Attendance
+                                </p>
+                            </a>
+                        </li>
+                        <?php if ($_SESSION['school_id'] == 27 || $_SESSION['school_id'] == 13) {  ?>
+                            <li class="nav-item">
+                                <a href="lesson_note" class="nav-link">
+                                    <p class="d-flex">
+                                        <i class="material-symbols-outlined pr-2">list</i>
+                                        Lesson Note
+                                    </p>
+                                </a>
+                            </li>
+                        <?php } ?>
+                        <li class="nav-item">
+                            <a href="assessment" class="nav-link active">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">app_registration</i>
+                                    Assessments
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="payments" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">payments</i>
+                                    Payments
                                 </p>
                             </a>
                         </li>
@@ -277,14 +341,14 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="reports" class="nav-link">
-                                <p class="d-flex">
-                                    <i class="material-symbols-outlined pr-2">list</i>
-                                    Reports
-                                </p>
-                            </a>
-                        </li>
+                        <!--<li class="nav-item">-->
+                        <!--    <a href="reports" class="nav-link">-->
+                        <!--        <p class="d-flex">-->
+                        <!--            <i class="material-symbols-outlined pr-2">list</i>-->
+                        <!--            Reports-->
+                        <!--        </p>-->
+                        <!--    </a>-->
+                        <!--</li>-->
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
@@ -340,6 +404,16 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="col-12" id="select_term_single">
+                                            <div class="form-group align-left">
+                                                <label for="" class="mb-0">Select Term</label>
+                                                <div class="assessment_term_btn d-flex flex-wrap" style="gap:10px;">
+                                                    <button type="button" class="btn term_btn select_btn <?= $assessment_data['term'] == 1 ? 'active' : '' ?>" data-id="1" onclick="toggle_term_btn(this)">First</button>
+                                                    <button type="button" class="btn term_btn select_btn <?= $assessment_data['term'] == 2 ? 'active' : '' ?>" data-id="2" onclick="toggle_term_btn(this)">Second</button>
+                                                    <button type="button" class="btn term_btn select_btn <?= $assessment_data['term'] == 3 ? 'active' : '' ?>" data-id="3" onclick="toggle_term_btn(this)">Third</button>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="col-12">
                                             <div class="form-group align-left">
                                                 <p class="mb-0 btn accent" onclick="get_all_classes_for_assessment('<?= $assessment_id ?>')">+ Assign Classes</p>
@@ -391,10 +465,10 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                                                 <option value="2">Hours</option>
                                             </select>
                                         </div>
-                                        <div class="input-group-prepend icheck-gray-dark ml-2">
-                                            <input <?= $assessment_data['duration_set'] ? 'checked' : '' ?> class="class-checkbox" type="checkbox" id="set_duration_checkbox">
-                                            <label for="set_duration_checkbox">Set Duration</label>
-                                        </div>
+                                        <!--<div class="input-group-prepend icheck-gray-dark ml-2">-->
+                                        <!--    <input <?= $assessment_data['duration_set'] ? 'checked' : '' ?> class="class-checkbox" type="checkbox" id="set_duration_checkbox">-->
+                                        <!--    <label for="set_duration_checkbox">Set Duration</label>-->
+                                        <!--</div>-->
                                     </div>
                                 </div>
                             </div>
@@ -404,10 +478,10 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                                         <label for="" class="mb-0">Deadline Date:</label>
                                         <input type="date" class="form-control" id="deadline_date" value="<?= $assessment_data['deadline_date'] ?>">
                                         <input type="time" class="form-control" id="deadline_time" value="<?= $assessment_data['deadline_time'] ?>">
-                                        <div class="input-group-prepend icheck-gray-dark ml-2">
-                                            <input <?= $assessment_data['deadline_Set'] ? 'checked' : '' ?> class="class-checkbox" type="checkbox" id="set_deadline_checkbox">
-                                            <label for="set_deadline_checkbox">Set Deadline</label>
-                                        </div>
+                                        <!--<div class="input-group-prepend icheck-gray-dark ml-2">-->
+                                        <!--    <input <?= $assessment_data['deadline_Set'] ? 'checked' : '' ?> class="class-checkbox" type="checkbox" id="set_deadline_checkbox">-->
+                                        <!--    <label for="set_deadline_checkbox">Set Deadline</label>-->
+                                        <!--</div>-->
                                     </div>
                                 </div>
                             </div>
@@ -476,14 +550,19 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                             </div>
                         <php endif; ?> -->
 
+                        <!-- Loading spinner for AJAX pagination -->
+                        <div id="questions-loading-spinner" style="display:none; text-align:center; padding:40px 0;">
+                            <div class="spinner-border text-primary" role="status" style="width:3rem; height:3rem;">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
                         <div id="questions-container">
                             <?php foreach ($questions_data as $index => $qdata): ?>
                                 <div class="py-3 px-15 bg-white mb-3 question-block" style="border-radius: 10px;" data-question-id="<?= $qdata['question']['id'] ?>">
                                     <div class="form-group">
-                                        <label>Question <?= $index + 1 ?></label>
+                                        <label>Question <?= $qdata['number'] ?></label>
                                         <textarea class="question-textarea form-control" style="height: 200px"><?= htmlspecialchars($qdata['question']['question']) ?></textarea>
                                     </div>
-
                                     <div class="options-container mt-3">
                                         <div class="form-group">
                                             <label>Options</label>
@@ -504,14 +583,22 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- <button type="button" class="btn btn-success btn-sm mt-2 mr-2" onclick="saveQuestion(this.closest('.question-block'))">Save Question</button> -->
                                     <button type="button" class="btn btn-danger btn-sm mt-2" onclick="deleteQuestion(<?= $qdata['question']['id'] ?>)">Delete Question</button>
                                 </div>
                             <?php endforeach; ?>
                         </div>
-                        <button type="button" class="btn btn-primary mt-3" id="add-question-btn">Add New Question</button>
-                        <div class="d-flex justify-content-end mb-3">
-                            <button type="button" class="btn btn-primary" onclick="saveEntireAssessment()">Save Assessment</button>
+                        <div class="d-flex align-items-center mt-3 flex-wrap" style="gap:10px">
+                            <button type="button" class="btn btn-secondary" id="prev-page-btn">Previous</button>
+                            <span>Page <span id="current-page"><?= $page ?></span> / <span id="total-pages"><?= $total_pages ?></span></span>
+                            <button type="button" class="btn btn-secondary" id="next-page-btn">Next</button>
+                            <!-- Import Question: only visible on last page or when there is a single page -->
+                            <button type="button" class="btn btn-info mr-2" id="import-question-btn" <?= ($page != $total_pages) ? 'style="display:none"' : '' ?>>Import Questions</button>
+                            <!-- Add New Question: only visible on last page or when there is a single page -->
+                            <button type="button" class="btn btn-primary" id="add-question-btn" <?= ($page != $total_pages) ? 'style="display:none"' : '' ?>>Add New Question</button>
+                            <!-- <button type="button" class="btn btn-success ml-auto" id="save-page-btn">Save Page</button> -->
+                            <button type="button" class="btn btn-primary d-block" id="save-all-btn">Save Assessment</button>
+                        </div>
+                        <div>
                         </div>
                     </div>
 
@@ -585,6 +672,28 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
         </div>
     </div>
 
+    <!-- Unsaved changes modal -->
+    <div class="modal fade" id="unsavedChangesModal" tabindex="-1" role="dialog" aria-labelledby="unsavedChangesModalLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="unsavedChangesModalLabel">Unsaved changes</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    You have unsaved changes on this page. What would you like to do?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancel-continue-btn" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="discard-continue-btn">Discard changes</button>
+                    <button type="button" class="btn btn-primary" id="save-continue-btn">Save and continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- ./wrapper -->
 
@@ -598,29 +707,27 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
     <script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- Select2 -->
 
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script> -->
 
-    <!-- <script src="../plugins/select2/js/select2.full.min.js"></script> -->
+    <script src="../plugins/select2/js/select2.full.min.js"></script>
     <!-- AdminLTE App -->
     <script src="../dist/js/adminlte.min.js"></script>
     <!-- <script src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
+    <!--<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>-->
+    <!--<script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>-->
     <script src="../plugins/toastr/toastr.min.js"></script>
     <!-- <script>$('.select2').select2()</script> -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
-    <!-- Summernote -->
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>-->
     <script src="../plugins/summernote/summernote-bs4.min.js"></script>
-    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/@wiris/mathtype-ckeditor5@7.30.0/plugin.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathquill/0.10.1/mathquill.min.js"></script>
     <script>
 
     </script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>-->
     <!-- Summernote -->
-    <script src="../plugins/summernote/summernote-bs4.min.js"></script>
-    <script src="../dist/js/skul.js?v=w3q125sj"></script>
+    <!--<script src="../plugins/summernote/summernote-bs4.min.js"></script>-->
+    <script src="../dist/js/skul.js"></script>
     <!-- date-range-picker -->
     <script src="../plugins/moment/moment.min.js"></script>
     <script src="../plugins/daterangepicker/daterangepicker.js"></script>
@@ -628,8 +735,69 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
         var existingAssessmentId = <?= $_GET['id'] ?>;
         var classElementToRemove = null;
     </script>
+
+    <!-- Import Questions Modal -->
+    <div class="modal fade" id="importQuestionsModal" tabindex="-1" role="dialog" aria-labelledby="importQuestionsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importQuestionsModalLabel">Import Questions</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <label>Term</label>
+                            <select class="form-control" id="import_term_filter">
+                                <option value="all">All Terms</option>
+                                <option value="1">First</option>
+                                <option value="2">Second</option>
+                                <option value="3">Third</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Type</label>
+                            <select class="form-control" id="import_type_filter">
+                                <option value="all">All Types</option>
+                                <option value="1">Assignment</option>
+                                <option value="2">CA</option>
+                                <option value="3">Exam</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Subject</label>
+                            <select class="form-control" id="import_subject_filter">
+                                <option value="all">All Subjects</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="import-questions-list" style="max-height: 500px; overflow-y: auto;">
+                        <!-- Questions will be loaded here directly -->
+                        <p class="text-muted text-center py-5">Please select Term, Type, and Subject to load questions.</p>
+                    </div>
+
+                    <div id="import_pagination" class="d-flex justify-content-between align-items-center mt-3" style="display: none !important;">
+                        <div>
+                            <span>Page <span id="import_current_page">1</span> of <span id="import_total_pages">1</span></span>
+                        </div>
+                        <div>
+                            <button class="btn btn-secondary btn-sm" id="import_prev_btn" disabled>Previous</button>
+                            <button class="btn btn-secondary btn-sm" id="import_next_btn" disabled>Next</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="import_selected_btn">Import Selected</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="../dist/js/assessment_image_buffer.js"></script>
-    <script src="../dist/js/examination.js?v=001"></script>
+    <script src="../dist/js/examination.js?v=90-restored-v1"></script>
     <script>
         // alert("mkm")
         // Add event listeners for form changes
@@ -653,6 +821,222 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
             };
 
             // addNewQuestion();
+        });
+
+        // Pagination helpers
+        var currentPage = <?= $page ?>;
+        var totalPages = <?= $total_pages ?>;
+        var perPage = <?= $per_page ?>;
+
+        function renderResponseHtml(html) {
+            $('#questions-container').html(html);
+            // re-init editors
+            initializeSummernote();
+        }
+
+        function loadPage(page) {
+            // Show spinner, hide questions
+            $('#questions-container').hide();
+            $('#questions-loading-spinner').show();
+            $.ajax({
+                url: '../controller_new.php',
+                type: 'POST',
+                data: {
+                    action: 'load_questions_page',
+                    assessment_id: existingAssessmentId,
+                    page: page,
+                    per_page: perPage
+                },
+                success: function(resp) {
+                    try {
+                        var data = typeof resp === 'string' ? JSON.parse(resp) : resp;
+                    } catch (e) {
+                        var data = resp;
+                    }
+                    if (data.success) {
+                        renderResponseHtml(data.html);
+                        currentPage = data.page;
+                        totalPages = data.total_pages;
+                        // restore pagination UI label and add-question visibility
+                        $('#current-page').text(currentPage);
+                        $('#total-pages').text(totalPages);
+                        if (currentPage === totalPages) $('#add-question-btn').show();
+                        else $('#add-question-btn').hide();
+                    }
+                    // Hide spinner, show questions
+                    $('#questions-loading-spinner').hide();
+                    $('#questions-container').show();
+                },
+                error: function() {
+                    $('#questions-loading-spinner').hide();
+                    $('#questions-container').show();
+                    toastr.error('Failed to load questions');
+                }
+            });
+        }
+
+        $('#next-page-btn').click(function() {
+            if (currentPage < totalPages) {
+                loadPage(currentPage + 1);
+            }
+        });
+
+        $('#prev-page-btn').click(function() {
+            if (currentPage > 1) {
+                loadPage(currentPage - 1);
+            }
+        });
+
+        // collect question + option data for the currently displayed page and save via save_all_questions
+        function collectCurrentPageQuestions() {
+            var questions = [];
+            $('.question-block').each(function() {
+                var $q = $(this);
+                var qid = $q.data('question-id') || null;
+                var questionText = $q.find('.question-textarea').val();
+                var options = [];
+                $q.find('.option-group').each(function() {
+                    var $opt = $(this);
+                    var optId = $opt.find('.option-textarea').data('option-id') || null;
+                    var optText = $opt.find('.option-textarea').val();
+                    var isAnswer = $opt.find('input[type="radio"]').is(':checked');
+                    options.push({
+                        id: optId,
+                        text: optText,
+                        isAnswer: isAnswer
+                    });
+                });
+                questions.push({
+                    id: qid,
+                    question: questionText,
+                    options: options
+                });
+            });
+            return questions;
+        }
+        // Dirty tracking: true when user edits any textarea or option
+        var isDirty = false;
+
+        function markDirty() {
+            isDirty = true;
+        }
+
+        function clearDirty() {
+            isDirty = false;
+        }
+
+        // mark dirty on edits
+        $(document).on('input change', '.question-textarea, .option-textarea, input[type=radio]', function() {
+            markDirty();
+        });
+
+        // Save current page function (reusable)
+        function saveCurrentPage(onSuccess) {
+            var questions = collectCurrentPageQuestions();
+            $.ajax({
+                url: '../controller_new.php',
+                type: 'POST',
+                data: {
+                    action: 'save_all_questions',
+                    assessment_id: existingAssessmentId,
+                    questions: JSON.stringify(questions)
+                },
+                success: function(resp) {
+                    try {
+                        var data = typeof resp === 'string' ? JSON.parse(resp) : resp;
+                    } catch (e) {
+                        var data = resp;
+                    }
+                    if (data.success) {
+                        toastr.success('Page saved');
+                        // update any new question ids
+                        if (data.question_ids && data.question_ids.length) {
+                            $('.question-block').each(function(i) {
+                                var qid = $(this).data('question-id');
+                                if (!qid && data.question_ids[i]) {
+                                    $(this).attr('data-question-id', data.question_ids[i]);
+                                }
+                            });
+                        }
+                        clearDirty();
+                        if (typeof onSuccess === 'function') onSuccess();
+                    } else {
+                        toastr.error(data.message || 'Save failed');
+                    }
+                },
+                error: function() {
+                    toastr.error('Save failed');
+                }
+            });
+        }
+
+        $('#save-page-btn').off('click').on('click', function() {
+            saveCurrentPage();
+        });
+
+        // Intercept navigation: attempt to navigate to newPage via loadPage(newPage)
+        var pendingPage = null;
+
+        function handleNavigationRequest(newPage) {
+            if (isDirty) {
+                pendingPage = newPage;
+                $('#unsavedChangesModal').modal('show');
+            } else {
+                loadPage(newPage);
+            }
+        }
+
+        $('#next-page-btn').off('click').on('click', function() {
+            if (currentPage < totalPages) {
+                handleNavigationRequest(currentPage + 1);
+            }
+        });
+
+        $('#prev-page-btn').off('click').on('click', function() {
+            if (currentPage > 1) {
+                handleNavigationRequest(currentPage - 1);
+            }
+        });
+
+        // Modal buttons
+        $('#save-continue-btn').off('click').on('click', function() {
+            $('#unsavedChangesModal').modal('hide');
+            saveCurrentPage(function() {
+                if (pendingPage) {
+                    loadPage(pendingPage);
+                    pendingPage = null;
+                }
+            });
+        });
+
+        $('#discard-continue-btn').off('click').on('click', function() {
+            $('#unsavedChangesModal').modal('hide');
+            clearDirty();
+            if (pendingPage) {
+                loadPage(pendingPage);
+                pendingPage = null;
+            }
+        });
+
+        $('#save-all-btn').click(function() {
+            saveEntireAssessment();
+        });
+
+        // show/hide add-question on initial load
+        $(function() {
+            if (currentPage === totalPages) $('#add-question-btn').show();
+            else $('#add-question-btn').hide();
+        });
+
+        // bind add new question to the existing function
+        $(document).on('click', '#add-question-btn', function() {
+            // call existing addNewQuestion implementation
+            if (typeof addNewQuestion === 'function') {
+                addNewQuestion();
+                // after adding a new question (which appends to DOM), ensure save behavior applies
+            } else {
+                toastr.error('Add question function not available');
+            }
         });
 
 

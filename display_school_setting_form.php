@@ -86,7 +86,29 @@ $row = mysqli_fetch_array($select);
         </div>
     </div>
 
-    <button type="button" class="btn btn-primary mb-3" id="set_location">Set School Location</button>
+    
+
+    <p class="font-weight-bold">Grade setting</p>
+    <?php
+    $skul_setting = json_decode($_SESSION['skul_settings'],true);
+    echo $_SESSION['skul_settings'];
+    echo $grade = json_decode($skul_setting['grading'],true);
+    foreach($grade as $key => $value) {
+    ?>
+    <div class="d-flex align-items-center">
+        <div class="form-group mr-2">
+            <p class="p-0 mb-0 muted-text small">Grade</p>
+            <input style="max-width: 100px;" type="text" name="" value="<?=$key?>" class="form-control grade_letter">
+        </div>
+        <div class="form-group">
+            <p class="p-0 mb-0 muted-text small">Start from</p>
+            <input style="max-width: 100px;" type="number" name="" value="<?=$value?>" class="form-control grade_value">
+        </div>
+    </div>
+    <?php } ?>
+    <p class="font-weight-bold">Location settings</p>
+    <p class="small">This settings will be used for staff attendance</p>
+<button type="button" class="btn btn-primary mb-3" id="set_location">Set School Location</button>
     <div id="map_container" style="display: none;">
         <div class="form-group">
             <label for="radius_input">Radius (in meters)</label>
@@ -103,25 +125,6 @@ $row = mysqli_fetch_array($select);
     <input type="hidden" id="latitude" name="latitude" value="<?php echo $latitude; ?>">
     <input type="hidden" id="longitude" name="longitude" value="<?php echo $longitude; ?>">
     <input type="hidden" id="radius" name="radius" value="<?php echo $radius; ?>">
-
-
-    <p class="font-weight-bold">Grade setting</p>
-    <?php
-    $skul_setting = json_decode($_SESSION['skul_settings'],true);
-    $grade = json_decode($skul_setting['grading'],true);
-    foreach($grade as $key => $value) {
-    ?>
-    <div class="d-flex align-items-center">
-        <div class="form-group mr-2">
-            <p class="p-0 mb-0 muted-text small">Grade</p>
-            <input style="max-width: 100px;" type="text" name="" value="<?=$key?>" class="form-control grade_letter">
-        </div>
-        <div class="form-group">
-            <p class="p-0 mb-0 muted-text small">Start from</p>
-            <input style="max-width: 100px;" type="number" name="" value="<?=$value?>" class="form-control grade_value">
-        </div>
-    </div>
-    <?php } ?>
 
 </div>
 <div class="row">

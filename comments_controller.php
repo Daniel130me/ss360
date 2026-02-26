@@ -27,9 +27,11 @@ if ($action === 'edit') {
         echo json_encode(['success' => false, 'message' => 'Invalid input']);
         exit;
     }
+    $score_from = intval($_POST['score_from'] ?? 0);
+    $score_to = intval($_POST['score_to'] ?? 100);
     $now = date('Y-m-d H:i:s');
-    $stmt = mysqli_prepare($conn, "UPDATE suggested_comments SET comment=?, dateupdated=? WHERE id=?");
-    mysqli_stmt_bind_param($stmt, 'ssi', $comment, $now, $id);
+    $stmt = mysqli_prepare($conn, "UPDATE suggested_comments SET comment=?, score_from=?, score_to=?, dateupdated=? WHERE id=?");
+    mysqli_stmt_bind_param($stmt, 'siisi', $comment, $score_from, $score_to, $now, $id);
     $ok = mysqli_stmt_execute($stmt);
     if ($ok) {
         echo json_encode(['success' => true]);
@@ -52,20 +54,24 @@ if ($action === 'list') {
     $offset = ($page - 1) * $per_page;
     // Search param
     $search = trim($_POST['search'] ?? '');
-    $where = "school_id='" . mysqli_real_escape_string($conn, $school_id) . "'";
+    $where = "sc.school_id='" . mysqli_real_escape_string($conn, $school_id) . "'";
     if ($search !== '') {
         $search_esc = mysqli_real_escape_string($conn, $search);
-        $where .= " AND comment LIKE '%$search_esc%'";
+        $where .= " AND sc.comment LIKE '%$search_esc%'";
     }
     // Get total count
-    $count_sql = "SELECT COUNT(*) as total FROM suggested_comments WHERE $where";
+    $count_sql = "SELECT COUNT(*) as total FROM suggested_comments sc WHERE $where";
     $count_query = mysqli_query($conn, $count_sql);
     $total = 0;
     if ($count_query && ($count_row = mysqli_fetch_assoc($count_query))) {
         $total = intval($count_row['total']);
     }
-    // Get paginated data
-    $sql = "SELECT id, comment FROM suggested_comments WHERE $where ORDER BY datecreated DESC LIMIT $per_page OFFSET $offset";
+    // Get paginated data with staff name
+    $sql = "SELECT sc.id, sc.comment, sc.commentby, sc.score_from, sc.score_to, 
+            CONCAT(s.firstname, ' ', s.lastname) as commentby_name
+            FROM suggested_comments sc
+            LEFT JOIN staff s ON sc.commentby = s.id
+            WHERE $where ORDER BY sc.datecreated DESC LIMIT $per_page OFFSET $offset";
     $query = mysqli_query($conn, $sql);
     while ($row = mysqli_fetch_assoc($query)) {
         $result[] = $row;
@@ -88,9 +94,11 @@ if ($action === 'add') {
     }
     $commentby = $_SESSION['userid'] ?? 0;
     $school_id = $_SESSION['school_id'] ?? 0;
+    $score_from = intval($_POST['score_from'] ?? 0);
+    $score_to = intval($_POST['score_to'] ?? 100);
     $now = date('Y-m-d H:i:s');
-    $stmt = mysqli_prepare($conn, "INSERT INTO suggested_comments (comment, commentby, school_id, datecreated, dateupdated) VALUES (?, ?, ?, ?, ?)");
-    mysqli_stmt_bind_param($stmt, 'sisss', $comment, $commentby, $school_id, $now, $now);
+    $stmt = mysqli_prepare($conn, "INSERT INTO suggested_comments (comment, commentby, score_from, score_to, school_id, datecreated, dateupdated) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    mysqli_stmt_bind_param($stmt, 'siiisss', $comment, $commentby, $score_from, $score_to, $school_id, $now, $now);
     $ok = mysqli_stmt_execute($stmt);
     if ($ok) {
         echo json_encode(['success' => true]);

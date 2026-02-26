@@ -1,89 +1,20 @@
 <?php
 session_start();
+error_reporting(E_ALL);
 
 include_once("model/connect.php");
 include_once("model/functions.php");
 $date = date("Y:m:d H:i:s");
 
-// echo $_POST['action'];
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Safely read the action parameter to avoid "Undefined array key 'action'" warnings
-    // Prefer POST, but allow fallback to GET if provided. Sanitize using test_input().
-    $action = '';
-    if (isset($_POST['action'])) {
-        $action = test_input($_POST['action']);
-    } elseif (isset($_GET['action'])) {
-        $action = test_input($_GET['action']);
-    }
-    // Handle image uploads for lesson notes via AJAX (CKEditor or fallback file input)
-    if ($action === 'upload_lesson_image') {
-        // Basic checks
-        $uploadDir = __DIR__ . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'lesson_images' . DIRECTORY_SEPARATOR;
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
-        }
 
-        // CKEditor 5 SimpleUpload adapter sends the file under the key 'upload'
-        $fileKey = '';
-        if (isset($_FILES['upload'])) {
-            $fileKey = 'upload';
-        } elseif (isset($_FILES['file'])) {
-            $fileKey = 'file';
-        } elseif (!empty($_FILES)) {
-            // fallback to first file
-            $keys = array_keys($_FILES);
-            $fileKey = $keys[0];
-        }
-
-        if (!$fileKey || !isset($_FILES[$fileKey]) || !is_uploaded_file($_FILES[$fileKey]['tmp_name'])) {
-            header('Content-Type: application/json');
-            echo json_encode(array('error' => array('message' => 'No file uploaded')));
-            exit;
-        }
-
-        $file = $_FILES[$fileKey];
-        $allowed = array('jpg', 'jpeg', 'png', 'gif', 'webp');
-        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-
-        if (!in_array($ext, $allowed)) {
-            header('Content-Type: application/json');
-            echo json_encode(array('error' => array('message' => 'Invalid file type')));
-            exit;
-        }
-
-        if ($file['size'] > 5 * 1024 * 1024) { // limit 5MB
-            header('Content-Type: application/json');
-            echo json_encode(array('error' => array('message' => 'File too large (max 5MB)')));
-            exit;
-        }
-
-        $safeName = uniqid('lesson_', true) . '.' . $ext;
-        $dest = $uploadDir . $safeName;
-
-        if (move_uploaded_file($file['tmp_name'], $dest)) {
-            // Build URL relative to web root. Assumes this script is in web root `ss360`.
-            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-            $host = $_SERVER['HTTP_HOST'];
-            $scriptDir = rtrim(dirname($_SERVER['SCRIPT_NAME']), '\/');
-            $uploadsUrlPath = $scriptDir . '/uploads/lesson_images/' . $safeName;
-            $url = $protocol . '://' . $host . $uploadsUrlPath;
-
-            header('Content-Type: application/json');
-            echo json_encode(array('url' => $url));
-            exit;
-        } else {
-            header('Content-Type: application/json');
-            echo json_encode(array('error' => array('message' => 'Failed to move uploaded file')));
-            exit;
-        }
-    }
+    $action = $_POST['action'];
     if ($action == 'settings') {
         $grading = $_POST['grades'];
-        $first = test_input($_POST['first_term_date']);
+        $first = test_input($_POST['first_term_date']) == '' ? '0001-01-01': test_input($_POST['third_term_date']);
         $session = test_input($_POST['session_id']);
         $term_id = test_input($_POST['term_id']);
-        $second = test_input($_POST['second_term_date']);
-        $third = test_input($_POST['third_term_date']);
+        $second = test_input($_POST['second_term_date']) == '' ? '0001-01-01' : test_input($_POST['second_term_date']);
+        $third = test_input($_POST['third_term_date']) == '' ? '0001-01-01' : test_input($_POST['third_term_date']);
         $ca1 = isset($_POST['ca1']) ? 1 : 0;
         $ca2 = isset($_POST['ca2']) ? 1 : 0;
         $ca3 = isset($_POST['ca3']) ? 1 : 0;
@@ -92,17 +23,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $date = date('Y-m-d H:i:s');
         $school_id = $_SESSION['school_id'];
         $userid = $_SESSION['userid'];
-        $school_open = test_input($_POST['school_open']);
-        $maplocation = test_input($_POST['latitude']).','.test_input($_POST['longitude']);
+        $school_open = test_input($_POST['school_open']) == '' ? 0 : test_input($_POST['school_open']);
+         $maplocation = test_input($_POST['latitude']).','.test_input($_POST['longitude']);
         $radius = test_input($_POST['radius']);
-
+            // echo $first.'is here';
+            // exit;
         // Check if the record exists
         $query = "SELECT * FROM skul_settings WHERE session_id='$session' AND term_id='$term_id' AND school_id='$school_id'";
         $result = mysqli_query($conn, $query);
 
         if (mysqli_num_rows($result) > 0) {
+            
             // Update existing record
-            $query = "UPDATE skul_settings SET 
+           $query = "UPDATE skul_settings SET 
                 first='$first',
                 second='$second',
                 third='$third',
@@ -169,6 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['term_id'] = $term_id;
         $_SESSION['maplocation'] = $maplocation;
         $_SESSION['radius'] = $radius;
+        $_SESSION['session_name'] = getSSessionName($session);
     }
     if ($action == 'update_school_subject') {
         $school_id = $_SESSION['school_id'];
@@ -185,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode(['status' => '0', 'err' => 'Failed to update subjects']);
         }
     }
-    if ($action == "get_all_classes_for_assessment") {
+       if ($action == "get_all_classes_for_assessment") {
         $assessment_id = $_POST['assessment_id'];
         $select = mysqli_query($conn, "SELECT id, classname FROM class WHERE school_id='{$_SESSION['school_id']}' ORDER BY classname ASC");
         $data = [];
@@ -193,17 +127,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data[$row['id']] =  $row['classname'];
         }
         $assigned_classes = [];
-        if ($assessment_id != 'new') {
+        if($assessment_id != 'new') {
             $select_assigned_classes = mysqli_query($conn, "SELECT class_ids FROM assessment WHERE school_id='{$_SESSION['school_id']}' AND id='$assessment_id'");
-            if ($s_row = mysqli_fetch_assoc($select_assigned_classes)) {
+            if($s_row = mysqli_fetch_assoc($select_assigned_classes)){
                 $assigned_classes = explode(",", $s_row['class_ids']);
-            } else {
+            }else{
                 $assigned_classes = [];
             }
         }
         $new_data = array('data' => $data, 'assigned_classes' => $assigned_classes);
         echo json_encode($new_data);
     }
+    
+   
 
     if ($action == 'school_info_update') {
         $school_id = $_SESSION['school_id'];
@@ -328,7 +264,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    if ($action == 'get_no_of_times_school_open') {
+    if($action == 'get_no_of_times_school_open'){
         $school_id = $_SESSION['school_id'];
         $term_id = $_POST['term_id'];
         $session_id = $_POST['session_id'];
@@ -338,7 +274,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
 
-    // without remember me feature
+// without remember me feature
     if ($action === 'login') {
 
         $phone = test_input($_POST['phone']);
@@ -453,7 +389,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
-
+    
     // with remember me feature
     //  if ($action === 'login') {
 
@@ -813,8 +749,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if ($action === 'getsettings') {
         $school_id = $_SESSION['school_id'];
+        $term_id = $_SESSION['term_id'];
         $session_id = $_POST['session_id'];
-        $select = mysqli_query($conn, "SELECT * FROM skul_settings WHERE school_id='$school_id' AND session_id='$session_id'");
+        $select = mysqli_query($conn, "SELECT * FROM skul_settings WHERE school_id='$school_id' AND session_id='$session_id' AND term_id='$term_id'");
         if ($row = mysqli_fetch_array($select)) {
             echo json_encode(
                 array(
@@ -930,11 +867,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         echo json_encode($data);
     }
-    if ($action == 'toggle_approval') {
+       if ($action == 'toggle_approval') {
         $school_id = $_SESSION['school_id'];
         $student_id = test_input($_POST['studentId']);
         $term_id = test_input($_POST['termId']);
-        $session_id = test_input($_POST['sessionId']);
+        $session_id = test_input($_POST['sessionId']); 
         $status = test_input($_POST['status']);
         $class_id = test_input($_POST['classId']);
         $date = date('Y-m-d H:i:s');
@@ -943,7 +880,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         //     exit; //debugging
         $update = mysqli_query($conn, "UPDATE skulscores SET status='$status', updatedby='{$_SESSION['userid']}', dateupdated='$date' 
             WHERE student_id='$student_id' AND term_id='$term_id' AND session_id='$session_id' AND class_id='$class_id' AND school_id='$school_id'");
-
+            
         if ($update) {
             echo 'success';
         } else {
@@ -982,7 +919,132 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode($data);
     }
 
-    if ($action == 'get_att') {
+// if ($action == 'get_att') {
+//     $start_date = test_input($_POST['start_date']);
+//     $end_date = test_input($_POST['end_date']); 
+//     $class_id = test_input($_POST['class_id']);
+//     $school_id = $_SESSION['school_id'];
+//     $current_session_id = $_SESSION['session_id'];
+//     $current_term_id = $_SESSION['term_id'];
+
+//     // Base SQL query parts
+//     $select_part = "SELECT s.id AS student_id,
+//                         s.firstname,
+//                         s.lastname,
+//                         s.middlename,
+//                         a.att_date,
+//                         a.class_id,
+//                         a.term_id,
+//                         a.session_id,
+//                         MAX(CASE WHEN a.first IS NOT NULL THEN 1 ELSE 0 END) AS has_first,
+//                         MAX(CASE WHEN a.second IS NOT NULL THEN 1 ELSE 0 END) AS has_second
+//                     FROM attendance a
+//                     JOIN students s ON a.student_id = s.id";
+//     $where_part = "WHERE a.class_id = ? AND a.school_id = ?";
+//     $group_part = "GROUP BY a.student_id, a.att_date";
+//     $order_part = "ORDER BY a.att_date, s.lastname, s.firstname";
+
+//     $params = [$class_id, $school_id];
+//     $types = "ii";
+
+//     // Add date filtering based on $start_date
+//     if ($start_date == "term") {
+//         $where_part .= " AND a.term_id = ? AND a.session_id = ?";
+//         $params[] = $current_term_id;
+//         $params[] = $current_session_id;
+//         $types .= "ii";
+//     } else if ($start_date == "session") {
+//         $where_part .= " AND a.session_id = ?";
+//         $params[] = $current_session_id;
+//         $types .= "i";
+//     } else {
+//         $where_part .= " AND a.att_date BETWEEN ? AND ?";
+//         $params[] = $start_date;
+//         $params[] = $end_date;
+//         $types .= "ss";
+//     }
+
+//     $sql = $select_part . " " . $where_part . " " . $group_part . " " . $order_part;
+
+//     // Fetch attendance status using prepared statement
+//     $stmt = mysqli_prepare($conn, $sql);
+//     if (!$stmt) {
+//         echo json_encode(['error' => 'SQL prepare failed: ' . mysqli_error($conn)]);
+//         mysqli_close($conn);
+//         exit;
+//     }
+//     mysqli_stmt_bind_param($stmt, $types, ...$params);
+//     mysqli_stmt_execute($stmt);
+//     $result = mysqli_stmt_get_result($stmt);
+
+//     $attendance_status = [];
+//     $unique_dates_set = [];
+//     while ($row = mysqli_fetch_assoc($result)) {
+//         $attendance_status[$row['student_id']][$row['att_date']] = $row;
+//         $unique_dates_set[$row['att_date']] = true;
+//     }
+//     mysqli_stmt_close($stmt);
+
+//     // Fetch all students in the class
+//     $student_sql = "SELECT id, firstname, lastname, middlename FROM students WHERE class_id = ? AND school_id = ? AND status = 1 ORDER BY lastname, firstname";
+//     $stmt_students = mysqli_prepare($conn, $student_sql);
+//     if (!$stmt_students) {
+//         echo json_encode(['error' => 'SQL prepare failed for students: ' . mysqli_error($conn)]);
+//         mysqli_close($conn);
+//         exit;
+//     }
+//     mysqli_stmt_bind_param($stmt_students, "ii", $class_id, $school_id);
+//     mysqli_stmt_execute($stmt_students);
+//     $students_result = mysqli_stmt_get_result($stmt_students);
+
+//     $studentdata = [];
+//     while ($student_row = mysqli_fetch_assoc($students_result)) {
+//         $studentdata[] = $student_row;
+//     }
+//     mysqli_stmt_close($stmt_students);
+
+//     $unique_dates = array_keys($unique_dates_set);
+//     sort($unique_dates);
+
+//     $output_data = [];
+//     foreach ($studentdata as $student) {
+//         foreach ($unique_dates as $date) {
+//             if (isset($attendance_status[$student['id']][$date])) {
+//                 $att_record = $attendance_status[$student['id']][$date];
+//                 $output_data[] = [
+//                     'lastname' => $att_record['lastname'],
+//                     'firstname' => $att_record['firstname'],
+//                     'middlename' => $att_record['middlename'],
+//                     'student_id' => (string)$att_record['student_id'],
+//                     'first' => (string)$att_record['has_first'],
+//                     'second' => (string)$att_record['has_second'],
+//                     'att_date' => $att_record['att_date'],
+//                     'class_id' => (string)$att_record['class_id'],
+//                     'term_id' => (string)$att_record['term_id'],
+//                     'session_id' => (string)$att_record['session_id']
+//                 ];
+//             } else {
+//                 $output_data[] = [
+//                     'lastname' => $student['lastname'],
+//                     'firstname' => $student['firstname'],
+//                     'middlename' => $student['middlename'],
+//                     'student_id' => (string)$student['id'],
+//                     'first' => "0",
+//                     'second' => "0",
+//                     'att_date' => $date,
+//                     'class_id' => (string)$class_id,
+//                     'term_id' => (string)$current_term_id,
+//                     'session_id' => (string)$current_session_id
+//                 ];
+//             }
+//         }
+//     }
+
+//     echo json_encode($output_data);
+  
+//          mysqli_close($conn);
+//      }
+  if ($action == 'get_att') {
         $start_date = test_input($_POST['start_date']);
         $end_date = test_input($_POST['end_date']);
         $class_id = test_input($_POST['class_id']);
@@ -990,8 +1052,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $current_session_id = $_SESSION['session_id'];
         $current_term_id = $_SESSION['term_id'];
 
-        // Base SQL query parts
-        $select_part = "SELECT s.id AS student_id,
+        // Build WHERE clause for date filtering
+        if ($start_date == "term") {
+            $where_part = "a.class_id = '$class_id' AND a.school_id = '$school_id' AND a.term_id = '$current_term_id' AND a.session_id = '$current_session_id'";
+        } else if ($start_date == "session") {
+            $where_part = "a.class_id = '$class_id' AND a.school_id = '$school_id' AND a.session_id = '$current_session_id'";
+        } else {
+            $where_part = "a.class_id = '$class_id' AND a.school_id = '$school_id' AND a.att_date BETWEEN '$start_date' AND '$end_date'";
+        }
+
+        $sql = "SELECT s.id AS student_id,
                         s.firstname,
                         s.lastname,
                         s.middlename,
@@ -1002,43 +1072,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         MAX(CASE WHEN a.first IS NOT NULL THEN 1 ELSE 0 END) AS has_first,
                         MAX(CASE WHEN a.second IS NOT NULL THEN 1 ELSE 0 END) AS has_second
                     FROM attendance a
-                    JOIN students s ON a.student_id = s.id";
-        $where_part = "WHERE a.class_id = ? AND a.school_id = ?";
-        $group_part = "GROUP BY a.student_id, a.att_date";
-        $order_part = "ORDER BY a.att_date, s.lastname, s.firstname";
+                    JOIN students s ON a.student_id = s.id
+                    WHERE $where_part
+                    GROUP BY s.id, s.firstname, s.lastname, s.middlename, a.att_date, a.class_id, a.term_id, a.session_id
+                    ORDER BY a.att_date, s.lastname, s.firstname";
 
-        $params = [$class_id, $school_id];
-        $types = "ii";
-
-        // Add date filtering based on $start_date
-        if ($start_date == "term") {
-            $where_part .= " AND a.term_id = ? AND a.session_id = ?";
-            $params[] = $current_term_id;
-            $params[] = $current_session_id;
-            $types .= "ii";
-        } else if ($start_date == "session") {
-            $where_part .= " AND a.session_id = ?";
-            $params[] = $current_session_id;
-            $types .= "i";
-        } else {
-            $where_part .= " AND a.att_date BETWEEN ? AND ?";
-            $params[] = $start_date;
-            $params[] = $end_date;
-            $types .= "ss";
-        }
-
-        $sql = $select_part . " " . $where_part . " " . $group_part . " " . $order_part;
-
-        // Fetch attendance status using prepared statement
-        $stmt = mysqli_prepare($conn, $sql);
-        if (!$stmt) {
-            echo json_encode(['error' => 'SQL prepare failed: ' . mysqli_error($conn)]);
-            mysqli_close($conn);
-            exit;
-        }
-        mysqli_stmt_bind_param($stmt, $types, ...$params);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
+        $result = mysqli_query($conn, $sql);
 
         $attendance_status = [];
         $unique_dates_set = [];
@@ -1046,25 +1085,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $attendance_status[$row['student_id']][$row['att_date']] = $row;
             $unique_dates_set[$row['att_date']] = true;
         }
-        mysqli_stmt_close($stmt);
 
         // Fetch all students in the class
-        $student_sql = "SELECT id, firstname, lastname, middlename FROM students WHERE class_id = ? AND school_id = ? AND status = 1 ORDER BY lastname, firstname";
-        $stmt_students = mysqli_prepare($conn, $student_sql);
-        if (!$stmt_students) {
-            echo json_encode(['error' => 'SQL prepare failed for students: ' . mysqli_error($conn)]);
-            mysqli_close($conn);
-            exit;
-        }
-        mysqli_stmt_bind_param($stmt_students, "ii", $class_id, $school_id);
-        mysqli_stmt_execute($stmt_students);
-        $students_result = mysqli_stmt_get_result($stmt_students);
+        $student_sql = "SELECT id, firstname, lastname, middlename FROM students WHERE class_id = '$class_id' AND school_id = '$school_id' AND status = 1 ORDER BY lastname, firstname";
+        $students_result = mysqli_query($conn, $student_sql);
 
         $studentdata = [];
         while ($student_row = mysqli_fetch_assoc($students_result)) {
             $studentdata[] = $student_row;
         }
-        mysqli_stmt_close($stmt_students);
 
         $unique_dates = array_keys($unique_dates_set);
         sort($unique_dates);
@@ -1108,6 +1137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mysqli_close($conn);
     }
 
+   
     if ($action == 'get_att_history') {
         $student_id = $_POST['student_id'];
         $session_id = $_POST['session_id'];
@@ -1115,7 +1145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $class_id = $_POST['class_id'];
         $start_date = $_POST['start_date'];
         $end_date = $_POST['end_date'];
-        if ($start_date == "today") {
+        if($start_date == "today"){
             $start_date = date('Y-m-d');
             $end_date = date('Y-m-d');
         }
@@ -1153,7 +1183,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // echo $sql = "SELECT b.subject as subjectname, s.*, t.firstname,t.lastname FROM skulscores s, subjects b, students t WHERE t.id=s.student_id AND b.id=s.subject_id AND s.session_id='$session_id' AND s.class_id='$class_id' AND s.student_id='$student_id' AND s.school_id='$school_id'");
         $select = mysqli_query($conn, "SELECT b.subject as subjectname, s.*, t.firstname,t.lastname FROM skulscores s, subjects b, students t WHERE t.id=s.student_id AND b.id=s.subject_id AND s.session_id='$session_id' AND s.class_id='$class_id' AND s.student_id='$student_id' AND s.school_id='$school_id'");        // $select = mysqli_query($conn, "SELECT * FROM skulscores WHERE session_id='$session_id' AND class_id='$class_id' AND student_id='$student_id' AND session_id='$session_id' AND term_id='$term_id'");
         while ($row = mysqli_fetch_array($select)) {
-            if ($_SESSION['report']) {
+             if ($_SESSION['report']) {
                 // echo 'p';
                 $select_approval = mysqli_query($conn, "SELECT ca1,ca2,ca3,practical,exam 
                 FROM approval WHERE session_id='$session_id' 
@@ -1210,7 +1240,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             //     'Term' => $row['term_id']
             // ];
         }
-        $select = mysqli_query($conn, "SELECT * FROM skul_settings WHERE school_id='$school_id' AND session_id='$session_id'");
+        $select = mysqli_query($conn, "SELECT * FROM skul_settings WHERE school_id='$school_id' AND term_id='$term_id' AND session_id='$session_id'");
         $settingsData = array();
         if ($row = mysqli_fetch_array($select)) {
             $settingsData[] = array(
@@ -1283,7 +1313,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //     }
     //     echo json_encode($data);
     // }
-    if ($action === 'getsinglesessionreport_view') {
+     if ($action === 'getsinglesessionreport_view') {
         $school_id = $_SESSION['school_id'];
         $session_id = test_input($_POST['session_id']);
         $student_id = test_input($_POST['student_id']);
@@ -1302,8 +1332,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         WHERE b.id=s.subject_id AND s.session_id='$session_id' 
         AND s.class_id='$class_id' AND s.student_id='$student_id' 
         AND s.school_id='$school_id' AND s.total > 0");
-
-        if (mysqli_error($conn)) {
+        // AND s.school_id='$school_id'");
+        
+        if(mysqli_error($conn)){
             echo mysqli_error($conn);
         }
         while ($row = mysqli_fetch_array($select)) {
@@ -1436,8 +1467,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         echo json_encode($data);
     }
-
-    if ($action === 'get_stud_byClass_comment') {
+   if ($action === 'get_stud_byClass_comment') {
         $school_id = $_SESSION['school_id'];
         $class_id = test_input($_POST['class_id']);
         $session = test_input($_POST['session']);
@@ -1447,7 +1477,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "nothinnow";
             exit;
         }
-    ?>
+        ?>
         <thead>
             <tr>
                 <th>
@@ -1461,9 +1491,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </th>
                 <?php
                 if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
-                ?>
+                    ?>
                     <th>
-                        Head Teacher's comment
+                        <?=$_SESSION['whocomment']?>'s comment
                     </th>
                 <?php } ?>
             </tr>
@@ -1472,7 +1502,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php
 
             while ($row = mysqli_fetch_array($select)) {
-            ?>
+                ?>
                 <tr class="comment_tb_row">
                     <!-- <td style="" class="w-xs-20 px-2">
                     <php if (!$row['photo']) { ?>
@@ -1483,7 +1513,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </td> -->
                     <td class="">
                         <div>
-                            <p style="font-size: 16px;"><?= $row['lastname'] ?> <?= $row['firstname'] . ' ' . $row['middlename'] ?></p>
+                            <p style="font-size: 16px;"><?= $row['lastname'] ?>             <?= $row['firstname'] . ' ' . $row['middlename'] ?>
+                            </p>
 
                         </div>
                     </td>
@@ -1497,11 +1528,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $comment_teacher = '';
                         }
                         ?>
-                        <textarea name="" rows="2" cols="" class="w-100 teacher_comment_comment" style="padding: 5px; border-radius:5px; margin-bottom: -5px;" placeholder="Teacher's comment"><?= $comment_teacher ?></textarea>
-                        <a href="#suggestionModal" data-toggle="modal" data-student_id="<?= $row['id'] ?>" data-student_name="<?= htmlspecialchars($row['lastname'] . ' ' . $row['firstname'] . ' ' . $row['middlename']) ?>" class="accent open-suggestion-modal d-block small">Suggest Comment</a>
+                        <textarea name="" rows="2" cols="" class="w-100 teacher_comment_comment"
+                            style="padding: 5px; border-radius:5px; margin-bottom: -5px;"
+                            placeholder="Teacher's comment"><?= $comment_teacher ?></textarea>
+                        <div class="d-flex"><a href="#suggestionModal" data-toggle="modal" data-student_id="<?= $row['id'] ?>"
+                                data-student_name="<?= htmlspecialchars($row['lastname'] . ' ' . $row['firstname'] . ' ' . $row['middlename']) ?>"
+                                class="accent open-suggestion-modal d-block small">Suggest Comment</a>
+                            <button type="button" style="color: var(--orange);" class="btn btn-sm auto-comment-btn p-0 ml-3"
+                                data-student-id="<?= $row['id'] ?>" data-class-id="<?= $row['class_id'] ?>"
+                                data-comment-type="teacher" onclick="generateAutoComment(this)" title="Generate auto comment">
+                                <i class="fa fa-magic"></i> Auto
+                            </button>
+                        </div>
                     </td>
                     <td>
-                        <button type="button" class="btn btn-primary" onclick="get_comment_skills('<?= $row['id'] ?>')">Skills</button>
+                        <button type="button" class="btn btn-primary"
+                            onclick="get_comment_skills('<?= $row['id'] ?>')">Skills</button>
                     </td>
                     <?php
                     $select_principal_comment = mysqli_query($conn, "SELECT comment FROM comment WHERE role_type='1' AND school_id='$school_id' AND class_id='$class_id' AND session_id='$session' AND term_id='$term' AND comment_type='1' AND student_id='{$row['id']}'");
@@ -1515,30 +1557,118 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="hidden" name="" class="student_id_comment" value="<?= $row['id'] ?>">
                     <?php
                     if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
-                    ?>
+                        ?>
                         <td>
-                            <textarea name="" rows="2" cols="" class="w-100 principal_comment_comment" style="padding: 5px; border-radius:5px; margin-bottom:-5px;" placeholder="Head Teacher's comment"><?= $comment_principal ?></textarea>
-                            <a href="#suggestionModal" data-toggle="modal" data-student_id="<?= $row['id'] ?>" data-student_name="<?= htmlspecialchars($row['lastname'] . ' ' . $row['firstname'] . ' ' . $row['middlename']) ?>" class="accent open-suggestion-modal d-block small">Suggest Comment</a>
-                        </td>
-                    <?php } ?>
-                </tr>
-            <?php
+                            <textarea name="" rows="2" cols="" class="w-100 principal_comment_comment"
+                                style="padding: 5px; border-radius:5px; margin-bottom:-5px;"
+                                placeholder="<?=$_SESSION['whocomment']?>'s comment"><?= $comment_principal ?></textarea>
+                            <div class="d-flex"><a href="#suggestionModal" data-toggle="modal" data-student_id="<?= $row['id'] ?>"
+                                    data-student_name="<?= htmlspecialchars($row['lastname'] . ' ' . $row['firstname'] . ' ' . $row['middlename']) ?>"
+                                    class="accent open-suggestion-modal d-block small">Suggest Comment</a>
+                                <button type="button" style="color: var(--orange);" class="btn btn-sm auto-comment-btn p-0 ml-3"
+                                                    data-student-id="<?= $row['id'] ?>" data-class-id="<?= $row['class_id'] ?>"
+                                                    data-comment-type="principal" onclick="generateAutoComment(this)" title="Generate auto comment">
+                                                    <i class="fa fa-magic"></i> Auto
+                                                </button>
+                                        </td>
+                                <?php } ?>
+                            </tr>
+                            <?php
             }
             ?>
-            </body>
-            <script>
-                if ($.fn.DataTable.isDataTable('#student_table_comment')) {
-                    $('#student_table_comment').DataTable().destroy();
+                    </body>
+                    <script>
+                        if ($.fn.DataTable.isDataTable('#student_table_comment')) {
+                            $('#student_table_comment').DataTable().destroy();
+                        }
+                        $('#student_table_comment').DataTable({
+                            scrollY: '50vh',
+                            scrollX: true,
+                            paging: false,
+                            ordering: false,
+                        });
+                    </script>
+                    <?php
+    }
+      if ($action == 'get_auto_comment') {
+        $school_id = $_SESSION['school_id'];
+        $student_id = test_input($_POST['student_id']);
+        $class_id = test_input($_POST['class_id']);
+        $session_id = test_input($_POST['session_id']);
+        $term_id = test_input($_POST['term_id']);
+
+        try {
+            // Step 1: Calculate student's total score and obtainable
+            $total_score = get_total_score_per_student($student_id, $term_id, $session_id, $class_id, 'term');
+            $total_obtainable = get_total_obtainables($student_id, $term_id, $session_id, $class_id, 'term');
+
+            // Step 2: Calculate percentage
+            if ($total_obtainable > 0) {
+                $percentage = ($total_score / $total_obtainable) * 100;
+                $percentage = round($percentage, 2);
+            } else {
+                // If no scores exist, return error
+                echo json_encode([
+                    'status' => '0',
+                    'error' => 'No scores found for this student in the selected term'
+                ]);
+                exit;
+            }
+
+            // Step 3: Get student name for personalization
+            $student_name = get_student_fullname_by_id($student_id);
+            $first_name = explode(' ', $student_name)[0]; // Get first name only
+
+            // Step 4: Query suggest_comments table for ALL matching comments
+            $query = "SELECT id, comment, commentby, datecreated FROM suggested_comments
+                      WHERE school_id = '$school_id'
+                      AND score_from <= '$percentage'
+                      AND score_to >= '$percentage'
+                      ORDER BY datecreated DESC";  // Most recent first, no LIMIT
+
+            $result = mysqli_query($conn, $query);
+
+            if ($result && mysqli_num_rows($result) > 0) {
+                // Fetch all matching comments into an array
+                $comments_array = [];
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $comments_array[] = [
+                        'id' => $row['id'],
+                        'comment' => $row['comment'],
+                        'commentby' => $row['commentby'],
+                        'datecreated' => $row['datecreated']
+                    ];
                 }
-                $('#student_table_comment').DataTable({
-                    scrollY: '50vh',
-                    scrollX: true,
-                    paging: false,
-                    ordering: false,
-                });
-            </script>
-            <?php
+
+                // Return success with all comments
+                echo json_encode([
+                    'status' => '1',
+                    'comments' => $comments_array,
+                    'total_comments' => count($comments_array),
+                    'percentage' => $percentage,
+                    'student_firstname' => $first_name,
+                    'debug' => [
+                        'total_score' => $total_score,
+                        'total_obtainable' => $total_obtainable
+                    ]
+                ]);
+            } else {
+                // No matching comment found
+                echo json_encode([
+                    'status' => '0',
+                    'error' => 'No suggested comment found for ' . $percentage . '% score range'
+                ]);
+            }
+        } catch (Exception $e) {
+            echo json_encode([
+                'status' => '0',
+                'error' => 'Server error: ' . $e->getMessage()
+            ]);
         }
+
+        exit;
+    }
+
 
         if ($action === 'save_comment') {
             $school_id = $_SESSION['school_id'];
@@ -1564,6 +1694,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 AND role_type='0'");
                     if (mysqli_num_rows($check) > 0) {
                         // echo "yes";
+                    //     echo "UPDATE comment 
+                    // SET comment='{$comment['teacher_comment']}', 
+                    // updatedby='{$_SESSION["userid"]}', role_type='0',
+                    // dateupdated='$date', commentby='{$_SESSION["userid"]}' 
+                    // WHERE class_id='$class_id' AND student_id='{$comment['student_id']}' AND session_id='$session_id' 
+                    // AND term_id='$term_id' AND school_id='$school_id'";
                         $update_comment = mysqli_query($conn, "UPDATE comment 
                     SET comment='{$comment['teacher_comment']}', 
                     updatedby='{$_SESSION["userid"]}', role_type='0',
@@ -1571,6 +1707,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     WHERE class_id='$class_id' AND student_id='{$comment['student_id']}' AND session_id='$session_id' 
                     AND term_id='$term_id' AND school_id='$school_id'");
                     } else {
+                    //     echo "INSERT INTO 
+                    // comment(class_id,student_id,comment,comment_type,role_type,session_id,term_id,datecreated,createdby,commentby,school_id) 
+                    // VALUES('$class_id','{$comment['student_id']}','{$comment['teacher_comment']}','1','0','$session_id','$term_id','$date',{$_SESSION['userid']},{$_SESSION['userid']},'$school_id')";
                         $insert_comment = mysqli_query($conn, "INSERT INTO 
                     comment(class_id,student_id,comment,comment_type,role_type,session_id,term_id,datecreated,createdby,commentby,school_id) 
                     VALUES('$class_id','{$comment['student_id']}','{$comment['teacher_comment']}','1','0','$session_id','$term_id','$date',{$_SESSION['userid']},{$_SESSION['userid']},'$school_id')");
@@ -1599,7 +1738,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
             }
-            echo json_encode(array('status' => '1'));
+                echo json_encode(array('status' => '1'));
         }
 
         if ($action === 'get_stud_byClass_report') {
@@ -1607,7 +1746,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // $class_id = '44';
             $class_id = test_input($_POST['class_id']);
 
-            $select = mysqli_query($conn, "SELECT c.classname,c.id,s.* FROM students s, class c WHERE s.class_id=c.id AND s.class_id='$class_id' AND s.school_id='$school_id' ORDER BY s.lastname DESC");
+            $select = mysqli_query($conn, "SELECT c.classname,c.id,s.* FROM students s, class c WHERE s.class_id=c.id AND s.class_id='$class_id' AND s.school_id='$school_id' ORDER BY s.lastname");
             if (mysqli_num_rows($select) < 1) {
                 echo "nothinnow";
                 exit;
@@ -1658,8 +1797,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-
-        if ($action === 'get_stud_byClass_attendance') {
+       
+ if ($action === 'get_stud_byClass_attendance') {
             $school_id = $_SESSION['school_id'];
             $class_id = test_input($_POST['class_id']);
             $att_date = test_input($_POST['att_date']);
@@ -1674,7 +1813,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             if ($_POST['att_type'] == 0) {
             ?>
-                <table id="student_table_attendance1" class="display nowrap" style="width:100%;">
+                                <table id="student_table_attendance1" class="display nowrap" style="width:100%;">
                     <thead>
                         <tr>
                             <th colspan="3" class="" style="text-align: center; font-weight:bold;">
@@ -1685,7 +1824,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <th>Student Name</th>
                             <th>Manual Entry</th>
                             <th>Daily Entry</th>
-                        </tr>
+                    </tr>
                     </thead>
                     <tbody>
 
@@ -1711,10 +1850,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ?>
                             <tr>
                                 <td style="" class=""><?= $row['lastname'] ?> <?= $row['firstname'] . ' ' . $row['middlename'] ?>
-                                </td>
+                            </td>
                                 <td style="" class="">
-                                    <input type="number" data-student_id="<?= $row['id'] ?>" value="<?= empty($total_present['total_present']) ? $row_num : $total_present['total_present'] ?>" name="one_time_att" id="one_time_att_<?= $row['id'] ?>" class="form-control form-control-sm one_time_att_input">
-
+                                    <input type="number" data-student_id = "<?= $row['id'] ?>" value="<?= empty($total_present['total_present']) ? $row_num : $total_present['total_present'] ?>" name="one_time_att" id="one_time_att_<?= $row['id'] ?>" class="form-control form-control-sm one_time_att_input">
+                                    
                                     <!-- <input type="number" data-student_id = "<= $row['id'] ?>" value="<= empty($total_present['total_present']) ? $row_num : $total_present['total_present'] ?>" name="one_time_att" id="one_time_att">
                                     <input type="number" disabled value="<= $row_num ?>" name="daily_att" id="daily_att"> -->
                                 </td>
@@ -1728,12 +1867,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </tbody>
                 </table>
                 <script>
-                    $('#student_table_attendance1').DataTable({
-                        // scrollY: '50vh',
-                        scrollX: true,
-                        paging: false,
-                        ordering: false,
-                    });
+                $('#student_table_attendance1').DataTable({
+                    // scrollY: '50vh',
+                    scrollX: true,
+                    paging: false,   
+                    ordering: false,
+                });
                 </script>
             <?php
             } else {
@@ -1762,9 +1901,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <!--        <label for="select_all2"></label>-->
                                 <!--    </div>-->
                                 <!--    <p class="mb-0 font-weight-normal">Mark All Present</p>-->
-                                <!-- <p class="font-weight-normal action_btn" style="display:none; margin: 0; cursor: pointer;" onclick="get_all_checked_checkbox_for_report('multiple',null,'report_card_modal')">Generate Report Card</p> -->
+                                    <!-- <p class="font-weight-normal action_btn" style="display:none; margin: 0; cursor: pointer;" onclick="get_all_checked_checkbox_for_report('multiple',null,'report_card_modal')">Generate Report Card</p> -->
                                 <!--</div>-->
-
+                                
                             </th>
                         </tr>
                     </thead>
@@ -1810,12 +1949,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </tbody>
                 </table>
                 <script>
-                    $('#student_table_attendance').DataTable({
-                        // scrollY: '50vh',
-                        scrollX: true,
-                        paging: false,
-                        ordering: false,
-                    });
+                $('#student_table_attendance').DataTable({
+                    // scrollY: '50vh',
+                    scrollX: true,
+                    paging: false,   
+                    ordering: false,
+                });
                 </script>
             <?php
             }
@@ -1860,95 +1999,225 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         //     }
         //     echo json_encode(['status' => '1']);
         // }
-        if ($action == 'set_attendance') {
+//  if ($action == 'set_attendance') {
+            
+//             $school_id = $_SESSION['school_id'];
+//             $session_id = $_SESSION['session_id'];
+//             $userid = $_SESSION['userid'];
+//             $term_id = $_SESSION['term_id'];
+//             $class_id = test_input($_POST['class_id']);
+//             $attendance_data = $_POST['attendance_data'] ?? []; // Default to empty array if not set
+//             // var_dump($attendance_data);
+//             $current_datetime = date('Y-m-d H:i:s');
+//             $success = true;
+//             $error_message = '';
+//             if($_POST['type'] == '0') {
+
+                
+//               $sql = "INSERT INTO attendance_once
+//                         (student_id, session_id, term_id, class_id, school_id, total_present, createdby, datecreated)
+//                     VALUES
+//                         (?, ?, ?, ?, ?, ?, ?, ?)
+//                     ON DUPLICATE KEY UPDATE
+//                         total_present = ?, updatedby = ?, dateupdated = ?";
+
+//             $stmt = mysqli_prepare($conn, $sql);
+
+//             if ($stmt) {
+//                 mysqli_begin_transaction($conn); // Start transaction for atomicity
+
+//                 foreach ($attendance_data as $student_id => $total_present) {
+//                     // Basic validation/sanitization
+//                     $student_id_int = filter_var($student_id, FILTER_VALIDATE_INT);
+//                     $total_present_int = filter_var($total_present, FILTER_VALIDATE_INT);
+
+//                     if ($student_id_int === false || $total_present_int === false) {
+//                         $success = false; $error_message = "Invalid data received."; break;
+//                     }
+
+//                     // Bind parameters (iiiiiiisisi - 11 params total)
+//                     mysqli_stmt_bind_param($stmt, "iiiiiiisisi",
+//                         $student_id_int, $session_id, $term_id, $class_id, $school_id, $total_present_int, $userid, $current_datetime, // INSERT values
+//                         $total_present_int, $userid, $current_datetime // UPDATE values
+//                     );
+                    
+
+//                     if (!mysqli_stmt_execute($stmt)) {
+//                         $success = false; $error_message = mysqli_stmt_error($stmt); break;
+//                     }
+//                 }
+
+//                 if ($success) { mysqli_commit($conn); echo json_encode(['status' => '1', 'msg' => 'Attendance saved successfully.']); }
+//                 else { mysqli_rollback($conn); echo json_encode(['status' => '0', 'err' => 'Failed to save attendance: ' . $error_message]); }
+
+//                 mysqli_stmt_close($stmt);
+//             } else { 
+//                 echo json_encode(['status' => '0', 'err' => 'Database error: ' . mysqli_error($conn)]); 
+                
+//             }
+//             exit; // Stop script executi
+//             }
+//             $att_date = test_input($_POST['att_date']);
+//             $current_time = date('Y-m-d H:i:s');
+//             $register = $_POST['register'];
+//             $register2 = $_POST['register2'];
+
+//             // Step 1: Fetch all existing attendance records for the given criteria
+//             $existing_records = [];
+//             $query = "SELECT student_id, first, second FROM attendance 
+//                       WHERE class_id='$class_id' AND session_id='$session_id' 
+//                       AND term_id='$term_id' AND school_id='$school_id' AND att_date='$att_date'";
+//             $result = mysqli_query($conn, $query);
+//             while ($row = mysqli_fetch_assoc($result)) {
+//                 $existing_records[$row['student_id']] = $row;
+//             }
+
+//             // Step 2: Prepare arrays for batch operations
+//             $to_insert = [];
+//             $to_update = [];
+//             $to_delete = [];
+
+//             foreach ($register as $student_id => $state1) {
+//                 $state2 = isset($register2[$student_id]) ? $register2[$student_id] : 0;
+
+//                 if ($state1 == 0 && $state2 == 0) {
+//                     // If both states are 0, mark for deletion if the record exists
+//                     if (isset($existing_records[$student_id])) {
+//                         $to_delete[] = $student_id;
+//                     }
+//                 } else {
+//                     // If either state is 1, determine whether to insert or update
+//                     if (isset($existing_records[$student_id])) {
+//                         // Record exists, check if updates are needed
+//                         $update_fields = [];
+//                         $existing_first = $existing_records[$student_id]['first'];
+//                         $existing_second = $existing_records[$student_id]['second'];
+
+//                         // Handle 'first' column based on state1
+//                         if ($state1 == 1 && empty($existing_records[$student_id]['first'])) {
+//                             $update_fields[] = "first='$current_time'";
+//                         } elseif ($state1 == 0 && !empty($existing_first)) { // Check if unchecked and timestamp exists
+//                             $update_fields[] = "first=NULL";
+//                         }
+//                         // Handle 'second' column based on state2
+//                         if ($state2 == 1 && empty($existing_records[$student_id]['second'])) {
+//                             $update_fields[] = "second='$current_time'";
+//                         } elseif ($state2 == 0 && !empty($existing_second)) { // Check if unchecked and timestamp exists
+//                             $update_fields[] = "second=NULL";
+//                         }
+
+//                         // If any changes were identified, add update metadata and queue the update
+//                         if (!empty($update_fields)) {
+//                             $update_fields[] = "updatedby='{$_SESSION['userid']}'"; // Always update who did it
+//                             $update_fields[] = "dateupdated='$current_time'"; // Always update the timestamp
+//                             $to_update[] = [
+//                                 'student_id' => $student_id,
+//                                 'fields' => implode(", ", $update_fields)
+//                             ];
+//                         }
+//                     } else {
+//                         // Prepare for insertion
+//                         $first = $state1 == 1 ? "'$current_time'" : "NULL";
+//                         $second = $state2 == 1 ? "'$current_time'" : "NULL";
+//                         $to_insert[] = "('$student_id', '$session_id', '$term_id', '$class_id', '$school_id', '$att_date', $first, $second, '{$_SESSION['userid']}', '$current_time')";
+//                     }
+//                 }
+//             }
+
+//             // Step 3: Execute batch operations
+//             if (!empty($to_insert)) {
+//                 $insert_query = "INSERT INTO attendance (student_id, session_id, term_id, class_id, school_id, att_date, first, second, createdby, datecreated) VALUES " . implode(", ", $to_insert);
+//                 mysqli_query($conn, $insert_query);
+//             }
+
+//             if (!empty($to_update)) {
+//                 foreach ($to_update as $update) {
+//                     $update_query = "UPDATE attendance SET {$update['fields']} WHERE student_id='{$update['student_id']}' AND class_id='$class_id' AND session_id='$session_id' AND term_id='$term_id' AND school_id='$school_id' AND att_date='$att_date'";
+//                     mysqli_query($conn, $update_query);
+//                 }
+//             }
+
+//             if (!empty($to_delete)) {
+//                 $delete_query = "DELETE FROM attendance WHERE student_id IN (" . implode(", ", $to_delete) . ") AND class_id='$class_id' AND session_id='$session_id' AND term_id='$term_id' AND school_id='$school_id' AND att_date='$att_date'";
+//                 mysqli_query($conn, $delete_query);
+//             }
+
+//             echo json_encode(['status' => '1']);
+//         }
+ if ($action == 'set_attendance') {
 
             $school_id = $_SESSION['school_id'];
+            
             $session_id = $_SESSION['session_id'];
             $userid = $_SESSION['userid'];
             $term_id = $_SESSION['term_id'];
             $class_id = test_input($_POST['class_id']);
             $attendance_data = $_POST['attendance_data'] ?? []; // Default to empty array if not set
+            // var_dump($attendance_data);
             $current_datetime = date('Y-m-d H:i:s');
             $success = true;
             $error_message = '';
             if ($_POST['type'] == '0') {
 
+            // Convert potentially non-integer values to ints to avoid injection via numeric fields
+            $session_id_int = intval($session_id);
+            $term_id_int = intval($term_id);
+            $class_id_int = intval($class_id);
+            $school_id_int = intval($school_id);
+            $userid_int = intval($userid);
+            $current_datetime_esc = mysqli_real_escape_string($conn, $current_datetime);
 
-                $sql = "INSERT INTO attendance_once
-                        (student_id, session_id, term_id, class_id, school_id, total_present, createdby, datecreated)
-                    VALUES
-                        (?, ?, ?, ?, ?, ?, ?, ?)
-                    ON DUPLICATE KEY UPDATE
-                        total_present = ?, updatedby = ?, dateupdated = ?";
+            mysqli_begin_transaction($conn); // Start transaction for atomicity
 
-                $stmt = mysqli_prepare($conn, $sql);
+            foreach ($attendance_data as $student_id => $total_present) {
+                // Basic validation/sanitization
+                $student_id_int = intval($student_id);
+                $total_present_int = intval($total_present);
 
-                if ($stmt) {
-                    mysqli_begin_transaction($conn); // Start transaction for atomicity
-
-                    foreach ($attendance_data as $student_id => $total_present) {
-                        // Basic validation/sanitization
-                        $student_id_int = filter_var($student_id, FILTER_VALIDATE_INT);
-                        $total_present_int = filter_var($total_present, FILTER_VALIDATE_INT);
-
-                        if ($student_id_int === false || $total_present_int === false) {
-                            $success = false;
-                            $error_message = "Invalid data received.";
-                            break;
-                        }
-
-                        // Bind parameters (iiiiiiisisi - 11 params total)
-                        mysqli_stmt_bind_param(
-                            $stmt,
-                            "iiiiiiisisi",
-                            $student_id_int,
-                            $session_id,
-                            $term_id,
-                            $class_id,
-                            $school_id,
-                            $total_present_int,
-                            $userid,
-                            $current_datetime, // INSERT values
-                            $total_present_int,
-                            $userid,
-                            $current_datetime // UPDATE values
-                        );
-
-
-                        if (!mysqli_stmt_execute($stmt)) {
-                            $success = false;
-                            $error_message = mysqli_stmt_error($stmt);
-                            break;
-                        }
-                    }
-
-                    if ($success) {
-                        mysqli_commit($conn);
-                        echo json_encode(['status' => '1', 'msg' => 'Attendance saved successfully.']);
-                    } else {
-                        mysqli_rollback($conn);
-                        echo json_encode(['status' => '0', 'err' => 'Failed to save attendance: ' . $error_message]);
-                    }
-
-                    mysqli_stmt_close($stmt);
-                } else {
-                    echo json_encode(['status' => '0', 'err' => 'Database error: ' . mysqli_error($conn)]);
+                if ($student_id_int <= 0 || $total_present_int < 0) {
+                $success = false;
+                $error_message = "Invalid data received.";
+                break;
                 }
-                exit; // Stop script executi
+
+                // Build direct SQL with properly casted/escaped values
+                $sql = "INSERT INTO attendance_once
+                (student_id, session_id, term_id, class_id, school_id, total_present, createdby, datecreated)
+                VALUES
+                ('$student_id_int', '$session_id_int', '$term_id_int', '$class_id_int', '$school_id_int', '$total_present_int', '$userid_int', '$current_datetime_esc')
+                ON DUPLICATE KEY UPDATE
+                total_present = '$total_present_int', updatedby = '$userid_int', dateupdated = '$current_datetime_esc'";
+
+                if (!mysqli_query($conn, $sql)) {
+                $success = false;
+                $error_message = mysqli_error($conn);
+                break;
+                }
+            }
+
+            if ($success) {
+                mysqli_commit($conn);
+                echo json_encode(['status' => '1', 'msg' => 'Attendance saved successfully.']);
+            } else {
+                mysqli_rollback($conn);
+                echo json_encode(['status' => '0', 'err' => 'Failed to save attendance: ' . $error_message]);
+            }
+
+            exit;
             }
             $att_date = test_input($_POST['att_date']);
             $current_time = date('Y-m-d H:i:s');
             $register = $_POST['register'];
             $register2 = $_POST['register2'];
-
+    // var_dump($register2);
             // Step 1: Fetch all existing attendance records for the given criteria
             $existing_records = [];
             $query = "SELECT student_id, first, second FROM attendance 
-                      WHERE class_id='$class_id' AND session_id='$session_id' 
-                      AND term_id='$term_id' AND school_id='$school_id' AND att_date='$att_date'";
+                  WHERE class_id='$class_id' AND session_id='$session_id' 
+                  AND term_id='$term_id' AND school_id='$school_id' AND att_date='$att_date'";
             $result = mysqli_query($conn, $query);
             while ($row = mysqli_fetch_assoc($result)) {
-                $existing_records[$row['student_id']] = $row;
+            $existing_records[$row['student_id']] = $row;
             }
 
             // Step 2: Prepare arrays for batch operations
@@ -1957,84 +2226,85 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $to_delete = [];
 
             foreach ($register as $student_id => $state1) {
-                $state2 = isset($register2[$student_id]) ? $register2[$student_id] : 0;
+            $state2 = isset($register2[$student_id]) ? $register2[$student_id] : 0;
 
-                if ($state1 == 0 && $state2 == 0) {
-                    // If both states are 0, mark for deletion if the record exists
-                    if (isset($existing_records[$student_id])) {
-                        $to_delete[] = $student_id;
-                    }
-                } else {
-                    // If either state is 1, determine whether to insert or update
-                    if (isset($existing_records[$student_id])) {
-                        // Record exists, check if updates are needed
-                        $update_fields = [];
-                        $existing_first = $existing_records[$student_id]['first'];
-                        $existing_second = $existing_records[$student_id]['second'];
-
-                        // Handle 'first' column based on state1
-                        if ($state1 == 1 && empty($existing_records[$student_id]['first'])) {
-                            $update_fields[] = "first='$current_time'";
-                        } elseif ($state1 == 0 && !empty($existing_first)) { // Check if unchecked and timestamp exists
-                            $update_fields[] = "first=NULL";
-                        }
-                        // Handle 'second' column based on state2
-                        if ($state2 == 1 && empty($existing_records[$student_id]['second'])) {
-                            $update_fields[] = "second='$current_time'";
-                        } elseif ($state2 == 0 && !empty($existing_second)) { // Check if unchecked and timestamp exists
-                            $update_fields[] = "second=NULL";
-                        }
-
-                        // If any changes were identified, add update metadata and queue the update
-                        if (!empty($update_fields)) {
-                            $update_fields[] = "updatedby='{$_SESSION['userid']}'"; // Always update who did it
-                            $update_fields[] = "dateupdated='$current_time'"; // Always update the timestamp
-                            $to_update[] = [
-                                'student_id' => $student_id,
-                                'fields' => implode(", ", $update_fields)
-                            ];
-                        }
-                    } else {
-                        // Prepare for insertion
-                        $first = $state1 == 1 ? "'$current_time'" : "NULL";
-                        $second = $state2 == 1 ? "'$current_time'" : "NULL";
-                        $to_insert[] = "('$student_id', '$session_id', '$term_id', '$class_id', '$school_id', '$att_date', $first, $second, '{$_SESSION['userid']}', '$current_time')";
-                    }
+            if ($state1 == 0 && $state2 == 0) {
+                // If both states are 0, mark for deletion if the record exists
+                if (isset($existing_records[$student_id])) {
+                $to_delete[] = intval($student_id);
                 }
+            } else {
+                // If either state is 1, determine whether to insert or update
+                if (isset($existing_records[$student_id])) {
+                // Record exists, check if updates are needed
+                $update_fields = [];
+                $existing_first = $existing_records[$student_id]['first'];
+                $existing_second = $existing_records[$student_id]['second'];
+
+                // Handle 'first' column based on state1
+                if ($state1 == 1 && empty($existing_records[$student_id]['first'])) {
+                    $update_fields[] = "first='" . mysqli_real_escape_string($conn, $current_time) . "'";
+                } elseif ($state1 == 0 && !empty($existing_first)) { // Check if unchecked and timestamp exists
+                    $update_fields[] = "first=NULL";
+                }
+                // Handle 'second' column based on state2
+                if ($state2 == 1 && empty($existing_records[$student_id]['second'])) {
+                    $update_fields[] = "second='" . mysqli_real_escape_string($conn, $current_time) . "'";
+                } elseif ($state2 == 0 && !empty($existing_second)) { // Check if unchecked and timestamp exists
+                    $update_fields[] = "second=NULL";
+                }
+
+                // If any changes were identified, add update metadata and queue the update
+                if (!empty($update_fields)) {
+                    $update_fields[] = "updatedby='" . intval($_SESSION['userid']) . "'"; // Always update who did it
+                    $update_fields[] = "dateupdated='" . mysqli_real_escape_string($conn, $current_time) . "'"; // Always update the timestamp
+                    $to_update[] = [
+                    'student_id' => intval($student_id),
+                    'fields' => implode(", ", $update_fields)
+                    ];
+                }
+                } else {
+                // Prepare for insertion
+                $first = $state1 == 1 ? "'" . mysqli_real_escape_string($conn, $current_time) . "'" : "NULL";
+                $second = $state2 == 1 ? "'" . mysqli_real_escape_string($conn, $current_time) . "'" : "NULL";
+                $to_insert[] = "(" . intval($student_id) . ", " . intval($session_id) . ", " . intval($term_id) . ", " . intval($class_id) . ", " . intval($school_id) . ", '" . mysqli_real_escape_string($conn, $att_date) . "', $first, $second, '" . intval($_SESSION['userid']) . "', '" . mysqli_real_escape_string($conn, $current_time) . "')";
+                }
+            }
             }
 
             // Step 3: Execute batch operations
             if (!empty($to_insert)) {
-                $insert_query = "INSERT INTO attendance (student_id, session_id, term_id, class_id, school_id, att_date, first, second, createdby, datecreated) VALUES " . implode(", ", $to_insert);
-                mysqli_query($conn, $insert_query);
+            $insert_query = "INSERT INTO attendance (student_id, session_id, term_id, class_id, school_id, att_date, first, second, createdby, datecreated) VALUES " . implode(", ", $to_insert);
+            mysqli_query($conn, $insert_query);
             }
 
             if (!empty($to_update)) {
-                foreach ($to_update as $update) {
-                    $update_query = "UPDATE attendance SET {$update['fields']} WHERE student_id='{$update['student_id']}' AND class_id='$class_id' AND session_id='$session_id' AND term_id='$term_id' AND school_id='$school_id' AND att_date='$att_date'";
-                    mysqli_query($conn, $update_query);
-                }
+            foreach ($to_update as $update) {
+                $update_query = "UPDATE attendance SET {$update['fields']} WHERE student_id='{$update['student_id']}' AND class_id='$class_id' AND session_id='$session_id' AND term_id='$term_id' AND school_id='$school_id' AND att_date='$att_date'";
+                mysqli_query($conn, $update_query);
+            }
             }
 
             if (!empty($to_delete)) {
-                $delete_query = "DELETE FROM attendance WHERE student_id IN (" . implode(", ", $to_delete) . ") AND class_id='$class_id' AND session_id='$session_id' AND term_id='$term_id' AND school_id='$school_id' AND att_date='$att_date'";
-                mysqli_query($conn, $delete_query);
+            $delete_query = "DELETE FROM attendance WHERE student_id IN (" . implode(", ", $to_delete) . ") AND class_id='$class_id' AND session_id='$session_id' AND term_id='$term_id' AND school_id='$school_id' AND att_date='$att_date'";
+            mysqli_query($conn, $delete_query);
             }
 
             echo json_encode(['status' => '1']);
         }
 
-        if ($action === 'filter_stud_Class') {
+
+         if ($action === 'filter_stud_Class') {
             $school_id = $_SESSION['school_id'];
             // $class_id = '44';
             $class_id = test_input($_POST['class_id']);
-            // echo "SELECT pr.status AS student_status, c.classname,c.id,s.* FROM students s  
-            //                       LEFT JOIN class c ON s.class_id=c.id AND pr.term_id='{$_SESSION['term_id']}' 
-            //                       AND pr.session_id='{$_SESSION['session_id']}' 
-            //                       LEFT JOIN payment_record pr ON pr.student_id=s.id 
-            //                       WHERE s.class_id='$class_id' 
-            //                       AND s.school_id='$school_id' 
-            //                       ORDER BY s.lastname ASC";
+// echo "SELECT pr.status AS student_status, c.classname,c.id,s.* FROM students s  
+//                       LEFT JOIN class c ON s.class_id=c.id AND pr.term_id='{$_SESSION['term_id']}' 
+//                       AND pr.session_id='{$_SESSION['session_id']}' 
+//                       LEFT JOIN payment_record pr ON pr.student_id=s.id 
+//                       WHERE s.class_id='$class_id' 
+//                       AND s.school_id='$school_id' 
+//                       ORDER BY s.lastname ASC";
             // $select = mysqli_query($conn, "SELECT c.classname,c.id,s.* FROM students s, class c WHERE s.class_id=c.id AND s.class_id='$class_id' AND s.school_id='$school_id' ORDER BY s.lastname ASC");
             $select = mysqli_query($conn, "SELECT pr.status AS student_status, c.classname,c.id,s.* FROM students s  
                       LEFT JOIN class c ON s.class_id=c.id
@@ -2072,28 +2342,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <td class="">
                         <p style="font-size: 16px;"><?= $row['lastname'] ?> <?= $row['firstname'] . ' ' . $row['middlename'] ?></p>
                         <!--<p class="small font-weight-bold accent"><= $row['classname'] ?> </p>-->
-                        <!--<p class="small font-weight-bold accent"><?= $row['classname'] ?> | <?= $row['status'] == '1' ? 'Active' : 'Inactive' ?></p> -->
-                        <p class="small font-weight-bold <?= $row['student_status'] == '1' ? 'accent' : 'text-danger' ?>"><?= $row['classname'] ?> | <?= $row['student_status'] == '1' ? 'Active' : 'Inactive' ?></p>
+                         <!--<p class="small font-weight-bold accent"><?= $row['classname'] ?> | <?= $row['status'] == '1' ? 'Active' : 'Inactive' ?></p> -->
+                         <p class="small font-weight-bold <?= $row['student_status'] == '1' ? 'accent' : 'text-danger' ?>"><?= $row['classname'] ?> | <?= $row['student_status'] == '1' ? 'Active' : 'Inactive' ?></p>
                         <div>
                             <a onclick="view_student_info('<?= $row['id'] ?>')" class="btn p-0 text-primary mr-3">View</a>
                             <?php
                             if ($row['student_status'] == '1'):
-                                if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['edit_student'] == 1) {
+                            if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['edit_student'] == 1) {
                             ?>
-                                    <a onclick="edit_student_info('<?= $row['id'] ?>')" class="btn p-0 text-primary mr-3">Edit</a>
-                                    <!-- edit parent info -->
-                                    <a onclick="edit_parent_info('<?= $row['parent_id'] ?>')" class="btn p-0 text-primary mr-3">Edit Parent</a>
+                                <a onclick="edit_student_info('<?= $row['id'] ?>')" class="btn p-0 text-primary mr-3">Edit</a>
+                                <!-- edit parent info -->
+                  <a onclick="edit_parent_info('<?= $row['parent_id'] ?>', '<?= $row['id'] ?>')"
+                                        class="btn p-0 text-primary mr-3">Edit
+                                        Parent</a>
                                 <?php } ?>
-                                <?php
-                                if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3) {
-                                ?>
-                                    <a onclick="get_student_info_to_delete('<?= $row['id'] ?>')" class="btn p-0 text-danger mr-3">Delete</a>
-                                <?php } ?>
-                                <?php
-                                if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['change_class'] == 1) {
-                                ?>
-                                    <a onclick="get_all_checked_checkbox('single','<?= $row['id'] ?>','bulk_transfer_modal')" class="btn p-0 text-primary mr-3">Transfer Student</a>
-                            <?php }
+                            <?php
+                            if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3) {
+                            ?>
+                                <a onclick="get_student_info_to_delete('<?= $row['id'] ?>')" class="btn p-0 text-danger mr-3">Delete</a>
+                            <?php } ?>
+                            <?php
+                            if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['change_class'] == 1) {
+                            ?>
+                                <a onclick="get_all_checked_checkbox('single','<?= $row['id'] ?>','bulk_transfer_modal')" class="btn p-0 text-primary mr-3">Transfer Student</a>
+                                <a onclick="get_the_id_for_password_reset('<?= $row['id'] ?>','reset_student_password_modal')" class="btn p-0 text-primary mr-3">Reset Student Password</a>
+                            <?php } 
                             endif;
                             ?>
                         </div>
@@ -2353,9 +2626,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $score_row['student_id'];
                 echo $query = "UPDATE skulscores SET total='$total' 
             WHERE subject_id='{$score_row['subject_id']}' AND student_id='{$score_row['student_id']}' AND term_id='$term' AND session_id='$session' AND class_id='$class' AND school_id='$school_id'";
-        ?>
-            <br>
-        <?php
+            ?>
+                <br>
+            <?php
                 $updatescore = mysqli_query($conn, $query);
 
                 // Store the student's total and ID in an array
@@ -2687,52 +2960,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = test_input($_POST['id']);
             $select  = mysqli_query($conn, "SELECT * FROM class WHERE id='$id' AND school_id='$school_id'");
             if ($row = mysqli_fetch_array($select)) {
-        ?>
+            ?>
 
-            <form onsubmit="update_class_data(event)">
-                <div class="form-group">
-                    <input type="hidden" name="action" value="update_class_data">
-                    <input type="hidden" name="id" value="<?= $row['id'] ?>">
-                    <label for="class" class="mb-0 muted-text">Class Name</label>
-                    <input id="class" name="classname" type="text" value="<?= $row['classname'] ?>" placeholder="Class name" class="form-control">
+                <form onsubmit="update_class_data(event)">
+                    <div class="form-group">
+                        <input type="hidden" name="action" value="update_class_data">
+                        <input type="hidden" name="id" value="<?= $row['id'] ?>">
+                        <label for="class" class="mb-0 muted-text">Class Name</label>
+                        <input id="class" name="classname" type="text" value="<?= $row['classname'] ?>" placeholder="Class name" class="form-control">
 
-                </div>
-                <div class="form-group">
-                    <label for="" class="mb-0 muted-text">Select Prefered Subject Category</label>
-                    <select class="form-control select2" name="subject_category" id="" style="width: 100%;" required>
-                        <option value="">Select category</option>
-                        <?php
-                        $select = mysqli_query($conn, "SELECT id,category_name FROM subject_cat WHERE school_id='$school_id'");
-                        while ($subjrow = mysqli_fetch_array($select)) {
-                            if ($row['subject_cat'] == $subjrow['id']) {
-                        ?>
-                                <option selected value="<?= $subjrow['id'] ?>"><?= $subjrow['category_name'] ?></option>
-                            <?php
-                            } else {
-                            ?>
-                                <option value="<?= $subjrow['id'] ?>"><?= $subjrow['category_name'] ?></option>
-                        <?php
-                            }
-                        }
-                        ?>
-                    </select>
-                </div>
-                </div>
-                <div class="card-foot">
-                    <div class="alert myalert alert-dismissible" style="display: none;">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                        <p class="warning small text-danger"></p>
                     </div>
-                    <button type="submit" id="update_class_btn" class="btn btn-primary">Update Class</button>
-                    <button type="button" class="btn btn-grey" class="close" data-dismiss="modal" aria-label="Close">Cancel</button>
-                </div>
-                </div>
-            </form>
-            <!-- </div> -->
-            <script>
-                $('.select2').select2()
-            </script>
-        <?php
+                     <?php if ($row['is_graduate'] == 0) { ?>
+                    <div class="form-group">
+                        <label for="" class="mb-0 muted-text">Select Prefered Subject Category</label>
+                        <select class="form-control select2" name="subject_category" id="" style="width: 100%;" required>
+                            <option value="">Select category</option>
+                            <?php
+                            $select = mysqli_query($conn, "SELECT id,category_name FROM subject_cat WHERE school_id='$school_id'");
+                            while ($subjrow = mysqli_fetch_array($select)) {
+                                if ($row['subject_cat'] == $subjrow['id']) {
+                            ?>
+                                    <option selected value="<?= $subjrow['id'] ?>"><?= $subjrow['category_name'] ?></option>
+                                <?php
+                                } else {
+                                ?>
+                                    <option value="<?= $subjrow['id'] ?>"><?= $subjrow['category_name'] ?></option>
+                            <?php
+                                }
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    </div>
+                    <?php } ?>
+                    <div class="card-foot">
+                        <div class="alert myalert alert-dismissible" style="display: none;">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            <p class="warning small text-danger"></p>
+                        </div>
+                        <button type="submit" id="update_class_btn" class="btn btn-primary">Update Class</button>
+                        <button type="button" class="btn btn-grey" class="close" data-dismiss="modal" aria-label="Close">Cancel</button>
+                    </div>
+                    </div>
+                </form>
+                <!-- </div> -->
+                <script>
+                    $('.select2').select2()
+                </script>
+            <?php
             }
         }
         if ($action === 'get_staff_data_for_update') {
@@ -2742,154 +3017,196 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $select  = mysqli_query($conn, "SELECT * FROM staff WHERE id='$id' AND school_id='$school_id'");
 
             if ($row = mysqli_fetch_array($select)) {
-        ?>
-            <form onsubmit="update_staff_data(event)">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-12">
-                            <input type="hidden" name="action" value="update_staff_data">
-                            <input type="hidden" name="id" value="<?= $row['id'] ?>">
-                            <div class="form-group mr-3" style="position:relative; max-width: 100px;">
-                                <img id="image_profile_preview" title="click to select photo" src="../uploads/<?= $row['photo'] ?>" alt="Photo" width="100" height="100">
-                                <input type="file" name="photo" accept="image/png, image/jpeg, image/jpg" id="update_photo_forstaff" style="display: none;" onchange="preview_image(event)" class="form-control">
-                                <label for="update_photo_forstaff" style="position:absolute; color: transparent; width: 100%; height: 100%; left:0; top:0;">Select Photo</label>
-                                <p class="small mb-0 text-center">Click to select photo</p>
-                            </div>
-                            <?php
-                            if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
-                            ?>
-                                <div class="mb-3 col-sm-4 col-12 px-0">
-                                    <p for="lastname" class="font-weight-bold mb-0 small muted-text">Change Status</p>
-                                    <select name="status" id="" class="select2 form-control" title="Change Status">
-                                        <?php
-                                        if ($row['status'] == '1') {
-                                        ?>
-                                            <option selected value="1">Activate</option>
-                                            <option value="0">Deactivate</option>
-                                        <?php
-                                        } else {
-                                        ?>
-                                            <option value="1">Activate</option>
-                                            <option selected value="0">Deactivate</option>
-                                        <?php
-                                        }
-                                        ?>
-                                    </select>
+            ?>
+                <form onsubmit="update_staff_data(event)">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-12">
+                                <input type="hidden" name="action" value="update_staff_data">
+                                <input type="hidden" name="id" value="<?= $row['id'] ?>">
+                                <div class="form-group mr-3" style="position:relative; max-width: 100px;">
+                                    <img id="image_profile_preview" title="click to select photo" src="../uploads/<?= $row['photo'] ?>" alt="Photo" width="100" height="100">
+                                    <input type="file" name="photo" accept="image/png, image/jpeg, image/jpg" id="update_photo_forstaff" style="display: none;" onchange="preview_image(event)" class="form-control">
+                                    <label for="update_photo_forstaff" style="position:absolute; color: transparent; width: 100%; height: 100%; left:0; top:0;">Select Photo</label>
+                                    <p class="small mb-0 text-center">Click to select photo</p>
                                 </div>
-                            <?php } ?>
-                            <p class="font-weight-bold text-muted">Basic Data</p>
-                            <div class="row flex-wrap" style="border-bottom:5px solid #f4f7fa">
-                                <div class="mb-3 col-sm-4 col-12">
-                                    <p for="firstname" class="font-weight-bold mb-0 small muted-text">Firstname</p>
-                                    <input id="firstname" name="firstname" type="text" placeholder="Firstname" value="<?= $row['firstname'] ?>" class="form-control" title="Enter Firstname">
-                                </div>
-                                <div class="mb-3 col-sm-4 col-12">
-                                    <p for="lastname" class="font-weight-bold mb-0 small muted-text">Lastname</p>
-                                    <input name="lastname" type="text" placeholder="Lastname" value="<?= $row['lastname'] ?>" class="form-control" title="Enter Lastname">
-                                </div>
-                                <div class="mb-3 col-sm-4 col-12">
-                                    <p class="font-weight-bold small muted-text">Middlename</p>
-                                    <input type="text" name="middlename" placeholder="Middlename" value="<?= $row['middlename'] ?>" class="form-control" title="Enter Middlename">
-                                </div>
-                                <div class="mb-3 col-sm-4 col-12">
-                                    <p class="font-weight-bold small muted-text">Gender</p>
-                                    <select class="form-control select2" name="gender" style="width: 100%;" title="Select Gender">
-                                        <option selected="selected" value="<?= $row['gender'] ?>"><?= $row['gender'] ?></option>
-                                        <option>Male</option>
-                                        <option>Female</option>
-                                    </select>
-                                </div>
-
                                 <?php
                                 if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
                                 ?>
-                                    <div class="mb-3 col-sm-4 col-12">
-                                        <p class="font-weight-bold small muted-text">Staff Role</p>
-                                        <select class="form-control select2" name="staff_role" style="width: 100%;" title="Select Staff Role">
-                                            <option value="">Select role</option>
+                                    <div class="mb-3 col-sm-4 col-12 px-0">
+                                        <p for="lastname" class="font-weight-bold mb-0 small muted-text">Change Status</p>
+                                        <select name="status" id="" class="select2 form-control" title="Change Status">
                                             <?php
-                                            $selectclass = mysqli_query($conn, "SELECT id,type FROM staff_type ORDER BY id ASC");
-                                            while ($staffrow = mysqli_fetch_array($selectclass)) {
-                                                if ($staffrow['id'] == $row['staff_type']) {
+                                            if ($row['status'] == '1') {
                                             ?>
-                                                    <option selected value="<?= $staffrow['id'] ?>"><?= $staffrow['type'] ?></option>
-                                                <?php
-                                                }
-                                                ?>
-                                                <option value="<?= $staffrow['id'] ?>"><?= $staffrow['type'] ?></option>
+                                                <option selected value="1">Activate</option>
+                                                <option value="0">Deactivate</option>
+                                            <?php
+                                            } else {
+                                            ?>
+                                                <option value="1">Activate</option>
+                                                <option selected value="0">Deactivate</option>
                                             <?php
                                             }
                                             ?>
                                         </select>
                                     </div>
                                 <?php } ?>
+                                <p class="font-weight-bold text-muted">Basic Data</p>
+                                <div class="row flex-wrap" style="border-bottom:5px solid #f4f7fa">
+                                    <div class="mb-3 col-sm-4 col-12">
+                                        <p for="firstname" class="font-weight-bold mb-0 small muted-text">Firstname</p>
+                                        <input id="firstname" name="firstname" type="text" placeholder="Firstname" value="<?= $row['firstname'] ?>" class="form-control" title="Enter Firstname">
+                                    </div>
+                                    <div class="mb-3 col-sm-4 col-12">
+                                        <p for="lastname" class="font-weight-bold mb-0 small muted-text">Lastname</p>
+                                        <input name="lastname" type="text" placeholder="Lastname" value="<?= $row['lastname'] ?>" class="form-control" title="Enter Lastname">
+                                    </div>
+                                    <div class="mb-3 col-sm-4 col-12">
+                                        <p class="font-weight-bold small muted-text">Middlename</p>
+                                        <input type="text" name="middlename" placeholder="Middlename" value="<?= $row['middlename'] ?>" class="form-control" title="Enter Middlename">
+                                    </div>
+                                    <div class="mb-3 col-sm-4 col-12">
+                                        <p class="font-weight-bold small muted-text">Gender</p>
+                                        <select class="form-control select2" name="gender" style="width: 100%;" title="Select Gender">
+                                            <option selected="selected" value="<?= $row['gender'] ?>"><?= $row['gender'] ?></option>
+                                            <option>Male</option>
+                                            <option>Female</option>
+                                        </select>
+                                    </div>
+
+                                    <?php
+                                    if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
+                                    ?>
+                                        <div class="mb-3 col-sm-4 col-12">
+                                            <p class="font-weight-bold small muted-text">Staff Role</p>
+                                            <select class="form-control select2" name="staff_role" style="width: 100%;" title="Select Staff Role">
+                                                <option value="">Select role</option>
+                                                <?php
+                                                $selectclass = mysqli_query($conn, "SELECT id,type FROM staff_type ORDER BY id ASC");
+                                                while ($staffrow = mysqli_fetch_array($selectclass)) {
+                                                    if ($staffrow['id'] == $row['staff_type']) {
+                                                ?>
+                                                        <option selected value="<?= $staffrow['id'] ?>"><?= $staffrow['type'] ?></option>
+                                                    <?php
+                                                    }
+                                                    ?>
+                                                    <option value="<?= $staffrow['id'] ?>"><?= $staffrow['type'] ?></option>
+                                                <?php
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    <?php } ?>
+                                </div>
+                            </div>
+                            <div class="col-12 mt-3">
+                                <p class="font-weight-bold text-muted">Contact Information</p>
+                                <div class="row flex-wrap">
+                                    <div class="mb-3 col-sm-4 col-12">
+                                        <p class="font-weight-bold small muted-text">Phone</p>
+                                        <input type="text" name="phone" class="form-control" value="<?= $row['phone'] ?>" placeholder="Staff phone number" required id="" title="Enter Phone Number">
+                                    </div>
+                                    <div class="mb-3 col-sm-4 col-12">
+                                        <p class="font-weight-bold small muted-text">Email</p>
+                                        <input type="email" name="email" class="form-control" value="<?= $row['email'] ?>" placeholder="Email address" id="" title="Enter Email Address">
+                                    </div>
+                                    <div class="mb-3 col-sm-4 col-12">
+                                        <p class="font-weight-bold small muted-text">Full address</p>
+                                        <input type="text" name="address" value="<?= $row['address'] ?>" autocomplete="address" class="form-control" placeholder="e.g. 10, Kings Street, Victoria Island, Lagos." id="" title="Enter Full Address">
+                                    </div>
+                                    <div class="mb-3 col-sm-4 col-12">
+                                        <p class="font-weight-bold small muted-text">City</p>
+                                        <input type="text" name="city" autocomplete="address-level1" value="<?= $row['city'] ?>" class="form-control" placeholder="e.g. Victoria Island" id="" title="Enter City">
+                                    </div>
+                                    <div class="mb-3 col-sm-4 col-12">
+                                        <p class="font-weight-bold small muted-text">State</p>
+                                        <input type="text" name="state" value="<?= $row['state'] ?>" autocomplete="address-level1" class="form-control" placeholder="e.g. Lagos" id="" title="Enter State">
+                                    </div>
+                                    <div class="mb-3 col-sm-4 col-12">
+                                        <p class="font-weight-bold small muted-text">Country</p>
+                                        <input type="text" name="country" value="<?= $row['country'] ?>" autocomplete="address-level1" class="form-control" placeholder="e.g. Nigeria" id="" title="Enter Country">
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-12 mt-3">
-                            <p class="font-weight-bold text-muted">Contact Information</p>
-                            <div class="row flex-wrap">
-                                <div class="mb-3 col-sm-4 col-12">
-                                    <p class="font-weight-bold small muted-text">Phone</p>
-                                    <input type="text" name="phone" class="form-control" value="<?= $row['phone'] ?>" placeholder="Staff phone number" required id="" title="Enter Phone Number">
-                                </div>
-                                <div class="mb-3 col-sm-4 col-12">
-                                    <p class="font-weight-bold small muted-text">Email</p>
-                                    <input type="email" name="email" class="form-control" value="<?= $row['email'] ?>" placeholder="Email address" id="" title="Enter Email Address">
-                                </div>
-                                <div class="mb-3 col-sm-4 col-12">
-                                    <p class="font-weight-bold small muted-text">Full address</p>
-                                    <input type="text" name="address" value="<?= $row['address'] ?>" autocomplete="address" class="form-control" placeholder="e.g. 10, Kings Street, Victoria Island, Lagos." id="" title="Enter Full Address">
-                                </div>
-                                <div class="mb-3 col-sm-4 col-12">
-                                    <p class="font-weight-bold small muted-text">City</p>
-                                    <input type="text" name="city" autocomplete="address-level1" value="<?= $row['city'] ?>" class="form-control" placeholder="e.g. Victoria Island" id="" title="Enter City">
-                                </div>
-                                <div class="mb-3 col-sm-4 col-12">
-                                    <p class="font-weight-bold small muted-text">State</p>
-                                    <input type="text" name="state" value="<?= $row['state'] ?>" autocomplete="address-level1" class="form-control" placeholder="e.g. Lagos" id="" title="Enter State">
-                                </div>
-                                <div class="mb-3 col-sm-4 col-12">
-                                    <p class="font-weight-bold small muted-text">Country</p>
-                                    <input type="text" name="country" value="<?= $row['country'] ?>" autocomplete="address-level1" class="form-control" placeholder="e.g. Nigeria" id="" title="Enter Country">
-                                </div>
-                            </div>
+                        <div class="card-foot">
+                            <button type="submit" id="update_staff_submit_btn" class="btn btn-primary">Update</button>
+                            <button type="button" class="btn btn-grey" class="close" data-dismiss="modal" aria-label="Close">Cancel</button>
                         </div>
                     </div>
-                    <div class="card-foot">
-                        <button type="submit" id="update_staff_submit_btn" class="btn btn-primary">Update</button>
-                        <button type="button" class="btn btn-grey" class="close" data-dismiss="modal" aria-label="Close">Cancel</button>
-                    </div>
-                </div>
-            </form>
-            <!-- </div> -->
-            <script>
-                $('.select2').select2()
-            </script>
-        <?php
+                </form>
+                <!-- </div> -->
+                <script>
+                    $('.select2').select2()
+                </script>
+            <?php
             }
         }
-        if ($action === 'get_parent_data_for_update') {
-            $school_id = $_SESSION['school_id'];
-            $id = test_input($_POST['id']);
-            // $staff_type = test_input($_POST['staff_type']);
-            $select  = mysqli_query($conn, "SELECT * FROM parent WHERE id='$id' AND school_id='$school_id'");
 
-            if ($row = mysqli_fetch_array($select)) {
-        ?>
+         if ($action === 'get_parent_data_for_update') {
+        $school_id = $_SESSION['school_id'];
+        $id = test_input($_POST['id']);
+        $student_id = isset($_POST['student_id']) ? test_input($_POST['student_id']) : null;
+
+        $select = mysqli_query($conn, "SELECT * FROM parent WHERE id='$id' AND school_id='$school_id'");
+
+        if ($row = mysqli_fetch_array($select)) {
+            // Count siblings to determine if reassignment choice is needed
+            $sibling_count = 0;
+            $select_siblings = mysqli_query($conn, "SELECT COUNT(*) as total FROM students WHERE parent_id='$id' AND school_id='$school_id'");
+            if ($sib_res = mysqli_fetch_array($select_siblings)) {
+                $sibling_count = $sib_res['total'];
+            }
+            ?>
             <form onsubmit="update_parent_data(event)">
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-12">
                             <input type="hidden" name="action" value="update_parent_data">
                             <input type="hidden" name="id" value="<?= $row['id'] ?>">
+                            <?php if ($student_id) { ?>
+                                <input type="hidden" name="ref_student_id" value="<?= $student_id ?>">
+                            <?php } ?>
+
+                            <?php if ($sibling_count > 1 && $student_id) {
+                                // Get current student name for clarity
+                                $stud_name = "";
+                                $sel_stud = mysqli_query($conn, "SELECT firstname, lastname FROM students WHERE id='$student_id' AND school_id='$school_id'");
+                                if ($srow = mysqli_fetch_array($sel_stud)) {
+                                    $stud_name = $srow['firstname'] . " " . $srow['lastname'];
+                                }
+                                ?>
+                                <div class="alert alert-inf py-2">
+                                    <p class="small mb-2 font-weight-bold">This parent has <?= $sibling_count ?> children. How should
+                                        this update apply?</p>
+                                    <div class="custom-control custom-radio small">
+                                        <input class="custom-control-input" type="radio" id="apply_all" name="update_scope" value="all"
+                                            checked>
+                                        <label for="apply_all" class="custom-control-label font-weight-normal">Update/Merge for ALL
+                                            children (Shared Parent)</label>
+                                    </div>
+                                    <div class="custom-control custom-radio small">
+                                        <input class="custom-control-input" type="radio" id="apply_single" name="update_scope"
+                                            value="single">
+                                        <label for="apply_single" class="custom-control-label font-weight-normal">Reassign ONLY
+                                            <strong><?= $stud_name ?></strong> (Move student to a new/different parent)</label>
+                                    </div>
+                                </div>
+                            <?php } else { ?>
+                                <input type="hidden" name="update_scope" value="all">
+                            <?php } ?>
+
                             <div class="row flex-wrap">
                                 <div class="mb-3 col-sm-4 col-12">
                                     <p for="firstname" class="font-weight-bold mb-0 small muted-text">Firstname</p>
-                                    <input id="firstname" name="firstname" type="text" placeholder="Firstname" value="<?= $row['firstname'] ?>" class="form-control" title="Enter parent's firstname">
+                                    <input id="firstname" name="firstname" type="text" placeholder="Firstname"
+                                        value="<?= $row['firstname'] ?>" class="form-control" title="Enter parent's firstname">
                                 </div>
                                 <div class="mb-3 col-sm-4 col-12">
                                     <p for="lastname" class="font-weight-bold mb-0 small muted-text">Lastname</p>
-                                    <input name="lastname" type="text" placeholder="Lastname" value="<?= $row['lastname'] ?>" class="form-control" title="Enter parent's lastname">
+                                    <input name="lastname" type="text" placeholder="Lastname" value="<?= $row['lastname'] ?>"
+                                        class="form-control" title="Enter parent's lastname">
                                 </div>
                             </div>
                         </div>
@@ -2897,43 +3214,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="row flex-wrap">
                                 <div class="mb-3 col-sm-4 col-12">
                                     <p class="font-weight-bold small muted-text">Phone</p>
-                                    <input type="text" name="phone" class="form-control" value="<?= $row['phone'] ?>" placeholder="Student phone number" id="" title="Enter parent's phone number">
+                                    <input type="text" name="phone" class="form-control" value="<?= $row['phone'] ?>"
+                                        placeholder="Student phone number" id="" title="Enter parent's phone number">
                                 </div>
                                 <div class="mb-3 col-sm-4 col-12">
                                     <p class="font-weight-bold small muted-text">Email</p>
-                                    <input type="email" name="email" class="form-control" value="<?= $row['email'] ?>" placeholder="Email address" id="" title="Enter parent's email address">
+                                    <input type="email" name="email" class="form-control" value="<?= $row['email'] ?>"
+                                        placeholder="Email address" id="" title="Enter parent's email address">
                                 </div>
                                 <div class="mb-3 col-sm-4 col-12">
                                     <p class="font-weight-bold small muted-text">Full address</p>
-                                    <input type="text" name="address" value="<?= $row['address'] ?>" autocomplete="address" class="form-control" placeholder="e.g. 10, Kings Street, Victoria Island, Lagos." id="" title="Enter parent's full address">
+                                    <input type="text" name="address" value="<?= $row['address'] ?>" autocomplete="address"
+                                        class="form-control" placeholder="e.g. 10, Kings Street, Victoria Island, Lagos." id=""
+                                        title="Enter parent's full address">
                                 </div>
                                 <div class="mb-3 col-sm-4 col-12">
                                     <p class="font-weight-bold small muted-text">City</p>
-                                    <input type="text" name="city" autocomplete="address-level1" value="<?= $row['city'] ?>" class="form-control" placeholder="e.g. Victoria Island" id="" title="Enter parent's city">
+                                    <input type="text" name="city" autocomplete="address-level1" value="<?= $row['city'] ?>"
+                                        class="form-control" placeholder="e.g. Victoria Island" id="" title="Enter parent's city">
                                 </div>
                                 <div class="mb-3 col-sm-4 col-12">
                                     <p class="font-weight-bold small muted-text">State</p>
-                                    <input type="text" name="state" value="<?= $row['state'] ?>" autocomplete="address-level1" class="form-control" placeholder="e.g. Lagos" id="" title="Enter parent's state">
+                                    <input type="text" name="state" value="<?= $row['state'] ?>" autocomplete="address-level1"
+                                        class="form-control" placeholder="e.g. Lagos" id="" title="Enter parent's state">
                                 </div>
                                 <div class="mb-3 col-sm-4 col-12">
                                     <p class="font-weight-bold small muted-text">Country</p>
-                                    <input type="text" name="country" value="<?= $row['country'] ?>" autocomplete="address-level1" class="form-control" placeholder="e.g. Nigeria" id="" title="Enter parent's country">
+                                    <input type="text" name="country" value="<?= $row['country'] ?>" autocomplete="address-level1"
+                                        class="form-control" placeholder="e.g. Nigeria" id="" title="Enter parent's country">
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="card-foot">
                         <div class="d-flex w-100">
-                            <small class="text-danger myalert p-2 mb-2 w-100" id="add_parent_data_warning" style="text-align:center; display:none;">Phone Number or email already exist, kindly try another.</small>
+                            <small class="text-danger myalert p-2 mb-2 w-100" id="add_parent_data_warning"
+                                style="text-align:center; display:none;">Phone Number or email already exist, kindly try
+                                another.</small>
                         </div>
-                        <button type="submit" id="update_parent_submit_btn" class="btn btn-primary" title="Update parent information">Update Now</button>
-                        <button type="button" class="btn btn-grey" class="close" data-dismiss="modal" aria-label="Close" title="Cancel update">Cancel</button>
+                        <button type="submit" id="update_parent_submit_btn" class="btn btn-primary"
+                            title="Update parent information">Update Now</button>
+                        <button type="button" class="btn btn-grey" class="close" data-dismiss="modal" aria-label="Close"
+                            title="Cancel update">Cancel</button>
                     </div>
                 </div>
             </form>
-        <?php
-            }
+            <?php
         }
+    }
         if ($action === 'get_student_data_for_update') {
             $school_id = $_SESSION['school_id'];
             $id = test_input($_POST['id']);
@@ -2945,106 +3273,118 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             s.id='$id' AND s.school_id='$school_id'";
             $select  = mysqli_query($conn, $student_query);
             if ($row = mysqli_fetch_array($select)) {
-        ?>
-            <form id="add_student_modal_id_update" onsubmit="update_student_data(event)">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-12">
-                            <input type="hidden" name="action" value="update_student_data">
-                            <input type="hidden" name="id" value="<?= $row['id'] ?>">
-                            <div class="form-group mr-3" style="position:relative; max-width: 100px;">
-                                <img id="image_profile_preview" title="click to select photo" src="../uploads/<?= $row['photo'] ?>" alt="Photo" width="100" height="100">
-                                <input type="file" name="studentphoto" accept="image/png, image/jpg, image/jpeg" id="image_studentprofile_add" style="display: none;" onchange="preview_image(event)" class="form-control">
-                                <label for="image_studentprofile_add" style="position:absolute; color: transparent; width: 100%; height: 100%; left:0; top:0;">Select
-                                    Photo</label>
-                                <p class="small mb-0 text-center">Click to select photo</p>
-                            </div>
-                            <?php
-                            if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
-                            ?>
-                                <!--<div class="mb-3 col-sm-4 col-12 px-0">-->
-                                <!--    <p for="lastname" class="font-weight-bold mb-0 small muted-text">Change Status</p>-->
-                                <!--    <select name="status" id="" class="select2 form-control">-->
-                                <!--        <php-->
-                                <!--        if ($row['status'] == '1') {-->
-                                <!--        ?>-->
-                                <!--            <option selected value="1">Activate</option>-->
-                                <!--            <option value="0">Deactivate</option>-->
-                                <!--        <php-->
-                                <!--        } else {-->
-                                <!--        ?>-->
-                                <!--            <option value="1">Activate</option>-->
-                                <!--            <option selected value="0">Deactivate</option>-->
-                                <!--        <php-->
-                                <!--        }-->
-                                <!--        ?>-->
-                                <!--    </select>-->
-                                <!--</div>-->
-                            <?php } ?>
-                            <p class="font-weight-bold text-muted">Basic Data</p>
-                            <div class="row flex-wrap" style="border-bottom:5px solid #f4f7fa">
-                                <div class="mb-3 col-sm-6 col-12">
-                                    <label for="firstname" class="mb-0 muted-text">Firstname</label>
-                                    <input id="firstname" name="firstname" type="text" placeholder="Firstname" value="<?= $row['firstname'] ?>" class="form-control" required>
+            ?>
+                <form id="add_student_modal_id_update" onsubmit="update_student_data(event)">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-12">
+                                <input type="hidden" name="action" value="update_student_data">
+                                <input type="hidden" name="id" value="<?= $row['id'] ?>">
+                                <div class="form-group mr-3" style="position:relative; max-width: 100px;">
+                                    <img id="image_profile_preview" title="click to select photo" src="../uploads/<?= $row['photo'] ?>" alt="Photo" width="100" height="100">
+                                    <input type="file" name="studentphoto" accept="image/png, image/jpg, image/jpeg" id="image_studentprofile_add" style="display: none;" onchange="preview_image(event)" class="form-control">
+                                    <label for="image_studentprofile_add" style="position:absolute; color: transparent; width: 100%; height: 100%; left:0; top:0;">Select
+                                        Photo</label>
+                                    <p class="small mb-0 text-center">Click to select photo</p>
                                 </div>
-                                <div class="mb-3 col-sm-6 col-12">
-                                    <label for="lastname" class="mb-0 muted-text">Lastname</label>
-                                    <input name="lastname" type="text" placeholder="Lastname" value="<?= $row['lastname'] ?>" class="form-control" required>
-                                </div>
-                                <div class="mb-3 col-sm-6 col-12">
-                                    <p class="mb-0 muted-text">Middlename</p>
-                                    <input type="text" name="middlename" placeholder="Middlename" value="<?= $row['middlename'] ?>" class="form-control">
-                                </div>
-                                <div class="mb-3 col-sm-6 col-12">
-                                    <p class="mb-0 muted-text">Admission number</p>
-                                    <input type="text" name="admissionnumber" placeholder="Admission number" value="<?= $row['admission_no'] ?>" class="form-control">
-                                </div>
-                                <div class="mb-3 col-sm-6 col-12">
-                                    <p class="mb-0 muted-text">Class</p>
-                                    <select class="form-control select2" name="class_id" style="width: 100%;" required>
-                                        <?php
-                                        $selectclass = mysqli_query($conn, "SELECT id,classname FROM class WHERE school_id='$school_id'");
-                                        while ($classrow = mysqli_fetch_array($selectclass)) {
-                                            if ($classrow['id'] == $row['class_id']) {
-                                        ?>
-                                                <option selected="selected" value="<?= $classrow['id'] ?>"><?= $classrow['classname'] ?></option>
+                                <?php
+                                if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
+                                ?>
+                                    <!--<div class="mb-3 col-sm-4 col-12 px-0">-->
+                                    <!--    <p for="lastname" class="font-weight-bold mb-0 small muted-text">Change Status</p>-->
+                                    <!--    <select name="status" id="" class="select2 form-control">-->
+                                    <!--        <php-->
+                                    <!--        if ($row['status'] == '1') {-->
+                                    <!--        ?>-->
+                                    <!--            <option selected value="1">Activate</option>-->
+                                    <!--            <option value="0">Deactivate</option>-->
+                                    <!--        <php-->
+                                    <!--        } else {-->
+                                    <!--        ?>-->
+                                    <!--            <option value="1">Activate</option>-->
+                                    <!--            <option selected value="0">Deactivate</option>-->
+                                    <!--        <php-->
+                                    <!--        }-->
+                                    <!--        ?>-->
+                                    <!--    </select>-->
+                                    <!--</div>-->
+                                <?php } ?>
+                                <p class="font-weight-bold text-muted">Basic Data</p>
+                                <div class="row flex-wrap" style="border-bottom:5px solid #f4f7fa">
+                                    <div class="mb-3 col-sm-6 col-12">
+                                        <label for="firstname" class="mb-0 muted-text">Firstname</label>
+                                        <input id="firstname" name="firstname" type="text" placeholder="Firstname" value="<?= $row['firstname'] ?>" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3 col-sm-6 col-12">
+                                        <label for="lastname" class="mb-0 muted-text">Lastname</label>
+                                        <input name="lastname" type="text" placeholder="Lastname" value="<?= $row['lastname'] ?>" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3 col-sm-6 col-12">
+                                        <p class="mb-0 muted-text">Middlename</p>
+                                        <input type="text" name="middlename" placeholder="Middlename" value="<?= $row['middlename'] ?>" class="form-control">
+                                    </div>
+                                    <div class="mb-3 col-sm-6 col-12">
+                                        <p class="mb-0 muted-text">Admission number</p>
+                                        <input type="text" name="admissionnumber" placeholder="Admission number" value="<?= $row['admission_no'] ?>" class="form-control">
+                                    </div>
+                                    <div class="mb-3 col-sm-6 col-12">
+                                        <p class="mb-0 muted-text">Class</p>
+                                        <select class="form-control select2" name="class_id" style="width: 100%;" required>
+                                            <?php
+                                            $selectclass = mysqli_query($conn, "SELECT id,classname FROM class WHERE school_id='$school_id'");
+                                            while ($classrow = mysqli_fetch_array($selectclass)) {
+                                                if ($classrow['id'] == $row['class_id']) {
+                                            ?>
+                                                    <option selected="selected" value="<?= $classrow['id'] ?>"><?= $classrow['classname'] ?></option>
+                                                <?php
+                                                }
+                                                ?>
+                                                <option value="<?= $classrow['id'] ?>"><?= $classrow['classname'] ?></option>
                                             <?php
                                             }
                                             ?>
-                                            <option value="<?= $classrow['id'] ?>"><?= $classrow['classname'] ?></option>
-                                        <?php
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-                                <div class="mb-3 col-sm-6 col-12">
-                                    <p class="mb-0 muted-text">Gender</p>
-                                    <select class="form-control select2" required name="gender" style="width: 100%;">
-                                        <option selected="selected" value="<?= $row['gender'] ?>"><?= $row['gender'] ?></option>
-                                        <option>Male</option>
-                                        <option>Female</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3 col-sm-6 col-12">
-                                    <p class="mb-0 muted-text">Date of Birth</p>
-                                    <input type="date" name="dob" class="form-control" placeholder="Date" value="<?= $row['dob'] ?>" id="">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 mt-3">
-                            <p class="mb-0 text-muted">Contact Information</p>
-                            <div class="row flex-wrap">
-                                <div class="mb-3 col-sm-6 col-12">
-                                    <p class="mb-0 muted-text">Phone number</p>
-                                    <input type="text" name="phone" class="form-control" value="<?= $row['phone'] ?>" placeholder="Student phone number" id="">
-                                </div>
-                                <div class="mb-3 col-sm-6 col-12">
-                                    <p class="mb-0 muted-text">Email address</p>
-                                    <input type="email" name="email" class="form-control" value="<?= $row['email'] ?>" placeholder="Email address" id="">
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 col-sm-6 col-12">
+                                        <p class="mb-0 muted-text">Department</p>
+                                        <input type="text" name="department" placeholder="Department" value="<?= $row['department'] ?>" class="form-control">
+                                    </div>
+                                    <div class="mb-3 col-sm-6 col-12">
+                                        <p class="mb-0 muted-text">Gender</p>
+                                        <select class="form-control select2" required name="gender" style="width: 100%;">
+                                            <option selected="selected" value="<?= $row['gender'] ?>"><?= $row['gender'] ?></option>
+                                            <option>Male</option>
+                                            <option>Female</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 col-sm-6 col-12">
+                                        <p class="mb-0 muted-text">Date of Birth</p>
+                                        <input type="date" name="dob" class="form-control" placeholder="Date" value="<?= $row['dob'] ?>" id="">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <!-- <div class="col-12 mt-3">
+                            <div class="col-12 mt-3">
+                                <p class="mb-0 text-muted">Contact Information</p>
+                                <div class="row flex-wrap">
+                                    <div class="mb-3 col-sm-6 col-12">
+                                        <p class="mb-0 muted-text">Phone number</p>
+                                        <input type="text" name="phone" class="form-control" value="<?= $row['phone'] ?>" placeholder="Student phone number" id="">
+                                    </div>
+                                    <div class="mb-3 col-sm-6 col-12">
+                                        <p class="mb-0 muted-text">Email address</p>
+                                        <input type="email" name="email" class="form-control" value="<?= $row['email'] ?>" placeholder="Email address" id="">
+                                    </div>
+                                </div>
+                            </div>
+                        <!--    <div class="col-12 mt-3">-->
+                        <!--    <p class="mb-0 text-muted">Set Password</p>-->
+                        <!--    <div class="row flex-wrap">-->
+                        <!--        <div class="mb-3 col-sm-6 col-12">-->
+                        <!--            <input type="password" name="password" class="form-control" value="<?=$row['passw']?>" placeholder="Enter new password" id="">-->
+                        <!--        </div>-->
+                        <!--    </div>-->
+                        <!--</div>-->
+                            <!-- <div class="col-12 mt-3">
                                 <p class="font-weight-bold text-muted">Parent Information</p>
 
                                 <div class="w-100 mb-3">
@@ -3091,18 +3431,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </div>
                                 </div>
                             </div> -->
+                        </div>
+                        <div class="card-foot">
+                            <button type="submit" id="update_student_btn" class="btn btn-primary">Update Student Data</button>
+                            <button type="button" class="btn btn-grey" class="close" data-dismiss="modal" aria-label="Close">Cancel</button>
+                        </div>
                     </div>
-                    <div class="card-foot">
-                        <button type="submit" id="update_student_btn" class="btn btn-primary">Update Student Data</button>
-                        <button type="button" class="btn btn-grey" class="close" data-dismiss="modal" aria-label="Close">Cancel</button>
-                    </div>
-                </div>
-            </form>
-            <!-- </div> -->
-        <?php
+                </form>
+                <!-- </div> -->
+            <?php
             }
         }
-
+        if ($action == 'add_g_class_data') {
+            $school_id = $_SESSION['school_id'];
+            $classname = test_input($_POST['class']);
+            $insertclass = mysqli_query($conn, "INSERT INTO class(is_graduate,classname, school_id, createdby, datecreated) 
+                VALUES(1,'$classname', '$school_id', '{$_SESSION['userid']}', '$date')");
+            echo $insertclass === true ? json_encode(array('status' => '1', 'msg' => 'Created Successfully')) : mysqli_error($conn);
+        }
         if ($action == 'add_class_data') {
             $school_id = $_SESSION['school_id'];
             $classname = test_input($_POST['class']);
@@ -3127,13 +3473,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $color = $color_array[array_rand($color_array)];
             }
 
-            if (!does_it_exist("id", "class", "classname='$classname'")) {
+            // if (!does_it_exist("id", "class", "classname='$classname'")) {
                 $insertclass = mysqli_query($conn, "INSERT INTO class(subject_cat, classname, school_id, createdby, datecreated, color) 
                 VALUES('$subject_cat', '$classname', '$school_id', '{$_SESSION['userid']}', '$date', '$color')");
                 echo $insertclass === true ? json_encode(array('status' => '1', 'msg' => 'Created Successfully')) : mysqli_error($conn);
-            } else {
-                echo json_encode(array('status' => '0', "err" => "Class already exists"));
-            }
+            // } else {
+            //     echo json_encode(array('status' => '0', "err" => "Class already exists"));
+            // }
         }
         if ($action == 'add_staff_data') {
             $school_id = $_SESSION['school_id'];
@@ -3161,6 +3507,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $valid_ext = array("jpg", "png", "jpeg");
                 if ($_FILES['photo']['name'] == '') {
                     $final_img = "avatar.png";
+                    // echo "INSERT INTO staff(status,staff_type,createdby,datecreated,address,city,state,country,passw,firstname,middlename,lastname,gender,phone,email,photo,school_id) 
+                    // VALUES('1','$role','{$_SESSION["userid"]}','$date','$address','$city','$state','$country','$hashedpassword','$firstname','$middlename','$lastname','$gender','$phone','$email','$final_img','$school_id')";
                     $insert = mysqli_query($conn, "INSERT INTO staff(status,staff_type,createdby,datecreated,address,city,state,country,passw,firstname,middlename,lastname,gender,phone,email,photo,school_id) 
                     VALUES('1','$role','{$_SESSION["userid"]}','$date','$address','$city','$state','$country','$hashedpassword','$firstname','$middlename','$lastname','$gender','$phone','$email','$final_img','$school_id')");
                     if ($insert) {
@@ -3329,7 +3677,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         //     $parentphone = test_input($_POST['parentphone']);
         //     $parentemail = test_input($_POST['parentemail']);
         //     $date = date('Y-m-d H:i:s');
-
+            
         //     $s_password = substr($admission_no, -4);
         //     $s_hashedpassword = password_hash($s_password, PASSWORD_ARGON2I);
 
@@ -3414,32 +3762,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         //         echo $insert_student === true ? json_encode(array('status' => '1')) : mysqli_error($conn);
         //     }
         // }
-        if ($action == 'add_student_data') {
-
+        
+         if ($action == 'add_student_data') {
             $school_id = $_SESSION['school_id'];
             $term = $_SESSION['term_id'];
             $session = $_SESSION['session_id'];
+            if($school_id == 26){
+                // echo "SELECT count(*) as total_student FROM students s INNER JOIN payment_record pr ON pr.student_id = s.id AND pr.term_id = '$term' AND pr.session_id = '$session'
+                // WHERE s.school_id = '$school_id' AND pr.status=1";
+                
+                $select_student = mysqli_query($conn, "SELECT count(*) as total_student FROM students s INNER JOIN payment_record pr ON pr.student_id = s.id AND pr.term_id = '$term' AND pr.session_id = '$session'
+                WHERE s.school_id = '$school_id' AND pr.status=1");
+            }
+            else 
+            {
             $select_student = mysqli_query($conn, "SELECT COUNT(id) as total_student FROM payment_record WHERE session_id='$session' AND term_id='$term' AND status=1 AND school_id='$school_id'");
             // $select_student = mysqli_query($conn, "SELECT COUNT(id) as total_student FROM students WHERE school_id='$school_id'");
+            }
             $student_row = mysqli_fetch_array($select_student);
             $select_payment = mysqli_query($conn, "SELECT SUM(student_number) AS total_paid_for FROM payments WHERE school_id='$school_id' AND term_id='$term' AND session_id='$session'");
+            
             $payment_row = mysqli_fetch_array($select_payment);
-            // echo "opayemr".$payment_row['student_number'];
+            // echo "paid for".$payment_row['total_paid_for'];
             // echo "student".$student_row['total_student'];
             //  if( $_SESSION['school_id == 13'] && $student_row['total_student'] == '20') {
             //     echo json_encode(array('status' => '0', 'err' => "Number of student exceeded, Kindly pay for more students."));
             //     exit;
             //  }
             //  exit;
-            if ($student_row['total_student'] >= $payment_row['total_paid_for']) {
+            
+        
+            $school_id_array = [13,29,30,39];
+            if(!in_array($school_id, $school_id_array)){
+                if ($student_row['total_student'] >= $payment_row['total_paid_for']) {
                 // if ($payment_row['total_paid_for'] > 40) {
-                echo json_encode(array('status' => '0', 'err' => "Number of student exceeded, Kindly pay for more students."));
-                exit;
+                    echo json_encode(array('status' => '0', 'err' => "Number of student exceeded, Kindly pay for more students."));
+                    exit;
+                }
             }
-            // echo $student_row['total_student'];
+            // if ($school_id == 38) {
+            //     $count_q = "SELECT COUNT(id) as total FROM students WHERE school_id=38";
+            //     $result_q = mysqli_query($conn, $count_q);
+            //     $row = mysqli_fetch_assoc($result_q);
+            //     if ($row['total'] == 20) {
+            //         echo "You have exceeded the limit";
+            //     }
+            // }
+
+            // $student_row['total_student'];
             // echo "new";
             // echo $payment_row['total_paid_for'];
             // exit;
+            $department = test_input($_POST['department']);
             $firstname = test_input($_POST['firstname']);
             $lastname = test_input($_POST['lastname']);
             $admission_no = test_input($_POST['admissionnumber']);
@@ -3471,17 +3845,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $city = test_input($_POST['city']);
                 $state = test_input($_POST['state']);
                 $country = test_input($_POST['country']);
-
+                // echo "kl";
                 if ($_FILES['studentphoto']['name'] == '') {
                     $final_img = "avatar.png";
+                    // echo "INSERT INTO parent(firstname,lastname,passw,phone, email, address,city,state,country, school_id, datecreated, createdby)
+                    // VALUES('$pfname','$plname','$hashedpassword','$parentphone','$parentemail','$address','$city', '$state','$country','$school_id','$date','{$_SESSION['userid']}')";
+                    // exit;
                     $insertparent = mysqli_query($conn, "INSERT INTO parent(firstname,lastname,passw,phone, email, address,city,state,country, school_id, datecreated, createdby)
                     VALUES('$pfname','$plname','$hashedpassword','$parentphone','$parentemail','$address','$city', '$state','$country','$school_id','$date','{$_SESSION['userid']}')");
                     if ($insertparent) {
                         $selectparentid = mysqli_query($conn, "SELECT id FROM parent WHERE phone='$parentphone' AND email='$parentemail' AND school_id='$school_id'");
                         if ($row = mysqli_fetch_array($selectparentid)) {
                             $parent_id = $row['id'];
-                            $insertstudent = mysqli_query($conn, "INSERT INTO students(passw,admission_no,photo,firstname,lastname,middlename,class_id,gender,dob,phone,email,parent_id,school_id,datecreated,createdby) 
-                            VALUES('$s_hashedpassword','$admission_no','$final_img','$firstname','$lastname','$middlename','$class_id','$gender','$dob','$phone','$email','$parent_id','$school_id','$date','{$_SESSION['userid']}')");
+                            $insertstudent = mysqli_query($conn, "INSERT INTO students(department, passw,admission_no,photo,firstname,lastname,middlename,class_id,gender,dob,phone,email,parent_id,school_id,datecreated,createdby) 
+                            VALUES('$department','$s_hashedpassword','$admission_no','$final_img','$firstname','$lastname','$middlename','$class_id','$gender','$dob','$phone','$email','$parent_id','$school_id','$date','{$_SESSION['userid']}')");
                             // echo "mkec";
                             if ($insertstudent) {
                                 // Get the last inserted student id
@@ -3506,12 +3883,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                     exit;
                 } else {
+                    // echo "fg";
                     $path = "uploads/";
                     $valid_ext = array("jpg", "png", "jpeg");
                     $img_name = $_FILES['studentphoto']['name'];
                     $tmp = $_FILES['studentphoto']['tmp_name'];
                     $ext = strtolower(pathinfo($img_name, PATHINFO_EXTENSION));
-                    $final_img = rand(10000, 1000000) . 'student' . $img_name;
+                    $final_img = rand(10, 100000000000) . 'student' . $img_name;
                     if (in_array($ext, $valid_ext)) {
                         $path = $path . $final_img;
                         if (move_uploaded_file($tmp, $path)) {
@@ -3521,8 +3899,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $selectparentid = mysqli_query($conn, "SELECT id FROM parent WHERE phone='$parentphone' AND email='$parentemail' AND school_id='$school_id'");
                                 if ($row = mysqli_fetch_array($selectparentid)) {
                                     $parent_id = $row['id'];
-                                    $insertstudent = mysqli_query($conn, "INSERT INTO students(passw,admission_no,admiphoto,firstname,lastname,middlename,class_id,gender,dob,phone,email,parent_id,school_id,datecreated,createdby) 
-                                    VALUES('$s_hashedpassword','$admission_no','$final_img','$firstname','$lastname','$middlename','$class_id','$gender','$dob','$phone','$email','$parent_id','$school_id','$date','{$_SESSION['userid']}')");
+                                    // echo "INSERT INTO students(department,passw,admission_no,photo,firstname,lastname,middlename,class_id,gender,dob,phone,email,parent_id,school_id,datecreated,createdby) 
+                                    // VALUES('$department','$s_hashedpassword','$admission_no','$final_img','$firstname','$lastname','$middlename','$class_id','$gender','$dob','$phone','$email','$parent_id','$school_id','$date','{$_SESSION['userid']}')";
+                                    $insertstudent = mysqli_query($conn, "INSERT INTO students(department,passw,admission_no,photo,firstname,lastname,middlename,class_id,gender,dob,phone,email,parent_id,school_id,datecreated,createdby) 
+                                    VALUES('$department','$s_hashedpassword','$admission_no','$final_img','$firstname','$lastname','$middlename','$class_id','$gender','$dob','$phone','$email','$parent_id','$school_id','$date','{$_SESSION['userid']}')");
                                     if ($insertstudent) {
                                         // Get the last inserted student id
                                         $student_id = mysqli_insert_id($conn);
@@ -3533,7 +3913,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         $updatedby = $_SESSION['userid'];
                                         $datecreated = $date;
                                         $dateupdated = $date;
-                                        $insert_payment = mysqli_query($conn, "INSERT INTO payment_record (student_id, class_id, session_id, term_id, school_id, status, created_by, updatedby, datecreated, dateupdated) VALUES ('$student_id', '$class_id', '$session_id', '$term_id', '$school_id', '$status', '$created_by', '$updatedby', '$datecreated', '$dateupdated')");
+                                        $insert_payment = mysqli_query($conn, "INSERT INTO payment_record (student_id, class_id, session_id, term_id, school_id, status, createdby, updatedby, datecreated, dateupdated) VALUES ('$student_id', '$class_id', '$session_id', '$term_id', '$school_id', '$status', '$created_by', '$updatedby', '$datecreated', '$dateupdated')");
                                         if ($insert_payment) {
                                             echo json_encode(array('status' => '1'));
                                         } else {
@@ -3550,6 +3930,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
             } else {
+                // echo "er";
                 $select_parent_id = mysqli_query($conn, "SELECT id FROM parent WHERE phone='$parentphone'");
                 $parent_id_row = mysqli_fetch_array($select_parent_id);
                 $parent_id = $parent_id_row['id'];
@@ -3561,7 +3942,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $img_name = $_FILES['studentphoto']['name'];
                     $tmp = $_FILES['studentphoto']['tmp_name'];
                     $ext = strtolower(pathinfo($img_name, PATHINFO_EXTENSION));
-                    $final_img = rand(10000, 1000000) . 'student' . $img_name;
+                    $final_img = rand(10, 1000000000000) . 'student' . $img_name;
                     if (in_array($ext, $valid_ext)) {
                         $path = $path . $final_img;
                         if (move_uploaded_file($tmp, $path)) {
@@ -3570,8 +3951,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
 
-                $insert_student = mysqli_query($conn, "INSERT INTO students(passw,admission_no,photo,firstname,lastname,middlename,class_id,gender,dob,phone,email,parent_id,school_id,datecreated,createdby) 
-                VALUES('$s_hashedpassword','$admission_no','$final_img','$firstname','$lastname','$middlename','$class_id','$gender','$dob','$phone','$email','$parent_id','$school_id','$date','{$_SESSION['userid']}')");
+                $insert_student = mysqli_query($conn, "INSERT INTO students(department,passw,admission_no,photo,firstname,lastname,middlename,class_id,gender,dob,phone,email,parent_id,school_id,datecreated,createdby) 
+                VALUES('$department','$s_hashedpassword','$admission_no','$final_img','$firstname','$lastname','$middlename','$class_id','$gender','$dob','$phone','$email','$parent_id','$school_id','$date','{$_SESSION['userid']}')");
                 if ($insert_student) {
                     // Get the last inserted student id
                     $student_id = mysqli_insert_id($conn);
@@ -3582,8 +3963,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $updatedby = $_SESSION['userid'];
                     $datecreated = $date;
                     $dateupdated = $date;
-                    // echo "INSERT INTO payment_record (student_id, class_id, session_id, term_id, school_id, status, createdby, updatedby, datecreated, dateupdated) VALUES ('$student_id', '$class_id', '$session_id', '$term_id', '$school_id', '$status', '$created_by', '$updatedby', '$datecreated', '$dateupdated')";
-                    $insert_payment = mysqli_query($conn, "INSERT INTO payment_record (student_id, class_id, session_id, term_id, school_id, status, created_by, updatedby, datecreated, dateupdated) VALUES ('$student_id', '$class_id', '$session_id', '$term_id', '$school_id', '$status', '$created_by', '$updatedby', '$datecreated', '$dateupdated')");
+                //   echo  "INSERT INTO payment_record (student_id, class_id, session_id, term_id, school_id, status, created_by, updatedby, datecreated, dateupdated) VALUES ('$student_id', '$class_id', '$session_id', '$term_id', '$school_id', '$status', '$created_by', '$updatedby', '$datecreated', '$dateupdated')";
+                    $insert_payment = mysqli_query($conn, "INSERT INTO payment_record (student_id, class_id, session_id, term_id, school_id, status, createdby, updatedby, datecreated, dateupdated) VALUES ('$student_id', '$class_id', '$session_id', '$term_id', '$school_id', '$status', '$created_by', '$updatedby', '$datecreated', '$dateupdated')");
                     if ($insert_payment) {
                         echo json_encode(array('status' => '1'));
                     } else {
@@ -3595,65 +3976,182 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         if ($action == 'update_class_data') {
+            // echo "m";
             $school_id = $_SESSION['school_id'];
             $id = test_input($_POST['id']);
             $classname = test_input($_POST['classname']);
-            $subject_category = test_input($_POST['subject_category']);
+             if (isset($_POST['subject_category'])) {
+                $subject_category = test_input($_POST['subject_category']);
+               $set = 'subject_cat=' . $subject_category . ',';
+                $is_graduate = false;
+            } else {
+                $set = '';
+                $is_graduate = true;
+            }
 
-            $updateclass = mysqli_query($conn, "UPDATE class SET subject_cat='$subject_category', classname='$classname', dateupdated='$date', updatedby='{$_SESSION['userid']}' WHERE school_id='$school_id' AND id='$id'");
+            $updateclass = mysqli_query($conn, "UPDATE class SET $set classname='$classname', dateupdated='$date', updatedby='{$_SESSION['userid']}' WHERE school_id='$school_id' AND id='$id'");
             // $insert = mysqli_query($conn, "INSERT INTO students(firstname,lastname,middlename,class_id,gender,dob,phone,email,parent_id) 
             // VALUES('$firstname','$lastname','$middlename','$class_id','$gender','$dob','$phone','$email','$parent_id')");
             // if ($updatestudent) {
             //     $updateparent = mysqli_query($conn, "UPDATE parent SET phone='$parentphone', email='$parentemail', address='$address', city='$city', state='$state', country='$country' WHERE school_id='$school_id' AND id='$parent_id' ");
             // }
-            echo $updateclass === true ? json_encode(array('status' => '1')) : mysqli_error($conn);
+            echo $updateclass === true ? json_encode(array('status' => '1', 'is_graduate' => $is_graduate)) : mysqli_error($conn);
         }
-        if ($action == 'update_parent_data') {
-            // echo "here";
-            $school_id = $_SESSION['school_id'];
-            $id = test_input($_POST['id']);
-            // exit;
-            $firstname = test_input($_POST['firstname']);
-            $lastname = test_input($_POST['lastname']);
-            $phone = test_input($_POST['phone']);
-            $email = test_input($_POST['email']);
+        // if ($action == 'update_parent_data') {
+        //     // echo "here";
+        //     $school_id = $_SESSION['school_id'];
+        //     $id = test_input($_POST['id']);
+        //     // exit;
+        //     $firstname = test_input($_POST['firstname']);
+        //     $lastname = test_input($_POST['lastname']);
+        //     $phone = test_input($_POST['phone']);
+        //     $email = test_input($_POST['email']);
 
-            $address = test_input($_POST['address']);
-            $city = test_input($_POST['city']);
-            $state = test_input($_POST['state']);
-            $country = test_input($_POST['country']);
-            // check if phone number or email exist first with the same school_id, if it exist, then check if the id is the same as the id being updated
-            // if the data exists, then return an error message
-            // else update the data
-            if (does_it_exist("phone", "parent", "phone='$phone' AND school_id='$school_id' AND id!='$id'")) {
-                echo json_encode(array('status' => '0', 'err' => "This phone number belongs to another parent, try a different phone number"));
-                exit;
+        //     $address = test_input($_POST['address']);
+        //     $city = test_input($_POST['city']);
+        //     $state = test_input($_POST['state']);
+        //     $country = test_input($_POST['country']);
+        //     // check if phone number or email exist first with the same school_id, if it exist, then check if the id is the same as the id being updated
+        //     // if the data exists, then return an error message
+        //     // else update the data
+        //     // if (does_it_exist("phone", "parent", "phone='$phone' AND school_id='$school_id' AND id!='$id'")) {
+        //     //     echo json_encode(array('status' => '0', 'err' => "This phone number belongs to another parent, try a different phone number"));
+        //     //     exit;
+        //     // }
+        //     // // check if email exist
+        //     // if (does_it_exist("email", "parent", "email='$email' AND school_id='$school_id' AND id!='$id'")) {
+        //     //     echo json_encode(array('status' => '0', 'err' => "This email belongs to another parent, try a different email address"));
+        //     //     exit;
+        //     // }
+        //     // update the data
+
+
+        //     $update = mysqli_query($conn, "UPDATE parent SET 
+        // address='$address',city='$city', state='$state', 
+        // country='$country', firstname='$firstname',
+        // lastname='$lastname',phone='$phone',email='$email', 
+        // dateupdated='$date',updatedby={$_SESSION['userid']} 
+        // WHERE school_id='$school_id' AND id='$id'");
+        
+        // if ($id == $_SESSION['userid']) {
+        //     $_SESSION['firstname'] = $firstname;
+        //     $_SESSION['lastname'] = $lastname;
+        //     $_SESSION['email'] = $email;
+        //     $_SESSION['phone'] = $phone;
+        // }
+
+        //     echo $update === true ? json_encode(array('status' => '1')) : mysqli_error($conn);
+        // }
+          if ($action == 'update_parent_data') {
+        $school_id = $_SESSION['school_id'];
+        $id = test_input($_POST['id']);
+        $firstname = test_input($_POST['firstname']);
+        $lastname = test_input($_POST['lastname']);
+        $phone = test_input($_POST['phone']);
+        $email = test_input($_POST['email']);
+
+        $address = test_input($_POST['address']);
+        $city = test_input($_POST['city']);
+        $state = test_input($_POST['state']);
+        $country = test_input($_POST['country']);
+
+        $scope = isset($_POST['update_scope']) ? test_input($_POST['update_scope']) : 'all';
+        $ref_student_id = isset($_POST['ref_student_id']) ? test_input($_POST['ref_student_id']) : null;
+
+        // --- SINGLE STUDENT REASSIGNMENT LOGIC ---
+        if ($scope == 'single' && $ref_student_id) {
+            // Check if phone number exists for another parent
+            $select_existing = mysqli_query($conn, "SELECT id, phone FROM parent WHERE phone='$phone' AND school_id='$school_id' AND id!='$id'");
+
+            if ($res_existing = mysqli_fetch_assoc($select_existing)) {
+                // Scenario: Moving to an EXISTING parent
+                $existing_id = $res_existing['id'];
+
+                // 1. Update the target parent's details
+                mysqli_query($conn, "UPDATE parent SET 
+                    address='$address', city='$city', state='$state', 
+                    country='$country', firstname='$firstname',
+                    lastname='$lastname', email='$email', 
+                    dateupdated='$date', updatedby='{$_SESSION['userid']}' 
+                    WHERE school_id='$school_id' AND id='$existing_id'");
+
+                // 2. Point only this student to the target parent
+                $update_stud = mysqli_query($conn, "UPDATE students SET parent_id='$existing_id' WHERE id='$ref_student_id' AND school_id='$school_id'");
+
+                echo $update_stud === true ? json_encode(array('status' => '1', 'msg' => 'Student reassigned to existing parent successfully')) : mysqli_error($conn);
+            } else {
+                // Scenario: Moving to a NEW parent (creating parent record for this student)
+                $password = substr($phone, -4);
+                $hashedpassword = password_hash($password, PASSWORD_ARGON2I);
+
+                $insert_new_parent = mysqli_query($conn, "INSERT INTO parent(firstname, lastname, passw, phone, email, address, city, state, country, school_id, datecreated, createdby) 
+                    VALUES('$firstname', '$lastname', '$hashedpassword', '$phone', '$email', '$address', '$city', '$state', '$country', '$school_id', '$date', '{$_SESSION['userid']}')");
+
+                if ($insert_new_parent) {
+                    $new_parent_id = mysqli_insert_id($conn);
+                    // Point only this student to the new parent
+                    $update_stud = mysqli_query($conn, "UPDATE students SET parent_id='$new_parent_id' WHERE id='$ref_student_id' AND school_id='$school_id'");
+                    echo $update_stud === true ? json_encode(array('status' => '1', 'msg' => 'Student reassigned to new parent successfully')) : mysqli_error($conn);
+                } else {
+                    echo json_encode(array('status' => '0', 'err' => "Error creating new parent: " . mysqli_error($conn)));
+                }
             }
-            // check if email exist
-            if (does_it_exist("email", "parent", "email='$email' AND school_id='$school_id' AND id!='$id'")) {
-                echo json_encode(array('status' => '0', 'err' => "This email belongs to another parent, try a different email address"));
-                exit;
-            }
-            // update the data
-
-
-            $update = mysqli_query($conn, "UPDATE parent SET 
-        address='$address',city='$city', state='$state', 
-        country='$country', firstname='$firstname',
-        lastname='$lastname',phone='$phone',email='$email', 
-        dateupdated='$date',updatedby={$_SESSION['userid']} 
-        WHERE school_id='$school_id' AND id='$id'");
-
-            if ($id == $_SESSION['userid']) {
-                $_SESSION['firstname'] = $firstname;
-                $_SESSION['lastname'] = $lastname;
-                $_SESSION['email'] = $email;
-                $_SESSION['phone'] = $phone;
-            }
-
-            echo $update === true ? json_encode(array('status' => '1')) : mysqli_error($conn);
+            exit;
         }
 
+        // --- STANDARD UPDATE / MERGE LOGIC (Applies to all children) ---
+        $select_existing = mysqli_query($conn, "SELECT id FROM parent WHERE phone='$phone' AND school_id='$school_id' AND id!='$id'");
+        if ($res_existing = mysqli_fetch_assoc($select_existing)) {
+            $existing_id = $res_existing['id'];
+
+            // 1. Update the existing parent record with the new info
+            $update_existing = mysqli_query($conn, "UPDATE parent SET 
+                address='$address', city='$city', state='$state', 
+                country='$country', firstname='$firstname',
+                lastname='$lastname', phone='$phone', email='$email', 
+                dateupdated='$date', updatedby='{$_SESSION['userid']}' 
+                WHERE school_id='$school_id' AND id='$existing_id'");
+
+            if ($update_existing) {
+                // 2. Link all students from the current ID to the existing ID
+                mysqli_query($conn, "UPDATE students SET parent_id='$existing_id' WHERE parent_id='$id' AND school_id='$school_id'");
+
+                // 3. If the current ID being updated is the session user, update session to point to the existing ID
+                if ($id == $_SESSION['userid']) {
+                    $_SESSION['userid'] = $existing_id;
+                    $_SESSION['firstname'] = $firstname;
+                    $_SESSION['lastname'] = $lastname;
+                    $_SESSION['email'] = $email;
+                    $_SESSION['phone'] = $phone;
+                }
+
+                // 4. Delete the redundant parent record
+                mysqli_query($conn, "DELETE FROM parent WHERE id='$id' AND school_id='$school_id'");
+
+                echo json_encode(array('status' => '1', 'msg' => 'Records merged and updated successfully'));
+            } else {
+                echo json_encode(array('status' => '0', 'err' => "Error updating existing record: " . mysqli_error($conn)));
+            }
+            exit;
+        }
+
+        // Standard update if no duplicate phone is found (or merging not required)
+        $update = mysqli_query($conn, "UPDATE parent SET 
+            address='$address', city='$city', state='$state', 
+            country='$country', firstname='$firstname',
+            lastname='$lastname', phone='$phone', email='$email', 
+            dateupdated='$date', updatedby='{$_SESSION['userid']}' 
+            WHERE school_id='$school_id' AND id='$id'");
+
+        if ($id == $_SESSION['userid']) {
+            $_SESSION['firstname'] = $firstname;
+            $_SESSION['lastname'] = $lastname;
+            $_SESSION['email'] = $email;
+            $_SESSION['phone'] = $phone;
+        }
+
+        echo $update === true ? json_encode(array('status' => '1')) : mysqli_error($conn);
+    }
         if ($action == 'update_staff_data') {
             // echo "here";
             $school_id = $_SESSION['school_id'];
@@ -3748,118 +4246,120 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // echo $update === true ? json_encode(array('status' => '1')) : mysqli_error($conn);
         }
-        if ($action == "get_subjects_and_classes") {
-            // echo "mmpcm";
-            $staff_id = isset($_POST['staff_id']) ? intval($_POST['staff_id']) : 0;
-            $school_id = isset($_SESSION['school_id']) ? intval($_SESSION['school_id']) : 0;
+if($action == "get_subjects_and_classes") {
+    $staff_id = isset($_POST['staff_id']) ? intval($_POST['staff_id']) : 0;
+    $school_id = isset($_SESSION['school_id']) ? intval($_SESSION['school_id']) : 0;
 
-            // Get all classes
-            $class_result = mysqli_query($conn, "SELECT id, classname, subject_cat FROM class WHERE school_id='$school_id'");
-            $classes = array();
-            while ($row = mysqli_fetch_assoc($class_result)) {
-                $classes[$row['id']] = array(
-                    'id' => $row['id'],
-                    'classname' => $row['classname'],
-                    'subject_cat' => $row['subject_cat']
-                );
-            }
+    // Get all classes
+    $class_result = mysqli_query($conn, "SELECT id, classname, subject_cat FROM class WHERE school_id='$school_id' AND is_graduate=0");
+    $classes = array();
+    while ($row = mysqli_fetch_assoc($class_result)) {
+        $classes[$row['id']] = array(
+            'id' => $row['id'],
+            'classname' => $row['classname'],
+            'subject_cat' => $row['subject_cat']
+        );
+    }
+// var_dump($classes);
+    // Get all subject_cat mappings
+    $subject_cat_ids = array();
+    foreach ($classes as $c) {
+        $subject_cat_ids[$c['subject_cat']] = true;
+    }
+    // var_dump($subject_cat_ids);
+    $subject_cat_str = implode(',', array_keys($subject_cat_ids));
+    $subject_cat_map = array();
+    // echo "SELECT id, subject_ids FROM subject_cat WHERE id IN ($subject_cat_str)";
+    $subject_cat_result = mysqli_query($conn, "SELECT id, subject_ids FROM subject_cat WHERE id IN ($subject_cat_str)");
+    // echo "mmpcm";
+    while ($row = mysqli_fetch_assoc($subject_cat_result)) {
+        $subject_cat_map[$row['id']] = $row['subject_ids']; // comma separated subject ids
+    }
 
-            // Get all subject_cat mappings
-            $subject_cat_ids = array();
-            foreach ($classes as $c) {
-                $subject_cat_ids[$c['subject_cat']] = true;
-            }
-            $subject_cat_str = implode(',', array_keys($subject_cat_ids));
-            $subject_cat_map = array();
-            $subject_cat_result = mysqli_query($conn, "SELECT id, subject_ids FROM subject_cat WHERE id IN ($subject_cat_str)");
-            while ($row = mysqli_fetch_assoc($subject_cat_result)) {
-                $subject_cat_map[$row['id']] = $row['subject_ids']; // comma separated subject ids
-            }
-
-            // Get all subject ids for all classes
-            $all_subject_ids = array();
-            foreach ($classes as $c) {
-                $subj_ids = isset($subject_cat_map[$c['subject_cat']]) ? $subject_cat_map[$c['subject_cat']] : '';
-                foreach (explode(',', $subj_ids) as $sid) {
-                    $sid = trim($sid);
-                    if ($sid !== '') $all_subject_ids[$sid] = true;
-                }
-            }
-            $all_subject_ids_str = implode(',', array_keys($all_subject_ids));
-
-            // Get subject names
-            $subjects = array();
-            if ($all_subject_ids_str) {
-                $subj_result = mysqli_query($conn, "SELECT id, subject FROM subjects WHERE id IN ($all_subject_ids_str)");
-                while ($subj_row = mysqli_fetch_assoc($subj_result)) {
-                    $subjects[$subj_row['id']] = $subj_row['subject'];
-                }
-            }
-
-            // Get staff assignments
-            $result = mysqli_query($conn, "SELECT subject_assigned FROM staff WHERE id = $staff_id LIMIT 1");
-            $row = mysqli_fetch_assoc($result);
-            $subject_assigned = isset($row['subject_assigned']) ? $row['subject_assigned'] : '';
-            $staff_assignments = array(); // [class_id => [subject_id, ...]]
-            preg_match_all('/(\d+):\s*([\d,]+)/', $subject_assigned, $matches, PREG_SET_ORDER);
-            foreach ($matches as $match) {
-                $class_id = intval($match[1]);
-                $subject_ids = array_filter(array_map('intval', explode(',', $match[2])));
-                $staff_assignments[$class_id] = $subject_ids;
-            }
-
-            // Build output
-            $output = array();
-            foreach ($classes as $class_id => $class_info) {
-                $subj_ids = isset($subject_cat_map[$class_info['subject_cat']]) ? $subject_cat_map[$class_info['subject_cat']] : '';
-                $subj_ids_arr = array();
-                foreach (explode(',', $subj_ids) as $sid) {
-                    $sid = trim($sid);
-                    if ($sid === '' || !isset($subjects[$sid])) continue;
-                    $assigned = (isset($staff_assignments[$class_id]) && in_array(intval($sid), $staff_assignments[$class_id])) ? true : false;
-                    $subj_ids_arr[] = array(
-                        'id' => $sid,
-                        'name' => $subjects[$sid],
-                        'assigned_to_staff' => $assigned
-                    );
-                }
-                $output[] = array(
-                    'class_id' => $class_id,
-                    'classname' => $class_info['classname'],
-                    'class_subjects' => $subj_ids_arr
-                );
-            }
-            header('Content-Type: application/json');
-            echo json_encode($output);
-            exit();
+    // Get all subject ids for all classes
+    $all_subject_ids = array();
+    foreach ($classes as $c) {
+        $subj_ids = isset($subject_cat_map[$c['subject_cat']]) ? $subject_cat_map[$c['subject_cat']] : '';
+        foreach (explode(',', $subj_ids) as $sid) {
+            $sid = trim($sid);
+            if ($sid !== '') $all_subject_ids[$sid] = true;
         }
-        if (isset($_POST['action']) && $_POST['action'] == 'assign_staff_subjects_by_classes') {
-            $staff_id = isset($_POST['staff_id']) ? intval($_POST['staff_id']) : 0;
-            $assignments = isset($_POST['assignments']) ? trim($_POST['assignments']) : '';
-            $response = array('status' => '0', 'msg' => '');
-            if ($staff_id > 0 && $assignments !== '') {
-                // Save assignments string to staff.subject_assigned
-                // require_once 'db.php'; // adjust if your DB connection file is named differently
-                // $conn = global $conn; // or use your connection variable
-                $stmt = $conn->prepare("UPDATE staff SET subject_assigned = ? WHERE id = ?");
-                if ($stmt) {
-                    $stmt->bind_param("si", $assignments, $staff_id);
-                    if ($stmt->execute()) {
-                        $response['status'] = '1';
-                        $response['msg'] = 'Assignments saved.';
-                    } else {
-                        $response['msg'] = 'Failed to save assignments.';
-                    }
-                    $stmt->close();
-                } else {
-                    $response['msg'] = 'DB error.';
-                }
+    }
+    $all_subject_ids_str = implode(',', array_keys($all_subject_ids));
+
+    // Get subject names
+    $subjects = array();
+    if ($all_subject_ids_str) {
+        $subj_result = mysqli_query($conn, "SELECT id, subject FROM subjects WHERE id IN ($all_subject_ids_str)");
+        while ($subj_row = mysqli_fetch_assoc($subj_result)) {
+            $subjects[$subj_row['id']] = $subj_row['subject'];
+        }
+    }
+
+    // Get staff assignments
+    $result = mysqli_query($conn, "SELECT subject_assigned FROM staff WHERE id = $staff_id LIMIT 1");
+    $row = mysqli_fetch_assoc($result);
+    $subject_assigned = isset($row['subject_assigned']) ? $row['subject_assigned'] : '';
+    $staff_assignments = array(); // [class_id => [subject_id, ...]]
+    preg_match_all('/(\d+):\s*([\d,]+)/', $subject_assigned, $matches, PREG_SET_ORDER);
+    foreach ($matches as $match) {
+        $class_id = intval($match[1]);
+        $subject_ids = array_filter(array_map('intval', explode(',', $match[2])));
+        $staff_assignments[$class_id] = $subject_ids;
+    }
+
+    // Build output
+    $output = array();
+    foreach ($classes as $class_id => $class_info) {
+        $subj_ids = isset($subject_cat_map[$class_info['subject_cat']]) ? $subject_cat_map[$class_info['subject_cat']] : '';
+        $subj_ids_arr = array();
+        foreach (explode(',', $subj_ids) as $sid) {
+            $sid = trim($sid);
+            if ($sid === '' || !isset($subjects[$sid])) continue;
+            $assigned = (isset($staff_assignments[$class_id]) && in_array(intval($sid), $staff_assignments[$class_id])) ? true : false;
+            $subj_ids_arr[] = array(
+                'id' => $sid,
+                'name' => $subjects[$sid],
+                'assigned_to_staff' => $assigned
+            );
+        }
+        $output[] = array(
+            'class_id' => $class_id,
+            'classname' => $class_info['classname'],
+            'class_subjects' => $subj_ids_arr
+        );
+    }
+    header('Content-Type: application/json');
+    echo json_encode($output);
+    exit();
+}
+if (isset($_POST['action']) && $_POST['action'] == 'assign_staff_subjects_by_classes') {
+    $staff_id = isset($_POST['staff_id']) ? intval($_POST['staff_id']) : 0;
+    $assignments = isset($_POST['assignments']) ? trim($_POST['assignments']) : '';
+    $response = array('status' => '0', 'msg' => '');
+    if ($staff_id > 0 && $assignments !== '') {
+        // Save assignments string to staff.subject_assigned
+        // require_once 'db.php'; // adjust if your DB connection file is named differently
+        // $conn = global $conn; // or use your connection variable
+        $stmt = $conn->prepare("UPDATE staff SET subject_assigned = ? WHERE id = ?");
+        if ($stmt) {
+            $stmt->bind_param("si", $assignments, $staff_id);
+            if ($stmt->execute()) {
+                $response['status'] = '1';
+                $response['msg'] = 'Assignments saved.';
             } else {
-                $response['msg'] = 'Invalid staff or assignments.';
+                $response['msg'] = 'Failed to save assignments.';
             }
-            echo json_encode($response);
-            exit;
+            $stmt->close();
+        } else {
+            $response['msg'] = 'DB error.';
         }
+    } else {
+        $response['msg'] = 'Invalid staff or assignments.';
+    }
+    echo json_encode($response);
+    exit;
+}
         if ($action == 'get_priviledges') {
             $school_id = $_SESSION['school_id'];
             $id = test_input($_POST['id']);
@@ -3867,132 +4367,132 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $select = mysqli_query($conn, "SELECT id,update_school,register_staff,register_student,edit_student,change_class,add_class,manage_payment,student_qr,staff_qr 
         FROM staff WHERE id='$id' AND school_id='$school_id'");
             $row = mysqli_fetch_array($select);
-        ?>
-        <div class="modal-header py-1 align-items-center">
-            <div>
-                <p class="modal-title">Assign Priviledges</p>
-                <small class="accent d-block"><?= $fullname ?></small>
-            </div>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-            </button>
-        </div>
-        <div class="modal-body pb-0" id="assign_priviledge_modal_body">
-            <form class="" onsubmit="submit_priviledge_form(event)" action="">
-                <input type="hidden" name="staff_id" value="<?= $id ?>">
-                <input type="hidden" name="action" value="submit_priviledges">
-                <table style="width: 100%;" class="display nowrap" id="priviledges_table">
-                    <tbody>
-                        <tr>
-                            <td>
-                                <p>Can update school information</p>
-                                <p class="small">This includes updating school information and other settings such as name, descriptions, term settings etc.</p>
-                            </td>
-                            <td>
-                                <div class="icheck-primary">
-                                    <input type="checkbox" class="table_checkbox" name="update_school" id="p_update_school_information" <?= $row['update_school'] == '1' ? 'checked' : '' ?>>
-                                    <label for="p_update_school_information"></label>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <p>Can register new student</p>
-                                <p class="small">This gives access to register any student.</p>
-                            </td>
-                            <td>
-                                <div class="icheck-primary">
-                                    <input type="checkbox" class="table_checkbox" id="p_register_student" name="register_student" <?= $row['register_student'] == '1' ? 'checked' : '' ?>>
-                                    <label for="p_register_student"></label>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <p>Can edit student information</p>
-                                <p class="small">This gives access to edit any student information including assigning classes.</p>
-                            </td>
-                            <td>
-                                <div class="icheck-primary">
-                                    <input type="checkbox" class="table_checkbox" id="p_edit_student" name="edit_student" <?= $row['edit_student'] == '1' ? 'checked' : '' ?>>
-                                    <label for="p_edit_student"></label>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <p>Can change student(s) class</p>
-                                <p class="small">This gives access to transfer any student to any class.</p>
-                            </td>
-                            <td>
-                                <div class="icheck-primary">
-                                    <input type="checkbox" class="table_checkbox" id="p_change_class" name="change_class" <?= $row['change_class'] == '1' ? 'checked' : '' ?>>
-                                    <label for="p_change_class"></label>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <p>Can add new class</p>
-                                <p class="small">This gives access to add new class.</p>
-                            </td>
-                            <td>
-                                <div class="icheck-primary">
-                                    <input type="checkbox" class="table_checkbox" id="p_add_class" name="add_class" <?= $row['add_class'] == '1' ? 'checked' : '' ?>>
-                                    <label for="p_add_class"></label>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <p>Can access the QR system for student</p>
-                                <p class="small">This gives access to scan students in or out of the school premises via the QR system .</p>
-                            </td>
-                            <td>
-                                <div class="icheck-primary">
-                                    <input type="checkbox" class="table_checkbox" id="p_student_qrcode" name="student_qr" <?= $row['student_qr'] == '1' ? 'checked' : '' ?>>
-                                    <label for="p_student_qrcode"></label>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <p>Can take staff attendance via manual or QRcode system</p>
-                                <p class="small">This gives access to take staff attendance manually or via QRcode system</p>
-                            </td>
-                            <td>
-                                <div class="icheck-primary">
-                                    <input type="checkbox" class="table_checkbox" id="p_staff_qrcode" name="staff_qr" <?= $row['staff_qr'] == '1' ? 'checked' : '' ?>>
-                                    <label for="p_staff_qrcode"></label>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <p>Can manage payments</p>
-                                <p class="small">This gives access to manage all payment related data for the school</p>
-                            </td>
-                            <td>
-                                <div class="icheck-primary">
-                                    <input type="checkbox" class="table_checkbox" id="p_payments" name="manage_payment" <?= $row['manage_payment'] == '1' ? 'checked' : '' ?>>
-                                    <label for="p_payments"></label>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="card-foot">
-                    <div class="text-center">
-                        <small class="text-danger" id="update_priviledges_warning" style="display: none;"></small>
-                    </div>
-                    <button type="submit" id="add_new_staff_submit_btn" class="btn btn-primary">Assign Priviledge</button>
-                    <button type="button" class="btn btn-grey" class="close" data-dismiss="modal" aria-label="Close">Cancel</button>
+            ?>
+            <div class="modal-header py-1 align-items-center">
+                <div>
+                    <p class="modal-title">Assign Priviledges</p>
+                    <small class="accent d-block"><?= $fullname ?></small>
                 </div>
-            </form>
-        </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body pb-0" id="assign_priviledge_modal_body">
+                <form class="" onsubmit="submit_priviledge_form(event)" action="">
+                    <input type="hidden" name="staff_id" value="<?= $id ?>">
+                    <input type="hidden" name="action" value="submit_priviledges">
+                    <table style="width: 100%;" class="display nowrap" id="priviledges_table">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <p>Can update school information</p>
+                                    <p class="small">This includes updating school information and other settings such as name, descriptions, term settings etc.</p>
+                                </td>
+                                <td>
+                                    <div class="icheck-primary">
+                                        <input type="checkbox" class="table_checkbox" name="update_school" id="p_update_school_information" <?= $row['update_school'] == '1' ? 'checked' : '' ?>>
+                                        <label for="p_update_school_information"></label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p>Can register new student</p>
+                                    <p class="small">This gives access to register any student.</p>
+                                </td>
+                                <td>
+                                    <div class="icheck-primary">
+                                        <input type="checkbox" class="table_checkbox" id="p_register_student" name="register_student" <?= $row['register_student'] == '1' ? 'checked' : '' ?>>
+                                        <label for="p_register_student"></label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p>Can edit student information</p>
+                                    <p class="small">This gives access to edit any student information including assigning classes.</p>
+                                </td>
+                                <td>
+                                    <div class="icheck-primary">
+                                        <input type="checkbox" class="table_checkbox" id="p_edit_student" name="edit_student" <?= $row['edit_student'] == '1' ? 'checked' : '' ?>>
+                                        <label for="p_edit_student"></label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p>Can change student(s) class</p>
+                                    <p class="small">This gives access to transfer any student to any class.</p>
+                                </td>
+                                <td>
+                                    <div class="icheck-primary">
+                                        <input type="checkbox" class="table_checkbox" id="p_change_class" name="change_class" <?= $row['change_class'] == '1' ? 'checked' : '' ?>>
+                                        <label for="p_change_class"></label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p>Can add new class</p>
+                                    <p class="small">This gives access to add new class.</p>
+                                </td>
+                                <td>
+                                    <div class="icheck-primary">
+                                        <input type="checkbox" class="table_checkbox" id="p_add_class" name="add_class" <?= $row['add_class'] == '1' ? 'checked' : '' ?>>
+                                        <label for="p_add_class"></label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p>Can access the QR system for student</p>
+                                    <p class="small">This gives access to scan students in or out of the school premises via the QR system .</p>
+                                </td>
+                                <td>
+                                    <div class="icheck-primary">
+                                        <input type="checkbox" class="table_checkbox" id="p_student_qrcode" name="student_qr" <?= $row['student_qr'] == '1' ? 'checked' : '' ?>>
+                                        <label for="p_student_qrcode"></label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p>Can take staff attendance via manual or QRcode system</p>
+                                    <p class="small">This gives access to take staff attendance manually or via QRcode system</p>
+                                </td>
+                                <td>
+                                    <div class="icheck-primary">
+                                        <input type="checkbox" class="table_checkbox" id="p_staff_qrcode" name="staff_qr" <?= $row['staff_qr'] == '1' ? 'checked' : '' ?>>
+                                        <label for="p_staff_qrcode"></label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p>Can manage payments</p>
+                                    <p class="small">This gives access to manage all payment related data for the school</p>
+                                </td>
+                                <td>
+                                    <div class="icheck-primary">
+                                        <input type="checkbox" class="table_checkbox" id="p_payments" name="manage_payment" <?= $row['manage_payment'] == '1' ? 'checked' : '' ?>>
+                                        <label for="p_payments"></label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="card-foot">
+                        <div class="text-center">
+                            <small class="text-danger" id="update_priviledges_warning" style="display: none;"></small>
+                        </div>
+                        <button type="submit" id="add_new_staff_submit_btn" class="btn btn-primary">Assign Priviledge</button>
+                        <button type="button" class="btn btn-grey" class="close" data-dismiss="modal" aria-label="Close">Cancel</button>
+                    </div>
+                </form>
+            </div>
 
-        </div>
-    <?php
+            </div>
+        <?php
         }
         if ($action == 'get_staff_table') {
             $school_id = $_SESSION['school_id'];
@@ -4005,28 +4505,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $select_class = mysqli_query($conn, "SELECT id, classname 
         FROM class WHERE school_id='$school_id'");
             // $row = mysqli_fetch_array($select_class);
-    ?>
+        ?>
 
 
-        <div>
-            <?php
-            $class_id_array = explode(",", $staff_row['class_id']);
-            while ($class_row = mysqli_fetch_array($select_class)) {
-            ?>
-                <div class="icheck-primary py-1">
-                    <input type="checkbox" class="table_checkbox" value="<?= $class_row['id'] ?>" name="update_school" id="<?= $class_row['id'] ?>" <?= in_array($class_row['id'], $class_id_array) == true ? 'checked' : '' ?>>
-                    <label class="w-100" for="<?= $class_row['id'] ?>"><?= $class_row['classname'] ?></label>
-                </div>
-            <?php
-            }
-            ?>
-        </div>
-        <div class="card-foot">
-            <button type="button" class="btn btn-primary" onclick="submit_staff_class_assign('<?= $id ?>')">Assign Classes</button>
-            <button type="button" class="btn btn-grey" class="close" data-dismiss="modal" aria-label="Close">Cancel</button>
-        </div>
-        </div>
-    <?php
+            <div>
+                <?php
+                $class_id_array = explode(",", $staff_row['class_id']);
+                while ($class_row = mysqli_fetch_array($select_class)) {
+                ?>
+                    <div class="icheck-primary py-1">
+                        <input type="checkbox" class="table_checkbox" value="<?= $class_row['id'] ?>" name="update_school" id="<?= $class_row['id'] ?>" <?= in_array($class_row['id'], $class_id_array) == true ? 'checked' : '' ?>>
+                        <label class="w-100" for="<?= $class_row['id'] ?>"><?= $class_row['classname'] ?></label>
+                    </div>
+                <?php
+                }
+                ?>
+            </div>
+            <div class="card-foot">
+                <button type="button" class="btn btn-primary" onclick="submit_staff_class_assign('<?= $id ?>')">Assign Classes</button>
+                <button type="button" class="btn btn-grey" class="close" data-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+            </div>
+        <?php
         }
         if ($action == 'get_classes') {
             $school_id = $_SESSION['school_id'];
@@ -4043,50 +4543,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $class_exist = true;
             }
             // $row = mysqli_fetch_array($select_class);
-    ?>
-        <div class="modal-header py-1 align-items-center">
-            <div>
-                <p class="modal-title">Assign Classes</p>
-                <small class="accent d-block"><?= $fullname ?></small>
+        ?>
+            <div class="modal-header py-1 align-items-center">
+                <div>
+                    <p class="modal-title">Assign Classes</p>
+                    <small class="accent d-block"><?= $fullname ?></small>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
             </div>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-            </button>
-        </div>
-        <div class="modal-body pb-0" id="assign_priviledge_modal_body">
-            <div>
-                <?php
-                $class_id_array = explode(",", $staff_row['class_id']);
-                while ($class_row = mysqli_fetch_array($select_class)) {
-                ?>
-                    <div class="icheck-primary py-1">
-                        <input type="checkbox" class="table_checkbox" value="<?= $class_row['id'] ?>" name="update_school" id="<?= $class_row['id'] ?>" <?= in_array($class_row['id'], $class_id_array) == true ? 'checked' : '' ?>>
-                        <label class="w-100" for="<?= $class_row['id'] ?>"><?= $class_row['classname'] ?></label>
-                    </div>
-                <?php
-                }
-                if (!$class_exist) {
-                    echo "<p>No class created yet</p>";
-                }
-                ?>
+            <div class="modal-body pb-0" id="assign_priviledge_modal_body">
+                <div>
+                    <?php
+                    $class_id_array = explode(",", $staff_row['class_id']);
+                    while ($class_row = mysqli_fetch_array($select_class)) {
+                    ?>
+                        <div class="icheck-primary py-1">
+                            <input type="checkbox" class="table_checkbox" value="<?= $class_row['id'] ?>" name="update_school" id="<?= $class_row['id'] ?>" <?= in_array($class_row['id'], $class_id_array) == true ? 'checked' : '' ?>>
+                            <label class="w-100" for="<?= $class_row['id'] ?>"><?= $class_row['classname'] ?></label>
+                        </div>
+                    <?php
+                    }
+                    if (!$class_exist) {
+                        echo "<p>No class created yet</p>";
+                    }
+                    ?>
+                </div>
+                <div class="card-foot">
+                    <?php
+                    if (!$class_exist) {
+                    ?>
+                        <a href="class" type="button" class="btn btn-primary">Create Class</a>
+                    <?php } else {
+                    ?>
+                        <button type="button" class="btn btn-primary" onclick="submit_staff_class_assign('<?= $id ?>')">Assign Classes</button>
+                    <?php
+                    }
+                    ?>
+                    <button type="button" class="btn btn-grey" class="close" data-dismiss="modal" aria-label="Close">Cancel</button>
+                </div>
             </div>
-            <div class="card-foot">
-                <?php
-                if (!$class_exist) {
-                ?>
-                    <a href="class" type="button" class="btn btn-primary">Create Class</a>
-                <?php } else {
-                ?>
-                    <button type="button" class="btn btn-primary" onclick="submit_staff_class_assign('<?= $id ?>')">Assign Classes</button>
-                <?php
-                }
-                ?>
-                <button type="button" class="btn btn-grey" class="close" data-dismiss="modal" aria-label="Close">Cancel</button>
-            </div>
-        </div>
 
-        </div>
-<?php
+            </div>
+    <?php
         }
 
         if ($action == 'submit_priviledges') {
@@ -4101,14 +4601,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $student_qr = isset($_POST['student_qr']) ? 1 : 0;
             $staff_qr = isset($_POST['staff_qr']) ? 1 : 0;
             $manage_payment = isset($_POST['manage_payment']) ? 1 : 0;
-            //     echo "UPDATE staff 
-            // SET update_school='$update_school', register_staff='$register_staff', 
-            // register_student='$register_student', edit_student='$edit_student',
-            // change_class='$change_class', add_class='$add_class',
-            // student_qr='$student_qr', staff_qr='$staff_qr',manage_payment='$manage_payment',
-            // updatedby='{$_SESSION['userid']}', dateupdated='$date' 
-            // WHERE id='$id' AND school_id='$school_id'";
-            // exit;
+        //     echo "UPDATE staff 
+        // SET update_school='$update_school', register_staff='$register_staff', 
+        // register_student='$register_student', edit_student='$edit_student',
+        // change_class='$change_class', add_class='$add_class',
+        // student_qr='$student_qr', staff_qr='$staff_qr',manage_payment='$manage_payment',
+        // updatedby='{$_SESSION['userid']}', dateupdated='$date' 
+        // WHERE id='$id' AND school_id='$school_id'";
+        // exit;
             $update = mysqli_query($conn, "UPDATE staff 
         SET update_school='$update_school', register_staff='$register_staff', 
         register_student='$register_student', edit_student='$edit_student',
@@ -4140,7 +4640,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(array('status' => '1', 'msg' => 'Assigned successfully'));
             }
         }
-
+ if($action == 'reset_student_password') {
+            $school_id = $_SESSION['school_id'];
+            $student_id = test_input($_POST['id']);
+            $new_password = test_input($_POST['new_password']);
+            $hashedpassword = password_hash($new_password, PASSWORD_ARGON2I);
+            $update = mysqli_query($conn, "UPDATE students SET passw='$hashedpassword', dateupdated='$date', updatedby='{$_SESSION['userid']}' WHERE id='$student_id' AND school_id='$school_id'");
+            echo $update === true ? json_encode(array('status' => '1')) : mysqli_error($conn);
+        }
 
         if ($action == 'update_student_data') {
             $school_id = $_SESSION['school_id'];
@@ -4157,12 +4664,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = test_input($_POST['email']);
             // $parentphone = test_input($_POST['parentphone']);
             // $parentemail = test_input($_POST['parentemail']);
-            $status = test_input($_POST['status']);
+            // $status = test_input($_POST['status']);
             $date = date('Y-m-d H:i:s');
             $createdby = $_SESSION['userid'];
             $admission_no = test_input($_POST['admissionnumber']);
+            $department = test_input($_POST['department']);
 
-            // $password = substr($parentphone, -4);
+            // $password = test_input($_POST['password']);
             // $hashedpassword = password_hash($password, PASSWORD_ARGON2I);
 
             // $pfname = test_input($_POST['parentfname']);
@@ -4173,14 +4681,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // $country = test_input($_POST['country']);
 
             // Handle file upload
-            $final_img = "avatar.png";
             if ($_FILES['studentphoto']['name'] != '') {
                 $path = "uploads/";
                 $valid_ext = array("jpg", "png", "jpeg");
                 $img_name = $_FILES['studentphoto']['name'];
                 $tmp = $_FILES['studentphoto']['tmp_name'];
                 $ext = strtolower(pathinfo($img_name, PATHINFO_EXTENSION));
-                $final_img = rand(10000, 1000000) . 'student' . $img_name;
+                $final_img = rand(10, 1000000000) . 'student' . $img_name;
                 if (in_array($ext, $valid_ext)) {
                     $path = $path . $final_img;
                     if (!move_uploaded_file($tmp, $path)) {
@@ -4192,6 +4699,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     exit;
                 }
             }
+        
+            
 
             // if (!does_it_exist("phone", "parent", "phone='$parentphone'")) {
             //     if (does_it_exist("email", "parent", "email='$parentemail'")) {
@@ -4226,8 +4735,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     deleteFile($filepath);
                 }
             }
-
-            $updatestudent = mysqli_query($conn, "UPDATE students SET admission_no = '$admission_no', status='$status', photo='$final_img', firstname='$firstname',lastname='$lastname',middlename='$middlename',class_id='$class_id',gender='$gender',dob='$dob',phone='$phone',email='$email',dateupdated='$date', updatedby='$createdby' WHERE school_id='$school_id' AND id='$id'");
+// echo "UPDATE students SET admission_no = '$admission_no', status='$status', photo='$final_img', firstname='$firstname',lastname='$lastname',middlename='$middlename',class_id='$class_id',gender='$gender',dob='$dob',phone='$phone',email='$email',dateupdated='$date', updatedby='$createdby' WHERE school_id='$school_id' AND id='$id'";
+         if($_FILES['studentphoto']['name'] == ''){
+            $updatestudent = mysqli_query($conn, "UPDATE students SET department='$department', admission_no = '$admission_no', firstname='$firstname',lastname='$lastname',middlename='$middlename',class_id='$class_id',gender='$gender',dob='$dob',phone='$phone',email='$email',dateupdated='$date', updatedby='$createdby' WHERE school_id='$school_id' AND id='$id'");
+         }else {
+            $updatestudent = mysqli_query($conn, "UPDATE students SET department='$department', admission_no = '$admission_no', photo='$final_img', firstname='$firstname',lastname='$lastname',middlename='$middlename',class_id='$class_id',gender='$gender',dob='$dob',phone='$phone',email='$email',dateupdated='$date', updatedby='$createdby' WHERE school_id='$school_id' AND id='$id'");
+         }
             // $updatestudent = mysqli_query($conn, "UPDATE students SET status='$status', photo='$final_img', firstname='$firstname',lastname='$lastname',middlename='$middlename',class_id='$class_id',gender='$gender',dob='$dob',phone='$phone',email='$email',parent_id='$parent_id',dateupdated='$date', updatedby='$createdby' WHERE school_id='$school_id' AND id='$id'");
             echo $updatestudent === true ? json_encode(array('status' => '1')) : mysqli_error($conn);
             // }
@@ -4287,6 +4800,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // $deleteparent = mysqli_query($conn, "DELETE FROM parent WHERE id='$parent_id' AND school_id='$school_id'");
             // $deletescores = mysqli_query($conn, "DELETE FROM skulscores WHERE student_id='$id' AND school_id='$school_id'");
             echo $deleteclass === true ? json_encode(array('status' => '1')) : mysqli_error($conn);
+        }
+     if ($action == 'get_current_graduate_classes') {
+            $school_id = $_SESSION['school_id'];
+            $stmt = mysqli_prepare($conn, "SELECT id, classname, is_graduate FROM class WHERE school_id = ? ORDER BY classname ASC");
+            if ($stmt) {
+                mysqli_stmt_bind_param($stmt, 'i', $school_id);
+                mysqli_stmt_execute($stmt);
+                $res = mysqli_stmt_get_result($stmt);
+                $groups = [
+                    'current' => [],
+                    'graduates' => []
+                ];
+                while ($row = mysqli_fetch_assoc($res)) {
+                    $item = ['id' => $row['id'], 'text' => $row['classname']];
+                    if ((int)$row['is_graduate'] === 1) {
+                        $groups['graduates'][] = $item;
+                    } else {
+                        $groups['current'][] = $item;
+                    }
+                }
+                $out = [];
+                if (!empty($groups['current'])) {
+                    $out[] = ['text' => 'Current', 'children' => $groups['current']];
+                }
+                if (!empty($groups['graduates'])) {
+                    $out[] = ['text' => 'Graduates', 'children' => $groups['graduates']];
+                }
+                echo json_encode($out);
+                exit;
+            } else {
+                echo json_encode([]);
+                exit;
+            }
         }
 
 
@@ -4499,6 +5045,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             // }
         }
+        if ($action == 'update_hidden_skills') {
+    $school_id = $_SESSION['school_id'];
+    $hidden_skills = isset($_POST['hidden_skills']) ? $_POST['hidden_skills'] : [];
+
+    // Convert array to JSON string
+    $hidden_skills_json = json_encode($hidden_skills);
+    $hidden_skills_json = mysqli_real_escape_string($conn, $hidden_skills_json);
+
+    $query = "UPDATE school SET hidden_skills='$hidden_skills_json' WHERE id='$school_id'";
+    $update = mysqli_query($conn, $query);
+    if ($update) {
+$_SESSION['hidden_row'] = $hidden_skills_json;
+// print_r($_SESSION['hidden_row']);
+        echo json_encode(array('status' => '1', 'msg' => 'Skills visibility updated successfully'));
+    } else {
+        echo json_encode(array('status' => '0', 'msg' => 'Failed to update skills visibility: ' . mysqli_error($conn)));
+    }
+}
         if ($action == 'change_password') {
             $school_id = $_SESSION['school_id'];
             $pass = test_input($_POST['new_Pin']);
@@ -4706,7 +5270,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         //     }
         //     echo json_encode($data);
         // }
-        if ($action == 'get_subject_data_for_search') {
+if ($action == 'get_subject_data_for_search') {
             $search_terms = test_input($_POST['search_terms']);
             $school_id = $_SESSION['school_id'];
             $class_id = isset($_POST['class_id']) ? test_input($_POST['class_id']) : null;
@@ -4767,25 +5331,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             echo json_encode($data);
         }
-        if ($action == 'send_internal') {
+        // if ($action == 'send_internal') {
+        //     $school_id = $_SESSION['school_id'];
+        //     $ids = explode(",", $_POST['recievers']);
+        //     $message = test_input($_POST['message']);
+        //     $usertype = test_input($_POST['usertype']);
+        //     foreach ($ids as $id) {
+        //         echo $sql = "INSERT INTO internal_msg 
+        //         (reciever_id,message,usertype,createdby,datecreated,school_id)
+        //         VALUES('$id','$message','$usertype','{$_SESSION['userid']}','$date','$school_id')";
+        //         $insert = mysqli_query($conn, $sql);
+        //     }
+        //     echo json_encode(array('status' => '1'));
+        // }
+            if ($action == 'send_internal') {
             $school_id = $_SESSION['school_id'];
-            $ids = explode(",", $_POST['recievers']);
-            $message = test_input($_POST['message']);
-            $usertype = test_input($_POST['usertype']);
-            foreach ($ids as $id) {
-                echo $sql = "INSERT INTO internal_msg 
-                (reciever_id,message,usertype,createdby,datecreated,school_id)
-                VALUES('$id','$message','$usertype','{$_SESSION['userid']}','$date','$school_id')";
-                $insert = mysqli_query($conn, $sql);
+            $ids = isset($_POST['recievers']) ? explode(",", $_POST['recievers']) : [];
+            // For internal messages we accept HTML from the summernote editor. Do light trimming but do not strip tags here.
+            $message = isset($_POST['message']) ? trim($_POST['message']) : '';
+            $usertype = isset($_POST['usertype']) ? test_input($_POST['usertype']) : '';
+
+            if (empty($ids) || empty($message)) {
+                echo json_encode(array('status' => '0', 'err' => 'No recipients or empty message'));
+                exit;
             }
-            echo json_encode(array('status' => '1'));
+
+            // Prepare statement for insertion
+            $stmt = mysqli_prepare($conn, "INSERT INTO internal_msg (reciever_id, message, usertype, createdby, datecreated, school_id) VALUES (?, ?, ?, ?, ?, ?)");
+            if (!$stmt) {
+                echo json_encode(array('status' => '0', 'err' => 'DB prepare failed: ' . mysqli_error($conn)));
+                exit;
+            }
+
+            $createdby = $_SESSION['userid'];
+            $datecreated = $date;
+            $success = true;
+
+            foreach ($ids as $id) {
+                $id = trim($id);
+                if ($id === '') continue;
+                // Bind params: s - string types for id, message, usertype, createdby, datecreated, school_id
+                mysqli_stmt_bind_param($stmt, 'ssssss', $id, $message, $usertype, $createdby, $datecreated, $school_id);
+                if (!mysqli_stmt_execute($stmt)) {
+                    $success = false;
+                    $err = mysqli_stmt_error($stmt);
+                    break;
+                }
+            }
+
+            mysqli_stmt_close($stmt);
+
+            if ($success) {
+                echo json_encode(array('status' => '1'));
+            } else {
+                echo json_encode(array('status' => '0', 'err' => 'DB error: ' . ($err ?? 'unknown')));
+            }
+            exit;
         }
 
         if ($action == 'get_msg') {
             $school_id = $_SESSION['school_id'];
             $usertype = test_input($_POST['usertype']);
             $userid = test_input($_POST['userid']);
-            $select = mysqli_query($conn, "SELECT id,message FROM internal_msg WHERE reciever_id='$userid' AND usertype='$usertype' AND school_id='$school_id'");
+            $select = mysqli_query($conn, "SELECT id,message FROM internal_msg WHERE reciever_id='$userid' AND usertype='$usertype' AND school_id='$school_id' ORDER BY datecreated DESC");
             if (mysqli_num_rows($select) > 0) {
                 $data = [];
                 while ($row = mysqli_fetch_array($select)) {
@@ -4797,10 +5405,118 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        if ($action == 'delete_int_msg') {
+            if ($action == 'delete_int_msg') {
             $school_id = $_SESSION['school_id'];
             $id = test_input($_POST['id']);
-            $delete = mysqli_query($conn, "DELETE FROM internal_msg WHERE id='$id'");
+            $userid = $_SESSION['userid'];
+            // Only allow creator to delete their messages
+            $stmt = mysqli_prepare($conn, "DELETE FROM internal_msg WHERE id=? AND createdby=? AND school_id=?");
+            if (!$stmt) {
+                echo json_encode(['status' => '0', 'err' => 'DB prepare failed']);
+                exit;
+            }
+            mysqli_stmt_bind_param($stmt, 'sss', $id, $userid, $school_id);
+            $ok = mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+            if ($ok) echo json_encode(['status' => '1']); else echo json_encode(['status' => '0', 'err' => 'Delete failed']);
+            exit;
+        }
+
+        // Fetch internal messages created by the logged-in user
+        if ($action == 'fetch_internal_sent') {
+            $school_id = $_SESSION['school_id'];
+            $userid = $_SESSION['userid'];
+            $page = isset($_POST['page']) ? max(1, (int)$_POST['page']) : 1;
+            $per_page = isset($_POST['per_page']) ? max(5, (int)$_POST['per_page']) : 10;
+            $search = isset($_POST['search']) ? trim($_POST['search']) : '';
+            $offset = ($page - 1) * $per_page;
+
+            // Base query
+            $where = "createdby='$userid' AND school_id='$school_id'";
+            if ($search !== '') {
+                // search in message content or in reciever_id (simple contains)
+                $s = mysqli_real_escape_string($conn, $search);
+                $where .= " AND (message LIKE '%$s%' OR reciever_id LIKE '%$s%')";
+            }
+
+            // Get total count
+            $countRes = mysqli_query($conn, "SELECT COUNT(*) AS cnt FROM internal_msg WHERE $where");
+            $total = 0;
+            if ($rowc = mysqli_fetch_assoc($countRes)) $total = (int)$rowc['cnt'];
+
+            $select = mysqli_query($conn, "SELECT id, message, reciever_id, usertype, createdby, datecreated FROM internal_msg WHERE $where ORDER BY datecreated DESC LIMIT $per_page OFFSET $offset");
+            $data = [];
+            $all_recipient_ids = [];
+            while ($row = mysqli_fetch_assoc($select)) {
+                $data[] = $row;
+                // collect recipient ids (comma separated)
+                if (!empty($row['reciever_id'])) {
+                    $parts = array_filter(array_map('trim', explode(',', $row['reciever_id'])));
+                    foreach ($parts as $p) {
+                        if (is_numeric($p)) $all_recipient_ids[$p] = true;
+                    }
+                }
+            }
+
+            // Resolve staff names in one query
+            $id_map = [];
+            if (!empty($all_recipient_ids)) {
+                $ids_list = implode(',', array_keys($all_recipient_ids));
+                $sres = mysqli_query($conn, "SELECT id, firstname, lastname, middlename FROM staff WHERE id IN ($ids_list)");
+                while ($r = mysqli_fetch_assoc($sres)) {
+                    $id_map[$r['id']] = trim($r['firstname'] . ' ' . $r['lastname'] . ' ' . $r['middlename']);
+                }
+            }
+
+            // Replace reciever_id with names where possible
+            foreach ($data as &$row) {
+                $names = [];
+                if (!empty($row['reciever_id'])) {
+                    $parts = array_filter(array_map('trim', explode(',', $row['reciever_id'])));
+                    foreach ($parts as $p) {
+                        if (isset($id_map[$p])) $names[] = $id_map[$p];
+                        else $names[] = $p; // keep id if no name found
+                    }
+                }
+                $row['recipients_display'] = implode(', ', $names);
+            }
+
+            echo json_encode(['status' => '1', 'data' => $data, 'total' => $total, 'page' => $page, 'per_page' => $per_page]);
+            exit;
+        }
+
+        // Update an internal message (only allowed by creator)
+        if ($action == 'update_internal_msg') {
+            $school_id = $_SESSION['school_id'];
+            $userid = $_SESSION['userid'];
+            $id = test_input($_POST['id']);
+            $message = isset($_POST['message']) ? trim($_POST['message']) : '';
+            if (empty($id) || $message === '') {
+                echo json_encode(['status' => '0', 'err' => 'Missing id or empty message']);
+                exit;
+            }
+
+            // Verify ownership
+            $stmtv = mysqli_prepare($conn, "SELECT createdby FROM internal_msg WHERE id=? AND school_id=?");
+            if (!$stmtv) { echo json_encode(['status' => '0', 'err' => 'DB prepare failed']); exit; }
+            mysqli_stmt_bind_param($stmtv, 'ss', $id, $school_id);
+            mysqli_stmt_execute($stmtv);
+            $resv = mysqli_stmt_get_result($stmtv);
+            $owner = null;
+            if ($rowv = mysqli_fetch_assoc($resv)) $owner = $rowv['createdby'];
+            mysqli_stmt_close($stmtv);
+            // echo $owner;
+            // echo "<br>";
+            // echo $userid;
+            if ($owner != $userid) { echo json_encode(['status' => '0', 'err' => 'Permission denied']); exit; }
+
+            $stmt = mysqli_prepare($conn, "UPDATE internal_msg SET message=? WHERE id=? AND createdby=? AND school_id=?");
+            if (!$stmt) { echo json_encode(['status' => '0', 'err' => 'DB prepare failed']); exit; }
+            mysqli_stmt_bind_param($stmt, 'ssss', $message, $id, $userid, $school_id);
+            $ok = mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+            if ($ok) echo json_encode(['status' => '1']); else echo json_encode(['status' => '0', 'err' => 'Update failed']);
+            exit;
         }
 
         if ($action == 'update_url') {
@@ -5145,7 +5861,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         //         }
         //     }
         // }
-    }
+    
 
     // exit;
     // $week_id = substr($_POST['week_ids'],1,-1);
@@ -5417,21 +6133,224 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // }
 
 
-    if ($action == "create_lesson_note_body") {
-        $cid = $_POST['class_id'];
-        // $class_id_array = explode(",", $_POST['class_id']);
-        // print_r($class_id_array);
-        // Keep an escaped version for SQL, but also retain the raw body for HTML comparison
-        $rawBody = isset($_POST['body']) ? $_POST['body'] : '';
-        $body = mysqli_real_escape_string($conn, $rawBody);
-        // $topic = test_input($_POST['topic']);
-        $subject_id = test_input($_POST['subject_id']);
-        // $week_id = implode(",", json_decode($_POST['week_ids']));
-        $wid = test_input($_POST['week_id']);
-        // print_r($week_ids);
+    // if ($action == "create_lesson_note_body") {
+    //     $cid = $_POST['class_id'];
+    //     // $class_id_array = explode(",", $_POST['class_id']);
+    //     // print_r($class_id_array);
+    //     $body = mysqli_real_escape_string($conn, $_POST['body']);
+    //     // $topic = test_input($_POST['topic']);
+    //     $subject_id = test_input($_POST['subject_id']);
+    //     // $week_id = implode(",", json_decode($_POST['week_ids']));
+    //     $wid = test_input($_POST['week_id']);
+    //     // print_r($week_ids);
 
-        // foreach ($class_id_array as $cid) {
-        $sql_check = "SELECT week_id,class_id,content,filedata FROM lesson_note WHERE week_id='$wid' AND class_id='$cid' AND school_id = '{$_SESSION['school_id']}' AND subject_id='$subject_id'";
+    //     // foreach ($class_id_array as $cid) {
+    //     $sql_check = "SELECT week_id,class_id,filedata FROM lesson_note WHERE week_id='$wid' AND class_id='$cid' AND school_id = '{$_SESSION['school_id']}' AND subject_id='$subject_id'";
+    //     $check = mysqli_query($conn, $sql_check);
+    //     if (mysqli_num_rows($check) > 0) {
+    //         if ($row = mysqli_fetch_assoc($check)) {
+
+    //             //without file
+    //             $sql_update = "UPDATE lesson_note SET updatedby='{$_SESSION['userid']}', dateupdated='$date', content='$body'
+    //                         WHERE week_id='$wid' AND class_id='$cid' AND school_id = '{$_SESSION['school_id']}' AND subject_id='$subject_id'";
+
+    //             $update = mysqli_query($conn, $sql_update);
+    //             echo "update";
+    //             echo json_encode(array('status' => '1'));
+    //         }
+    //     } else {
+
+    //         $sql = "INSERT INTO lesson_note(school_id,createdby,datecreated,session_id,term_id,class_id,subject_id,week_id,content)
+    //                     VALUES('{$_SESSION['school_id']}','{$_SESSION['userid']}','$date','{$_SESSION['session_id']}','{$_SESSION['term_id']}','$cid','$subject_id','$wid','$body')";
+
+    //         $insert = mysqli_query($conn, $sql);
+    //         if ($insert) {
+    //             echo "insert";
+    //             echo json_encode(array('status' => '1'));
+    //         }
+    //     }
+    // }
+    // }
+// if ($action == "create_lesson_note_body") {
+//         $cid = $_POST['class_id'];
+//         // $class_id_array = explode(",", $_POST['class_id']);
+//         // print_r($class_id_array);
+//         // Keep an escaped version for SQL, but also retain the raw body for HTML comparison
+//         $rawBody = isset($_POST['body']) ? $_POST['body'] : '';
+//         $body = mysqli_real_escape_string($conn, $rawBody);
+//         // $topic = test_input($_POST['topic']);
+//         $subject_id = test_input($_POST['subject_id']);
+//         // $week_id = implode(",", json_decode($_POST['week_ids']));
+//         $wid = test_input($_POST['week_id']);
+//         // print_r($week_ids);
+
+//         // foreach ($class_id_array as $cid) {
+//         $sql_check = "SELECT week_id,class_id,content,filedata FROM lesson_note WHERE week_id='$wid' AND class_id='$cid' AND school_id = '{$_SESSION['school_id']}' AND subject_id='$subject_id'";
+//         $check = mysqli_query($conn, $sql_check);
+//         if (mysqli_num_rows($check) > 0) {
+//             if ($row = mysqli_fetch_assoc($check)) {
+
+//                 // Capture old content so we can remove images that were deleted from the editor
+//                 $oldContent = isset($row['content']) ? $row['content'] : '';
+
+//                 // Update content
+//                 $sql_update = "UPDATE lesson_note SET updatedby='{$_SESSION['userid']}', dateupdated='$date', content='$body'
+//                             WHERE week_id='$wid' AND class_id='$cid' AND school_id = '{$_SESSION['school_id']}' AND subject_id='$subject_id'";
+
+//                 $update = mysqli_query($conn, $sql_update);
+
+//                 if ($update) {
+//                     // After successful update: determine which images existed previously but are not present in the new content
+//                     // Use the raw (unescaped) body for HTML/image comparison
+//                     $newContent = $rawBody;
+
+//                     // helper to extract src attributes from img tags
+//                     $extractSrcs = function ($html) {
+//                         $results = [];
+//                         if (!$html) return $results;
+//                         if (preg_match_all('/<img[^>]+src=["\']([^"\']+)["\']/i', $html, $m)) {
+//                             $results = $m[1];
+//                         }
+//                         return $results;
+//                     };
+
+//                     // decode any HTML entities to improve matching
+//                     $oldImgs = $extractSrcs(html_entity_decode($oldContent));
+//                     $newImgs = $extractSrcs(html_entity_decode($newContent));
+
+//                     // normalize to basenames for comparison and safety
+//                     $normalize = function ($url) {
+//                         $path = parse_url($url, PHP_URL_PATH);
+//                         return $path ? basename($path) : basename($url);
+//                     };
+
+//                     $newBasenames = array_map($normalize, $newImgs);
+
+//                     // delete files that were in oldImgs but not in newImgs
+//                     $uploadsDir = __DIR__ . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'lesson_images' . DIRECTORY_SEPARATOR;
+//                     // prepare a debug log
+//                     $logFile = $uploadsDir . 'upload_errors.log';
+//                     $dbg = [];
+//                     $dbg[] = "-- image-deletion-run: " . date('c');
+//                     $dbg[] = "oldImgs: " . json_encode($oldImgs);
+//                     $dbg[] = "newImgs: " . json_encode($newImgs);
+//                     $dbg[] = "newBasenames: " . json_encode($newBasenames);
+
+//                     foreach ($oldImgs as $oldUrl) {
+//                         $base = $normalize($oldUrl);
+//                         if (!$base) {
+//                             $dbg[] = "skip-empty-base for url: $oldUrl";
+//                             continue;
+//                         }
+//                         // skip if still present
+//                         if (in_array($base, $newBasenames)) {
+//                             $dbg[] = "keep (still referenced): $base";
+//                             continue;
+//                         }
+
+//                         // safety: only allow simple filenames
+//                         if (!preg_match('/^[a-zA-Z0-9_\-\.]+$/', $base)) {
+//                             $dbg[] = "skip-invalid-filename: $base";
+//                             continue;
+//                         }
+
+//                         $filePath = $uploadsDir . $base;
+//                         if (file_exists($filePath) && is_file($filePath)) {
+//                             $ok = @unlink($filePath);
+//                             if ($ok) {
+//                                 $dbg[] = "deleted: $filePath";
+//                             } else {
+//                                 $dbg[] = "unlink-failed: $filePath";
+//                             }
+//                         } else {
+//                             $dbg[] = "file-not-found: $filePath";
+//                         }
+//                     }
+//                     // append debug log
+//                     @file_put_contents($logFile, implode("\n", $dbg) . "\n", FILE_APPEND | LOCK_EX);
+
+//                     // return JSON including debug info for easier client-side debugging
+//                     $response = ['status' => '1', 'debug' => $dbg];
+//                     header('Content-Type: application/json');
+//                     echo json_encode($response);
+//                     exit();
+//                 } else {
+//                     $response = ['status' => '0', 'error' => 'db_update_failed'];
+//                     header('Content-Type: application/json');
+//                     echo json_encode($response);
+//                     exit();
+//                 }
+//             }
+//         } else {
+
+//             $sql = "INSERT INTO lesson_note(school_id,createdby,datecreated,session_id,term_id,class_id,subject_id,week_id,content)
+//                         VALUES('{$_SESSION['school_id']}','{$_SESSION['userid']}','$date','{$_SESSION['session_id']}','{$_SESSION['term_id']}','$cid','$subject_id','$wid','$body')";
+
+//             $insert = mysqli_query($conn, $sql);
+//             if ($insert) {
+//                 echo "insert";
+//                 echo json_encode(array('status' => '1'));
+//             }
+//         }
+//     }
+    // if ($action == "create_lesson_note_topic") {
+    //     $cid = $_POST['class_id'];
+    //     // $class_id_array = explode(",", $_POST['class_id']);
+    //     // print_r($class_id_array);
+    //     // $body = mysqli_real_escape_string($conn, $_POST['body']);
+    //     $topic = test_input($_POST['topic']);
+    //     $subject_id = $_POST['subject_id'];
+    //     // $week_id = implode(",", json_decode($_POST['week_ids']));
+    //     $wid = $_POST['week_id'];
+    //     // print_r($week_ids);
+
+    //     // foreach ($class_id_array as $cid) {
+    //     // foreach ($week_ids as $wid) {
+    //     $sql_check = "SELECT week_id,class_id,filedata FROM lesson_note WHERE week_id='$wid' AND class_id='$cid' AND school_id = '{$_SESSION['school_id']}' AND subject_id='$subject_id'";
+    //     $check = mysqli_query($conn, $sql_check);
+    //     if (mysqli_num_rows($check) > 0) {
+    //         if ($row = mysqli_fetch_assoc($check)) {
+
+    //             //without file
+    //             $sql_update = "UPDATE lesson_note SET updatedby='{$_SESSION['userid']}', dateupdated='$date', topic='$topic' 
+    //                     WHERE week_id='$wid' AND class_id='$cid' AND school_id = '{$_SESSION['school_id']}' AND subject_id='$subject_id'";
+
+    //             $update = mysqli_query($conn, $sql_update);
+    //             echo "update";
+    //             echo json_encode(array('status' => '1'));
+    //         }
+    //     } else {
+
+    //         $sql = "INSERT INTO lesson_note(school_id,createdby,datecreated,session_id,term_id,class_id,subject_id,week_id,topic)
+    //                     VALUES('{$_SESSION['school_id']}','{$_SESSION['userid']}','$date','{$_SESSION['session_id']}','{$_SESSION['term_id']}','$cid','$subject_id','$wid','$topic')";
+
+    //         $insert = mysqli_query($conn, $sql);
+    //         if ($insert) {
+    //             echo "insert";
+    //             echo json_encode(array('status' => '1'));
+    //         }
+    //     }
+    // }
+    if ($action == "create_lesson_note_body") {
+    $cid_input = $_POST['class_id'];
+    $class_id_array = is_array($cid_input) ? $cid_input : [$cid_input];
+
+    // Keep an escaped version for SQL, but also retain the raw body for HTML comparison
+    $rawBody = isset($_POST['body']) ? $_POST['body'] : '';
+    
+    $body = mysqli_real_escape_string($conn, $rawBody);
+    // echo $body;
+    // $topic = test_input($_POST['topic']);
+    $subject_id = test_input($_POST['subject_id']);
+    // $week_id = implode(",", json_decode($_POST['week_ids']));
+    $wid = test_input($_POST['week_id']);
+        $term_id = isset($_POST['term_id']) && $_POST['term_id'] !== '' ? test_input($_POST['term_id']) : $_SESSION['term_id'];
+
+    // print_r($week_ids);
+
+    foreach ($class_id_array as $cid) {
+               $sql_check = "SELECT week_id,class_id,content,filedata FROM lesson_note WHERE week_id='$wid' AND class_id='$cid' AND term_id='$term_id' AND school_id = '{$_SESSION['school_id']}' AND subject_id='$subject_id'";
+
         $check = mysqli_query($conn, $sql_check);
         if (mysqli_num_rows($check) > 0) {
             if ($row = mysqli_fetch_assoc($check)) {
@@ -5441,7 +6360,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Update content
                 $sql_update = "UPDATE lesson_note SET updatedby='{$_SESSION['userid']}', dateupdated='$date', content='$body'
-                            WHERE week_id='$wid' AND class_id='$cid' AND school_id = '{$_SESSION['school_id']}' AND subject_id='$subject_id'";
+                            WHERE week_id='$wid' AND class_id='$cid' AND term_id='$term_id' AND school_id = '{$_SESSION['school_id']}' AND subject_id='$subject_id'";
+
 
                 $update = mysqli_query($conn, $sql_update);
 
@@ -5453,7 +6373,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // helper to extract src attributes from img tags
                     $extractSrcs = function ($html) {
                         $results = [];
-                        if (!$html) return $results;
+                        if (!$html)
+                            return $results;
                         if (preg_match_all('/<img[^>]+src=["\']([^"\']+)["\']/i', $html, $m)) {
                             $results = $m[1];
                         }
@@ -5477,26 +6398,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // prepare a debug log
                     $logFile = $uploadsDir . 'upload_errors.log';
                     $dbg = [];
-                    $dbg[] = "-- image-deletion-run: " . date('c');
-                    $dbg[] = "oldImgs: " . json_encode($oldImgs);
-                    $dbg[] = "newImgs: " . json_encode($newImgs);
-                    $dbg[] = "newBasenames: " . json_encode($newBasenames);
+                    // $dbg[] = "-- image-deletion-run: " . date('c');
+                    // $dbg[] = "oldImgs: " . json_encode($oldImgs);
+                    // $dbg[] = "newImgs: " . json_encode($newImgs);
+                    // $dbg[] = "newBasenames: " . json_encode($newBasenames);
 
                     foreach ($oldImgs as $oldUrl) {
                         $base = $normalize($oldUrl);
                         if (!$base) {
-                            $dbg[] = "skip-empty-base for url: $oldUrl";
+                            // $dbg[] = "skip-empty-base for url: $oldUrl";
                             continue;
                         }
                         // skip if still present
                         if (in_array($base, $newBasenames)) {
-                            $dbg[] = "keep (still referenced): $base";
+                            // $dbg[] = "keep (still referenced): $base";
                             continue;
                         }
 
                         // safety: only allow simple filenames
                         if (!preg_match('/^[a-zA-Z0-9_\-\.]+$/', $base)) {
-                            $dbg[] = "skip-invalid-filename: $base";
+                            // $dbg[] = "skip-invalid-filename: $base";
                             continue;
                         }
 
@@ -5504,81 +6425,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if (file_exists($filePath) && is_file($filePath)) {
                             $ok = @unlink($filePath);
                             if ($ok) {
-                                $dbg[] = "deleted: $filePath";
+                                // $dbg[] = "deleted: $filePath";
                             } else {
-                                $dbg[] = "unlink-failed: $filePath";
+                                // $dbg[] = "unlink-failed: $filePath";
                             }
                         } else {
-                            $dbg[] = "file-not-found: $filePath";
+                            // $dbg[] = "file-not-found: $filePath";
                         }
                     }
                     // append debug log
-                    @file_put_contents($logFile, implode("\n", $dbg) . "\n", FILE_APPEND | LOCK_EX);
-
-                    // return JSON including debug info for easier client-side debugging
-                    $response = ['status' => '1', 'debug' => $dbg];
-                    header('Content-Type: application/json');
-                    echo json_encode($response);
-                    exit();
-                } else {
-                    $response = ['status' => '0', 'error' => 'db_update_failed'];
-                    header('Content-Type: application/json');
-                    echo json_encode($response);
-                    exit();
+                    // @file_put_contents($logFile, implode("\n", $dbg) . "\n", FILE_APPEND | LOCK_EX);
                 }
             }
         } else {
-
             $sql = "INSERT INTO lesson_note(school_id,createdby,datecreated,session_id,term_id,class_id,subject_id,week_id,content)
-                        VALUES('{$_SESSION['school_id']}','{$_SESSION['userid']}','$date','{$_SESSION['session_id']}','{$_SESSION['term_id']}','$cid','$subject_id','$wid','$body')";
+                        VALUES('{$_SESSION['school_id']}','{$_SESSION['userid']}','$date','{$_SESSION['session_id']}','$term_id','$cid','$subject_id','$wid','$body')";
+
 
             $insert = mysqli_query($conn, $sql);
-            if ($insert) {
-                echo "insert";
-                echo json_encode(array('status' => '1'));
-            }
         }
     }
-    // }
-
+    echo json_encode(array('status' => '1'));
+}
     if ($action == "create_lesson_note_topic") {
-        $cid = $_POST['class_id'];
-        // $class_id_array = explode(",", $_POST['class_id']);
-        // print_r($class_id_array);
-        // $body = mysqli_real_escape_string($conn, $_POST['body']);
-        $topic = test_input($_POST['topic']);
-        $subject_id = $_POST['subject_id'];
-        // $week_id = implode(",", json_decode($_POST['week_ids']));
-        $wid = $_POST['week_id'];
-        // print_r($week_ids);
+    $cid_input = $_POST['class_id'];
+    $class_id_array = is_array($cid_input) ? $cid_input : [$cid_input];
 
-        // foreach ($class_id_array as $cid) {
-        // foreach ($week_ids as $wid) {
-        $sql_check = "SELECT week_id,class_id,filedata FROM lesson_note WHERE week_id='$wid' AND class_id='$cid' AND school_id = '{$_SESSION['school_id']}' AND subject_id='$subject_id'";
+    $topic = test_input($_POST['topic']);
+    $subject_id = $_POST['subject_id'];
+    $wid = isset($_POST['week_id']) ? test_input($_POST['week_id']) : '';
+    $term_id = isset($_POST['term_id']) && $_POST['term_id'] !== '' ? test_input($_POST['term_id']) : $_SESSION['term_id'];
+    foreach ($class_id_array as $cid) {
+        $sql_check = "SELECT week_id,class_id,filedata FROM lesson_note WHERE week_id='$wid' AND class_id='$cid' AND term_id='$term_id' AND school_id = '{$_SESSION['school_id']}' AND subject_id='$subject_id'";
         $check = mysqli_query($conn, $sql_check);
         if (mysqli_num_rows($check) > 0) {
             if ($row = mysqli_fetch_assoc($check)) {
 
                 //without file
                 $sql_update = "UPDATE lesson_note SET updatedby='{$_SESSION['userid']}', dateupdated='$date', topic='$topic' 
-                        WHERE week_id='$wid' AND class_id='$cid' AND school_id = '{$_SESSION['school_id']}' AND subject_id='$subject_id'";
+                    WHERE week_id='$wid' AND class_id='$cid' AND term_id='$term_id' AND school_id = '{$_SESSION['school_id']}' AND subject_id='$subject_id'";
 
                 $update = mysqli_query($conn, $sql_update);
-                echo "update";
-                echo json_encode(array('status' => '1'));
             }
         } else {
 
             $sql = "INSERT INTO lesson_note(school_id,createdby,datecreated,session_id,term_id,class_id,subject_id,week_id,topic)
-                        VALUES('{$_SESSION['school_id']}','{$_SESSION['userid']}','$date','{$_SESSION['session_id']}','{$_SESSION['term_id']}','$cid','$subject_id','$wid','$topic')";
+                        VALUES('{$_SESSION['school_id']}','{$_SESSION['userid']}','$date','{$_SESSION['session_id']}','$term_id','$cid','$subject_id','$wid','$topic')";
 
             $insert = mysqli_query($conn, $sql);
-            if ($insert) {
-                echo "insert";
-                echo json_encode(array('status' => '1'));
-            }
         }
     }
+    echo json_encode(array('status' => '1'));
+}
+if ($action == "get_classes_for_lesson_note") {
+    $select = mysqli_query($conn, "SELECT id, classname FROM class WHERE school_id='{$_SESSION['school_id']}' ORDER BY classname ASC");
+    $data = [];
+    while ($row = mysqli_fetch_assoc($select)) {
+        $data[] = $row;
+    }
+    echo json_encode(['status' => '1', 'data' => $data]);
+}
     // }
     // }
 
@@ -5591,17 +6497,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // $cid = end($class_id_array);
 
         $wid = $_POST['week_id'];
+            $term_id = isset($_POST['term_id']) && $_POST['term_id'] !== '' ? test_input($_POST['term_id']) : $_SESSION['term_id'];
+
         // $wid = end($week_ids_array);
         if ($_POST['type'] == 'body') {
-            $sql = "SELECT content FROM lesson_note 
-                WHERE week_id = '$wid' AND class_id = '$cid' 
+        $sql = "SELECT content FROM lesson_note 
+                WHERE week_id = '$wid' AND class_id = '$cid' AND term_id='$term_id' 
                 AND school_id = '{$_SESSION['school_id']}' 
                 AND subject_id = '$subject_id'";
         } else {
-            $sql = "SELECT topic FROM lesson_note 
-                WHERE week_id = '$wid' AND class_id = '$cid' 
-                AND school_id = '{$_SESSION['school_id']}' 
-                AND subject_id = '$subject_id'";
+           $sql = "SELECT topic FROM lesson_note 
+                    WHERE week_id = '$wid' AND class_id = '$cid' AND term_id='$term_id' 
+                    AND school_id = '{$_SESSION['school_id']}' 
+                    AND subject_id = '$subject_id'";
         }
         $select = mysqli_query($conn, $sql);
 
@@ -5613,7 +6521,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action == 'get_note_weeks') {
         $class_id = test_input($_POST['class_id']);
         $subject_id = $_POST['subject_id'];
-        $sql = "SELECT week_id FROM lesson_note WHERE class_id='$class_id' AND subject_id='$subject_id' AND school_id = '{$_SESSION['school_id']}'";
+        
+         $term_id = isset($_POST['term_id']) && $_POST['term_id'] !== '' ? test_input($_POST['term_id']) : $_SESSION['term_id'];
+        $sql = "SELECT week_id FROM lesson_note WHERE class_id='$class_id' AND subject_id='$subject_id' AND term_id='$term_id' AND school_id = '{$_SESSION['school_id']}'";
+    
         $select = mysqli_query($conn, $sql);
         $data = [];
         while ($row = mysqli_fetch_assoc($select)) {
@@ -5627,27 +6538,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $savedEvents = [];
         foreach ($events as $event) {
             $id = $event['id'];
-            $start = $event['start'];
-            $end = $event['end'];
+            $start = (new DateTime($event['start']))->format('Y-m-d H:i:s');
+            $end = (new DateTime($event['end']))->format('Y-m-d H:i:s');
+
+            // $start = $event['start'];
+            // $end = $event['end'];
             $classid = isset($event['classid']) ? $event['classid'] : null;
             $subjectid = isset($event['subjectid']) ? $event['subjectid'] : null;
             $eventid = isset($event['eventid']) ? $event['eventid'] : null;
 
             if ($id == '') {
                 if ($classid && $subjectid) {
+                    // echo "INSERT INTO time_table (class_id, subject_id, start, end, createdby, datecreated, school_id) 
+                    // VALUES ('$classid', '$subjectid', '$start', '$end', '{$_SESSION['userid']}', '$date', '{$_SESSION['school_id']}')";
                     $query = mysqli_query($conn, "INSERT INTO time_table (class_id, subject_id, start, end, createdby, datecreated, school_id) 
                     VALUES ('$classid', '$subjectid', '$start', '$end', '{$_SESSION['userid']}', '$date', '{$_SESSION['school_id']}')");
                     $id = mysqli_insert_id($conn);
                 } else {
+                    // echo "INSERT INTO extraevents (event_id, start, end, createdby, datecreated, school_id) 
+                    // VALUES ('$eventid', '$start', '$end', '{$_SESSION['userid']}', '$date', '{$_SESSION['school_id']}')";
                     $query = mysqli_query($conn, "INSERT INTO extraevents (event_id, start, end, createdby, datecreated, school_id) 
                     VALUES ('$eventid', '$start', '$end', '{$_SESSION['userid']}', '$date', '{$_SESSION['school_id']}')");
                     $id = mysqli_insert_id($conn);
                 }
             } else {
                 if ($classid && $subjectid) {
+                //   echo  "UPDATE time_table SET class_id='$classid', subject_id='$subjectid', start='$start', end='$end', updatedby='{$_SESSION['userid']}', dateupdated='$date' 
+                //     WHERE id='$id' AND school_id='{$_SESSION['school_id']}'";
                     $query = mysqli_query($conn, "UPDATE time_table SET class_id='$classid', subject_id='$subjectid', start='$start', end='$end', updatedby='{$_SESSION['userid']}', dateupdated='$date' 
                     WHERE id='$id' AND school_id='{$_SESSION['school_id']}'");
                 } else {
+                    // echo "UPDATE extraevents SET start='$start', end='$end', updatedby='{$_SESSION['userid']}', dateupdated='$date' 
+                    // WHERE id='$id' AND school_id='{$_SESSION['school_id']}'";
                     $query = mysqli_query($conn, "UPDATE extraevents SET start='$start', end='$end', updatedby='{$_SESSION['userid']}', dateupdated='$date' 
                     WHERE id='$id' AND school_id='{$_SESSION['school_id']}'");
                 }
@@ -5807,7 +6729,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action == 'add_extra_event') {
         $title = $_POST['title'];
         $color = '#17a2b8';
-        $query = mysqli_query($conn, "INSERT INTO events (events,cal_type, createdby, datecreated, school_id,color) VALUES ('$title',1, '{$_SESSION['userid']}', '$date', '{$_SESSION['school_id']}','$color')");
+        // echo "INSERT INTO events (events,cal_type, createdby, datecreated, school_id,color) VALUES ('$title',1, '{$_SESSION['userid']}', '$date', '{$_SESSION['school_id']}','$color')";
+        $query = mysqli_query($conn, "INSERT INTO events (events,cal_type, createdby, datecreated, school_id,color,updatedby) VALUES ('$title',1, '{$_SESSION['userid']}', '$date', '{$_SESSION['school_id']}','$color',NULL)");
         if ($query) {
             $id = mysqli_insert_id($conn);
             echo json_encode(['id' => $id, 'title' => $title]);
@@ -5890,69 +6813,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mysqli_close($conn);
         exit();
     }
-
+    
     // For score updates
-    if ($action === 'track_scores_changes') {
-        // var_dump($_SESSION['old_scores']);
-        // echo '<br>';
-        // var_dump($_SESSION['new_scores']);
-        if ($_SESSION['studentOrsubject'] === 'student') {
-            $changes = compare_student_scores_changes($_SESSION['old_scores'], $_SESSION['new_scores']);
-            var_dump($changes);
-            // exit;
-        } else {
-            $changes = compare_subject_scores_changes($_SESSION['old_scores'], $_SESSION['new_scores']);
-        }
-        // $changes = compare_student_scores($_SESSION['old_scores'], $_SESSION['new_scores']);
-        if (!empty($changes)) {
-            // Format the changes for logging
-            $log_data = [
-                'class' => $_SESSION['new_scores'][0]['class'] ?? '',
-                'changes' => $changes
-            ];
-
-            // Save to database
-            save_changes_to_log($log_data, 'score_update');
-            $_SESSION['old_scores'] = $_SESSION['new_scores'];
-            unset($_SESSION['new_scores']);
-        }
-    }
-    if ($action === 'get_change_logs') {
-        $action_type = isset($_POST['action_type']) ? $_POST['action_type'] : null;
-        $logs = get_changes_log($action_type);
-
-        foreach ($logs as &$log) {
-            // Convert user_id to name
-            $log['user_name'] = get_staff_fullname_by_id($log['user_id']);
-
-            $changes = $log['changes'];
-            // Convert class id to name 
-            $log['changes']['class_name'] = get_class_by_classid($changes['class']);
-
-            // Convert student and subject IDs in the nested changes array
-            $newChanges = [];
-            foreach ($changes['changes'] as $student_id => $studentChanges) {
-                $student_name = get_student_fullname_by_id($student_id);
-
-                foreach ($studentChanges as &$change) {
-                    // Add student name and subject name to each change
-                    $change['student_name'] = $student_name;
-                    if (isset($change['subject_id'])) {
-                        $change['subject_name'] = getsubjectbyid($change['subject_id']);
-                    }
-                }
-
-                // Use student name as key but preserve the original changes
-                $newChanges[$student_name] = $studentChanges;
+         if ($action === 'track_scores_changes') {
+            // var_dump($_SESSION['old_scores']);
+            // echo '<br>';
+            // var_dump($_SESSION['new_scores']);
+            if($_SESSION['studentOrsubject'] === 'student'){
+                $changes = compare_student_scores_changes($_SESSION['old_scores'], $_SESSION['new_scores']);
+                var_dump($changes);
+                // exit;
+            } else {
+                $changes = compare_subject_scores_changes($_SESSION['old_scores'], $_SESSION['new_scores']);
             }
+            // $changes = compare_student_scores($_SESSION['old_scores'], $_SESSION['new_scores']);
+            if (!empty($changes)) {
+                // Format the changes for logging
+                $log_data = [
+                    'class' => $_SESSION['new_scores'][0]['class'] ?? '',
+                    'changes' => $changes
+                ];
 
-            // Replace the changes array with the new one
-            $log['changes']['changes'] = $newChanges;
+                // Save to database
+                save_changes_to_log($log_data, 'score_update');
+                $_SESSION['old_scores'] = $_SESSION['new_scores'];
+                unset($_SESSION['new_scores']);
+            }
         }
-
-        echo json_encode($logs);
-        exit;
-    }
+        if ($action === 'get_change_logs') {
+            $action_type = isset($_POST['action_type']) ? $_POST['action_type'] : null;
+            $logs = get_changes_log($action_type);
+        
+            foreach ($logs as &$log) {
+                // Convert user_id to name
+                $log['user_name'] = get_staff_fullname_by_id($log['user_id']);
+                
+                $changes = $log['changes'];
+                // Convert class id to name 
+                $log['changes']['class_name'] = get_class_by_classid($changes['class']);
+        
+                // Convert student and subject IDs in the nested changes array
+                $newChanges = [];
+                foreach ($changes['changes'] as $student_id => $studentChanges) {
+                    $student_name = get_student_fullname_by_id($student_id);
+                    
+                    foreach ($studentChanges as &$change) {
+                        // Add student name and subject name to each change
+                        $change['student_name'] = $student_name;
+                        if (isset($change['subject_id'])) {
+                            $change['subject_name'] = getsubjectbyid($change['subject_id']);
+                        }
+                    }
+                    
+                    // Use student name as key but preserve the original changes
+                    $newChanges[$student_name] = $studentChanges;
+                }
+                
+                // Replace the changes array with the new one
+                $log['changes']['changes'] = $newChanges;
+            }
+        
+            echo json_encode($logs);
+            exit;
+        }
     
      // lesson note code with multiple weeks
     // if ($action == "create_lesson_note") {
@@ -6102,6 +7025,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //                             exit;
     //                         }
     //                     }
+    
     //                     $data = join(",", $data);
     //                     $sql = "INSERT INTO lesson_note(school_id,createdby,datecreated,filedata,session_id,term_id,class_id,subject_id,week_id,topic,content)
     //                     VALUES('{$_SESSION['school_id']}','{$_SESSION['userid']}','$date','$data','{$_SESSION['session_id']}','{$_SESSION['term_id']}','$cid','$subject_id','$wid','$topic','$body')";
@@ -6118,6 +7042,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //         }
     //     }
 
+
     //     //     if (does_it_exist("id", "lesson_note", "week_id='$wid' AND class_id='$cid' AND school_id = '{$_SESSION['school_id']}' AND subject_id='$subject_id'")) {
 
     //     // }
@@ -6127,3 +7052,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //     $class_id = test_input($_POST['class_id']);
     //     $subject_id = $_POST['subject_id'];
     // }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = '';
+    if (isset($_POST['action'])) {
+        $action = test_input($_POST['action']);
+    } elseif (isset($_GET['action'])) {
+        $action = test_input($_GET['action']);
+    }
+      // Handle image uploads for lesson notes via AJAX (CKEditor or fallback file input)
+        // echo "pmpomdc";
+        // exit;
+        // Basic checks
+        $uploadDir = __DIR__ . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'lesson_images' . DIRECTORY_SEPARATOR;
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        // CKEditor 5 SimpleUpload adapter sends the file under the key 'upload'
+        $fileKey = '';
+        if (isset($_FILES['upload'])) {
+            $fileKey = 'upload';
+        } elseif (isset($_FILES['file'])) {
+            $fileKey = 'file';
+        } elseif (!empty($_FILES)) {
+            // fallback to first file
+            $keys = array_keys($_FILES);
+            $fileKey = $keys[0];
+        }
+
+        if (!$fileKey || !isset($_FILES[$fileKey]) || !is_uploaded_file($_FILES[$fileKey]['tmp_name'])) {
+            header('Content-Type: application/json');
+            json_encode(array('error' => array('message' => 'No file uploaded')));
+            exit;
+        }
+
+        $file = $_FILES[$fileKey];
+        $allowed = array('jpg','jpeg','png','gif','webp');
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+        if (!in_array($ext, $allowed)) {
+            header('Content-Type: application/json');
+            echo json_encode(array('error' => array('message' => 'Invalid file type')));
+            exit;
+        }
+
+        if ($file['size'] > 5 * 1024 * 1024) { // limit 5MB
+            header('Content-Type: application/json');
+            echo json_encode(array('error' => array('message' => 'File too large (max 5MB)')));
+            exit;
+        }
+
+        $safeName = uniqid('lesson_', true) . '.' . $ext;
+        $dest = $uploadDir . $safeName;
+
+        if (move_uploaded_file($file['tmp_name'], $dest)) {
+            // Build URL relative to web root. Assumes this script is in web root `ss360`.
+            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+            $host = $_SERVER['HTTP_HOST'];
+            $scriptDir = rtrim(dirname($_SERVER['SCRIPT_NAME']), '\/');
+            $uploadsUrlPath = $scriptDir . '/uploads/lesson_images/' . $safeName;
+            $url = $protocol . '://' . $host . $uploadsUrlPath;
+
+            header('Content-Type: application/json');
+            echo json_encode(array('url' => $url));
+            exit;
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(array('error' => array('message' => 'Failed to move uploaded file')));
+            exit;
+        }
+}

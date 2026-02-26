@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //         echo json_encode(array('status' => '0', 'err' => 'Staff Already Registered'));
     //     }
     // }
- if ($action == 'reg_staff') {
+   if ($action == 'reg_staff') {
         // exit;
         $fname = test_input($_POST['firstname']);
         $lname = test_input($_POST['lastname']);
@@ -73,6 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $staff_type = test_input($_POST['staff_type']);
         $school_id = test_input($_POST['school_id']);   
         $email = test_input($_POST['email']);
+        $status = $_SESSION['onboarding'] === true ? '1' : '0';
         if (!does_it_exist("firstname", "staff", "phone='$phone' OR email='$email'")) {
             $hashPassword = password_hash($password, PASSWORD_ARGON2I);
             $path = "../uploads/";
@@ -80,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($_FILES['photo']['name'] == '') {
                 $final_img = "avatar.png";
                 $query = "INSERT INTO staff (status,photo,firstname,lastname,middlename,phone,email,passw,staff_type,gender,school_id,datecreated,address,city,state,country) 
-                VALUES('0','$final_img','$fname','$lname','$middlename','$phone','$email','$hashPassword','$staff_type','$gender','$school_id','$date','$address','$city','$state','$country')"; 
+                VALUES('$status','$final_img','$fname','$lname','$middlename','$phone','$email','$hashPassword','$staff_type','$gender','$school_id','$date','$address','$city','$state','$country')"; 
         } else {
                 $img_name = $_FILES['photo']['name'];
                 $tmp = $_FILES['photo']['tmp_name'];
@@ -90,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $path = $path . $final_img;
                     if (move_uploaded_file($tmp, $path)) {
                         $query = "INSERT INTO staff (status,photo,firstname,lastname,middlename,phone,email,passw,staff_type,gender,school_id,datecreated,address,city,state,country) 
-                        VALUES('0','$final_img','$fname','$lname','$middlename','$phone','$email','$hashPassword','$staff_type','$gender','$school_id','$date','$address','$city','$state','$country')";
+                        VALUES('$status','$final_img','$fname','$lname','$middlename','$phone','$email','$hashPassword','$staff_type','$gender','$school_id','$date','$address','$city','$state','$country')";
                     }
                 }
             }
@@ -118,18 +119,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if ($action == 'reg_school') {
         $name = test_input($_POST['name']);
+    
         $address = test_input($_POST['address']);
         $city = test_input($_POST['city']);
         $state = test_input($_POST['state']);
         $country = test_input($_POST['country']);
         $logo = $_FILES['logo']['name'];
+        $term_id = 1;
+        $amount = 1000;
+        $url = rand(10000, 99999);
+        // select last session id from session table
+        $select_session = mysqli_query($conn, "SELECT MAX(id) as last_session_id FROM sessions");
+        if ($row = mysqli_fetch_array($select_session)) {
+            $session_id = $row['last_session_id'];
+        }
+        // $session_id = 
         if (!does_it_exist("school_name", "school", "school_name='$name' OR address='$address'")) {
             $path = "../uploads/";
             $valid_ext = array("jpg", "png", "jpeg");
             if ($_FILES['logo']['name'] == '') {
                 $img_name = 'logo-placeholder.jpg';
-                $insert = mysqli_query($conn, "INSERT INTO school(school_name,address,city,state,country,logo,datecreated) 
-                VALUES('$name','$address','$city','$state','$country','$img_name','$date')");
+                $insert = mysqli_query($conn, "INSERT INTO school(url,amount,term_id,session_id,school_name,address,city,state,country,logo,datecreated) 
+                VALUES('$url','$amount','$term_id','$session_id','$name','$address','$city','$state','$country','$img_name','$date')");
             } else {
                 $img_name = $_FILES['logo']['name'];
                 $tmp = $_FILES['logo']['tmp_name'];
@@ -139,19 +150,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $path = $path . $final_img;
                     if (move_uploaded_file($tmp, $path)) {
 
-                        $insert = mysqli_query($conn, "INSERT INTO school(school_name,address,city,state,country,logo,datecreated) 
-                    VALUES('$name','$address','$city','$state','$country','$final_img','$date')");
+                        $insert = mysqli_query($conn, "INSERT INTO school(url,amount,term_id,session_id,school_name,address,city,state,country,logo,datecreated) 
+                    VALUES('$url','$amount','$term_id','$session_id','$name','$address','$city','$state','$country','$final_img','$date')");
                     }
                 }
             }
             if ($insert) {
-                $select = mysqli_query($conn, "SELECT id,school_name,logo FROM school WHERE school_name='$name' AND address='$address' AND city='$city'");
+                // insert into skul_settings
+                // $insert_settings = mysqli_query($conn, "INSERT INTO school_settings(school_id,
+                $select = mysqli_query($conn, "SELECT id,url,school_name,logo FROM school WHERE school_name='$name' AND address='$address' AND city='$city'");
                 if ($row = mysqli_fetch_array($select)) {
                     $school_id  = $row['id'];
                     $_SESSION['school_id']  = $row['id'];
                     // $userid = $_SESSION['userid'];
                     // $phone = $_SESSION['phone'];
                     // $email = $_SESSION['email'];
+                    $_SESSION['onboarding'] = true;
+                    $_SESSION['url'] = $row['url'];
+                    $_SESSION['session_id'] = $session_id;
+                    $_SESSION['term_id'] = $term_id;
                     $_SESSION['school_name'] = $row['school_name'];
                     $_SESSION['logo'] = $row['logo'];
                     echo json_encode(array('status' => '1', 'location' => 'staff'));

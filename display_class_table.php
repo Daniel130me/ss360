@@ -3,11 +3,20 @@ session_start();
 include_once("model/connect.php");
 include_once("model/functions.php");
 $school_id = $_SESSION['school_id'];
+// Safely read optional query parameter 'is_g_table' to avoid undefined index warnings
+$is_g_table = filter_input(INPUT_GET, 'is_g_table', FILTER_SANITIZE_STRING);
+if($is_g_table !== null ) {
+    $where = 'and is_graduate = 1';
+} else {
+    $where = 'and is_graduate = 0';
+}
+// Example usage: if you need to branch when this param is present, check with isset or !== null
+// e.g. if ($is_g_table !== null) { /* do something */ }
 // $select = mysqli_query($conn, "SELECT s.id,c.classname, s.firstname,s.middlename,s.lastname,s.class_id,s.dob,s.parent_id FROM students s, class c WHERE s.class_id=c.id AND s.school_id='$school_id' AND s.parent_id='$parent_id'");
 // while ($row = mysqli_fetch_array($select)) {
 //     $data[] = array('id' => $row['id'], 'classname' => $row['classname'], 'firstname' => $row['firstname'], 'lastname' => $row['lastname'], 'middlename' => $row['middlename'], 'class_id' => $row['class_id'], 'dob' => $row['dob'], 'parent_id' => $row['parent_id']);
 // }
-
+// Do not exit here; let the script render the table HTML so the AJAX caller receives the full response
 ?>
 <thead>
     <tr class="d-none">
@@ -16,7 +25,8 @@ $school_id = $_SESSION['school_id'];
 </thead>
 <tbody>
     <?php
-    $select = mysqli_query($conn, "SELECT * FROM class WHERE school_id='$school_id' ORDER BY classname Asc");
+    // echo "SELECT * FROM class WHERE school_id='$school_id' $where ORDER BY classname Asc";
+    $select = mysqli_query($conn, "SELECT * FROM class WHERE school_id='$school_id' $where ORDER BY classname Asc");
     while ($row = mysqli_fetch_array($select)) {
     ?>
         <tr>

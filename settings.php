@@ -6,8 +6,8 @@ if (!isset($_SESSION['userid'])) {
 }
 include_once("model/connect.php");
 include_once("model/functions.php");
-$_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3];
 $school_id = $_SESSION['school_id'];
+$_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[2];
 // exit;
 ?>
 <!DOCTYPE html>
@@ -23,8 +23,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <title>Settings</title>
 
   <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="../plugins/fontawesome-free/css/all.min.css">
   <link rel="stylesheet" href="../plugins/toastr/toastr.min.css">
@@ -34,9 +36,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link rel="stylesheet" href="../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.2.2/css/fixedColumns.dataTables.min.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
+
 
   <style>
     .sticky {
@@ -125,15 +129,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Navbar -->
     <nav class="main-header navbar border-bottom-0 navbar-expand justify-content-between bg1">
       <!-- <div class=""> -->
-      <!-- <div> -->
 
       <!-- Left navbar links -->
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+          <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="muted-text fas fa-bars"></i></a>
         </li>
-      </ul>
 
+      </ul>
       <!-- Right navbar links -->
       <ul class="navbar-nav align-items-center">
         <li class="nav-item dropdown">
@@ -145,7 +148,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
               </div>
               <div class="info d-none d-sm-inline-block">
                 <p style="font-size: 14px;" class="mb-0 d-block">
-                  <?= $_SESSION['firstname'] . ' ' . $_SESSION['lastname'] ?></p>
+                  <?= $_SESSION['firstname'] . ' ' . $_SESSION['lastname'] ?>
+                </p>
                 <p style="font-size: 12px;" class="d-block mb-0 accent">
                   <?= get_staff_type_in_name($_SESSION['staff_type']) ?>
                 </p>
@@ -161,11 +165,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </a>
             <?php
             if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
-            ?>
+              ?>
               <a href="my_payment" class="dropdown-item text-muted d-flex">
                 <span class="material-symbols-outlined mr-2">payments</span> Billing
               </a>
-            <?php
+              <?php
             } ?>
             <a href="logout" class="dropdown-item text-muted d-flex">
               <span class="material-symbols-outlined mr-2">logout</span> Logout
@@ -174,8 +178,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </li>
       </ul>
       <!-- </div> -->
-      <!-- </div> -->
-
     </nav>
     <!-- /.navbar -->
 
@@ -184,7 +186,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <aside class="main-sidebar sidebar-light-primary elevation-4">
       <!-- Brand Logo -->
       <a href="" class="brand-link">
-        <img src="../uploads/<?= $_SESSION['logo'] ?>" alt="<?= $_SESSION['school_name'] ?>" class="brand-image" style="opacity: .8">
+        <img src="../uploads/<?= $_SESSION['logo'] ?>" alt="<?= $_SESSION['school_name'] ?>" class="brand-image"
+          style="opacity: .8">
         <span class="brand-text font-weight-light" style="visibility: hidden;">Rus</span>
       </a>
 
@@ -199,11 +202,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
       <!-- Sidebar -->
       <div class="sidebar">
-
         <!-- Sidebar Menu -->
         <nav class="mt-2">
-          <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
-            data-accordion="false">
+          <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
             <li class="nav-item">
               <a href="dashboard" class="nav-link">
@@ -215,7 +216,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </li>
             <?php
             if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
-            ?>
+              ?>
               <li class="nav-item">
                 <a href="settings" class="nav-link active">
                   <p class="d-flex">
@@ -224,7 +225,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   </p>
                 </a>
               </li>
-            <?php
+              <?php
             }
             ?>
             <li class="nav-item">
@@ -293,14 +294,46 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </p>
               </a>
             </li>
+            <?php if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4 || $_SESSION['staff_type'] == 5) { ?>
+              <li class="nav-item">
+                <a href="staff_attendance" class="nav-link">
+                  <p class="d-flex">
+                    <i class="material-symbols-outlined pr-2">add_chart</i>
+                    Staff Attendance
+                  </p>
+                </a>
+              </li>
+            <?php } ?>
+            <?php if ($_SESSION['school_id'] == 27 || $_SESSION['school_id'] == 13) { ?>
+              <li class="nav-item">
+                <a href="lesson_note" class="nav-link">
+                  <p class="d-flex">
+                    <i class="material-symbols-outlined pr-2">list</i>
+                    Lesson Note
+                  </p>
+                </a>
+              </li>
+            <?php } ?>
             <li class="nav-item">
-              <a href="lesson_note" class="nav-link">
+              <a href="assessment" class="nav-link">
                 <p class="d-flex">
-                  <i class="material-symbols-outlined pr-2">list</i>
-                  Lesson Note
+                  <i class="material-symbols-outlined pr-2">app_registration</i>
+                  Assessments
                 </p>
               </a>
             </li>
+            <?php
+            if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4 || $_SESSION['staff_type'] == 7) {
+              ?>
+              <li class="nav-item">
+                <a href="payments" class="nav-link">
+                  <p class="d-flex">
+                    <i class="material-symbols-outlined pr-2">payments</i>
+                    Payments
+                  </p>
+                </a>
+              </li>
+            <?php } ?>
             <li class="nav-item">
               <a href="time_table" class="nav-link">
                 <p class="d-flex">
@@ -318,19 +351,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
               </a>
             </li>
             <!--<li class="nav-item">-->
-            <!--  <a href="reports" class="nav-link">-->
-            <!--    <p class="d-flex">-->
-            <!--      <i class="material-symbols-outlined pr-2">list</i>-->
-            <!--      Reports-->
-            <!--    </p>-->
-            <!--  </a>-->
+            <!--    <a href="reports" class="nav-link">-->
+            <!--        <p class="d-flex">-->
+            <!--            <i class="material-symbols-outlined pr-2">list</i>-->
+            <!--            Reports-->
+            <!--        </p>-->
+            <!--    </a>-->
             <!--</li>-->
           </ul>
         </nav>
         <!-- /.sidebar-menu -->
       </div>
       <a href="" class="brand-link" style="background:white; position: fixed; bottom:0;">
-        <img src="../dist/img/company_logo.png" alt="Schoolsuite360" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <img src="../dist/img/company_logo.png" alt="Schoolsuite360" class="brand-image img-circle elevation-3"
+          style="opacity: .8">
         <span class="brand-text font-weight-light">Schoolsuite360</span>
       </a>
       <!-- /.sidebar -->
@@ -367,17 +401,28 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <div class="container-fluid mt-4">
         <div class="py-3 px-0 bg-white" style="border-radius: 10px;">
           <div id="tabhead">
-            <ul class="nav nav-pills menu-scrollbar" id="pills-tab" role="tablist" style="flex-wrap: nowrap; overflow: auto; width: 100%; white-space: nowrap">
+            <ul class="nav nav-pills menu-scrollbar" id="pills-tab" role="tablist"
+              style="flex-wrap: nowrap; overflow: auto; width: 100%; white-space: nowrap">
               <li class="nav-item px-15" role="presentation">
-                <button class="pill-link link-primary active" id="pills-school-info-tab" data-toggle="pill" data-target="#pills-school-info" type="button" role="tab" aria-controls="pills-school-info" aria-selected="true">Update School Info</button>
+                <button class="pill-link link-primary active" id="pills-school-info-tab" data-toggle="pill"
+                  data-target="#pills-school-info" type="button" role="tab" aria-controls="pills-school-info"
+                  aria-selected="true">Update School Info</button>
               </li>
               <li class="nav-item" role="presentation">
-                <button class="pill-link link-primary" id="pills-settings-tab" data-toggle="pill" data-target="#pills-settings" type="button" role="tab" aria-controls="pills-settings" aria-selected="false">Settings</button>
+                <button class="pill-link link-primary" id="pills-settings-tab" data-toggle="pill"
+                  data-target="#pills-settings" type="button" role="tab" aria-controls="pills-settings"
+                  aria-selected="false">Settings</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="pill-link link-primary" id="pills-skills-tab" data-toggle="pill"
+                  data-target="#pills-skills" type="button" role="tab" aria-controls="pills-skills"
+                  aria-selected="false">Skills Configuration</button>
               </li>
             </ul>
           </div>
           <div class="tab-content px-15" id="pills-tabContent">
-            <div class="tab-pane fade show active" id="pills-school-info" role="tabpanel" aria-labelledby="pills-school-info-tab">
+            <div class="tab-pane fade show active" id="pills-school-info" role="tabpanel"
+              aria-labelledby="pills-school-info-tab">
               <div>
                 <form id="school_info_placeholder_form" class="settingsform">
                 </form>
@@ -388,16 +433,23 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   <div class="input-group-prepend">
                     <span class="input-group-text">schoolsuite360.com/</span>
                   </div>
-                  <input type="text" name="url" value="<?= $_SESSION['url'] ?>" class="form-control" title="e.g ris, phs, sic" placeholder="preffered URL">
+                  <input type="text" name="url" value="<?= $_SESSION['url'] ?>" class="form-control"
+                    title="e.g ris, phs, sic" placeholder="preffered URL">
                   <input type="hidden" name="action" value="update_url">
 
                 </div>
-                <input type="submit" id="url_update_btn" class="btn btn-primary mt-2" title="click to submit url" value="Update URL">
+                <input type="submit" id="url_update_btn" class="btn btn-primary mt-2" title="click to submit url"
+                  value="Update URL">
               </form>
             </div>
             <div class="tab-pane fade" id="pills-settings" role="tabpanel" aria-labelledby="pills-settings-tab">
               <form id="school_setting_placeholder_form" class="settingsform">
               </form>
+            </div>
+            <div class="tab-pane fade" id="pills-skills" role="tabpanel" aria-labelledby="pills-skills-tab">
+              <div id="skills_config_placeholder">
+                  <?php include "display_skills_config_form.php"; ?>
+              </div>
             </div>
           </div>
         </div>
@@ -429,14 +481,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <!-- <script src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
-  <script src="../plugins/toastr/toastr.min.js"></script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js"
+    charset="utf-8"></script>
+  <script src="../plugins/toastr/toastr.min.js"></script>
   <script src="../dist/js/skul.js"></script>
   <script>
     //  localStorage.setItem("settings", "first,second,third")
-    window.onscroll = function() {
+    window.onscroll = function () {
       scrollhandler()
     }
     var tabhead = document.getElementById("tabhead");

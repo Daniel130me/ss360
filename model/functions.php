@@ -647,14 +647,15 @@ function onboard_settings($phone, $email, $staff_type)
         $_SESSION['phone'] = $phone;
         $_SESSION['email'] = $email;
         $_SESSION['staff_type'] = $staff_type;
+        $grading = '{"A":"70","B":"60","C":"50","D":"40","E":"30","F":"0"}';
         $update = mysqli_query($conn, "UPDATE school SET createdby='{$row['id']}' WHERE id='{$_SESSION['school_id']}'");
-        $insertsetting = mysqli_query($conn, "INSERT INTO skul_settings (school_id,grading,datecreated,createdby) VALUES('{$_SESSION['school_id']}','{A:70,B:60,C:50,D:40,E:30,F:0}','$date','{$row['id']}')");
+        $insertsetting = mysqli_query($conn, "INSERT INTO skul_settings (session_id,term_id,ca1,ca2,exam,school_id,grading,datecreated,createdby) VALUES('{$_SESSION['session_id']}', '{$_SESSION['term_id']}',1,1,1,'{$_SESSION['school_id']}','$grading','$date','{$row['id']}')");
         $insertsub_cat = mysqli_query(
             $conn,
             "INSERT INTO subject_cat (category_name,createdby, datecreated,subject_ids,school_id) 
                     VALUES('Primary','{$row['id']}','$date','65,92,4,16,62,2,23,15,58,1,14,19','{$_SESSION['school_id']}')"
         );
-        echo json_encode(array('status' => '1', 'location' => '../login'));
+        echo json_encode(array('status' => '1', 'location' => "../{$_SESSION['url']}/"));
     }
 }
 
@@ -877,12 +878,12 @@ function get_attendance_present($student_id, $term_id, $session_id)
             // $row = mysqli_fetch_assoc($daily_result);
             if ($daily_result) {
                 $daily_row = mysqli_fetch_assoc($daily_result);
-                return $daily_row['total_presence'] ?? 10; // Return 0 if no records found
+                return $daily_row['total_presence'] ?? 0; // Return 0 if no records found
             } else {
-                return 20; // Return 0 if query fails
+                return 0; // Return 0 if query fails
             }
         } else {
-            return $row['total_present'] ?? 30; // Return 0 if no records found
+            return $row['total_present'] ?? 0; // Return 0 if no records found
         }
     }
     // $query = "SELECT COUNT(*) as present_days
@@ -908,20 +909,6 @@ function get_school_amount()
     }
     return 0;
 }
-
-// Function to get a student's score for a specific assessment from assessment_results table
-function get_assessment_score($assessment_id, $student_id) {
-    global $conn;
-    $query = "SELECT score FROM assessment_results 
-              WHERE assessment_id = '$assessment_id' 
-              AND student_id = '$student_id'";
-    $result = mysqli_query($conn, $query);
-    if ($row = mysqli_fetch_assoc($result)) {
-        return (int)$row['score'];
-    }
-    return 0;
-}
-
 function get_school_id_by_url($url) {
     global $conn;
     $query = "SELECT id FROM school WHERE url = '$url'";
@@ -931,7 +918,6 @@ function get_school_id_by_url($url) {
     }
     return 0;
 }
-
 // function get_total_obtainables($studentid, $term_id, $session_id, $class_id) {
 //     global $conn;
 //     $select = mysqli_query($conn, "SELECT COUNT(*) as subject_count FROM skulscores 

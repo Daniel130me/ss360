@@ -1,15 +1,235 @@
-
 // var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-(function () {
-    var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
-    s1.async = true;
-    s1.src = 'https://embed.tawk.to/67b7c05426ddae190981fa83/1ikiseijf';
-    s1.charset = 'UTF-8';
-    s1.setAttribute('crossorigin', '*');
-    s0.parentNode.insertBefore(s1, s0);
-})();
+// (function(){
+// var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+// s1.async=true;
+// s1.src='https://embed.tawk.to/67b7c05426ddae190981fa83/1ikiseijf';
+// s1.charset='UTF-8';
+// s1.setAttribute('crossorigin','*');
+// s0.parentNode.insertBefore(s1,s0);
+// })();
+
+// ;(function registerServiceWorker(){
+//   if (!('serviceWorker' in navigator)) return;
+//   // Avoid registering multiple times in noisy environments
+//   if (window.__SS360_SW_REGISTERED) return;
+//   window.__SS360_SW_REGISTERED = true;
+
+//   navigator.serviceWorker.register('/sw.js?v=4').then(reg => {
+//     console.log('SS360: Service Worker registered', reg);
+
+//     // After registration, request the service worker to precache common CDN assets
+//     // but do this during idle time to avoid impacting page load.
+//     const cdnAssets = [
+//       'https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback',
+//       'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200',
+//       'https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css',
+//       'https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js',
+//       'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-bs4.min.css',
+//       'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-bs4.min.js',
+//       'https://cdnjs.cloudflare.com/ajax/libs/mathquill/0.10.1/mathquill.min.css',
+//       'https://cdnjs.cloudflare.com/ajax/libs/mathquill/0.10.1/mathquill.min.js'
+//     ];
 
 
+//     function sendPrecacheMessage() {
+//       try {
+//         if (navigator.serviceWorker.controller) {
+//           navigator.serviceWorker.controller.postMessage({type: 'precache', urls: cdnAssets});
+//         } else if (reg.waiting) {
+//           reg.waiting.postMessage({type: 'precache', urls: cdnAssets});
+//         } else if (reg.installing) {
+//           // Wait until installed/activated
+//           const track = setInterval(() => {
+//             if (navigator.serviceWorker.controller) {
+//               navigator.serviceWorker.controller.postMessage({type: 'precache', urls: cdnAssets});
+//               clearInterval(track);
+//             }
+//           }, 500);
+//           setTimeout(() => clearInterval(track), 10000);
+//         }
+//       } catch (e) {
+//         console.warn('SS360: precache message failed', e);
+//       }
+//     }
+
+//     // Schedule precache during idle time, fallback to setTimeout
+//     if ('requestIdleCallback' in window) {
+//       requestIdleCallback(sendPrecacheMessage, {timeout: 5000});
+//     } else {
+//       // Give the page 3s to finish loading critical tasks, then prefetch
+//       setTimeout(sendPrecacheMessage, 3000);
+//     }
+
+//   }).catch(err => {
+//     console.warn('SS360: SW register failed', err);
+//   });
+// })();
+function get_billing_data() {
+    let student_id = $('#select_student_field').val();
+    let term_id = $('.term.select_btn.active').attr('data-name');
+    let session_id = $('#select_session_field').val();
+    let class_id = $('#select_class_field').val();
+    // show a lightweight loading state inside the existing payment card
+    var $body = $('#payment_card').find('.card-body');
+    if ($body.length === 0) {
+        // fallback: try to replace entire card if inner wrapper missing
+        $body = $('#payment_card');
+    }
+    $body.html('<div class="text-center p-3"><i class="fas fa-spinner fa-spin"></i><p class="mb-0 mt-2">Loading billing information&hellip;</p></div>');
+
+    $.ajax({
+        url: '../billing_controller.php',
+        type: 'POST',
+        data: {
+            action: 'get_parent_billing',
+            student_id,
+            term_id,
+            session_id,
+            class_id
+        },
+        dataType: 'json',
+        success: function (response) {
+            if (response && response.success) {
+                // Safely parse numbers and format with thousand separators
+                var due = parseFloat(response.amount_due) || 0;
+                var paid = parseFloat(response.total_amount_paid) || 0;
+                var balance = isNaN(parseFloat(response.balance)) ? (due - paid) : parseFloat(response.balance);
+
+                var fmt = function (n) {
+                    try {
+                        return Number(n).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                    } catch (e) {
+                        return n;
+                    }
+                };
+
+                var html = '';
+                html += '<div class="d-flex align-items-center mb-2">';
+                html += '    <span class="material-symbols-outlined text-danger mr-2">request_quote</span>';
+                html += '    <p class="mb-0">Amount due: <span class="font-weight-bold">' + fmt(due) + '</span></p>';
+                html += '</div>';
+                html += '<div class="d-flex align-items-center mb-2">';
+                html += '    <span class="material-symbols-outlined text-success mr-2">price_check</span>';
+                html += '    <p class="mb-0">Amount paid: <span class="font-weight-bold">' + fmt(paid) + '</span></p>';
+                html += '</div>';
+                html += '<div class="d-flex align-items-center mb-3">';
+                html += '    <span class="material-symbols-outlined text-warning mr-2">account_balance_wallet</span>';
+                html += '    <p class="mb-0">Balance: <span class="font-weight-bold">' + fmt(balance) + '</span></p>';
+                html += '</div>';
+                html += '<button type="button" class="btn btn-sm btn-outline-primary w-100" onclick="payment_breakdown_modal()">';
+                html += '    <span class="material-symbols-outlined" style="font-size: 1.2em; vertical-align: middle;">visibility</span>';
+                html += '    See payment breakdown';
+                html += '</button>';
+
+                $body.html(html);
+            } else {
+                var msg = (response && response.message) ? response.message : 'No billing data available.';
+                $body.html('<p class="text-muted text-center p-3">' + msg + '</p>');
+            }
+        },
+        error: function (xhr, status, err) {
+            $body.html('<p class="text-danger text-center p-3">Error fetching billing data.</p>');
+            console.error('get_billing_data error:', status, err, xhr && xhr.responseText);
+        }
+    });
+}
+// alert("cats")
+// function payment_breakdown_modal() {
+//     // Show modal and loading state
+//     $('#payment-breakdown-content').html('<div class="text-center py-4"><div class="spinner-border" role="status" aria-hidden="true"></div><div class="mt-2">Loading payment details&hellip;</div></div>');
+//     $('#payment_breakdown_modal').modal('show');
+
+//     // gather selection
+//     let student_id = $('#select_student_field').val();
+//     let term_id = $('.term.select_btn.active').attr('data-name') || '';
+//     let session_id = $('#select_session_field').val() || '';
+//     let class_id = $('#select_class_field').val() || '';
+
+//     if (!student_id || !term_id || !session_id) {
+//         $('#payment-breakdown-content').html('<p class="text-danger">Please select student, term and session.</p>');
+//         return;
+//     }
+
+//     function escapeHtml(str) {
+//         if (str === null || str === undefined) return '';
+//         return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+//     }
+
+//     $.ajax({
+//         url: '../billing_controller.php',
+//         type: 'POST',
+//         dataType: 'json',
+//         data: {
+//             action: 'get_payment_breakdown',
+//             student_id: student_id,
+//             term_id: term_id,
+//             session_id: session_id,
+//             class_id: class_id
+//         },
+//         success: function (resp) {
+//             if (!resp || !resp.success) {
+//                 $('#payment-breakdown-content').html('<p class="text-danger">Failed to load payment breakdown.</p>');
+//                 return;
+//             }
+
+//             const data = resp.data || [];
+//             if (data.length === 0) {
+//                 $('#payment-breakdown-content').html('<p>No payments or bills found for the selected filters.</p>');
+//                 return;
+//             }
+
+//             // Group by bill_id to create a timeline per bill
+//             const grouped = {};
+//             data.forEach(item => {
+//                 const bid = item.bill_id || 'no-bill';
+//                 if (!grouped[bid]) grouped[bid] = { bill_name: item.bill_name || ('Bill ' + bid), entries: [] };
+//                 grouped[bid].entries.push(item);
+//             });
+
+//             let html = '';
+//             Object.keys(grouped).forEach(bid => {
+//                 const group = grouped[bid];
+//                 html += `<div class="mb-4 p-3 border rounded">`;
+//                 html += `<div class="d-flex justify-content-between align-items-start mb-2">`;
+//                 html += `<div><strong>${escapeHtml(group.bill_name)}</strong></div>`;
+//                 html += `</div>`;
+
+//                 // timeline list
+//                 html += '<ul class="list-unstyled mb-0">';
+//                 // entries are expected ordered by date desc from server; normalize to desc
+//                 group.entries.sort((a, b) => (b.date_paid || '') > (a.date_paid || '') ? 1 : -1);
+//                 group.entries.forEach(entry => {
+//                     const date = entry.date_paid || entry.datecreated || '';
+//                     const amount = Number(entry.amount_newly_paid || 0);
+//                     const total_paid = Number(entry.total_amount_paid || 0);
+//                     const balance = Number(entry.balance || 0);
+//                     const method = entry.payment_method || '';
+//                     const desc = entry.description || '';
+
+//                     html += `<li class="mb-2">`;
+//                     html += `<div class="p-2 border rounded">`;
+//                     html += `<div class="d-flex justify-content-between">`;
+//                     html += `<div>`;
+//                     html += `<div><strong>₦${amount.toLocaleString()}</strong></div>`;
+//                     html += `<div class="small text-muted">${escapeHtml(desc)}${method ? ' — ' + escapeHtml(method) : ''}</div>`;
+//                     html += `</div>`;
+//                     html += `<div class="text-right small text-muted">${escapeHtml(date)}<div>Balance: ₦${balance.toLocaleString()}</div><div>Paid to date: ₦${total_paid.toLocaleString()}</div><a href="#paymentReceiptPreviewModal" class="float-right" data-toggle="modal" aria-expanded="false" data-bill_id="${entry.bill_id}" data-paymentid="${entry.id}" aria-controls="paymentReceiptPreviewModal">Preview Payment Receipt</a></div>`;
+//                     html += `</div>`;
+//                     html += `</div>`;
+//                     html += `</li>`;
+//                 });
+//                 html += '</ul>';
+//                 html += `</div>`;
+//             });
+
+//             $('#payment-breakdown-content').html(html);
+//         },
+//         error: function (xhr, status, err) {
+//             console.error(err);
+//             $('#payment-breakdown-content').html('<p class="text-danger">Error fetching payment breakdown.</p>');
+//         }
+//     });
+// }
 var student_score_data = [];
 // get_score_data()
 
@@ -18,8 +238,6 @@ var student_score_data = [];
 //     $(".select_btn.grade_type").removeClass("active")
 //     $(event).addClass("active")
 // }
-
-
 
 function toggle_term_setting(event) {
     $(".select_btn.term_setting").removeClass("active")
@@ -119,7 +337,7 @@ function get_notices(userid, usertype) {
                         str += `
                         <div class="each_message_notice">
                             <p>${value}</p>
-                            <a class="small" onclick="remove_msg(${key},'${userid}','${usertype}')"><i class="fas fa-minus mr-2"> Remove</i></a>
+                            <a class="small btn btn-sm" style="color:#e74c3c;" onclick="remove_msg(${key},'${userid}','${usertype}')"><i class="fas fa-minus mr-2"> Remove</i></a>
                         </div>`
                     })
                 })
@@ -317,77 +535,6 @@ function check_result_toggle() {
         format_student_table(student_score_data, $(".term.select_btn.active").attr("data-name"), $("#select_session_field").val(), $("#select_class_field").val())
     }
 }
-function get_billing_data() {
-    let student_id = $('#select_student_field').val();
-    let term_id = $('.term.select_btn.active').attr('data-name');
-    let session_id = $('#select_session_field').val();
-    let class_id = $('#select_class_field').val();
-    // show a lightweight loading state inside the existing payment card
-    var $body = $('#payment_card').find('.card-body');
-    if ($body.length === 0) {
-        // fallback: try to replace entire card if inner wrapper missing
-        $body = $('#payment_card');
-    }
-    $body.html('<div class="text-center p-3"><i class="fas fa-spinner fa-spin"></i><p class="mb-0 mt-2">Loading billing information&hellip;</p></div>');
-
-    $.ajax({
-        url: '../billing_controller.php',
-        type: 'POST',
-        data: {
-            action: 'get_parent_billing',
-            student_id,
-            term_id,
-            session_id,
-            class_id
-        },
-        dataType: 'json',
-        success: function (response) {
-            if (response && response.success) {
-                // Safely parse numbers and format with thousand separators
-                var due = parseFloat(response.amount_due) || 0;
-                var paid = parseFloat(response.total_amount_paid) || 0;
-                var balance = isNaN(parseFloat(response.balance)) ? (due - paid) : parseFloat(response.balance);
-
-                var fmt = function (n) {
-                    try {
-                        return Number(n).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-                    } catch (e) {
-                        return n;
-                    }
-                };
-
-                var html = '';
-                html += '<div class="d-flex align-items-center mb-2">';
-                html += '    <span class="material-symbols-outlined text-danger mr-2">request_quote</span>';
-                html += '    <p class="mb-0">Amount due: <span class="font-weight-bold">' + fmt(due) + '</span></p>';
-                html += '</div>';
-                html += '<div class="d-flex align-items-center mb-2">';
-                html += '    <span class="material-symbols-outlined text-success mr-2">price_check</span>';
-                html += '    <p class="mb-0">Amount paid: <span class="font-weight-bold">' + fmt(paid) + '</span></p>';
-                html += '</div>';
-                html += '<div class="d-flex align-items-center mb-3">';
-                html += '    <span class="material-symbols-outlined text-warning mr-2">account_balance_wallet</span>';
-                html += '    <p class="mb-0">Balance: <span class="font-weight-bold">' + fmt(balance) + '</span></p>';
-                html += '</div>';
-                html += '<button type="button" class="btn btn-sm btn-outline-primary w-100" onclick="payment_breakdown_modal()">';
-                html += '    <span class="material-symbols-outlined" style="font-size: 1.2em; vertical-align: middle;">visibility</span>';
-                html += '    See payment breakdown';
-                html += '</button>';
-
-                $body.html(html);
-            } else {
-                var msg = (response && response.message) ? response.message : 'No billing data available.';
-                $body.html('<p class="text-muted text-center p-3">' + msg + '</p>');
-            }
-        },
-        error: function (xhr, status, err) {
-            $body.html('<p class="text-danger text-center p-3">Error fetching billing data.</p>');
-            console.error('get_billing_data error:', status, err, xhr && xhr.responseText);
-        }
-    });
-}
-// alert("cats")
-
 function table_visual_Score_toggle(event) {
     let btn = $(event)
     if (btn.hasClass("visuals")) {
@@ -522,16 +669,16 @@ function display_visual_score(student_score_data, term, session_id, class_id) {
         console.log("theitem", nwdata)
         nwdata.forEach(item => {
             console.log("subj", item.subject)
-            let maxObtainable = parseFloat(item.ca1Total) + parseFloat(item.ca2Total) + parseFloat(item.ca3Total) + parseFloat(item.praTotal) + parseFloat(item.exaTotal)
-            let total = parseFloat(item.Total)
+            let maxObtainable = safeParseFloat(item.ca1Total) + safeParseFloat(item.ca2Total) + safeParseFloat(item.ca3Total) + safeParseFloat(item.praTotal) + safeParseFloat(item.exaTotal)
+            let total = safeParseFloat(item.Total)
             if (maxObtainable > 0) {
-                percentage = (parseFloat(total / maxObtainable) * 100).toFixed(0)
+                percentage = (safeParseFloat(total / maxObtainable) * 100).toFixed(0)
             } else {
                 percentage = '0'
             }
             function getCApercentage(score, total) {
                 if (total > 0) {
-                    return ((parseFloat(score) / parseFloat(total)) * 100).toFixed(0)
+                    return ((safeParseFloat(score) / safeParseFloat(total)) * 100).toFixed(0)
                 } else {
                     return '0';
                 }
@@ -828,8 +975,9 @@ function get_score_data() {
         return
     }
     // loadSettings().done(function (response) {
-    console.log("mmm", settingsData)
-    console.log(student_id, class_id, session_id, term_id)
+    // console.log("mmm", settingsData)
+    // console.log(student_id, class_id, session_id, term_id)
+    // console.log(student_id, class_id, session_id, term_id)
     if ($("#report_page").val() === 'report_scores') {
         setTimeout(get_billing_data, 100)
     }
@@ -853,6 +1001,7 @@ function get_score_data() {
             $(".data_overlay").show()
         },
         success: (data) => {
+            console.log(data)
             // console.log('l', )
             // alert(data.length)
             // if(data.length == 0){
@@ -1127,12 +1276,12 @@ function format_student_table(student_score_data, term, session_id, class_id) {
             str += `
         <tr>
             <td>${item.subject}</td>
-            <td class="${settingsData.ca1 == 0 ? 'd-none' : ''}">${item.CA1}</td>
-            <td class="${settingsData.ca2 == 0 ? 'd-none' : ''}">${item.CA2}</td>
-            <td class="${settingsData.ca3 == 0 ? 'd-none' : ''}">${item.CA3}</td>
-            <td class="${settingsData.pra == 0 ? 'd-none' : ''}">${item.Practical}</td>
-            <td class="${settingsData.exa == 0 ? 'd-none' : ''}">${item.Exam}</td>
-            <td>${item.Total}</td>
+             <td class="${settingsData.ca1 == 0 ? 'd-none' : ''}">${safeParseFloat(item.CA1)}</td>
+            <td class="${settingsData.ca2 == 0 ? 'd-none' : ''}">${safeParseFloat(item.CA2)}</td>
+            <td class="${settingsData.ca3 == 0 ? 'd-none' : ''}">${safeParseFloat(item.CA3)}</td>
+            <td class="${settingsData.pra == 0 ? 'd-none' : ''}">${safeParseFloat(item.Practical)}</td>
+            <td class="${settingsData.exa == 0 ? 'd-none' : ''}">${safeParseFloat(item.Exam)}</td>
+            <td>${safeParseFloat(item.Total)}</td>
             <td>${get_subject_percentage(item.subject_id, term, session_id, class_id)}</td>
             <td>${calculateGrade1(get_subject_percentage(item.subject_id, term, session_id, class_id), grader)}</td>
         </tr>
@@ -2869,39 +3018,51 @@ function by_class_view_content() {
     if (!class_id) {
         $(".data_overlay").html(`
             <p class="font-weight-bold">Fill the forms appropiately</p>
-        `)
-        $(".data_overlay").show()
-        $(".thecontentbox, .by_class_filter").hide()
-        return
+        `);
+        $(".data_overlay").show();
+        $(".thecontentbox, .by_class_filter").hide();
+        return;
     }
 
     $.ajax({
         url: "../controller.php",
         type: "post",
-        data: { 'action': 'get_score_data_by_class_term', term_id, class_id, session_id },
+        data: {
+            action: "get_score_data_by_class_term",
+            term_id,
+            class_id,
+            session_id,
+        },
         beforeSend: () => {
             $(".data_overlay").html(`
             <p class="font-weight-bold">Loading...</p>
-            `)
-            $(".thecontentbox, .by_class_filter").hide()
+            `);
+            $(".thecontentbox, .by_class_filter").hide();
             // $(".thecontentbox").hide()
-            $(".data_overlay").show()
+            $(".data_overlay").show();
         },
         success: (data) => {
-            data = JSON.parse(data)
-            let grader = format_grade(skul_settings['grading'])
+            data = data;
+            // data = JSON.parse(data);
+            let grader = format_grade(skul_settings["grading"]);
             if (data.length <= 1) {
                 $(".data_overlay").html(`
                 <p class="font-weight-bold">No record for the class selected</p>
-            `)
-                return
+            `);
+                return;
             }
-            $(".by_class_filter").show()
-            $(".data_overlay").hide()
+            $(".by_class_filter").show();
+            $(".data_overlay").hide();
             $(".data_overlay").html(`
             <p class="font-weight-bold">Fill the forms appropiately</p>
-        `)
-            const colspan_lenght = parseInt(settingsData.ca1) + parseInt(settingsData.ca2) + parseInt(settingsData.ca3) + parseInt(settingsData.pra) + parseInt(settingsData.exa);
+        `);
+            // compute component count safely (avoid NaN if settingsData entries are missing)
+            const ca1Flag = Number(settingsData.ca1) || 0;
+            const ca2Flag = Number(settingsData.ca2) || 0;
+            const ca3Flag = Number(settingsData.ca3) || 0;
+            const praFlag = Number(settingsData.pra) || 0;
+            const exaFlag = Number(settingsData.exa) || 0;
+            const colspan_lenght = ca1Flag + ca2Flag + ca3Flag + praFlag + exaFlag;
 
             const subjects = {};
 
@@ -2920,26 +3081,34 @@ function by_class_view_content() {
 
             // Loop through subjects to create subject-specific headers
             Object.keys(subjects).forEach((subject) => {
-                str += `<th colspan="${colspan_lenght + 2}">${subject}</th>`;
+                str += `<th colspan="${colspan_lenght + 3}">${subject}</th>`;
             });
 
             str += `
-                    <th></th></tr>
+                    <th colspan="3">Summary</th></tr>
                     <tr>
                         <th>Students</th>`;
 
             // Add score components for each subject
             Object.keys(subjects).forEach(() => {
                 str += `
-                    <th class="score_head ${settingsData.ca1 == 0 ? 'd-none' : ''}">CA1</th>
-                    <th class="score_head ${settingsData.ca2 == 0 ? 'd-none' : ''}">CA2</th>
-                    <th class="score_head ${settingsData.ca3 == 0 ? 'd-none' : ''}">CA3</th>
-                    <th class="score_head ${settingsData.pra == 0 ? 'd-none' : ''}">Practical</th>
-                    <th class="${settingsData.exa == 0 ? 'd-none' : ''}">Exam</th>
+                    <th class="score_head ${settingsData.ca1 == 0 ? "d-none" : ""
+                    }">CA1</th>
+                    <th class="score_head ${settingsData.ca2 == 0 ? "d-none" : ""
+                    }">CA2</th>
+                    <th class="score_head ${settingsData.ca3 == 0 ? "d-none" : ""
+                    }">CA3</th>
+                    <th class="score_head ${settingsData.pra == 0 ? "d-none" : ""
+                    }">Practical</th>
+                    <th class="${settingsData.exa == 0 ? "d-none" : ""
+                    }">Exam</th>
                     <th>Total</th>
-                    <th>Total(%)</th>`;
+                    <th>Total(%)</th>
+                    <th>Grade</th>`;
             });
             str += `
+                    <th>Overall Total</th>
+                    <th>Overall Percentage</th>
                     <th>Approval</th></tr>
                 </thead>
                 <tbody>`;
@@ -2954,36 +3123,99 @@ function by_class_view_content() {
             // Fill each student row with data for each subject
             Object.keys(students).forEach((studentId) => {
                 const studentSubjects = students[studentId];
-                const studentName = studentSubjects[Object.keys(studentSubjects)[0]].student_name;
+                const studentName =
+                    studentSubjects[Object.keys(studentSubjects)[0]].student_name;
 
-                str += `<tr><td>${studentName}</td>`;
+                str += `<tr><td><a href="students?id=${studentId}">${studentName}</a></td>`;
+
+                let overallTotal = 0;
+                let subjectsWithScoreCount = 0;
 
                 Object.keys(subjects).forEach((subject) => {
                     const record = studentSubjects[subject];
 
                     if (record) {
                         // console.log("record",record)
-                        const total = safeParseFloat(record.CA1) + safeParseFloat(record.CA2) + safeParseFloat(record.CA3) + safeParseFloat(record.Practical) + safeParseFloat(record.Exam);
-                        const totalMax = safeParseFloat(record.ca1Total) + safeParseFloat(record.ca2Total) + safeParseFloat(record.ca3Total) + safeParseFloat(record.praTotal) + safeParseFloat(record.exaTotal);
-                        const percentage = totalMax > 0 ? ((total / totalMax) * 100).toFixed(0) : 0
+                        const total =
+                            safeParseFloat(record.CA1) +
+                            safeParseFloat(record.CA2) +
+                            safeParseFloat(record.CA3) +
+                            safeParseFloat(record.Practical) +
+                            safeParseFloat(record.Exam);
+
+                        // Use Total from DB if available, otherwise use calculated total
+                        const dbTotal =
+                            record.Total !== undefined ? safeParseFloat(record.Total) : total;
+
+                        const totalMax =
+                            safeParseFloat(record.ca1Total) +
+                            safeParseFloat(record.ca2Total) +
+                            safeParseFloat(record.ca3Total) +
+                            safeParseFloat(record.praTotal) +
+                            safeParseFloat(record.exaTotal);
+                        const percentage =
+                            totalMax > 0 ? ((dbTotal / totalMax) * 100).toFixed(0) : 0;
+                        const grade = calculateGrade1(percentage, grader);
+
+                        if (totalMax > 0) {
+                            overallTotal += dbTotal;
+                            if (dbTotal > 0) {
+                                subjectsWithScoreCount++;
+                            }
+                        }
 
                         str += `
-                            <td class="${settingsData.ca1 == 0 ? 'd-none' : ''}">${record.CA1}</td>
-                            <td class="${settingsData.ca2 == 0 ? 'd-none' : ''}">${record.CA2}</td>
-                            <td class="${settingsData.ca3 == 0 ? 'd-none' : ''}">${record.CA3}</td>
-                            <td class="${settingsData.pra == 0 ? 'd-none' : ''}">${record.Practical}</td>
-                            <td class="${settingsData.exa == 0 ? 'd-none' : ''}">${record.Exam}</td>
-                            <td>${total}</td>
-                            <td>${percentage}</td>`;
+                            <td class="${settingsData.ca1 == 0 ? "d-none" : ""
+                            }">${safeParseFloat(record.CA1)}</td>
+                            <td class="${settingsData.ca2 == 0 ? "d-none" : ""
+                            }">${safeParseFloat(record.CA2)}</td>
+                            <td class="${settingsData.ca3 == 0 ? "d-none" : ""
+                            }">${safeParseFloat(record.CA3)}</td>
+                            <td class="${settingsData.pra == 0 ? "d-none" : ""
+                            }">${safeParseFloat(record.Practical)}</td>
+                            <td class="${settingsData.exa == 0 ? "d-none" : ""
+                            }">${safeParseFloat(record.Exam)}</td>
+                            <td>${dbTotal}</td>
+                            <td>${percentage}</td>
+                            <td>${grade}</td>`;
                     } else {
-                        str += `<td colspan="${colspan_lenght + 2}">0</td>`;
+                        // When a student has no record for this subject, emit the same number of <td>
+                        // cells as the header (one per component + Total + Total(%)). Using a single
+                        // colspan in the body can break DataTables; emitting individual cells keeps
+                        // the column count stable.
+                        // CA1
+                        str += `<td class="${ca1Flag == 0 ? "d-none" : ""}">0</td>`;
+                        // CA2
+                        str += `<td class="${ca2Flag == 0 ? "d-none" : ""}">0</td>`;
+                        // CA3
+                        str += `<td class="${ca3Flag == 0 ? "d-none" : ""}">0</td>`;
+                        // Practical
+                        str += `<td class="${praFlag == 0 ? "d-none" : ""}">0</td>`;
+                        // Exam
+                        str += `<td class="${exaFlag == 0 ? "d-none" : ""}">0</td>`;
+                        // Total
+                        str += `<td>0</td>`;
+                        // Total(%)
+                        str += `<td>0</td>`;
+                        // Grade
+                        str += `<td>-</td>`;
                     }
                 });
+
+                // Calculate overall percentage
+                const overallObtainable = subjectsWithScoreCount * 100;
+                const overallPercentage =
+                    overallObtainable > 0
+                        ? ((overallTotal / overallObtainable) * 100).toFixed(1)
+                        : 0;
+                str += `<td>${overallTotal}</td><td>${overallPercentage}%</td>`;
+
                 // Get the first record for this student to check status
                 const firstRecord = studentSubjects[Object.keys(studentSubjects)[0]];
                 str += `<td>
-    <button type="button" class="btn btn-sm btn-${firstRecord.status == 1 ? 'success' : 'warning'}" onclick="toggleApproval(${studentId}, ${term_id}, ${session_id},${class_id}, this)">
-        ${firstRecord.status == 1 ? 'Approved' : 'Approve'}
+    <button type="button" class="btn btn-sm btn-${firstRecord.status == 1 ? "success" : "warning"
+                    }" onclick="toggleApproval(${studentId}, ${term_id}, ${session_id},${class_id}, this)">
+        ${firstRecord.status == 1 ? "Approved" : "Approve"}
     </button>
 </td></tr>`;
             });
@@ -2991,19 +3223,329 @@ function by_class_view_content() {
             str += `</tbody></table>`;
 
             $("#class_table_data").html(str);
-            $('#class_score_table').DataTable({
+            $("#class_score_table").DataTable({
                 scrollX: true,
                 paging: false,
-                ordering: false,
+                ordering: true,
                 fixedColumns: {
                     left: 1,
-                    right: 0
-                }
+                    right: 0,
+                },
             });
-        }
+        },
     });
-    get_approval_btn(class_id, term_id, session_id)
+    get_approval_btn(class_id, term_id, session_id);
 }
+// function by_class_view_content() {
+//     const term_id = $(".select_btn.termclass.active").attr("data-name");
+//     const class_id = $("#select_class_field").val();
+//     const session_id = $("#select_session_field").val();
+
+//     if (!class_id) {
+//         $(".data_overlay").html(`
+//             <p class="font-weight-bold">Fill the forms appropiately</p>
+//         `)
+//         $(".data_overlay").show()
+//         $(".thecontentbox, .by_class_filter").hide()
+//         return
+//     }
+
+//     $.ajax({
+//         url: "../controller.php",
+//         type: "post",
+//         data: { 'action': 'get_score_data_by_class_term', term_id, class_id, session_id },
+//         beforeSend: () => {
+//             $(".data_overlay").html(`
+//             <p class="font-weight-bold">Loading...</p>
+//             `)
+//             $(".thecontentbox, .by_class_filter").hide()
+//             // $(".thecontentbox").hide()
+//             $(".data_overlay").show()
+//         },
+//         success: (data) => {
+//             data = JSON.parse(data)
+//             let grader = format_grade(skul_settings['grading'])
+//             if (data.length <= 1) {
+//                 $(".data_overlay").html(`
+//                 <p class="font-weight-bold">No record for the class selected</p>
+//             `)
+//                 return
+//             }
+//             $(".by_class_filter").show()
+//             $(".data_overlay").hide()
+//             $(".data_overlay").html(`
+//             <p class="font-weight-bold">Fill the forms appropiately</p>
+//         `)
+//             const colspan_lenght = parseInt(settingsData.ca1) + parseInt(settingsData.ca2) + parseInt(settingsData.ca3) + parseInt(settingsData.pra) + parseInt(settingsData.exa);
+
+//             const subjects = {};
+
+//             // Group data by subject
+//             data.forEach((record) => {
+//                 if (!subjects[record.subject]) subjects[record.subject] = [];
+//                 subjects[record.subject].push(record);
+//             });
+
+//             // Table header construction
+//             let str = `
+//             <table id="class_score_table" class="display nowrap" style="width:100%;">
+//                 <thead>
+//                     <tr>
+//                         <th></th>`;
+
+//             // Loop through subjects to create subject-specific headers
+//             Object.keys(subjects).forEach((subject) => {
+//                 str += `<th colspan="${colspan_lenght + 2}">${subject}</th>`;
+//             });
+
+//             str += `
+//                     <th></th></tr>
+//                     <tr>
+//                         <th>Students</th>`;
+
+//             // Add score components for each subject
+//             Object.keys(subjects).forEach(() => {
+//                 str += `
+//                     <th class="score_head ${settingsData.ca1 == 0 ? 'd-none' : ''}">CA1</th>
+//                     <th class="score_head ${settingsData.ca2 == 0 ? 'd-none' : ''}">CA2</th>
+//                     <th class="score_head ${settingsData.ca3 == 0 ? 'd-none' : ''}">CA3</th>
+//                     <th class="score_head ${settingsData.pra == 0 ? 'd-none' : ''}">Practical</th>
+//                     <th class="${settingsData.exa == 0 ? 'd-none' : ''}">Exam</th>
+//                     <th>Total</th>
+//                     <th>Total(%)</th>`;
+//             });
+//             str += `
+//                     <th>Approval</th></tr>
+//                 </thead>
+//                 <tbody>`;
+
+//             // Construct table rows for each student
+//             const students = {};
+//             data.forEach((record) => {
+//                 if (!students[record.student_id]) students[record.student_id] = {};
+//                 students[record.student_id][record.subject] = record;
+//             });
+
+//             // Fill each student row with data for each subject
+//             Object.keys(students).forEach((studentId) => {
+//                 const studentSubjects = students[studentId];
+//                 const studentName = studentSubjects[Object.keys(studentSubjects)[0]].student_name;
+
+//                 str += `<tr><td><a href="students?id=${studentId}">${studentName}</a></td>`;
+
+//                 Object.keys(subjects).forEach((subject) => {
+//                     const record = studentSubjects[subject];
+
+//                     if (record) {
+//                         // console.log("record",record)
+//                         const total = safeParseFloat(record.CA1) + safeParseFloat(record.CA2) + safeParseFloat(record.CA3) + safeParseFloat(record.Practical) + safeParseFloat(record.Exam);
+//                         const totalMax = safeParseFloat(record.ca1Total) + safeParseFloat(record.ca2Total) + safeParseFloat(record.ca3Total) + safeParseFloat(record.praTotal) + safeParseFloat(record.exaTotal);
+//                         const percentage = totalMax > 0 ? ((total / totalMax) * 100).toFixed(0) : 0
+
+//                         str += `
+//                             <td class="${settingsData.ca1 == 0 ? 'd-none' : ''}">${record.CA1}</td>
+//                             <td class="${settingsData.ca2 == 0 ? 'd-none' : ''}">${record.CA2}</td>
+//                             <td class="${settingsData.ca3 == 0 ? 'd-none' : ''}">${record.CA3}</td>
+//                             <td class="${settingsData.pra == 0 ? 'd-none' : ''}">${record.Practical}</td>
+//                             <td class="${settingsData.exa == 0 ? 'd-none' : ''}">${record.Exam}</td>
+//                             <td>${total}</td>
+//                             <td>${percentage}</td>`;
+//                     } else {
+//                         str += `<td colspan="${colspan_lenght + 2}">0</td>`;
+//                     }
+//                 });
+// // Get the first record for this student to check status
+// const firstRecord = studentSubjects[Object.keys(studentSubjects)[0]];
+// str += `<td>
+//     <button type="button" class="btn btn-sm btn-${firstRecord.status == 1 ? 'success' : 'warning'}" onclick="toggleApproval(${studentId}, ${term_id}, ${session_id},${class_id}, this)">
+//         ${firstRecord.status == 1 ? 'Approved' : 'Approve'}
+//     </button>
+// </td></tr>`;
+//             });
+
+//             str += `</tbody></table>`;
+
+//             $("#class_table_data").html(str);
+//             $('#class_score_table').DataTable({
+//                 scrollX: true,
+//                 paging: false,
+//                 ordering: false,
+//                 fixedColumns: {
+//                     left: 1,
+//                     right: 0
+//                 }
+//             });
+//         }
+//     });
+//     get_approval_btn(class_id, term_id, session_id)
+// }
+// function by_class_view_content() {
+//     const term_id = $(".select_btn.termclass.active").attr("data-name");
+//     const class_id = $("#select_class_field").val();
+//     const session_id = $("#select_session_field").val();
+
+//     if (!class_id) {
+//         $(".data_overlay").html(`
+//             <p class="font-weight-bold">Fill the forms appropiately</p>
+//         `)
+//         $(".data_overlay").show()
+//         $(".thecontentbox, .by_class_filter").hide()
+//         return
+//     }
+
+//     $.ajax({
+//         url: "../controller.php",
+//         type: "post",
+//         data: { 'action': 'get_score_data_by_class_term', term_id, class_id, session_id },
+//         beforeSend: () => {
+//             $(".data_overlay").html(`
+//             <p class="font-weight-bold">Loading...</p>
+//             `)
+//             $(".thecontentbox, .by_class_filter").hide()
+//             // $(".thecontentbox").hide()
+//             $(".data_overlay").show()
+//         },
+//         success: (data) => {
+//             data = JSON.parse(data)
+//             let grader = format_grade(skul_settings['grading'])
+//             if (data.length <= 1) {
+//                 $(".data_overlay").html(`
+//                 <p class="font-weight-bold">No record for the class selected</p>
+//             `)
+//                 return
+//             }
+//             $(".by_class_filter").show()
+//             $(".data_overlay").hide()
+//             $(".data_overlay").html(`
+//             <p class="font-weight-bold">Fill the forms appropiately</p>
+//         `)
+//             // compute component count safely (avoid NaN if settingsData entries are missing)
+//             const ca1Flag = Number(settingsData.ca1) || 0;
+//             const ca2Flag = Number(settingsData.ca2) || 0;
+//             const ca3Flag = Number(settingsData.ca3) || 0;
+//             const praFlag = Number(settingsData.pra) || 0;
+//             const exaFlag = Number(settingsData.exa) || 0;
+//             const colspan_lenght = ca1Flag + ca2Flag + ca3Flag + praFlag + exaFlag;
+
+//             const subjects = {};
+
+//             // Group data by subject
+//             data.forEach((record) => {
+//                 if (!subjects[record.subject]) subjects[record.subject] = [];
+//                 subjects[record.subject].push(record);
+//             });
+
+//             // Table header construction
+//             let str = `
+//             <table id="class_score_table" class="display nowrap" style="width:100%;">
+//                 <thead>
+//                     <tr>
+//                         <th></th>`;
+
+//             // Loop through subjects to create subject-specific headers
+//             Object.keys(subjects).forEach((subject) => {
+//                 str += `<th colspan="${colspan_lenght + 2}">${subject}</th>`;
+//             });
+
+//             str += `
+//                     <th></th></tr>
+//                     <tr>
+//                         <th>Students</th>`;
+
+//             // Add score components for each subject
+//             Object.keys(subjects).forEach(() => {
+//                 str += `
+//                     <th class="score_head ${settingsData.ca1 == 0 ? 'd-none' : ''}">CA1</th>
+//                     <th class="score_head ${settingsData.ca2 == 0 ? 'd-none' : ''}">CA2</th>
+//                     <th class="score_head ${settingsData.ca3 == 0 ? 'd-none' : ''}">CA3</th>
+//                     <th class="score_head ${settingsData.pra == 0 ? 'd-none' : ''}">Practical</th>
+//                     <th class="${settingsData.exa == 0 ? 'd-none' : ''}">Exam</th>
+//                     <th>Total</th>
+//                     <th>Total(%)</th>`;
+//             });
+//             str += `
+//                     <th>Approval</th></tr>
+//                 </thead>
+//                 <tbody>`;
+
+//             // Construct table rows for each student
+//             const students = {};
+//             data.forEach((record) => {
+//                 if (!students[record.student_id]) students[record.student_id] = {};
+//                 students[record.student_id][record.subject] = record;
+//             });
+
+//             // Fill each student row with data for each subject
+//             Object.keys(students).forEach((studentId) => {
+//                 const studentSubjects = students[studentId];
+//                 const studentName = studentSubjects[Object.keys(studentSubjects)[0]].student_name;
+
+//                 str += `<tr><td><a href="students?id=${studentId}">${studentName}</a></td>`;
+
+//                 Object.keys(subjects).forEach((subject) => {
+//                     const record = studentSubjects[subject];
+
+//                     if (record) {
+//                         // console.log("record",record)
+//                         const total = safeParseFloat(record.CA1) + safeParseFloat(record.CA2) + safeParseFloat(record.CA3) + safeParseFloat(record.Practical) + safeParseFloat(record.Exam);
+//                         const totalMax = safeParseFloat(record.ca1Total) + safeParseFloat(record.ca2Total) + safeParseFloat(record.ca3Total) + safeParseFloat(record.praTotal) + safeParseFloat(record.exaTotal);
+//                         const percentage = totalMax > 0 ? ((total / totalMax) * 100).toFixed(0) : 0
+
+//                         str += `
+//                             <td class="${settingsData.ca1 == 0 ? 'd-none' : ''}">${safeParseFloat(record.CA1)}</td>
+//                             <td class="${settingsData.ca2 == 0 ? 'd-none' : ''}">${safeParseFloat(record.CA2)}</td>
+//                             <td class="${settingsData.ca3 == 0 ? 'd-none' : ''}">${safeParseFloat(record.CA3)}</td>
+//                             <td class="${settingsData.pra == 0 ? 'd-none' : ''}">${safeParseFloat(record.Practical)}</td>
+//                             <td class="${settingsData.exa == 0 ? 'd-none' : ''}">${safeParseFloat(record.Exam)}</td>
+//                             <td>${total}</td>
+//                             <td>${percentage}</td>`;
+//                     } else {
+//                         // When a student has no record for this subject, emit the same number of <td>
+//                         // cells as the header (one per component + Total + Total(%)). Using a single
+//                         // colspan in the body can break DataTables; emitting individual cells keeps
+//                         // the column count stable.
+//                         // CA1
+//                         str += `<td class="${ca1Flag == 0 ? 'd-none' : ''}">0</td>`;
+//                         // CA2
+//                         str += `<td class="${ca2Flag == 0 ? 'd-none' : ''}">0</td>`;
+//                         // CA3
+//                         str += `<td class="${ca3Flag == 0 ? 'd-none' : ''}">0</td>`;
+//                         // Practical
+//                         str += `<td class="${praFlag == 0 ? 'd-none' : ''}">0</td>`;
+//                         // Exam
+//                         str += `<td class="${exaFlag == 0 ? 'd-none' : ''}">0</td>`;
+//                         // Total
+//                         str += `<td>0</td>`;
+//                         // Total(%)
+//                         str += `<td>0</td>`;
+//                     }
+//                 });
+// // Get the first record for this student to check status
+// const firstRecord = studentSubjects[Object.keys(studentSubjects)[0]];
+// str += `<td>
+//     <button type="button" class="btn btn-sm btn-${firstRecord.status == 1 ? 'success' : 'warning'}" onclick="toggleApproval(${studentId}, ${term_id}, ${session_id},${class_id}, this)">
+//         ${firstRecord.status == 1 ? 'Approved' : 'Approve'}
+//     </button>
+// </td></tr>`;
+//             });
+
+//             str += `</tbody></table>`;
+
+//             $("#class_table_data").html(str);
+//             $('#class_score_table').DataTable({
+//                 scrollX: true,
+//                 paging: false,
+//                 ordering: false,
+//                 fixedColumns: {
+//                     left: 1,
+//                     right: 0
+//                 }
+//             });
+//         }
+//     });
+//     get_approval_btn(class_id, term_id, session_id)
+// }
+
 function toggleApproval(studentId, termId, sessionId, classId, button) {
     const currentStatus = $(button).hasClass('btn-success') ? 0 : 1;
     $.ajax({
@@ -3037,7 +3579,8 @@ function get_approval_btn(class_id, term_id, session_id) {
         type: "post",
         data: { 'action': 'get_approval', class_id, term_id, session_id, },
         success: (data) => {
-            data = JSON.parse(data) //{ca1:1,ca2:0}
+            data = data //{ca1:1,ca2:0}
+            // data = JSON.parse(data) //{ca1:1,ca2:0}
             console.log(data)
             // Object.entries(data[0]).forEach(([key,value]) => {
             str += settingsData.ca1 == 1 ? `<button type="button" class="btn btn-sm mr-2 select_btn approve_disaprove ${data[0].ca1 == '1' ? 'active' : ''} mt-3" data-name='ca1' onclick="approve_disaprove_comment(this)">Approve CA1</button>` : ''
@@ -3074,7 +3617,8 @@ const loadSettings = () => {
             'session_id': session_id
         },
         success: (data) => {
-            settingsData = JSON.parse(data);
+            settingsData = data;
+            // settingsData = JSON.parse(data);
             // settingsData = data;
             // if ($("#report_page").val() === 'report_scores') {
             //     callback('student');
@@ -3548,11 +4092,15 @@ function edit_staff_info(id, staff_type) {
         }
     });
 }
-function edit_parent_info(id) {
+function edit_parent_info(id, student_id = null) {
     $.ajax({
-        url: '../controller.php',
-        type: 'POST',
-        data: { "action": "get_parent_data_for_update", id },
+        url: "../controller.php",
+        type: "POST",
+        data: {
+            action: "get_parent_data_for_update",
+            id: id,
+            student_id: student_id,
+        },
         beforeSend: () => {
             $("#edit_parent_modal").modal("show");
             $("#edit_parent_modal_body").html(`
@@ -3567,9 +4115,9 @@ function edit_parent_info(id) {
             `);
         },
         success: (data) => {
-            data = (data).trim();
+            data = data.trim();
             $("#edit_parent_modal_body").html(data);
-        }
+        },
     });
 }
 
@@ -3801,40 +4349,71 @@ function get_classes(id) {
 
 
 function sendEmail() {
-    let recipients = $("#reciepient_email_list").val()
-    let subject = $("#message_subject").val();
-    let body = $("#message_body").val();
+    let recipients = $('#reciepient_email_list').val()
+    let subject = $('#message_subject').val()
+    // get plain text from summernote (strip HTML)
+    let bodyHtml = $('#message_body').summernote('code')
+    let bodyText = $('<div>').html(bodyHtml).text()
 
-    let mailtoLink = `mailto:${recipients}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailtoLink;
+    let mailtoLink = `mailto:${recipients}?subject=${encodeURIComponent(
+        subject
+    )}&body=${encodeURIComponent(bodyText)}`
+    window.location.href = mailtoLink
 }
+
 function send_message() {
-    let recipients = $("#reciepient_email_list").val()
-    let body = $("#message_body").val();
+    let recipients = $('#reciepient_email_list').val()
+    let bodyHtml = $('#message_body').summernote('code')
+    let bodyText = $('<div>').html(bodyHtml).text()
 
-    let mailtoLink = `sms:${recipients}?body=${encodeURIComponent(body)}`;
-    window.location.href = mailtoLink;
+    let smsLink = `sms:${recipients}?body=${encodeURIComponent(bodyText)}`
+    window.location.href = smsLink
 }
-function send_internal() {
-    let recievers = $("#reciepient_email_list").val()
-    let message = $("#message_body").val();
-    let usertype = ($("#reciepient_type").val() == 'parent_specific' || $("#reciepient_type").val() == 'all_parent') ? '0' : '1';
 
+function send_internal() {
+    let recievers = $('#reciepient_email_list').val()
+    // For internal messages we send the HTML content so formatting is preserved
+    let message = $('#message_body').summernote('code')
+    let usertype =
+        $('#reciepient_type').val() == 'parent_specific' ||
+            $('#reciepient_type').val() == 'all_parent'
+            ? '0'
+            : '1'
+    $("#int_message_comm_btn").html("Processing").attr("disabled", true)
     $.ajax({
         url: '../controller.php',
-        type: "post",
-        data: { action: 'send_internal', recievers, message, usertype },
-        success: (data) => {
+        type: 'post',
+        dataType: 'json',
+        data: {
+            action: 'send_internal',
+            recievers,
+            message,
+            usertype
+        },
+        success: data => {
             console.log(data)
-            if (data.status == '1') {
-                toastr.success("Sent successfully")
+            if (data && data.status == '1') {
+                toastr.success('Sent successfully')
+                $("#int_message_comm_btn").html("Send Message").attr("disabled", false)
+                try {
+                    if (typeof fetchSentInternalMessages === 'function') {
+                        // refresh using current search and go to first page
+                        const search = (typeof $('#internal_search').val === 'function') ? $('#internal_search').val().trim() : '';
+                        fetchSentInternalMessages(1, search);
+                    }
+                } catch (e) {
+                    console.error('refresh messages failed', e)
+                }
+            } else {
+                toastr.error(data && data.err ? data.err : 'Failed to send')
             }
+        },
+        error: function (xhr, status, err) {
+            console.error(xhr.responseText)
+            toastr.error('Failed to send (network)')
         }
     })
 }
-
-
-
 
 function get_staff_table(id) {
     $.ajax({
@@ -4264,6 +4843,7 @@ function delete_student_modal(event) {
 }
 
 function delete_class_modal(event) {
+    // console.log($("#class_page").val() == 'display_g_class' ? '?is_g_table=1':null)
     const id = $(event).attr("data-id")
     $.ajax({
         url: '../controller.php',
@@ -4272,10 +4852,11 @@ function delete_class_modal(event) {
         beforeSend: function () {
             $("#delete_class_modal").modal("show")
         },
+
         success: (data) => {
             data = JSON.parse(data)
             if (data.status == '1') {
-                $("#class_table").load('../display_class_table.php')
+                $("#class_table").load(`../display_class_table.php${$("#class_page").val() == 'display_g_class' ? '?is_g_table=1' : ''}`)
                 setTimeout($("#delete_class_modal").modal("hide"), 200)
                 toastr.success("Updated Successfully")
             }
@@ -4344,6 +4925,10 @@ const init = () => {
     if ($("#class_page").val() === 'display_class') {
         $("#class_table").load('../display_class_table.php')
     }
+    if ($("#class_page").val() === 'display_g_class') {
+        $("#class_table").load('../display_class_table.php?is_g_table=1')
+    }
+
     if ($("#settings_page").val() === 'view_Settings') {
         $("#school_info_placeholder_form").load('../display_school_info_form.php')
         $("#school_setting_placeholder_form").load('../display_school_setting_form.php')
@@ -4405,8 +4990,9 @@ function toggletermfilterClass(element) {
     // let session = $("#select_session_field").val()
     // let class = $("#select_class_field").val()
     $("#filterTerm button").removeClass('active');
-    console.log($(element).html())
+    // console.log($(element).html())
     $(element).addClass('active');
+    // console.log("some",$(element).attr('data-name'))
     // if (element === '1') {
     //     $("#first").addClass('active');
     // } else if (element === '2') {
@@ -4423,10 +5009,10 @@ function toggletermfilterClass(element) {
     //         // alert("class")
     //     } else if ($("#by_stud_btn").hasClass("active")) {
     //         // alert("stude") 
-    console.log()
     check_result_toggle()
-
-    get_billing_data()
+    if ($(element).attr('data-name') != 'summary') {
+        get_billing_data();
+    }
     //     }
     // }
     if ($("#report_page").val() === 'report_scores') {
@@ -4496,7 +5082,8 @@ function getsubjects(classid, callback) {
                     $("#select_subject_field").empty()
                     return reject()
                 }
-                subjects = JSON.parse(data)
+                subjects = data
+                // subjects = JSON.parse(data)
                 if (callback == 'callback') {
                     if ($("#by_subj_btn").hasClass('active')) {
                         $("#select_subject_warning").hide()
@@ -4534,7 +5121,8 @@ function getstudents(classValue) {
         success: (data) => {
 
             let str;
-            let parsedData = JSON.parse(data);
+            let parsedData = data;
+            // let parsedData = JSON.parse(data);
             students = parsedData
             if ($("#by_subj_btn").hasClass('active')) {
                 students = parsedData;
@@ -5976,28 +6564,32 @@ function check_checkbox() {
     }
 }
 
-
+console.log("lkjk")
 function get_all_checked_checkbox(selection_type, id, modal) {
-    $.ajax({
-        url: "../controller.php",
-        type: "POST",
-        beforeSend: () => {
-            $("#" + modal).modal("show");
-        },
-        success: (data) => {
-            if (selection_type == 'multiple') {
-                var box = []
-                var checkedbox = $('.table_checkbox:checked');
-                for (var i = 0; i < checkedbox.length; i++) {
-                    box.push(checkedbox[i].value);
-                }
-                var joinedcheckbox = box.join(",")
-                $(".bulk_transfer_ids").val(joinedcheckbox)
-            } else {
-                $(".bulk_transfer_ids").val(id)
-            }
+    console.log("lind")
+    $("#" + modal).modal("show");
+    if (selection_type == 'multiple') {
+        var box = []
+        var checkedbox = $('.table_checkbox:checked');
+        for (var i = 0; i < checkedbox.length; i++) {
+            box.push(checkedbox[i].value);
         }
-    })
+        var joinedcheckbox = box.join(",")
+        $(".bulk_transfer_ids").val(joinedcheckbox)
+    } else {
+        console.log("sentidin", id)
+
+        $(".bulk_transfer_ids").val(id)
+    }
+    // $.ajax({
+    //     url: "../controller.php",
+    //     type: "POST",
+    //     beforeSend: () => {
+    //     },
+    //     success: (data) => {
+    //         console.log("sentid",id)
+    //     }
+    // })
 }
 function get_all_checked_checkbox_for_report(selection_type, id, modal, ids_class) {
     $("#" + modal).modal("show");
@@ -6013,6 +6605,43 @@ function get_all_checked_checkbox_for_report(selection_type, id, modal, ids_clas
     else if (selection_type == 'single') {
         $("." + ids_class).val(id)
     }
+}
+
+function get_the_id_for_password_reset(id, modal) {
+    $("#" + modal).modal("show");
+    $("#student_id_for_password_reset").val(id)
+}
+
+function reset_student_password_modal(e) {
+    e.preventDefault()
+    let formdata = new FormData(e.target);
+    $.ajax({
+        url: '../controller.php',
+        type: 'post',
+        data: formdata,
+        contentType: false,
+        processData: false,
+        beforeSend: () => {
+            $("#reset_student_password_btn").html('Processing...').prop('disabled', true);
+        },
+        success: (data) => {
+            try {
+                let res = JSON.parse(data);
+                if (res.status == '1') {
+                    toastr.success(res.msg || "Password reset successfully.");
+                    $('#reset_student_password_modal').modal('hide');
+                } else {
+                    toastr.error(res.err || "Failed to reset password.");
+                }
+            } catch (e) {
+                toastr.error("An unexpected error occurred.");
+            }
+        },
+        complete: () => {
+            $("#reset_student_password_btn").html('Reset').prop('disabled', false);
+            e.target.reset();
+        }
+    });
 }
 
 // alert("dgh")
@@ -6691,57 +7320,105 @@ function download_att_report() {
 
 
 function generatePDF(thestudent_name) {
-    console.log(data)
-    alert("func" + thestudent_name)
-    // return
-    // const element = data;
-    const element = document.querySelector('.report-card');
+    const previewContent = document.getElementById("preview-content");
+    const singleReport = document.querySelector(".report-card");
+    const element =
+        previewContent && previewContent.innerHTML.trim() !== ""
+            ? previewContent
+            : singleReport;
 
-    // Add CSS to control page layout
-    element.style.width = '100%';
-    element.style.maxWidth = '100%';
-    element.style.pageBreakInside = 'avoid';
-    element.style.transform = 'scale(0.9)'; // Slightly reduce content size
+    if (!element) return;
+
+    const htmlString = `
+    <div style="width: 1000px; background-color: #ffffff; padding: 20px; font-family: sans-serif;">
+      ${element.innerHTML}
+    </div>
+  `;
 
     const opt = {
-        margin: 0.5, // Reduce margins (in mm)
-        filename: thestudent_name + '.pdf',
-        image: {
-            type: 'jpeg',
-            quality: 0.95 // Slightly reduce image quality to save space
-        },
+        margin: [10, 5, 10, 5],
+        filename: (thestudent_name || "Report").trim() + ".pdf",
+        image: { type: "jpeg", quality: 0.98 },
         html2canvas: {
-            scale: 1.5, // Reduce scale from 2 to 1.5
+            scale: 2,
             useCORS: true,
             letterRendering: true,
-            scrollY: 0,
-            windowWidth: element.scrollWidth
+            width: 1000,
         },
         jsPDF: {
-            unit: 'mm',
-            format: 'a4',
-            orientation: 'portrait',
+            unit: "mm",
+            format: "a4",
+            orientation: "portrait",
             compress: true,
-            hotfixes: ["px_scaling"], // Add hotfix for scaling
-            // Custom page size that's slightly smaller than A4
-            putOnlyUsedFonts: true,
-            floatPrecision: "smart" // Optimize number precision
-        }
+        },
     };
 
-    // Create PDF with optimized settings
-    html2pdf().from(element).set(opt).save()
-        .then(() => {
-            // Reset any style changes we made
-            element.style.width = '';
-            element.style.maxWidth = '';
-            element.style.pageBreakInside = '';
-            element.style.transform = '';
+    html2pdf()
+        .from(htmlString)
+        .set(opt)
+        .save()
+        .catch((err) => {
+            console.error("PDF Generation Error:", err);
         });
 }
+async function downloadAllReports() {
+    console.log("weeeeeeeeeeeeeeeeeeeeeeeeeeee")
+    const reports = document.querySelectorAll("#preview-content .single-report");
+    const downloadButton = $("#download-pdf-button");
 
+    if (reports.length === 0) return;
 
+    downloadButton
+        .prop("disabled", true)
+        .html('<i class="fas fa-spinner fa-spin mr-1"></i> Downloading...');
 
+    for (let i = 0; i < reports.length; i++) {
+        const report = reports[i];
+        const nameEl = report.querySelector(".student-name-header");
+        const studentName = nameEl
+            ? nameEl.getAttribute("data-student-name")
+            : `Student_${i + 1}`;
+
+        // Create a temporary container for each report to ensure clean capture
+        const htmlString = `
+      <div style="width: 1000px; background-color: #ffffff; padding: 20px; font-family: sans-serif;">
+        ${report.innerHTML}
+      </div>
+    `;
+
+        const opt = {
+            margin: [10, 5, 10, 5],
+            filename: (studentName || "Report").trim() + ".pdf",
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                letterRendering: true,
+                width: 1000,
+            },
+            jsPDF: {
+                unit: "mm",
+                format: "a4",
+                orientation: "portrait",
+                compress: true,
+            },
+        };
+
+        try {
+            await html2pdf().from(htmlString).set(opt).save();
+            // Small delay to prevent browser download blocking
+            if (i < reports.length - 1) {
+                await new Promise((resolve) => setTimeout(resolve, 800));
+            }
+        } catch (err) {
+            console.error(`Error downloading report for ${studentName}:`, err);
+        }
+    }
+
+    downloadButton
+        .prop("disabled", false)
+        .html('<i class="fas fa-download mr-1"></i> Download PDF');
+}
 
 // function generatePDF(data) {
 //     console.log(data)
@@ -6849,15 +7526,133 @@ function generatePDF(thestudent_name) {
 //     // return
 // }
 
+// function set_behaviour_comment(term, session, student_id, class_id, pagetype) {
+//     // alert('kl')
+//     if ($("#report_page").val() === 'report_scores') {
+//         pagetype = 'report'
+//     }
+//     $.ajax({
+//         url: "../controller.php",
+//         type: "POST",
+//         data: { 'action': 'getbehaviour_comment', term, session, student_id, class_id, pagetype },
+//         success: (data) => {
+//             data = data.trim();
+//             data = JSON.parse(data);
+//             // alert(data.staff_classId)
+//             // let staff_classId_json = JSON.parse(data.staff_classId)
+//             // alert((data.staff_classId).includes(class_id))
+//             thebehavedata = data.comment;
+//             if ($("#comment_student_page").val() == "comment") {
+//                 // console.log("comm",data.comment)
+//                 if ((data.staff_classId).includes(class_id) == false && pagetype == 'post') {
+
+//                     // console.log("kkk")
+//                     document.querySelectorAll(".btn.togglebtn").forEach(button => {
+//                         button.disabled = true
+//                         // button.addEventListener("click", function(event){
+//                         //     event.preventDefault()
+//                         //     event.stopPropagation()
+//                         // })
+//                     })
+
+//                 }
+//                 if (data.comment == '') {
+//                     console.log('success but empty');
+//                     $("#post_teacher_comment_gb_container").show();
+//                     let behave = ['punctuality', 'classattendance', 'resptoass', 'Politeness', 'Honesty', 'selfcontrol', 'relationship', 'responsibility', 'organizationability', 'Neatness', 'Obedience', 'Creativity', 'Writing', 'Fluency', 'Sport', 'Games', 'DrawingPainting', 'Music', 'HandlingTools', 'Crafts'];
+//                     behave.map((each) => {
+//                         let theclasses = Array.from(document.querySelectorAll(`.${each}`));
+//                         theclasses.map((item) => {
+//                             item.classList.remove("active");
+//                         });
+//                     });
+//                 } else {
+//                     console.log("access garnted with ful data")
+//                     parsedata = JSON.parse(thebehavedata)
+//                     $("#post_teacher_comment_gb_container").show();
+//                     Object.entries(parsedata).forEach(([key, thevalue]) => {
+//                         let punct = Array.from(document.querySelectorAll(`.${key}`));
+//                         punct.map((each) => {
+//                             each.classList.remove("active");
+//                             each.value == thevalue && each.classList.add("active");
+//                         });
+//                     });
+//                 }
+//             }
+
+
+//             if ((data.staff_classId).includes(class_id) && pagetype == 'post') {
+//                 if (data.comment == '') {
+//                     console.log('success but empty');
+//                     $("#post_teacher_comment_gb_container").show();
+//                     let behave = ['punctuality', 'classattendance', 'resptoass', 'Politeness', 'Honesty', 'selfcontrol', 'relationship', 'responsibility', 'organizationability', 'Neatness', 'Obedience', 'Creativity', 'Writing', 'Fluency', 'Sport', 'Games', 'DrawingPainting', 'Music', 'HandlingTools', 'Crafts'];
+//                     behave.map((each) => {
+//                         let theclasses = Array.from(document.querySelectorAll(`.${each}`));
+//                         theclasses.map((item) => {
+//                             item.classList.remove("active");
+//                         });
+//                     });
+//                 } else {
+//                     console.log("access garnted with ful data")
+//                     parsedata = JSON.parse(thebehavedata)
+//                     $("#post_teacher_comment_gb_container").show();
+//                     Object.entries(parsedata).forEach(([key, thevalue]) => {
+//                         let punct = Array.from(document.querySelectorAll(`.${key}`));
+//                         punct.map((each) => {
+//                             each.classList.remove("active");
+//                             each.value == thevalue && each.classList.add("active");
+//                         });
+//                     });
+//                 }
+//             } else if (pagetype == 'view' || pagetype == 'report') {
+//                 // alert('ll')
+//                 function getPercentage(score) {
+//                     switch (score) {
+//                         case "5": return "100%";
+//                         case "4": return "80%";
+//                         case "3": return "60%";
+//                         case "2": return "40%";
+//                         case "1": return "20%";
+//                         default: return "Not rated";
+//                     }
+//                 }
+//                 if (thebehavedata == '') {
+//                     let behave = ['punctuality', 'classattendance', 'resptoass', 'Politeness', 'Honesty', 'selfcontrol', 'relationship', 'responsibility', 'organizationability', 'Neatness', 'Obedience', 'Creativity', 'Writing', 'Fluency', 'Sport', 'Games', 'DrawingPainting', 'Music', 'HandlingTools', 'Crafts'];
+//                     behave.map((key) => {
+//                         console.log(key)
+//                         $("." + key).html(getPercentage(0))
+//                     })
+//                 } else {
+//                     par = JSON.parse(thebehavedata)
+//                     Object.entries(par).forEach(([key, value]) => {
+//                         $("." + key).html(getPercentage(value))
+//                     })
+//                 }
+//             }
+//             else {
+//                 $("#view_teacher_comment_gb_container").hide();
+//                 $("#post_teacher_comment_gb_container").hide();
+//             }
+//         }
+//     });
+// }
+console.log('kilometer')
 function set_behaviour_comment(term, session, student_id, class_id, pagetype) {
-    // alert('kl')
-    if ($("#report_page").val() === 'report_scores') {
-        pagetype = 'report'
+    console.log(window.schoolHiddenSkills);
+    if ($("#report_page").val() === "report_scores") {
+        pagetype = "report";
     }
     $.ajax({
         url: "../controller.php",
         type: "POST",
-        data: { 'action': 'getbehaviour_comment', term, session, student_id, class_id, pagetype },
+        data: {
+            action: "getbehaviour_comment",
+            term,
+            session,
+            student_id,
+            class_id,
+            pagetype,
+        },
         success: (data) => {
             data = data.trim();
             data = JSON.parse(data);
@@ -6865,24 +7660,62 @@ function set_behaviour_comment(term, session, student_id, class_id, pagetype) {
             // let staff_classId_json = JSON.parse(data.staff_classId)
             // alert((data.staff_classId).includes(class_id))
             thebehavedata = data.comment;
+            console.log("thebehavedata", thebehavedata)
+            console.log("thebehavedata2", data)
             if ($("#comment_student_page").val() == "comment") {
                 // console.log("comm",data.comment)
-                if ((data.staff_classId).includes(class_id) == false && pagetype == 'post') {
-
+                if (
+                    data.staff_classId.includes(class_id) == false &&
+                    pagetype == "post"
+                ) {
                     // console.log("kkk")
-                    document.querySelectorAll(".btn.togglebtn").forEach(button => {
-                        button.disabled = true
+                    document.querySelectorAll(".btn.togglebtn").forEach((button) => {
+                        button.disabled = true;
                         // button.addEventListener("click", function(event){
                         //     event.preventDefault()
                         //     event.stopPropagation()
                         // })
-                    })
-
+                    });
                 }
-                if (data.comment == '') {
-                    console.log('success but empty');
+                if (data.comment == "") {
+                    console.log("success but empty");
                     $("#post_teacher_comment_gb_container").show();
-                    let behave = ['punctuality', 'classattendance', 'resptoass', 'Politeness', 'Honesty', 'selfcontrol', 'relationship', 'responsibility', 'organizationability', 'Neatness', 'Obedience', 'Creativity', 'Writing', 'Fluency', 'Sport', 'Games', 'DrawingPainting', 'Music', 'HandlingTools', 'Crafts'];
+                    let behave =
+                        typeof window.schoolSkills !== "undefined" &&
+                            Array.isArray(window.schoolSkills) &&
+                            window.schoolSkills.length > 0
+                            ? window.schoolSkills
+                            : [
+                                "punctuality",
+                                "classattendance",
+                                "resptoass",
+                                "Politeness",
+                                "Honesty",
+                                "selfcontrol",
+                                "relationship",
+                                "responsibility",
+                                "organizationability",
+                                "Neatness",
+                                "Obedience",
+                                "Creativity",
+                                "Writing",
+                                "Fluency",
+                                "Sport",
+                                "Games",
+                                "DrawingPainting",
+                                "Music",
+                                "HandlingTools",
+                                "Crafts",
+                            ];
+                    if (
+                        typeof window.schoolHiddenSkills !== "undefined" &&
+                        Array.isArray(window.schoolHiddenSkills)
+                    ) {
+                        behave = behave.filter(
+                            (skill) => !window.schoolHiddenSkills.includes(skill)
+                        );
+                    }
+                    console.log("theskills", behave);
                     behave.map((each) => {
                         let theclasses = Array.from(document.querySelectorAll(`.${each}`));
                         theclasses.map((item) => {
@@ -6890,8 +7723,9 @@ function set_behaviour_comment(term, session, student_id, class_id, pagetype) {
                         });
                     });
                 } else {
-                    console.log("access garnted with ful data")
-                    parsedata = JSON.parse(thebehavedata)
+                    console.log("access garnted with ful data1");
+                    parsedata = JSON.parse(thebehavedata);
+                    console.log("comm", parsedata);
                     $("#post_teacher_comment_gb_container").show();
                     Object.entries(parsedata).forEach(([key, thevalue]) => {
                         let punct = Array.from(document.querySelectorAll(`.${key}`));
@@ -6903,12 +7737,46 @@ function set_behaviour_comment(term, session, student_id, class_id, pagetype) {
                 }
             }
 
-
-            if ((data.staff_classId).includes(class_id) && pagetype == 'post') {
-                if (data.comment == '') {
-                    console.log('success but empty');
+            if (data.staff_classId.includes(class_id) && pagetype == "post") {
+                if (data.comment == "") {
+                    console.log("success but empty");
                     $("#post_teacher_comment_gb_container").show();
-                    let behave = ['punctuality', 'classattendance', 'resptoass', 'Politeness', 'Honesty', 'selfcontrol', 'relationship', 'responsibility', 'organizationability', 'Neatness', 'Obedience', 'Creativity', 'Writing', 'Fluency', 'Sport', 'Games', 'DrawingPainting', 'Music', 'HandlingTools', 'Crafts'];
+                    let behave =
+                        typeof window.schoolSkills !== "undefined" &&
+                            Array.isArray(window.schoolSkills) &&
+                            window.schoolSkills.length > 0
+                            ? window.schoolSkills
+                            : [
+                                "punctuality",
+                                "classattendance",
+                                "resptoass",
+                                "Politeness",
+                                "Honesty",
+                                "selfcontrol",
+                                "relationship",
+                                "responsibility",
+                                "organizationability",
+                                "Neatness",
+                                "Obedience",
+                                "Creativity",
+                                "Writing",
+                                "Fluency",
+                                "Sport",
+                                "Games",
+                                "DrawingPainting",
+                                "Music",
+                                "HandlingTools",
+                                "Crafts",
+                            ];
+                    if (
+                        typeof window.schoolHiddenSkills !== "undefined" &&
+                        Array.isArray(window.schoolHiddenSkills)
+                    ) {
+                        behave = behave.filter(
+                            (skill) => !window.schoolHiddenSkills.includes(skill)
+                        );
+                    }
+                    console.log("theskills", behave);
                     behave.map((each) => {
                         let theclasses = Array.from(document.querySelectorAll(`.${each}`));
                         theclasses.map((item) => {
@@ -6916,8 +7784,9 @@ function set_behaviour_comment(term, session, student_id, class_id, pagetype) {
                         });
                     });
                 } else {
-                    console.log("access garnted with ful data")
-                    parsedata = JSON.parse(thebehavedata)
+                    console.log("access garnted with ful data2");
+                    parsedata = JSON.parse(thebehavedata);
+                    console.log("comm", parsedata);
                     $("#post_teacher_comment_gb_container").show();
                     Object.entries(parsedata).forEach(([key, thevalue]) => {
                         let punct = Array.from(document.querySelectorAll(`.${key}`));
@@ -6927,39 +7796,80 @@ function set_behaviour_comment(term, session, student_id, class_id, pagetype) {
                         });
                     });
                 }
-            } else if (pagetype == 'view' || pagetype == 'report') {
-                // alert('ll')
+            } else if (pagetype == "view" || pagetype == "report") {
+                console.log('llama now')
                 function getPercentage(score) {
                     switch (score) {
-                        case "5": return "100%";
-                        case "4": return "80%";
-                        case "3": return "60%";
-                        case "2": return "40%";
-                        case "1": return "20%";
-                        default: return "Not rated";
+                        case "5":
+                            return "100%";
+                        case "4":
+                            return "80%";
+                        case "3":
+                            return "60%";
+                        case "2":
+                            return "40%";
+                        case "1":
+                            return "20%";
+                        default:
+                            return "Not rated";
                     }
                 }
-                if (thebehavedata == '') {
-                    let behave = ['punctuality', 'classattendance', 'resptoass', 'Politeness', 'Honesty', 'selfcontrol', 'relationship', 'responsibility', 'organizationability', 'Neatness', 'Obedience', 'Creativity', 'Writing', 'Fluency', 'Sport', 'Games', 'DrawingPainting', 'Music', 'HandlingTools', 'Crafts'];
+                if (thebehavedata == "") {
+                    console.log("behace")
+                    let behave =
+                        typeof window.schoolSkills !== "undefined" &&
+                            Array.isArray(window.schoolSkills) &&
+                            window.schoolSkills.length > 0
+                            ? window.schoolSkills
+                            : [
+                                "punctuality",
+                                "classattendance",
+                                "resptoass",
+                                "Politeness",
+                                "Honesty",
+                                "selfcontrol",
+                                "relationship",
+                                "responsibility",
+                                "organizationability",
+                                "Neatness",
+                                "Obedience",
+                                "Creativity",
+                                "Writing",
+                                "Fluency",
+                                "Sport",
+                                "Games",
+                                "DrawingPainting",
+                                "Music",
+                                "HandlingTools",
+                                "Crafts",
+                            ];
+                    if (
+                        typeof window.schoolHiddenSkills !== "undefined" &&
+                        Array.isArray(window.schoolHiddenSkills)
+                    ) {
+                        behave = behave.filter(
+                            (skill) => !window.schoolHiddenSkills.includes(skill)
+                        );
+                    }
+                    console.log("theskills", behave);
                     behave.map((key) => {
-                        console.log(key)
-                        $("." + key).html(getPercentage(0))
-                    })
+                        console.log(key);
+                        $("." + key).html(getPercentage(0));
+                    });
                 } else {
-                    par = JSON.parse(thebehavedata)
+                    console.log("king and queens")
+                    par = JSON.parse(thebehavedata);
                     Object.entries(par).forEach(([key, value]) => {
-                        $("." + key).html(getPercentage(value))
-                    })
+                        $("." + key).html(getPercentage(value));
+                    });
                 }
-            }
-            else {
+            } else {
                 $("#view_teacher_comment_gb_container").hide();
                 $("#post_teacher_comment_gb_container").hide();
             }
-        }
+        },
     });
 }
-
 function get_teacher_comment(term, session, student_id, class_id, pagetype) {
     // alert(class_id)
     // return
@@ -7112,11 +8022,339 @@ function loadApproval() {
         data: { 'action': 'get_approval', class_id, term_id, session_id, },
         cache: true,
         success: (data) => {
-            data = JSON.parse(data)
+            data = data
+            // data = JSON.parse(data)
             approval_data = data[0];
         }
     })
 }
+// async function post_table_data(filtertype, viewOrPostPage) {
+//     // alert('kk')
+//     const termValue = $(".select_btn.term.active").attr("data-name");
+//     // alert(termValue)
+//     // return
+//     const classValue = $("#select_class_field").val();
+//     const sessionValue = $("#select_session_field").val();
+//     if ($("#by_subj_btn").hasClass("active") && (!classValue || !($("#select_subject_field").val()))) {
+//         $(".data_overlay").html(`
+//             <p class="font-weight-bold">Fill the form appropiately</p>
+//         `).show()
+//         $(".thecontentbox").hide()
+//         return
+//     }
+//     if ($("#by_stud_btn").hasClass("active") && (!classValue || !($("#select_student_field").val()))) {
+//         $(".data_overlay").html(`
+//             <p class="font-weight-bold">Fill the form appropiately</p>
+//         `).show()
+//         $(".thecontentbox").hide()
+//         return
+//     }
+
+
+//     $(".comment_term").val(termValue)
+//     $(".comment_Session").val(sessionValue)
+//     $(".comment_class").val(classValue)
+
+//     let arrayValues = '';
+//     let postdata = {};
+//     let hideshowtotals = ''
+//     if (filtertype === 'student') {
+//         hideshowtotals = '';
+//         try {
+//             await getsubjects(classValue, null)
+//         }
+//         catch (error) {
+//             return
+//         }
+//         const studentValue = $("#select_student_field").val();
+//         $(".student_id_for_comment").val(studentValue)
+//         $("#post_principal_comment_container").show()
+//         arrayValues = subjects;
+//         postdata = {
+//             action: 'get_scores',
+//             termValue,
+//             classValue,
+//             studentValue,
+//             sessionValue
+//         };
+//         // alert('k')
+//         setTimeout(get_teacher_comment(termValue, sessionValue, studentValue, classValue, 'post'), 200);
+//         setTimeout(set_behaviour_comment(termValue, sessionValue, studentValue, classValue, 'post'), 200);
+//         if (!$("#select_student_field").val()) {
+//             $("#select_student_warning").show()
+//             return
+//         }
+//         else {
+//             $("#select_student_warning").hide()
+//         }
+//         // $("#post_table_title").html(`${$("#select_session_field option:selected").html() + ' ' + $(".select_btn.term.active").html() + ' scores for ' + $("#select_student_field option:selected").html() + ' in ' + $("#select_class_field option:Selected").html()}`)
+//         // $("#post_teacher_comment_container").show()
+//     } else {
+//         hideshowtotals = 'd-none';
+//         const subjectValue = $("#select_subject_field").val();
+//         try {
+//             await getsubjects(classValue)
+//         }
+//         catch (error) {
+//             $("#subject_student_container").html('<h3>No Data to show</h3>')
+//             return
+//         }
+
+//         arrayValues = students;
+//         postdata = {
+//             action: 'get_scores',
+//             termValue,
+//             classValue,
+//             subjectValue,
+//             sessionValue
+//         };
+//         // alert("here")
+//         $("#post_principal_comment_container").hide()
+//         // $("#post_table_title").html(`${$("#select_session_field option:selected").html() + ' ' + $(".select_btn.term.active").html() + ' ' + $("#select_subject_field option:Selected").html() + ' scores for students in ' + $("#select_class_field option:selected").html()}`)
+//         $("#post_teacher_comment_container").hide()
+//         $("#post_teacher_comment_gb_container").hide()
+//     }
+
+//     console.log("arrayValues", arrayValues);
+//     console.log("postdata", postdata);
+//     // alert("viewOrPostPage")
+//     let tableHtml = '';
+
+
+//     $.ajax({
+//         url: '../controller.php',
+//         type: 'POST',
+//         data: postdata,
+//         beforeSend: () => {
+//             $(".data_overlay").html(`
+//                 <p class="font-weight-bold">Loading...</p>
+//             `)
+//             $(".thecontentbox").hide()
+//             $(".data_overlay").show()
+//         },
+//         success: (data) => {
+//             $(".thecontentbox").show()
+//             $(".data_overlay").hide()
+//             $(".data_overlay").html(`
+//                 <p class="font-weight-bold">Fill the forms appropiately</p>
+//             `)
+//             data = data.trim();
+//             let response = JSON.parse(data);
+//             let scores = response.scores;
+//             console.log("scores", scores);
+//             console.log("aproval", approval_data);
+
+
+//             if ($("#by_all").hasClass('active')) {
+//                 tableHtml = `
+//                     <thead>
+//                         <tr>
+//                             <th>${filtertype === 'Student' ? 'Subjects' : 'Students'}</th>
+//                             ${settingsData.ca1 == 1 ? `<th>CA1</th>` : ''}
+//                             ${settingsData.ca1 == 1 ? `<th class="d-non ${hideshowtotals}">CA1Total</th>` : ''}
+//                             ${settingsData.ca2 == 1 ? `<th>CA2</th>` : ''}
+//                             ${settingsData.ca2 == 1 ? `<th class="d-non ${hideshowtotals}">CA2Total</th>` : ''}
+//                             ${settingsData.ca3 == 1 ? `<th>CA3</th>` : ''}
+//                             ${settingsData.ca3 == 1 ? `<th class="d-non ${hideshowtotals}">CA3Total</th>` : ''}
+//                             ${settingsData.pra == 1 ? `<th>Practical</th>` : ''}
+//                             ${settingsData.pra == 1 ? `<th class="d-non ${hideshowtotals}">PracticalTotal</th>` : ''}
+//                             ${settingsData.exa == 1 ? `<th>Exam</th>` : ''}
+//                             ${settingsData.exa == 1 ? `<th class="d-non ${hideshowtotals}">ExamTotal</th>` : ''}
+//                         </tr>
+//                     </thead>
+//                     <tbody id="tbody">
+//                     <tr class="${filtertype === 'student' ? 'd-none' : ''}">
+//                         <td class="font-xs-16 assess_subject" data-id="NAN">Total</td>
+//                         ${settingsData.ca1 == 1 ? `<td><input type="number" class="w-xs-60 assess_input ca1total" ${approval_data.ca1 == '1' ? 'disabled' : ''} onchange="updatehiddentotals(this,'ca1total')" value="${scores.length > 0 ? scores[0].ca1Total || '' : ''}" /></td>` : ''}
+//                         ${settingsData.ca1 == 1 ? `<td class="d-non ${hideshowtotals}"><input type="number" class="w-xs-60 assess_input ca1total" ${approval_data.ca1 == '1' ? 'disabled' : ''} onchange="updatehiddentotals(this,'ca1total')" value="${scores.length > 0 ? scores[0].ca1Total || '' : ''}" /></td>` : ''}
+//                         ${settingsData.ca2 == 1 ? `<td><input type="number" class="w-xs-60 assess_input ca2total" onchange="updatehiddentotals(this,'ca2total')" ${approval_data.ca2 == '1' ? 'disabled' : ''} value="${scores.length > 0 ? scores[0].ca2Total || '' : ''}" /></td>` : ''}
+//                         ${settingsData.ca2 == 1 ? `<td class="d-non ${hideshowtotals}"><input type="number" class="w-xs-60 assess_input ca2total" ${approval_data.ca2 == '1' ? 'disabled' : ''} onchange="updatehiddentotals(this,'ca2total')" value="${scores.length > 0 ? scores[0].ca2Total || '' : ''}" /></td>` : ''}
+//                         ${settingsData.ca3 == 1 ? `<td><input type="number" class="w-xs-60 assess_input ca3total" onchange="updatehiddentotals(this,'ca3total')" ${approval_data.ca3 == '1' ? 'disabled' : ''} value="${scores.length > 0 ? scores[0].ca3Total || '' : ''}" /></td>` : ''}
+//                         ${settingsData.ca3 == 1 ? `<td class="d-non ${hideshowtotals}"><input type="number" class="w-xs-60 assess_input ca3total" onchange="updatehiddentotals(this,'ca3total')" ${approval_data.ca3 == '1' ? 'disabled' : ''} value="${scores.length > 0 ? scores[0].ca3Total || '' : ''}" /></td>` : ''}
+//                         ${settingsData.pra == 1 ? `<td><input type="number" class="w-xs-60 assess_input pratotal" onchange="updatehiddentotals(this,'pratotal')" ${approval_data.practical == '1' ? 'disabled' : ''} value="${scores.length > 0 ? scores[0].praTotal || '' : ''}" /></td>` : ''}
+//                         ${settingsData.pra == 1 ? `<td class="d-non ${hideshowtotals}"><input type="number" class="w-xs-60 assess_input pratotal" onchange="updatehiddentotals(this,'pratotal')" ${approval_data.practical == '1' ? 'disabled' : ''} value="${scores.length > 0 ? scores[0].praTotal || '' : ''}" /></td>` : ''}
+//                         ${settingsData.exa == 1 ? `<td><input type="number"  class="w-xs-60 assess_input exatotal" onchange="updatehiddentotals(this,'exatotal')" ${approval_data.exam == '1' ? 'disabled' : ''} value="${scores.length > 0 ? scores[0].examTotal || '' : ''}" /></td>` : ''}
+//                         ${settingsData.exa == 1 ? `<td class="d-non ${hideshowtotals}"><input type="number"  class="w-xs-60 assess_input exatotal" onchange="updatehiddentotals(this,'exatotal')" ${approval_data.exam == '1' ? 'disabled' : ''} value="${scores.length > 0 ? scores[0].examTotal || '' : ''}" /></td>` : ''}
+//                     </tr>
+//                     ${arrayValues.map((arrayValue) => {
+//                     let nameToMatch = filtertype === 'student' ? arrayValue.subject : `<a href="students?id=${arrayValue.id}">${arrayValue.name}</a>`;
+
+
+//                     let score = scores.find(s => s.subjectsOrNames.trim() === nameToMatch.trim()) || {};
+//                     console.log("Matching score for:", nameToMatch, score);
+
+//                     return `<tr>
+//                             <td class="font-xs-16 assess_subject" data-id=${arrayValue.id}>${nameToMatch}</td>
+
+//                             ${settingsData.ca1 == 1 ? `<td><input class="w-xs-60 assess_input ca1Total" type="number" ${approval_data.ca1 == '1' ? 'disabled' : ''} value="${score.ca1 || ''}"></td>` : ''}
+//                             ${settingsData.ca1 == 1 ? `<td class="d-non ${hideshowtotals}"><input class="w-xs-60 assess_input ca1total" type="number" ${approval_data.ca1 == '1' ? 'disabled' : ''} value="${score.ca1Total || ''}"></td>` : ''}
+//                             ${settingsData.ca2 == 1 ? `<td><input class="w-xs-60 assess_input" type="number" ${approval_data.ca2 == '1' ? 'disabled' : ''} value="${score.ca2 || ''}"></td>` : ''}
+//                             ${settingsData.ca2 == 1 ? `<td class="d-non ${hideshowtotals}"><input class="w-xs-60 assess_input ca2total" type="number" ${approval_data.ca2 == '1' ? 'disabled' : ''} value="${score.ca2Total || ''}"></td>` : ''}
+//                             ${settingsData.ca3 == 1 ? `<td><input class="w-xs-60 assess_input" type="number" ${approval_data.ca2 == '1' ? 'disabled' : ''} value="${score.ca3 || ''}"></td>` : ''}
+//                             ${settingsData.ca3 == 1 ? `<td class="d-non ${hideshowtotals}"><input class="w-xs-60 assess_input ca3total" ${approval_data.ca3 == '1' ? 'disabled' : ''} type="number" value="${score.ca3Total || ''}"></td>` : ''}
+//                             ${settingsData.pra == 1 ? `<td><input class="w-xs-60 assess_input" type="number" ${approval_data.ca3 == '1' ? 'disabled' : ''} value="${score.pra || ''}"></td>` : ''}
+//                             ${settingsData.pra == 1 ? `<td class="d-non ${hideshowtotals}"><input class="w-xs-60 assess_input pratotal" ${approval_data.practical == '1' ? 'disabled' : ''} type="number" value="${score.praTotal || ''}"></td>` : ''}
+//                             ${settingsData.exa == 1 ? `<td><input class="w-xs-60 assess_input" type="number" ${approval_data.exam == '1' ? 'disabled' : ''} value="${score.exam || ''}"></td>` : ''}
+//                             ${settingsData.exa == 1 ? `<td class="d-non ${hideshowtotals}"><input class="w-xs-60 assess_input exatotal" ${approval_data.exam == '1' ? 'disabled' : ''} type="number" value="${score.examTotal || ''}"></td>` : ''}
+//                         </tr>`;
+//                 }).join('')}
+//                     </tbody>`;
+//             } else if ($("#by_ca1").hasClass('active')) {
+//                 tableHtml = `
+//                     <thead>
+//                         <tr>
+//                             <th>${filtertype === 'student' ? 'Subjects' : 'Students'}</th>
+//                             <th>CA1</th>
+//                             <th class="d-non ${hideshowtotals}">CA1 Total</th>
+//                         </tr>
+//                     </thead>
+//                     <tbody>
+//                     <tr class="${filtertype === 'student' ? 'd-none' : ''}">
+//                         <td class="font-xs-16 assess_subject" data-id="NAN">Total</td>
+//                         <td><input type="number" class="w-xs-60 assess_input" ${approval_data.ca1 == '1' ? 'disabled' : ''} onchange="updatehiddentotals(this,'ca1total')" value="${scores.length > 0 ? scores[0].ca1Total || '' : ''}" /></td>
+//                         <td class="d-non ${hideshowtotals}"><input type="number" ${approval_data.ca1 == '1' ? 'disabled' : ''} class="assess_input ca1total" value="${scores.length > 0 ? scores[0].ca1Total || '' : ''}" /></td>
+//                     </tr>
+//                     ${arrayValues.map((arrayValue) => {
+//                     let nameToMatch = filtertype === 'student' ? arrayValue.subject : `<a href="students?id=${arrayValue.id}">${arrayValue.name}</a>`;
+//                     let score = scores.find(s => s.subjectsOrNames.trim() === nameToMatch.trim()) || {};
+//                     console.log("Matching score for:", nameToMatch, score);
+//                     return `<tr>
+//                             <td class="font-xs-16 assess_subject" data-id=${arrayValue.id}>${nameToMatch}</td>
+//                             ${viewOrPostPage === 'post' ? `<td><input class="w-xs-60 assess_input" type="number" ${approval_data.ca1 == '1' ? 'disabled' : ''} value="${score.ca1 || ''}"></td>` : `<td>${score.ca1 || ''}</td>`}
+//                             ${viewOrPostPage === 'post' ? `<td class="d-non ${hideshowtotals}"><input class="w-xs-60 assess_input ca1total" ${approval_data.ca1 == '1' ? 'disabled' : ''} type="number" value="${score.ca1Total || ''}"></td>` : `<td>${score.ca1Total || ''}</td>`}
+//                         </tr>`;
+//                 }).join('')}
+//                     </tbody>`;
+//             }
+//             else if ($("#by_ca2").hasClass('active')) {
+//                 tableHtml = `
+//                     <thead>
+//                         <tr>
+//                             <th>${filtertype === 'student' ? 'Subjects' : 'Students'}</th>
+//                             <th>CA2</th>
+//                             <th class="d-non ${hideshowtotals}">CA2 Total</th>
+//                         </tr>
+//                     </thead>
+//                     <tbody>
+//                     <tr class="${filtertype === 'student' ? 'd-none' : ''}">
+//                         <td class="font-xs-16 assess_subject" data-id="NAN">Total</td>
+//                         <td><input type="number" class="w-xs-60 assess_input" ${approval_data.ca2 == '1' ? 'disabled' : ''} onchange="updatehiddentotals(this,'ca2total')" value="${scores.length > 0 ? scores[0].ca2Total || '' : ''}" /></td>
+//                         <td class="d-non ${hideshowtotals}"><input type="number" ${approval_data.ca2 == '1' ? 'disabled' : ''} class="assess_input ca2total" value="${scores.length > 0 ? scores[0].ca2Total || '' : ''}" /></td>
+//                     </tr>
+//                     ${arrayValues.map((arrayValue) => {
+//                     let nameToMatch = filtertype === 'student' ? arrayValue.subject : `<a href="students?id=${arrayValue.id}">${arrayValue.name}</a>`;
+//                     let score = scores.find(s => s.subjectsOrNames.trim() === nameToMatch.trim()) || {};
+//                     console.log("Matching score for:", nameToMatch, score);
+//                     return `<tr>
+//                             <td class="font-xs-16 assess_subject" data-id=${arrayValue.id}>${nameToMatch}</td>
+//                             ${viewOrPostPage === 'post' ? `<td><input class="w-xs-60 assess_input" type="number" ${approval_data.ca2 == '1' ? 'disabled' : ''} value="${score.ca2 || ''}"></td>` : `<td>${score.ca2 || ''}</td>`}
+//                             ${viewOrPostPage === 'post' ? `<td class="d-non ${hideshowtotals}"><input class="w-xs-60 assess_input ca2total" ${approval_data.ca2 == '1' ? 'disabled' : ''} type="number" value="${score.ca2Total || ''}"></td>` : `<td>${score.ca2Total || ''}</td>`}
+//                         </tr>`;
+//                 }).join('')}
+//                     </tbody>`;
+//             }
+//             else if ($("#by_ca3").hasClass('active')) {
+//                 tableHtml = `
+//                     <thead>
+//                         <tr>
+//                             <th>${filtertype === 'student' ? 'Subjects' : 'Students'}</th>
+//                             <th>CA3</th>
+//                             <th class="d-non ${hideshowtotals}">CA3 Total</th>
+//                         </tr>
+//                     </thead>
+//                     <tbody>
+//                     <tr class="${filtertype === 'student' ? 'd-none' : ''}">
+//                         <td class="font-xs-16 assess_subject" data-id="NAN">Total</td>
+//                         <td><input type="number" class="w-xs-60 assess_input" ${approval_data.ca3 == '1' ? 'disabled' : ''} onchange="updatehiddentotals(this,'ca3total')" value="${scores.length > 0 ? scores[0].ca3Total || '' : ''}" /></td>
+//                         <td class="d-non ${hideshowtotals}"><input type="number" ${approval_data.ca3 == '1' ? 'disabled' : ''} class="assess_input ca3total" value="${scores.length > 0 ? scores[0].ca3Total || '' : ''}" /></td>
+//                     </tr>
+//                     ${arrayValues.map((arrayValue) => {
+//                     let nameToMatch = filtertype === 'student' ? arrayValue.subject : `<a href="students?id=${arrayValue.id}">${arrayValue.name}</a>`;
+//                     let score = scores.find(s => s.subjectsOrNames.trim() === nameToMatch.trim()) || {};
+//                     console.log("Matching score for:", nameToMatch, score);
+//                     return `<tr>
+//                             <td class="font-xs-16 assess_subject" data-id=${arrayValue.id}>${nameToMatch}</td>
+//                             ${viewOrPostPage === 'post' ? `<td><input class="w-xs-60 assess_input" ${approval_data.ca3 == '1' ? 'disabled' : ''} type="number" value="${score.ca3 || ''}"></td>` : `<td>${score.ca3 || ''}</td>`}
+//                             ${viewOrPostPage === 'post' ? `<td class="d-non ${hideshowtotals}"><input class="w-xs-60 assess_input ca3total" ${approval_data.ca3 == '1' ? 'disabled' : ''} type="number" value="${score.ca3Total || ''}"></td>` : `<td>${score.ca3Total || ''}</td>`}
+//                         </tr>`;
+//                 }).join('')}
+//                     </tbody>`;
+//             }
+//             else if ($("#by_pra").hasClass('active')) {
+//                 tableHtml = `
+//                     <thead>
+//                         <tr>
+//                             <th>${filtertype === 'student' ? 'Subjects' : 'Students'}</th>
+//                             <th>Practical</th>
+//                             <th class="d-non ${hideshowtotals}">Practical Total</th>
+//                         </tr>
+//                     </thead>
+//                     <tbody>
+//                     <tr class="${filtertype === 'student' ? 'd-none' : ''}">
+//                         <td class="font-xs-16 assess_subject" data-id="NAN">Total</td>
+//                         <td><input type="number" class="w-xs-60 assess_input" ${approval_data.practical == '1' ? 'disabled' : ''} onchange="updatehiddentotals(this,'pratotal')" value="${scores.length > 0 ? scores[0].praTotal || '' : ''}" /></td>
+//                         <td class="d-non ${hideshowtotals}"><input type="number" ${approval_data.practical == '1' ? 'disabled' : ''} class="assess_input pratotal" value="${scores.length > 0 ? scores[0].praTotal || '' : ''}" /></td>
+//                     </tr>
+//                     ${arrayValues.map((arrayValue) => {
+//                     let nameToMatch = filtertype === 'student' ? arrayValue.subject : `<a href="students?id=${arrayValue.id}">${arrayValue.name}</a>`;
+//                     let score = scores.find(s => s.subjectsOrNames.trim() === nameToMatch.trim()) || {};
+//                     console.log("Matching score for:", nameToMatch, score);
+//                     return `<tr>
+//                             <td class="font-xs-16 assess_subject" data-id=${arrayValue.id}>${nameToMatch}</td>
+//                             ${viewOrPostPage === 'post' ? `<td><input class="w-xs-60 assess_input" ${approval_data.pratical == '1' ? 'disabled' : ''} type="number" value="${score.pra || ''}"></td>` : `<td>${score.pra || ''}</td>`}
+//                             ${viewOrPostPage === 'post' ? `<td class="d-non ${hideshowtotals}"><input class="w-xs-60 assess_input pratotal" ${approval_data.practical == '1' ? 'disabled' : ''} type="number" value="${score.praTotal || ''}"></td>` : `<td>${score.ca3Total || ''}</td>`}
+//                         </tr>`;
+//                 }).join('')}
+//                     </tbody>`;
+//             }
+//             else if ($("#by_exam").hasClass('active')) {
+//                 tableHtml = `
+//                     <thead>
+//                         <tr>
+//                             <th>${filtertype === 'student' ? 'Subjects' : 'Students'}</th>
+//                             <th>Exam</th>
+//                             <th class="d-non ${hideshowtotals}">Exam Total</th>
+//                         </tr>
+//                     </thead>
+//                     <tbody>
+//                     <tr class="${filtertype === 'student' ? 'd-none' : ''}">
+//                         <td class="font-xs-16 assess_subject" data-id="NAN">Total</td>
+//                         <td><input type="number" class="w-xs-60 assess_input" ${approval_data.exam == '1' ? 'disabled' : ''} onchange="updatehiddentotals(this,'exatotal')" value="${scores.length > 0 ? scores[0].examTotal || '' : ''}" /></td>
+//                         <td class="d-non ${hideshowtotals}"><input type="number" class="assess_input exatotal" ${approval_data.exam == '1' ? 'disabled' : ''} value="${scores.length > 0 ? scores[0].examTotal || '' : ''}" /></td>
+//                     </tr>
+//                     ${arrayValues.map((arrayValue) => {
+//                     let nameToMatch = filtertype === 'student' ? arrayValue.subject : `<a href="students?id=${arrayValue.id}">${arrayValue.name}</a>`;
+//                     let score = scores.find(s => s.subjectsOrNames.trim() === nameToMatch.trim()) || {};
+//                     console.log("Matching score for:", nameToMatch, score);
+//                     return `<tr>
+//                             <td class="font-xs-16 assess_subject" data-id=${arrayValue.id}>${nameToMatch}</td>
+//                             ${viewOrPostPage === 'post' ? `<td><input class="w-xs-60 assess_input" type="number" ${approval_data.exam == '1' ? 'disabled' : ''} value="${score.exam || ''}"></td>` : `<td>${score.exa || ''}</td>`}
+//                             ${viewOrPostPage === 'post' ? `<td class="d-non ${hideshowtotals}"><input class="w-xs-60 assess_input exatotal" ${approval_data.exam == '1' ? 'disabled' : ''} type="number" value="${score.examTotal || ''}"></td>` : `<td>${score.exaTotal || ''}</td>`}
+//                         </tr>`;
+//                 }).join('')}
+//                     </tbody>`;
+//             }
+//             // alert('l')
+
+//             // Destroy existing DataTable instance
+//             if ($.fn.DataTable.isDataTable('#post_score_table_by_student')) {
+//                 $('#post_score_table_by_student').DataTable().destroy();
+//             }
+//             $('#post_score_table_by_student').html(tableHtml);
+
+//             // Reinitialize DataTable
+//             $('#post_score_table_by_student').DataTable({
+//                 scrollX: true,
+//                 paging: false,
+//                 ordering: false,
+//                 fixedColumns: {
+//                     left: 1,
+//                     right: 0
+//                 }
+//             });
+//         }
+//     });
+// }
 async function post_table_data(filtertype, viewOrPostPage) {
     // alert('kk')
     const termValue = $(".select_btn.term.active").attr("data-name");
@@ -7227,8 +8465,10 @@ async function post_table_data(filtertype, viewOrPostPage) {
             $(".data_overlay").html(`
                 <p class="font-weight-bold">Fill the forms appropiately</p>
             `)
-            data = data.trim();
-            let response = JSON.parse(data);
+            data = data;
+            // data = data.trim();
+            // let response = JSON.parse(data);
+            let response = data;
             let scores = response.scores;
             console.log("scores", scores);
             console.log("aproval", approval_data);
@@ -7266,13 +8506,24 @@ async function post_table_data(filtertype, viewOrPostPage) {
                         ${settingsData.exa == 1 ? `<td class="d-non ${hideshowtotals}"><input type="number"  class="w-xs-60 assess_input exatotal" onchange="updatehiddentotals(this,'exatotal')" ${approval_data.exam == '1' ? 'disabled' : ''} value="${scores.length > 0 ? scores[0].examTotal || '' : ''}" /></td>` : ''}
                     </tr>
                     ${arrayValues.map((arrayValue) => {
-                    let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue.name;
+                    let nameToMatch;
+                    let thestudentnameorsubj;
+                    // let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue.name;
+                    if (filtertype === 'student') {
+                        console.log('student')
+                        nameToMatch = arrayValue.subject;
+                        thestudentnameorsubj = nameToMatch;
+                    } else {
+                        console.log('subject now')
+                        nameToMatch = arrayValue.name;
+                        thestudentnameorsubj = `<a href="students?id=${arrayValue.id}">${nameToMatch}</a>`;
+                    }
 
                     let score = scores.find(s => s.subjectsOrNames.trim() === nameToMatch.trim()) || {};
                     console.log("Matching score for:", nameToMatch, score);
 
                     return `<tr>
-                            <td class="font-xs-16 assess_subject" data-id=${arrayValue.id}>${nameToMatch}</td>
+                            <td class="font-xs-16 assess_subject" data-id=${arrayValue.id}>${thestudentnameorsubj}</td>
                             
                             ${settingsData.ca1 == 1 ? `<td><input class="w-xs-60 assess_input ca1Total" type="number" ${approval_data.ca1 == '1' ? 'disabled' : ''} value="${score.ca1 || ''}"></td>` : ''}
                             ${settingsData.ca1 == 1 ? `<td class="d-non ${hideshowtotals}"><input class="w-xs-60 assess_input ca1total" type="number" ${approval_data.ca1 == '1' ? 'disabled' : ''} value="${score.ca1Total || ''}"></td>` : ''}
@@ -7303,11 +8554,22 @@ async function post_table_data(filtertype, viewOrPostPage) {
                         <td class="d-non ${hideshowtotals}"><input type="number" ${approval_data.ca1 == '1' ? 'disabled' : ''} class="assess_input ca1total" value="${scores.length > 0 ? scores[0].ca1Total || '' : ''}" /></td>
                     </tr>
                     ${arrayValues.map((arrayValue) => {
-                    let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue.name;
+                    let nameToMatch;
+                    let thestudentnameorsubj;
+                    // let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue;
+                    if (filtertype === 'student') {
+                        console.log('student')
+                        nameToMatch = arrayValue.subject;
+                        thestudentnameorsubj = nameToMatch;
+                    } else {
+                        console.log('subject now')
+                        nameToMatch = arrayValue.name;
+                        thestudentnameorsubj = `<a href="students?id=${arrayValue.id}">${nameToMatch}</a>`;
+                    }
                     let score = scores.find(s => s.subjectsOrNames.trim() === nameToMatch.trim()) || {};
                     console.log("Matching score for:", nameToMatch, score);
                     return `<tr>
-                            <td class="font-xs-16 assess_subject" data-id=${arrayValue.id}>${nameToMatch}</td>
+                            <td class="font-xs-16 assess_subject" data-id=${arrayValue.id}>${thestudentnameorsubj}</td>
                             ${viewOrPostPage === 'post' ? `<td><input class="w-xs-60 assess_input" type="number" ${approval_data.ca1 == '1' ? 'disabled' : ''} value="${score.ca1 || ''}"></td>` : `<td>${score.ca1 || ''}</td>`}
                             ${viewOrPostPage === 'post' ? `<td class="d-non ${hideshowtotals}"><input class="w-xs-60 assess_input ca1total" ${approval_data.ca1 == '1' ? 'disabled' : ''} type="number" value="${score.ca1Total || ''}"></td>` : `<td>${score.ca1Total || ''}</td>`}
                         </tr>`;
@@ -7330,11 +8592,23 @@ async function post_table_data(filtertype, viewOrPostPage) {
                         <td class="d-non ${hideshowtotals}"><input type="number" ${approval_data.ca2 == '1' ? 'disabled' : ''} class="assess_input ca2total" value="${scores.length > 0 ? scores[0].ca2Total || '' : ''}" /></td>
                     </tr>
                     ${arrayValues.map((arrayValue) => {
-                    let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue.name;
+                    // let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue.name;
+                    let nameToMatch;
+                    let thestudentnameorsubj;
+                    // let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue;
+                    if (filtertype === 'student') {
+                        console.log('student')
+                        nameToMatch = arrayValue.subject;
+                        thestudentnameorsubj = nameToMatch;
+                    } else {
+                        console.log('subject now')
+                        nameToMatch = arrayValue.name;
+                        thestudentnameorsubj = `<a href="students?id=${arrayValue.id}">${nameToMatch}</a>`;
+                    }
                     let score = scores.find(s => s.subjectsOrNames.trim() === nameToMatch.trim()) || {};
                     console.log("Matching score for:", nameToMatch, score);
                     return `<tr>
-                            <td class="font-xs-16 assess_subject" data-id=${arrayValue.id}>${nameToMatch}</td>
+                            <td class="font-xs-16 assess_subject" data-id=${arrayValue.id}>${thestudentnameorsubj}</td>
                             ${viewOrPostPage === 'post' ? `<td><input class="w-xs-60 assess_input" type="number" ${approval_data.ca2 == '1' ? 'disabled' : ''} value="${score.ca2 || ''}"></td>` : `<td>${score.ca2 || ''}</td>`}
                             ${viewOrPostPage === 'post' ? `<td class="d-non ${hideshowtotals}"><input class="w-xs-60 assess_input ca2total" ${approval_data.ca2 == '1' ? 'disabled' : ''} type="number" value="${score.ca2Total || ''}"></td>` : `<td>${score.ca2Total || ''}</td>`}
                         </tr>`;
@@ -7357,11 +8631,23 @@ async function post_table_data(filtertype, viewOrPostPage) {
                         <td class="d-non ${hideshowtotals}"><input type="number" ${approval_data.ca3 == '1' ? 'disabled' : ''} class="assess_input ca3total" value="${scores.length > 0 ? scores[0].ca3Total || '' : ''}" /></td>
                     </tr>
                     ${arrayValues.map((arrayValue) => {
-                    let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue.name;
+                    // let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue.name;
+                    let nameToMatch;
+                    let thestudentnameorsubj;
+                    // let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue;
+                    if (filtertype === 'student') {
+                        console.log('student')
+                        nameToMatch = arrayValue.subject;
+                        thestudentnameorsubj = nameToMatch;
+                    } else {
+                        console.log('subject now')
+                        nameToMatch = arrayValue.name;
+                        thestudentnameorsubj = `<a href="students?id=${arrayValue.id}">${nameToMatch}</a>`;
+                    }
                     let score = scores.find(s => s.subjectsOrNames.trim() === nameToMatch.trim()) || {};
                     console.log("Matching score for:", nameToMatch, score);
                     return `<tr>
-                            <td class="font-xs-16 assess_subject" data-id=${arrayValue.id}>${nameToMatch}</td>
+                            <td class="font-xs-16 assess_subject" data-id=${arrayValue.id}>${thestudentnameorsubj}</td>
                             ${viewOrPostPage === 'post' ? `<td><input class="w-xs-60 assess_input" ${approval_data.ca3 == '1' ? 'disabled' : ''} type="number" value="${score.ca3 || ''}"></td>` : `<td>${score.ca3 || ''}</td>`}
                             ${viewOrPostPage === 'post' ? `<td class="d-non ${hideshowtotals}"><input class="w-xs-60 assess_input ca3total" ${approval_data.ca3 == '1' ? 'disabled' : ''} type="number" value="${score.ca3Total || ''}"></td>` : `<td>${score.ca3Total || ''}</td>`}
                         </tr>`;
@@ -7384,11 +8670,23 @@ async function post_table_data(filtertype, viewOrPostPage) {
                         <td class="d-non ${hideshowtotals}"><input type="number" ${approval_data.practical == '1' ? 'disabled' : ''} class="assess_input pratotal" value="${scores.length > 0 ? scores[0].praTotal || '' : ''}" /></td>
                     </tr>
                     ${arrayValues.map((arrayValue) => {
-                    let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue.name;
+                    // let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue.name;
+                    let nameToMatch;
+                    let thestudentnameorsubj;
+                    // let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue;
+                    if (filtertype === 'student') {
+                        console.log('student')
+                        nameToMatch = arrayValue.subject;
+                        thestudentnameorsubj = nameToMatch;
+                    } else {
+                        console.log('subject now')
+                        nameToMatch = arrayValue.name;
+                        thestudentnameorsubj = `<a href="students?id=${arrayValue.id}">${nameToMatch}</a>`;
+                    }
                     let score = scores.find(s => s.subjectsOrNames.trim() === nameToMatch.trim()) || {};
                     console.log("Matching score for:", nameToMatch, score);
                     return `<tr>
-                            <td class="font-xs-16 assess_subject" data-id=${arrayValue.id}>${nameToMatch}</td>
+                            <td class="font-xs-16 assess_subject" data-id=${arrayValue.id}>${thestudentnameorsubj}</td>
                             ${viewOrPostPage === 'post' ? `<td><input class="w-xs-60 assess_input" ${approval_data.pratical == '1' ? 'disabled' : ''} type="number" value="${score.pra || ''}"></td>` : `<td>${score.pra || ''}</td>`}
                             ${viewOrPostPage === 'post' ? `<td class="d-non ${hideshowtotals}"><input class="w-xs-60 assess_input pratotal" ${approval_data.practical == '1' ? 'disabled' : ''} type="number" value="${score.praTotal || ''}"></td>` : `<td>${score.ca3Total || ''}</td>`}
                         </tr>`;
@@ -7411,11 +8709,23 @@ async function post_table_data(filtertype, viewOrPostPage) {
                         <td class="d-non ${hideshowtotals}"><input type="number" class="assess_input exatotal" ${approval_data.exam == '1' ? 'disabled' : ''} value="${scores.length > 0 ? scores[0].examTotal || '' : ''}" /></td>
                     </tr>
                     ${arrayValues.map((arrayValue) => {
-                    let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue.name;
+                    // let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue.name;
+                    let nameToMatch;
+                    let thestudentnameorsubj;
+                    // let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue;
+                    if (filtertype === 'student') {
+                        console.log('student')
+                        nameToMatch = arrayValue.subject;
+                        thestudentnameorsubj = nameToMatch;
+                    } else {
+                        console.log('subject now')
+                        nameToMatch = arrayValue.name;
+                        thestudentnameorsubj = `<a href="students?id=${arrayValue.id}">${nameToMatch}</a>`;
+                    }
                     let score = scores.find(s => s.subjectsOrNames.trim() === nameToMatch.trim()) || {};
                     console.log("Matching score for:", nameToMatch, score);
                     return `<tr>
-                            <td class="font-xs-16 assess_subject" data-id=${arrayValue.id}>${nameToMatch}</td>
+                            <td class="font-xs-16 assess_subject" data-id=${arrayValue.id}>${thestudentnameorsubj}</td>
                             ${viewOrPostPage === 'post' ? `<td><input class="w-xs-60 assess_input" type="number" ${approval_data.exam == '1' ? 'disabled' : ''} value="${score.exam || ''}"></td>` : `<td>${score.exa || ''}</td>`}
                             ${viewOrPostPage === 'post' ? `<td class="d-non ${hideshowtotals}"><input class="w-xs-60 assess_input exatotal" ${approval_data.exam == '1' ? 'disabled' : ''} type="number" value="${score.examTotal || ''}"></td>` : `<td>${score.exaTotal || ''}</td>`}
                         </tr>`;
@@ -9114,8 +10424,41 @@ function update_sub_cat_form(event) {
         }
     });
 }
+function add_g_class_data(event) {
+    event.preventDefault()
+    let formdata = new FormData(event.target);
+    $.ajax({
+        url: "../controller.php",
+        type: "post",
+        data: formdata,
+        contentType: false,
+        processData: false,
+        beforeSend: () => {
+            $("#create_class_btn").html('Processing')
+            $("#create_class_btn").attr('disabled', true)
+        },
+        success: (data) => {
+            $("#create_class_btn").html('Create Class')
+            $("#create_class_btn").attr('disabled', false)
+            data = JSON.parse(data)
+            if (data.status == '1') {
+                $(".myalert").hide()
+
+                $("#class_table").load('../display_class_table.php?is_g_table=1')
+                setTimeout($("#add_class_modal").modal("hide"), 200)
+                toastr.success(data.msg)
+                event.target.reset()
+                $('.select2').val(null).trigger('change')
+            } else {
+                $(".warning").html(data.err)
+                $(".myalert").show()
+            }
+        },
+    });
+}
 
 function add_class_data(event) {
+    console.log('mknck')
     event.preventDefault()
     let formdata = new FormData(event.target);
     $.ajax({
@@ -9156,11 +10499,11 @@ function add_student_data(event) {
         contentType: false,
         processData: false,
         beforeSend: () => {
-            // $("#add_student_btn").attr("disabled", true)
+            $("#add_student_btn").attr("disabled", true)
+            $("#add_student_btn").html("Processing...")
         },
         success: (data) => {
             data = JSON.parse(data)
-            $("#add_student_btn").attr("disabled", false)
             if (data.status == '1') {
                 filter_stud_Class()
                 // $("#student_table").load('display_student_table.php')
@@ -9174,6 +10517,10 @@ function add_student_data(event) {
                 $("#add_student_data_warning").html(data.err)
                 $("#add_student_data_warning").show()
             }
+        },
+        complete: () => {
+            $("#add_student_btn").attr("disabled", false)
+            $("#add_student_btn").html("Register")
         }
     });
 }
@@ -9191,7 +10538,7 @@ function update_class_data(event) {
         success: (data) => {
             data = JSON.parse(data)
             if (data.status == '1') {
-                $("#class_table").load('../display_class_table.php')
+                $("#class_table").load(`../display_class_table.php${data.is_graduate ? '?is_g_table=1' : ''}`)
                 setTimeout($("#edit_class_modal").modal("hide"), 200)
                 // toastr.success("Updated Successfully")
             }
@@ -9423,7 +10770,18 @@ $(".form").submit(function (event) {
     });
 });
 // alert('kk')
+const savepath = () => {
+    const thepath = location.pathname.split('/')
+    if (thepath[thepath.length - 1] != 'login' && thepath[thepath.length - 1]) {
+        localStorage.setItem('myurl', window.location.href)
+    } else {
+        if (localStorage.getItem('myurl')) {
+            localStorage.removeItem('myurl');
+        }
+    }
 
+}
+savepath()
 $(".loginform").submit(function (event) {
     event.preventDefault();
     var $form = $(this);
@@ -9446,8 +10804,12 @@ $(".loginform").submit(function (event) {
             $($btn).html($btntext)
             // data = JSON.parse(data)
             if (data.status == '1') {
-                alert(data.location)
-                window.location.href = data.location
+                // alert(data.location)
+                // alert(localStorage.getItem("myurl"))
+
+                window.location = `./${data.location}`
+
+                // window.location = `./${data.location}`
             }
             else {
                 toastr.error(data.err);
@@ -9455,7 +10817,6 @@ $(".loginform").submit(function (event) {
         }
     });
 });
-
 
 
 function get_note_week_create(element = true) {
@@ -9485,6 +10846,12 @@ function get_note_week_create(element = true) {
     )
     setTimeout(get_notes_week_view, 100)
     setTimeout(() => get_lesson_note(element), 100)
+    setTimeout(() => {
+        // ensure a lesson term is selected (default to first) before loading weeks
+        if ($('.lesson_term.select_btn').length && !$('.lesson_term.select_btn.active').length) {
+            $('.lesson_term.select_btn').first().addClass('active');
+        }
+    }, 10);
 }
 
 
@@ -9498,6 +10865,8 @@ function get_notes_week_view() {
         data: {
             "class_id": $("#select_class_field").val(),
             "subject_id": $("#select_subject_field").val(),
+            "term_id": $('.lesson_term.select_btn.active').attr('data-name') || $('.term.select_btn.active').attr('data-name') || '',
+
             'action': 'get_note_weeks'
         },
         success: (data) => {
@@ -9526,6 +10895,13 @@ function toggle_week_btn(event, staff = true) {
     $(event).addClass("active")
     get_lesson_note(staff)
 }
+function toggle_lesson_term(event) {
+    $(".lesson_term.select_btn").removeClass("active");
+    $(event).addClass("active");
+    // reload weeks and lesson content for the selected term
+    get_note_week_create();
+    get_lesson_note(true);
+}
 function toggle_subject_btn(event, staff = true) {
     $(".subject_btn.select_btn").removeClass("active")
     $(event).addClass("active")
@@ -9534,7 +10910,9 @@ function toggle_subject_btn(event, staff = true) {
 
 
 
+
 let editorInstance;
+
 
 function get_class_note_topic() {
     // const week_ids = Array.from(document.querySelectorAll(".week_btn.active")).map((item) => item.getAttribute("data-id"));
@@ -9558,6 +10936,8 @@ function get_class_note_topic() {
             "class_id": $("#select_class_student").val(),
             "subject_id": $(".subject_btn.select_btn.active").attr("data-id"),
             "week_id": $(".week_btn.active").attr("data-id"),
+            term_id: $('.lesson_term.select_btn.active').attr('data-name') || $('.term.select_btn.active').attr('data-name') || '',
+
             "type": 'topic',
             "action": "get_lesson_note"
         },
@@ -9608,6 +10988,8 @@ function get_lesson_note_topic() {
             "class_id": $("#select_class_field").val(),
             "subject_id": $("#select_subject_field").val(),
             "week_id": $(".week_btn.active").attr("data-id"),
+            "term_id": $('.lesson_term.select_btn.active').attr('data-name') || $('.term.select_btn.active').attr('data-name') || '',
+
             "type": 'topic',
             "action": "get_lesson_note"
         },
@@ -9647,6 +11029,8 @@ function get_class_note_body() {
             "class_id": $("#select_class_student").val(),
             "subject_id": $(".subject_btn.select_btn.active").attr("data-id"),
             "week_id": $(".week_btn.active").attr("data-id"),
+            "term_id": $('.lesson_term.select_btn.active').attr('data-name') || $('.term.select_btn.active').attr('data-name') || '',
+
             'type': 'body',
             "action": "get_lesson_note"
         },
@@ -9698,21 +11082,1109 @@ function get_class_note_body() {
         }
     });
 }
+// function get_lesson_note_body() {
+//     if (!$("#select_class_field").val() || !$("#select_subject_field").val() || !$(".week_btn.active").attr("data-id")) {
+//         return false;
+//     }
+//     if (editorInstance) {
+//         editorInstance.destroy()
+//             .then(() => {
+//                 console.log("Editor destroyed");
+//             })
+//             .catch(error => {
+//                 console.error("Error destroying editor:", error);
+//             });
+//     }
+
+//     $("#note_container_body").html(`
+
+//                     <div class="mt-4">
+//                         <div class="py-3 px-15 bg-white" style="border-radius: 10px;">
+
+//                             <div class="form-group mb-0 w-100" id="lesson_note_body_editor" style="display:none;">
+//                                 <label class="">Content</label>
+//                                 <textarea id="lesson_body" name=""></textarea>
+//                                 <div class="d-flex mt-3">
+//                                     <button type="button" class="btn btn-primary mr-3" onclick="create_lesson_note_body()">Save changes</button>
+//                                     <button type="button" class="btn btn-outline-primary" onclick="show_lesson_note_body()">Cancel editing</button>
+//                                 </div>
+//                             </div>
+//                             <div class="form-group mb-0 w-100" id="lesson_note_body_view" style="display: inline-block;">
+//                                 <label class="">Content</label>
+//                                 <div id="lesson_body_view" style="background-color: #fcfcfc; padding-top: 10px; padding-bottom: 10px; padding-left: 10px; padding-right: 10px; border-radius: 5px;">        
+//                                 <i>No content here yet</i>
+//                                 </div>
+//                                 <a onclick="show_lesson_note_body_editor()" class="btn accent pl-0 pr-5 d-flex align-items-center">Edit content</a>
+//                             </div>
+//                         </div>
+//                     </div>
+
+//     `);
+
+//     ClassicEditor.create(document.querySelector("#lesson_body"), {
+//         toolbar: {
+//             shouldNotGroupWhenFull: true,
+//             items: [
+//                 'heading', 'bold', 'italic', 'underline', 'strikethrough',
+//                 '|', 'bulletedList', 'numberedList', 'alignment',
+//                 '|', 'blockQuote', 'link', 'undo', 'redo',
+//                 '|', 'fontSize', 'fontColor', 'fontBackgroundColor', 'insertTable', 'imageUpload'
+//             ]
+//         },
+//         // Enable image upload via SimpleUpload adapter. Remove heavy/unused plugins but keep image upload support.
+//         removePlugins: ['MediaEmbed', 'EasyImage', 'CKFinder'],
+//         simpleUpload: {
+//             // Upload URL: controller will handle uploads when action=upload_lesson_image
+//             uploadUrl: '../controller.php?action=upload_lesson_image',
+//             // Optional headers (e.g., CSRF) can be added here if needed:
+//             // headers: { 'X-CSRF-TOKEN': 'CSRF-Token' }
+//         },
+//         heading: {
+//             options: [
+//                 { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+//                 { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+//                 { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+//                 { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+//             ]
+//         }
+//     })
+//         .then(editor => {
+//             editorInstance = editor;
+//             editorInstance.setData(''); // Set initial data
+//             console.log("Editor initialized successfully!");
+//             // Provide a fallback image upload control when the CKEditor upload adapter/plugin
+//             // is not available (filerepository-no-upload-adapter). This allows users to upload
+//             // an image via a simple file input and insert it into the editor content.
+//             try {
+//                 const viewEl = document.querySelector('#lesson_note_body_view');
+//                 if (viewEl) {
+//                     let uploadGroup = document.getElementById('lesson_image_upload_group');
+//                     if (!uploadGroup) {
+//                         uploadGroup = document.createElement('div');
+//                         uploadGroup.id = 'lesson_image_upload_group';
+//                         uploadGroup.style.marginTop = '8px';
+//                         uploadGroup.innerHTML = `
+//                             <input type="file" id="lesson_image_input" accept="image/*" style="display:none;">
+//                             <button type="button" id="lesson_image_btn" class="btn btn-sm btn-secondary">Upload Image</button>
+//                             <span id="lesson_image_status" style="margin-left:10px"></span>
+//                             <div id="lesson_image_progress_wrap" style="margin-top:8px; display:none;">
+//                                 <div style="height:6px; background:#e9ecef; border-radius:3px; overflow:hidden;">
+//                                     <div id="lesson_image_progress" style="height:6px; width:0%; background:#007bff;"></div>
+//                                 </div>
+//                                 <div style="font-size:12px; margin-top:4px; color:#666; display:flex; justify-content:space-between;">
+//                                     <span id="lesson_image_progress_text">0 B of 2 MB used</span>
+//                                     <button type="button" id="lesson_image_reset" class="btn btn-sm btn-link" style="padding:0;">Reset</button>
+//                                 </div>
+//                             </div>
+//                         `;
+//                         // Insert upload controls after the view element
+//                         viewEl.parentNode.insertBefore(uploadGroup, viewEl.nextSibling);
+
+//                         const fileInput = document.getElementById('lesson_image_input');
+//                         const uploadBtn = document.getElementById('lesson_image_btn');
+//                         const statusEl = document.getElementById('lesson_image_status');
+
+//                         uploadBtn.addEventListener('click', function () {
+//                             fileInput.click();
+//                         });
+
+//                         // initialize global tracking state if not present
+//                         if (!window.lessonImageUploadState) {
+//                             window.lessonImageUploadState = {
+//                                 maxTotal: 2 * 1024 * 1024, // 2 MB
+//                                 used: 0,
+//                                 inProgress: false,
+//                                 // store names of files uploaded in this session
+//                                 files: []
+//                             };
+//                         }
+
+//                         const progressWrap = document.getElementById('lesson_image_progress_wrap');
+//                         const progressBar = document.getElementById('lesson_image_progress');
+//                         const progressText = document.getElementById('lesson_image_progress_text');
+//                         const resetBtn = document.getElementById('lesson_image_reset');
+
+//                         function updateProgressUI() {
+//                             const used = window.lessonImageUploadState.used || 0;
+//                             const max = window.lessonImageUploadState.maxTotal;
+//                             const pct = Math.min(100, Math.round((used / max) * 100));
+//                             progressBar.style.width = pct + '%';
+//                             progressText.textContent = bytesToHuman(used) + ' of ' + bytesToHuman(max) + ' used';
+//                             if (used >= max) {
+//                                 uploadBtn.disabled = true;
+//                                 uploadBtn.classList.add('disabled');
+//                             } else {
+//                                 uploadBtn.disabled = false;
+//                                 uploadBtn.classList.remove('disabled');
+//                             }
+//                             progressWrap.style.display = used > 0 ? 'block' : 'none';
+//                         }
+
+//                         resetBtn.addEventListener('click', function () {
+//                             window.lessonImageUploadState.used = 0;
+//                             updateProgressUI();
+//                         });
+
+//                         function bytesToHuman(n) {
+//                             if (n < 1024) return n + ' B';
+//                             if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+//                             return (n / (1024 * 1024)).toFixed(2) + ' MB';
+//                         }
+
+//                         fileInput.addEventListener('change', function (e) {
+//                             const file = this.files && this.files[0];
+//                             if (!file) return;
+
+//                             // Check remaining quota
+//                             const state = window.lessonImageUploadState;
+//                             const remaining = state.maxTotal - (state.used || 0);
+//                             if (file.size > remaining) {
+//                                 statusEl.textContent = 'File too large for remaining quota';
+//                                 return;
+//                             }
+
+//                             statusEl.textContent = 'Uploading...';
+//                             progressWrap.style.display = 'block';
+
+//                             const xhr = new XMLHttpRequest();
+//                             const form = new FormData();
+//                             form.append('image', file);
+
+//                             xhr.open('POST', '../upload_image.php');
+
+//                             // progress for this upload
+//                             xhr.upload.addEventListener('progress', function (ev) {
+//                                 if (ev.lengthComputable) {
+//                                     const percent = Math.round((ev.loaded / ev.total) * 100);
+//                                     // show progress towards this file only
+//                                     progressBar.style.width = percent + '%';
+//                                     progressText.textContent = bytesToHuman((state.used || 0) + ev.loaded) + ' of ' + bytesToHuman(state.maxTotal) + ' used';
+//                                 }
+//                             });
+
+//                             xhr.addEventListener('load', function () {
+//                                 try {
+//                                     const resp = JSON.parse(xhr.responseText);
+//                                         if (xhr.status >= 200 && xhr.status < 300 && resp && resp.url) {
+//                                         // commit usage
+//                                         state.used = (state.used || 0) + file.size;
+//                                         // record uploaded filename (server returns 'name') or fallback to parsing from url
+//                                         if (resp.name) {
+//                                             state.files.push(resp.name);
+//                                         } else if (resp.url) {
+//                                             try {
+//                                                 const parts = resp.url.split('/');
+//                                                 const base = parts[parts.length - 1].split('?')[0];
+//                                                 if (base) state.files.push(base);
+//                                             } catch (e) {}
+//                                         }
+//                                         updateProgressUI();
+
+//                                         const insertImageByUrl = (url) => {
+//                                             try {
+//                                                 if (editorInstance && editorInstance.model && editorInstance.model.schema && editorInstance.model.schema.checkChild) {
+//                                                     editorInstance.model.change(writer => {
+//                                                         const imageElement = writer.createElement('imageBlock', { src: url });
+//                                                         editorInstance.model.insertContent(imageElement, editorInstance.model.document.selection);
+//                                                     });
+//                                                 } else if (editorInstance && typeof editorInstance.execute === 'function') {
+//                                                     try {
+//                                                         editorInstance.execute('imageInsert', { source: url });
+//                                                     } catch (e) {
+//                                                         const current = editorInstance.getData();
+//                                                         editorInstance.setData(current + `<p><img src="${url}"/></p>`);
+//                                                     }
+//                                                 } else {
+//                                                     const current = editorInstance.getData ? editorInstance.getData() : '';
+//                                                     if (typeof editorInstance.setData === 'function') {
+//                                                         editorInstance.setData(current + `<p><img src="${url}"/></p>`);
+//                                                     }
+//                                                 }
+//                                                 statusEl.textContent = 'Uploaded';
+//                                             } catch (err) {
+//                                                 try {
+//                                                     const current = editorInstance.getData();
+//                                                     editorInstance.setData(current + `<p><img src="${url}"/></p>`);
+//                                                     statusEl.textContent = 'Uploaded (fallback)';
+//                                                 } catch (err2) {
+//                                                     console.error('Insert image error', err2);
+//                                                     statusEl.textContent = 'Uploaded but insert failed';
+//                                                 }
+//                                             }
+//                                         };
+
+//                                         insertImageByUrl(resp.url);
+//                                     } else {
+//                                         statusEl.textContent = resp && resp.error ? (resp.error.message || resp.error) : 'Upload failed';
+//                                     }
+//                                 } catch (err) {
+//                                     console.error('Upload parse error', err, xhr.responseText);
+//                                     statusEl.textContent = 'Upload error';
+//                                 }
+//                             });
+
+//                             xhr.addEventListener('error', function (ev) {
+//                                 console.error('XHR upload error', ev);
+//                                 statusEl.textContent = 'Upload error';
+//                             });
+
+//                             xhr.send(form);
+//                         });
+//                     }
+//                 }
+//             } catch (e) {
+//                 console.error('Fallback upload init error', e);
+//             }
+
+//             // --- Image resize toolbar ---
+//             try {
+//                 // Create floating toolbar element
+//                 let imgToolbar = document.getElementById('ck_img_resize_toolbar');
+//                 if (!imgToolbar) {
+//                     imgToolbar = document.createElement('div');
+//                     imgToolbar.id = 'ck_img_resize_toolbar';
+//                     imgToolbar.style.position = 'absolute';
+//                     imgToolbar.style.display = 'none';
+//                     imgToolbar.style.zIndex = 9999;
+//                     imgToolbar.style.background = '#fff';
+//                     imgToolbar.style.border = '1px solid #ddd';
+//                     imgToolbar.style.padding = '6px';
+//                     imgToolbar.style.borderRadius = '4px';
+//                     imgToolbar.style.boxShadow = '0 2px 6px rgba(0,0,0,0.15)';
+//                     imgToolbar.innerHTML = `
+//                         <button class="btn btn-sm btn-light ck-img-size-btn" data-size="25">25%</button>
+//                         <button class="btn btn-sm btn-light ck-img-size-btn" data-size="50">50%</button>
+//                         <button class="btn btn-sm btn-light ck-img-size-btn" data-size="75">75%</button>
+//                         <button class="btn btn-sm btn-light ck-img-size-btn" data-size="100">100%</button>
+//                         <input id="ck_img_custom_px" type="number" placeholder="px" style="width:64px; margin-left:6px;" />
+//                         <button class="btn btn-sm btn-primary" id="ck_img_apply_px" style="margin-left:6px;">Apply</button>
+//                         <button class="btn btn-sm btn-outline-secondary" id="ck_img_remove_style" style="margin-left:6px;">Reset</button>
+//                     `;
+//                     document.body.appendChild(imgToolbar);
+//                 }
+
+//                 let currentImage = null;
+
+//                 // Helper to position toolbar near an element
+//                 function positionToolbarForElement(el) {
+//                     const rect = el.getBoundingClientRect();
+//                     const toolbarRect = imgToolbar.getBoundingClientRect();
+//                     // place above the image if possible
+//                     let top = window.scrollY + rect.top - toolbarRect.height - 8;
+//                     if (top < window.scrollY + 5) top = window.scrollY + rect.bottom + 8; // below if not enough space
+//                     let left = window.scrollX + rect.left;
+//                     imgToolbar.style.top = top + 'px';
+//                     imgToolbar.style.left = left + 'px';
+//                     imgToolbar.style.display = 'block';
+//                 }
+
+//                 // Click handler inside the editor to detect images
+//                 const editable = editor.ui ? editor.ui.view.editable.element : document.querySelector('.ck-editor__editable');
+//                 if (editable) {
+//                     editable.addEventListener('click', function (ev) {
+//                         const target = ev.target;
+//                         if (target && target.tagName && target.tagName.toLowerCase() === 'img') {
+//                             currentImage = target;
+//                             positionToolbarForElement(target);
+//                             // Pre-fill custom px with current width (if set as px)
+//                             const width = target.style.width || target.getAttribute('width') || '';
+//                             const px = width && width.indexOf('%') === -1 ? parseInt(width, 10) || '' : '';
+//                             document.getElementById('ck_img_custom_px').value = px;
+//                         } else {
+//                             currentImage = null;
+//                             imgToolbar.style.display = 'none';
+//                         }
+//                     });
+
+//                     // Hide toolbar when clicking elsewhere
+//                     document.addEventListener('click', function (ev) {
+//                         if (!imgToolbar.contains(ev.target) && !editable.contains(ev.target)) {
+//                             imgToolbar.style.display = 'none';
+//                             currentImage = null;
+//                         }
+//                     });
+
+//                     // Toolbar button handlers
+//                     imgToolbar.addEventListener('click', function (ev) {
+//                         const btn = ev.target.closest('.ck-img-size-btn');
+//                         if (btn && currentImage) {
+//                             const size = btn.getAttribute('data-size');
+//                             currentImage.style.width = size + '%';
+//                             // reflect change into editor model if possible
+//                             try { currentImage.removeAttribute('height'); } catch (e) {}
+//                         }
+//                         if (ev.target && ev.target.id === 'ck_img_apply_px' && currentImage) {
+//                             const val = parseInt(document.getElementById('ck_img_custom_px').value, 10);
+//                             if (!isNaN(val) && val > 0) {
+//                                 currentImage.style.width = val + 'px';
+//                             }
+//                         }
+//                         if (ev.target && ev.target.id === 'ck_img_remove_style' && currentImage) {
+//                             currentImage.style.width = '';
+//                             currentImage.removeAttribute('width');
+//                         }
+//                     });
+//                 }
+//             } catch (e) {
+//                 console.error('Image toolbar init error', e);
+//             }
+//         })
+//         .catch(error => {
+//             console.error("Error initializing editor:", error);
+//         });
+
+
+
+
+//     $.ajax({
+//         url: "../controller.php",
+//         type: "post",
+//         data: {
+//             "class_id": $("#select_class_field").val(),
+//             "subject_id": $("#select_subject_field").val(),
+//             "week_id": $(".week_btn.active").attr("data-id"),
+//             'type': 'body',
+//             "action": "get_lesson_note"
+//         },
+//         beforeSend: () => {
+//             $("#lesson_body_view").html("Loading...")
+//         },
+//         success: (response) => {
+//             const data = !response ? '' : JSON.parse(response);
+//             // Keep the full content in the editor and show full content in the view
+//             editorInstance.setData(data.content || '');
+//             $("#lesson_body_view").html(data.content || "<i>No content here yet</i>");
+
+//         },
+//         error: (error) => {
+//             console.error("Error fetching lesson note:", error);
+//         }
+//     });
+// }
+
+function populate_multi_class_select(targetId = "#lesson_note_multi_class") {
+    const $target = $(targetId);
+    const currentClass = $("#select_class_field").val();
+    $.ajax({
+        url: "../controller.php",
+        type: "POST",
+        data: {
+            action: "get_classes_for_lesson_note",
+        },
+        success: function (response) {
+            if (!response) return;
+            try {
+                console.log(response);
+                const json = JSON.parse(response);
+                if (json.status == "1" && json.data) {
+                    $target.empty();
+                    json.data.forEach(function (cls) {
+                        $target.append(new Option(cls.classname, cls.id));
+                    });
+                    if ($target.hasClass("select2-hidden-accessible")) {
+                        $target.select2("destroy");
+                    }
+                    $target.select2();
+                    // Pre-select the current class if it exists in the new list
+                    if (currentClass) {
+                        $target.val([currentClass]).trigger("change");
+                    }
+                }
+            } catch (e) {
+                console.error("Error parsing classes:", e);
+            }
+        },
+        error: function (err) {
+            console.error("Error fetching classes:", err);
+        },
+    });
+}
+
+
+// function get_lesson_note_body() {
+//     if (!$("#select_class_field").val() || !$("#select_subject_field").val() || !$(".week_btn.active").attr("data-id")) {
+//         return false;
+//     }
+//     // Only inject the editor/view markup and initialize CKEditor once. Subsequent
+//     // calls will reuse the same editor instance and only update the view content.
+//     if ($("#note_container_body").children().length === 0) {
+//         $("#note_container_body").html(`
+
+//                     <div class="mt-4">
+//                         <div class="py-3 px-15 bg-white" style="border-radius: 10px;">
+
+//                             <div class="form-group mb-0 w-100" id="lesson_note_body_editor" style="display:none;">
+//                                 <label class="">Content</label>
+//                                 <textarea id="lesson_body" name=""></textarea>
+//                                 <div class="d-flex mt-3">
+//                                     <button type="button" class="btn btn-primary mr-3" onclick="create_lesson_note_body()">Save changes</button>
+//                                     <button type="button" class="btn btn-outline-primary" onclick="show_lesson_note_body()">Cancel editing</button>
+//                                 </div>
+//                             </div>
+//                             <div class="form-group mb-0 w-100" id="lesson_note_body_view" style="display: inline-block;">
+//                                 <label class="">Content</label>
+//                                 <div id="lesson_body_view" style="background-color: #fcfcfc; padding-top: 10px; padding-bottom: 10px; padding-left: 10px; padding-right: 10px; border-radius: 5px;">        
+//                                 <i>No content here yet</i>
+//                                 </div>
+//                                 <a onclick="show_lesson_note_body_editor()" class="btn accent pl-0 pr-5 d-flex align-items-center">Edit content</a>
+//                             </div>
+//                         </div>
+//                     </div>
+
+//     `);
+
+//     ClassicEditor.create(document.querySelector("#lesson_body"), {
+//         toolbar: {
+//             shouldNotGroupWhenFull: true,
+//             items: [
+//                 'heading', 'bold', 'italic', 'underline', 'strikethrough',
+//                 '|', 'bulletedList', 'numberedList', 'alignment',
+//                 '|', 'blockQuote', 'link', 'undo', 'redo',
+//                 '|', 'fontSize', 'fontColor', 'fontBackgroundColor', 'insertTable', 'imageUpload'
+//             ]
+//         },
+//         // Enable image upload via SimpleUpload adapter. Remove heavy/unused plugins but keep image upload support.
+//         removePlugins: ['MediaEmbed', 'EasyImage', 'CKFinder'],
+//         simpleUpload: {
+//             // Upload URL: controller will handle uploads when action=upload_lesson_image
+//             uploadUrl: '../controller.php?action=upload_lesson_image',
+//             // Optional headers (e.g., CSRF) can be added here if needed:
+//             // headers: { 'X-CSRF-TOKEN': 'CSRF-Token' }
+//         },
+//         heading: {
+//             options: [
+//                 { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+//                 { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+//                 { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+//                 { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+//             ]
+//         }
+//     })
+//         .then(editor => {
+//             editorInstance = editor;
+//             editorInstance.setData(''); // Set initial data
+//             // Start editor in read-only mode (view mode). Editing is toggled via
+//             // show_lesson_note_body_editor() which sets isReadOnly = false.
+//             try { editorInstance.isReadOnly = true; } catch (e) {}
+//             // If a pending body was stored (user clicked Edit before editor ready), restore it
+//             try {
+//                 if (window.__pendingLessonBody && typeof editorInstance.setData === 'function') {
+//                     editorInstance.setData(window.__pendingLessonBody);
+//                     window.__pendingLessonBody = null;
+//                 }
+//             } catch (e) {
+//                 console.warn('Could not apply pending lesson body to editor:', e);
+//             }
+//             console.log("Editor initialized successfully!");
+//             // Provide a fallback image upload control when the CKEditor upload adapter/plugin
+//             // is not available (filerepository-no-upload-adapter). This allows users to upload
+//             // an image via a simple file input and insert it into the editor content.
+//             try {
+//                 const viewEl = document.querySelector('#lesson_note_body_view');
+//                 if (viewEl) {
+//                     let uploadGroup = document.getElementById('lesson_image_upload_group');
+//                     if (!uploadGroup) {
+//                         uploadGroup = document.createElement('div');
+//                         uploadGroup.id = 'lesson_image_upload_group';
+//                         uploadGroup.style.marginTop = '8px';
+//                         uploadGroup.innerHTML = `
+//                             <input type="file" id="lesson_image_input" accept="image/*" style="display:none;">
+//                             <button type="button" id="lesson_image_btn" class="btn btn-sm btn-secondary">Upload Image</button>
+//                             <span id="lesson_image_status" style="margin-left:10px"></span>
+//                             <div id="lesson_image_progress_wrap" style="margin-top:8px; display:none;">
+//                                 <div style="height:6px; background:#e9ecef; border-radius:3px; overflow:hidden;">
+//                                     <div id="lesson_image_progress" style="height:6px; width:0%; background:#007bff;"></div>
+//                                 </div>
+//                                 <div style="font-size:12px; margin-top:4px; color:#666; display:flex; justify-content:space-between;">
+//                                     <span id="lesson_image_progress_text">0 B of 2 MB used</span>
+//                                     <button type="button" id="lesson_image_reset" class="btn btn-sm btn-link d-none" style="padding:0;">Reset</button>
+//                                 </div>
+//                             </div>
+//                         `;
+//                         // Insert upload controls after the view element
+//                         viewEl.parentNode.insertBefore(uploadGroup, viewEl.nextSibling);
+
+//                         const fileInput = document.getElementById('lesson_image_input');
+//                         const uploadBtn = document.getElementById('lesson_image_btn');
+//                         const statusEl = document.getElementById('lesson_image_status');
+
+//                         uploadBtn.addEventListener('click', function () {
+//                             fileInput.click();
+//                         });
+
+//                         // initialize global tracking state if not present
+//                         if (!window.lessonImageUploadState) {
+//                             // files: array of { name: string, url?: string, size: number }
+//                             window.lessonImageUploadState = {
+//                                 maxTotal: 2 * 1024 * 1024, // 2 MB
+//                                 inProgress: false,
+//                                 // store uploaded file metadata
+//                                 files: []
+//                             };
+//                         }
+
+//                         // Helper: compute used bytes from known files
+//                         function computeUsedFromFiles() {
+//                             try {
+//                                 const files = window.lessonImageUploadState.files || [];
+//                                 return files.reduce((s, f) => s + (Number(f.size) || 0), 0);
+//                             } catch (e) { return 0; }
+//                         }
+
+//                         // Replace earlier used tracking by computing on-demand
+//                         function updateProgressUI() {
+//                             const used = computeUsedFromFiles();
+//                             const state = window.lessonImageUploadState;
+//                             const max = state.maxTotal;
+//                             const pct = Math.min(100, Math.round((used / max) * 100));
+//                             progressBar.style.width = pct + '%';
+//                             progressText.textContent = bytesToHuman(used) + ' of ' + bytesToHuman(max) + ' used';
+//                             if (used >= max) {
+//                                 uploadBtn.disabled = true;
+//                                 uploadBtn.classList.add('disabled');
+//                             } else {
+//                                 uploadBtn.disabled = false;
+//                                 uploadBtn.classList.remove('disabled');
+//                             }
+//                             progressWrap.style.display = used > 0 ? 'block' : 'none';
+//                         }
+
+//                         const progressWrap = document.getElementById('lesson_image_progress_wrap');
+//                         const progressBar = document.getElementById('lesson_image_progress');
+//                         const progressText = document.getElementById('lesson_image_progress_text');
+//                         const resetBtn = document.getElementById('lesson_image_reset');
+
+//                         // (updateProgressUI replaced above to compute used from files)
+
+//                         resetBtn.addEventListener('click', function () {
+//                             // clear tracked files (only client-side for this session)
+//                             window.lessonImageUploadState.files = [];
+//                             updateProgressUI();
+//                         });
+
+//                         function bytesToHuman(n) {
+//                             if (n < 1024) return n + ' B';
+//                             if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+//                             return (n / (1024 * 1024)).toFixed(2) + ' MB';
+//                         }
+
+//                         fileInput.addEventListener('change', function (e) {
+//                             const file = this.files && this.files[0];
+//                             if (!file) return;
+
+//                             const state = window.lessonImageUploadState;
+//                             const usedNow = computeUsedFromFiles();
+//                             const remaining = state.maxTotal - usedNow;
+//                             if (file.size > remaining) {
+//                                 statusEl.textContent = 'File too large for remaining quota';
+//                                 return;
+//                             }
+
+//                             statusEl.textContent = 'Uploading...';
+//                             progressWrap.style.display = 'block';
+
+//                             const xhr = new XMLHttpRequest();
+//                             const form = new FormData();
+//                             form.append('image', file);
+
+//                             xhr.open('POST', '../upload_image.php');
+
+//                             // progress for this upload (visual per-file)
+//                             xhr.upload.addEventListener('progress', function (ev) {
+//                                 if (ev.lengthComputable) {
+//                                     const percent = Math.round((ev.loaded / ev.total) * 100);
+//                                     progressBar.style.width = percent + '%';
+//                                     progressText.textContent = bytesToHuman(usedNow + ev.loaded) + ' of ' + bytesToHuman(state.maxTotal) + ' used';
+//                                 }
+//                             });
+
+//                             xhr.addEventListener('load', function () {
+//                                 try {
+//                                     const resp = JSON.parse(xhr.responseText);
+//                                     if (xhr.status >= 200 && xhr.status < 300 && resp && resp.url) {
+//                                         // commit usage: store object with name/url/size
+//                                         const parts = (resp.name ? resp.name : resp.url.split('/').pop().split('?')[0]) || '';
+//                                         state.files.push({ name: parts, url: resp.url, size: file.size });
+//                                         updateProgressUI();
+
+//                                         const insertImageByUrl = (url) => {
+//                                             try {
+//                                                 if (editorInstance && editorInstance.model && editorInstance.model.schema && editorInstance.model.schema.checkChild) {
+//                                                     editorInstance.model.change(writer => {
+//                                                         const imageElement = writer.createElement('imageBlock', { src: url });
+//                                                         editorInstance.model.insertContent(imageElement, editorInstance.model.document.selection);
+//                                                     });
+//                                                 } else if (editorInstance && typeof editorInstance.execute === 'function') {
+//                                                     try {
+//                                                         editorInstance.execute('imageInsert', { source: url });
+//                                                     } catch (e) {
+//                                                         const current = editorInstance.getData();
+//                                                         editorInstance.setData(current + `<p><img src="${url}"/></p>`);
+//                                                     }
+//                                                 } else {
+//                                                     const current = editorInstance.getData ? editorInstance.getData() : '';
+//                                                     if (typeof editorInstance.setData === 'function') {
+//                                                         editorInstance.setData(current + `<p><img src="${url}"/></p>`);
+//                                                     }
+//                                                 }
+//                                                 statusEl.textContent = 'Uploaded';
+//                                             } catch (err) {
+//                                                 try {
+//                                                     const current = editorInstance.getData();
+//                                                     editorInstance.setData(current + `<p><img src="${url}"/></p>`);
+//                                                     statusEl.textContent = 'Uploaded (fallback)';
+//                                                 } catch (err2) {
+//                                                     console.error('Insert image error', err2);
+//                                                     statusEl.textContent = 'Uploaded but insert failed';
+//                                                 }
+//                                             }
+//                                         };
+
+//                                         insertImageByUrl(resp.url);
+//                                     } else {
+//                                         statusEl.textContent = resp && resp.error ? (resp.error.message || resp.error) : 'Upload failed';
+//                                     }
+//                                 } catch (err) {
+//                                     console.error('Upload parse error', err, xhr.responseText);
+//                                     statusEl.textContent = 'Upload error';
+//                                 }
+//                             });
+
+//                             xhr.addEventListener('error', function (ev) {
+//                                 console.error('XHR upload error', ev);
+//                                 statusEl.textContent = 'Upload error';
+//                             });
+
+//                             xhr.send(form);
+//                         });
+
+//                         // Scan existing images in the view and try to include their sizes
+//                         (function includeExistingImagesSizes() {
+//                             try {
+//                                 const imgs = viewEl.querySelectorAll('img');
+//                                 if (!imgs || imgs.length === 0) return;
+//                                 const state = window.lessonImageUploadState;
+//                                 // For each image, if URL looks same-origin or points to uploads folder, try a HEAD request
+//                                 Array.from(imgs).forEach(img => {
+//                                     try {
+//                                         const src = img.getAttribute('src') || img.src || '';
+//                                         if (!src) return;
+//                                         // avoid data: URIs
+//                                         if (src.indexOf('data:') === 0) return;
+//                                         // Only attempt for http(s) URLs or relative paths
+//                                         const isHttp = src.indexOf('http') === 0 || src.indexOf('//') === 0 || src.indexOf('/') === 0;
+//                                         if (!isHttp) return;
+
+//                                         // Try to build an absolute URL
+//                                         let url = src;
+//                                         try {
+//                                             url = new URL(src, window.location.href).href;
+//                                         } catch (e) {}
+
+//                                         // Skip obvious external hosts (basic check)
+//                                         try {
+//                                             const urlObj = new URL(url);
+//                                             if (urlObj.hostname !== window.location.hostname) return;
+//                                         } catch (e) {}
+
+//                                         // If we already tracked this file by name/url, skip
+//                                         const base = url.split('/').pop().split('?')[0];
+//                                         if ((state.files || []).some(f => f.name === base || f.url === url)) return;
+
+//                                         // HEAD request to fetch Content-Length
+//                                         const xhr = new XMLHttpRequest();
+//                                         xhr.open('HEAD', url);
+//                                         xhr.onreadystatechange = function () {
+//                                             if (xhr.readyState === 4) {
+//                                                 try {
+//                                                     if (xhr.status >= 200 && xhr.status < 400) {
+//                                                         const len = xhr.getResponseHeader('Content-Length');
+//                                                         const size = len ? parseInt(len, 10) : 0;
+//                                                         state.files.push({ name: base, url: url, size: size });
+//                                                         updateProgressUI();
+//                                                     }
+//                                                 } catch (e) { /* ignore */ }
+//                                             }
+//                                         };
+//                                         // Add a small timeout so this doesn't block other init
+//                                         setTimeout(() => {
+//                                             try { xhr.send(); } catch (e) {}
+//                                         }, 10);
+//                                     } catch (e) { /* ignore per-image errors */ }
+//                                 });
+//                             } catch (e) { console.warn('includeExistingImagesSizes error', e); }
+//                         })();
+
+//                         // Ensure the UI shows the current usage immediately (may be 0)
+//                         try { updateProgressUI(); } catch (e) { /* ignore */ }
+
+//                         // Reconcile tracked files with the current images in the lesson view.
+//                         // This will remove entries for images that were deleted and add sizes for
+//                         // newly-added, same-origin images.
+//                         function reconcileTrackedFilesWithView() {
+//                             try {
+//                                 const state = window.lessonImageUploadState;
+//                                 if (!state) return;
+//                                 // collect images from both the readonly view and the editor editable DOM (if present)
+//                                 let imgs = [];
+//                                 try { imgs = imgs.concat(Array.from(viewEl.querySelectorAll('img'))); } catch (e) {}
+//                                 try {
+//                                     const editableEl = editorInstance && editorInstance.ui && editorInstance.ui.view && editorInstance.ui.view.editable && editorInstance.ui.view.editable.element;
+//                                     if (editableEl) imgs = imgs.concat(Array.from(editableEl.querySelectorAll('img')));
+//                                 } catch (e) {}
+//                                 // dedupe
+//                                 imgs = imgs.filter((v,i,a)=>a.indexOf(v)===i);
+
+//                                 const currentBases = new Set();
+//                                 imgs.forEach(img => {
+//                                     try {
+//                                         const src = img.getAttribute('src') || img.src || '';
+//                                         if (!src) return;
+//                                         const base = (new URL(src, window.location.href).pathname.split('/').pop() || '').split('?')[0];
+//                                         if (base) currentBases.add(base);
+//                                     } catch (e) {
+//                                         const src = img.getAttribute('src') || '';
+//                                         const base = src.split('/').pop().split('?')[0];
+//                                         if (base) currentBases.add(base);
+//                                     }
+//                                 });
+
+//                                 // remove tracked files not present anymore
+//                                 state.files = (state.files || []).filter(f => {
+//                                     const fname = (f.name || (f.url || '').split('/').pop().split('?')[0] || '');
+//                                     return currentBases.has(fname);
+//                                 });
+
+//                                 // add any current images not tracked yet (attempt HEAD for same-origin)
+//                                 imgs.forEach(img => {
+//                                     try {
+//                                         const src = img.getAttribute('src') || img.src || '';
+//                                         if (!src) return;
+//                                         if (src.indexOf('data:') === 0) return;
+//                                         let url = src;
+//                                         try { url = new URL(src, window.location.href).href; } catch (e) {}
+//                                         // basic same-host check
+//                                         try {
+//                                             const urlObj = new URL(url);
+//                                             if (urlObj.hostname !== window.location.hostname) return;
+//                                         } catch (e) {}
+//                                         const base = url.split('/').pop().split('?')[0];
+//                                         if (!base) return;
+//                                         if ((state.files || []).some(f => f.name === base || f.url === url)) return;
+
+//                                         // HEAD request to try to get Content-Length
+//                                         const xhr = new XMLHttpRequest();
+//                                         xhr.open('HEAD', url);
+//                                         xhr.onreadystatechange = function () {
+//                                             if (xhr.readyState === 4) {
+//                                                 try {
+//                                                     if (xhr.status >= 200 && xhr.status < 400) {
+//                                                         const len = xhr.getResponseHeader('Content-Length');
+//                                                         const size = len ? parseInt(len, 10) : 0;
+//                                                         state.files.push({ name: base, url: url, size: size });
+//                                                         updateProgressUI();
+//                                                     }
+//                                                 } catch (e) { /* ignore */ }
+//                                             }
+//                                         };
+//                                         setTimeout(() => { try { xhr.send(); } catch (e) {} }, 10);
+//                                     } catch (e) { /* per-image ignore */ }
+//                                 });
+
+//                                 updateProgressUI();
+//                             } catch (e) { console.warn('reconcileTrackedFilesWithView error', e); }
+//                         }
+
+//                         // Observe the lesson view and the editor editable DOM for image add/remove changes so we can update the quota
+//                         try {
+//                             const observer = new MutationObserver(function (mutations) {
+//                                 // simple throttle: run reconcile once per mutation batch
+//                                 reconcileTrackedFilesWithView();
+//                             });
+//                             observer.observe(viewEl, { childList: true, subtree: true, attributes: true, attributeFilter: ['src'] });
+//                             try {
+//                                 const editableEl = editorInstance && editorInstance.ui && editorInstance.ui.view && editorInstance.ui.view.editable && editorInstance.ui.view.editable.element;
+//                                 if (editableEl) {
+//                                     observer.observe(editableEl, { childList: true, subtree: true, attributes: true, attributeFilter: ['src'] });
+//                                 }
+//                             } catch (e) { /* ignore */ }
+//                         } catch (e) { console.warn('MutationObserver not available', e); }
+//                     }
+//                 }
+//             } catch (e) {
+//                 console.error('Fallback upload init error', e);
+//             }
+
+//             // --- Image resize toolbar ---
+//             try {
+//                 // Create floating toolbar element
+//                 let imgToolbar = document.getElementById('ck_img_resize_toolbar');
+//                 if (!imgToolbar) {
+//                     imgToolbar = document.createElement('div');
+//                     imgToolbar.id = 'ck_img_resize_toolbar';
+//                     imgToolbar.style.position = 'absolute';
+//                     imgToolbar.style.display = 'none';
+//                     imgToolbar.style.zIndex = 9999;
+//                     imgToolbar.style.background = '#fff';
+//                     imgToolbar.style.border = '1px solid #ddd';
+//                     imgToolbar.style.padding = '6px';
+//                     imgToolbar.style.borderRadius = '4px';
+//                     imgToolbar.style.boxShadow = '0 2px 6px rgba(0,0,0,0.15)';
+//                     imgToolbar.innerHTML = `
+//                         <button class="btn btn-sm btn-light ck-img-size-btn" data-size="25">25%</button>
+//                         <button class="btn btn-sm btn-light ck-img-size-btn" data-size="50">50%</button>
+//                         <button class="btn btn-sm btn-light ck-img-size-btn" data-size="75">75%</button>
+//                         <button class="btn btn-sm btn-light ck-img-size-btn" data-size="100">100%</button>
+//                         <input id="ck_img_custom_px" type="number" placeholder="px" style="width:64px; margin-left:6px;" />
+//                         <button class="btn btn-sm btn-primary" id="ck_img_apply_px" style="margin-left:6px;">Apply</button>
+//                         <button class="btn btn-sm btn-outline-secondary" id="ck_img_remove_style" style="margin-left:6px;">Reset</button>
+//                     `;
+//                     document.body.appendChild(imgToolbar);
+//                 }
+
+//                 let currentImage = null;
+
+//                 // Helper to position toolbar near an element
+//                 function positionToolbarForElement(el) {
+//                     const rect = el.getBoundingClientRect();
+//                     const toolbarRect = imgToolbar.getBoundingClientRect();
+//                     // place above the image if possible
+//                     let top = window.scrollY + rect.top - toolbarRect.height - 8;
+//                     if (top < window.scrollY + 5) top = window.scrollY + rect.bottom + 8; // below if not enough space
+//                     let left = window.scrollX + rect.left;
+//                     imgToolbar.style.top = top + 'px';
+//                     imgToolbar.style.left = left + 'px';
+//                     imgToolbar.style.display = 'block';
+//                 }
+
+//                 // Helper to apply a visual width that overrides common layout constraints
+//                 function applyVisualWidth(el, widthVal) {
+//                     try {
+//                         if (!el || !widthVal) return;
+//                         // ensure width is explicit and important so parent CSS (min-width, flex) doesn't override
+//                         el.style.setProperty('width', widthVal, 'important');
+//                         el.style.setProperty('height', 'auto', 'important');
+//                         // reset constraints that can block percentage sizing
+//                         el.style.setProperty('min-width', '0', 'important');
+//                         el.style.setProperty('max-width', 'none', 'important');
+//                         el.style.setProperty('flex', '0 0 auto', 'important');
+//                         el.style.setProperty('flex-grow', '0', 'important');
+//                         // make image block level so percentage widths behave predictably
+//                         el.style.setProperty('display', 'block', 'important');
+//                         // ensure object-fit doesn't crop unexpectedly
+//                         el.style.setProperty('object-fit', 'contain', 'important');
+//                     } catch (e) { try { el.style.width = widthVal; } catch (err) {} }
+//                 }
+
+//                 function clearVisualWidth(el) {
+//                     try {
+//                         if (!el) return;
+//                         el.style.removeProperty('width');
+//                         el.style.removeProperty('height');
+//                         el.style.removeProperty('min-width');
+//                         el.style.removeProperty('max-width');
+//                         el.style.removeProperty('flex');
+//                         el.style.removeProperty('flex-grow');
+//                         el.style.removeProperty('display');
+//                         el.style.removeProperty('object-fit');
+//                     } catch (e) { /* ignore */ }
+//                 }
+
+//                 // Click handler inside the editor to detect images
+//                 const editable = editor.ui ? editor.ui.view.editable.element : document.querySelector('.ck-editor__editable');
+//                 if (editable) {
+//                     // Listen for clicks and use closest to find images even if nested (e.g., inside figure)
+//                     editable.addEventListener('click', function (ev) {
+//                         const targetImg = ev.target && ev.target.closest ? ev.target.closest('img') : null;
+//                         if (targetImg) {
+//                             currentImage = targetImg;
+//                             positionToolbarForElement(targetImg);
+//                             // Pre-fill custom px with current width (if set as px)
+//                             const width = targetImg.style.width || targetImg.getAttribute('width') || '';
+//                             const px = width && width.indexOf('%') === -1 ? parseInt(width, 10) || '' : '';
+//                             const cust = document.getElementById('ck_img_custom_px');
+//                             if (cust) cust.value = px;
+//                         } else {
+//                             currentImage = null;
+//                             imgToolbar.style.display = 'none';
+//                         }
+//                     });
+
+//                     // Hide toolbar when clicking elsewhere
+//                     document.addEventListener('click', function (ev) {
+//                         if (!imgToolbar.contains(ev.target) && !editable.contains(ev.target)) {
+//                             imgToolbar.style.display = 'none';
+//                             currentImage = null;
+//                         }
+//                     });
+
+//                     // Toolbar button handlers
+//                     imgToolbar.addEventListener('click', function (ev) {
+//                         const btn = ev.target.closest('.ck-img-size-btn');
+//                         if (btn && currentImage) {
+//                             const size = btn.getAttribute('data-size');
+//                             applyVisualWidth(currentImage, size + '%');
+//                             try { currentImage.removeAttribute('height'); } catch (e) {}
+//                         }
+//                         if (ev.target && ev.target.id === 'ck_img_apply_px' && currentImage) {
+//                             const val = parseInt(document.getElementById('ck_img_custom_px').value, 10);
+//                             if (!isNaN(val) && val > 0) {
+//                                 applyVisualWidth(currentImage, val + 'px');
+//                             }
+//                         }
+//                         if (ev.target && ev.target.id === 'ck_img_remove_style' && currentImage) {
+//                             clearVisualWidth(currentImage);
+//                             currentImage.removeAttribute('width');
+//                         }
+//                     });
+//                 }
+//             } catch (e) {
+//                 console.error('Image toolbar init error', e);
+//             }
+
+//             // Helper: ensure the resized image style is persisted into the editor data
+//             function syncImageToEditor(imgEl) {
+//                 try {
+//                     if (!editorInstance) return;
+
+//                     // If editor has a model and we can map DOM to model, try to update via model.change
+//                     if (editorInstance.model && editorInstance.editing && typeof editorInstance.editing.view._renderer === 'object') {
+//                         // Best-effort: update by finding image element in editor data by src and replace its style/width
+//                         const src = imgEl.getAttribute('src') || imgEl.src || '';
+//                         if (!src) return;
+
+//                         // Retrieve current editor HTML
+//                         let html = editorInstance.getData();
+
+//                         // Create a DOM parser to modify the image tag corresponding to this src
+//                         const parser = new DOMParser();
+//                         const doc = parser.parseFromString('<div>' + html + '</div>', 'text/html');
+//                         // Find images with matching src (use endsWith compare to allow absolute/relative differences)
+//                         const imgs = Array.from(doc.querySelectorAll('img'));
+//                         let matched = false;
+//                         for (let i = 0; i < imgs.length; i++) {
+//                             const iSrc = imgs[i].getAttribute('src') || imgs[i].src || '';
+//                             if (!iSrc) continue;
+//                             // Compare by filename at end to tolerate query strings
+//                             const baseA = iSrc.split('/').pop().split('?')[0];
+//                             const baseB = src.split('/').pop().split('?')[0];
+//                             if (baseA === baseB || iSrc === src) {
+//                                 // copy inline width/style attributes from imgEl
+//                                 const widthStyle = imgEl.style.width || '';
+//                                 if (widthStyle) {
+//                                     imgs[i].setAttribute('style', (imgs[i].getAttribute('style') || '') + ' width: ' + widthStyle + ';');
+//                                     imgs[i].setAttribute('width', ''); // keep style-driven width
+//                                 } else {
+//                                     // remove width/style if cleared
+//                                     let st = imgs[i].getAttribute('style') || '';
+//                                     st = st.replace(/\bwidth\s*:\s*[^;]+;?/ig, '');
+//                                     if (st.trim()) imgs[i].setAttribute('style', st); else imgs[i].removeAttribute('style');
+//                                     imgs[i].removeAttribute('width');
+//                                 }
+//                                 matched = true;
+//                                 // Do not break — update all matching images
+//                             }
+//                         }
+
+//                         if (matched) {
+//                             // Serialize back to HTML and set data
+//                             const newHtml = doc.body.firstChild.innerHTML;
+//                             editorInstance.setData(newHtml);
+//                         }
+//                         return;
+//                     }
+
+//                     // Fallback: direct replace in editor HTML string by src
+//                     const src = imgEl.getAttribute('src') || imgEl.src || '';
+//                     if (!src) return;
+//                     let data = editorInstance.getData();
+//                     // build regex to find the img tag with this src (escape special chars)
+//                     const esc = src.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+//                     const re = new RegExp('(<img[^>]*src=["\']?'+esc+'["\']?[^>]*>)','gi');
+//                     const match = data.match(re);
+//                     if (match && match.length > 0) {
+//                         // pick first occurrence and update style attribute
+//                         const originalTag = match[0];
+//                         // create a DOM element to manipulate
+//                         const tmp = document.createElement('div');
+//                         tmp.innerHTML = originalTag;
+//                         const img = tmp.querySelector('img');
+//                         if (!img) return;
+//                         // copy computed style width
+//                         const widthStyle = imgEl.style.width || '';
+//                         if (widthStyle) {
+//                             img.setAttribute('style', (img.getAttribute('style') || '') + ' width: ' + widthStyle + ';');
+//                             img.setAttribute('width', '');
+//                         } else {
+//                             let st = img.getAttribute('style') || '';
+//                             st = st.replace(/\bwidth\s*:\s*[^;]+;?/ig, '');
+//                             if (st.trim()) img.setAttribute('style', st); else img.removeAttribute('style');
+//                             img.removeAttribute('width');
+//                         }
+//                         const newTag = tmp.innerHTML;
+//                         data = data.replace(re, newTag);
+//                         editorInstance.setData(data);
+//                     }
+//                 } catch (err) {
+//                     console.error('syncImageToEditor error', err);
+//                 }
+//             }
+//         })
+//         .catch(error => {
+//             console.error("Error initializing editor:", error);
+//         });
+//     } // end init-once
+
+
+
+
+//     $.ajax({
+//         url: "../controller.php",
+//         type: "post",
+//         data: {
+//             "class_id": $("#select_class_field").val(),
+//             "subject_id": $("#select_subject_field").val(),
+//             "week_id": $(".week_btn.active").attr("data-id"),
+//             'type': 'body',
+//             "action": "get_lesson_note"
+//         },
+//         beforeSend: () => {
+//             $("#lesson_body_view").html("Loading...")
+//         },
+//         success: (response) => {
+//             const data = !response ? '' : JSON.parse(response);
+//             const contentHtml = data.content || '<i>No content here yet</i>';
+//             // Update the view HTML
+//             $("#lesson_body_view").html(contentHtml);
+//             // If editor exists and is initialized, update its data too but keep it readOnly
+//             try {
+//                 if (editorInstance && typeof editorInstance.setData === 'function') {
+//                     // Only update the editor data so that toggling to edit will reflect latest content
+//                     editorInstance.setData(contentHtml);
+//                     try { editorInstance.isReadOnly = true; } catch (e) {}
+//                 }
+//             } catch (e) {
+//                 console.warn('Could not set editor data on get_lesson_note_body success:', e);
+//             }
+
+//         },
+//         error: (error) => {
+//             console.error("Error fetching lesson note:", error);
+//         }
+//     });
+// }
 function get_lesson_note_body() {
-    if (!$("#select_class_field").val() || !$("#select_subject_field").val() || !$(".week_btn.active").attr("data-id")) {
+    if (
+        !$("#select_class_field").val() ||
+        !$("#select_subject_field").val() ||
+        !$(".week_btn.active").attr("data-id")
+    ) {
         return false;
     }
-    if (editorInstance) {
-        editorInstance.destroy()
-            .then(() => {
-                console.log("Editor destroyed");
-            })
-            .catch(error => {
-                console.error("Error destroying editor:", error);
-            });
-    }
-
-    $("#note_container_body").html(`
+    // Only inject the editor/view markup and initialize CKEditor once. Subsequent
+    // calls will reuse the same editor instance and only update the view content.
+    if ($("#note_container_body").children().length === 0) {
+        $("#note_container_body").html(`
         
                     <div class="mt-4">
                         <div class="py-3 px-15 bg-white" style="border-radius: 10px;">
@@ -9720,6 +12192,10 @@ function get_lesson_note_body() {
                             <div class="form-group mb-0 w-100" id="lesson_note_body_editor" style="display:none;">
                                 <label class="">Content</label>
                                 <textarea id="lesson_body" name=""></textarea>
+                                <div class="form-group mt-3">
+                                    <label>Save for Classes (Multi-Select)</label>
+                                    <select class="form-control select2" multiple="multiple" id="lesson_note_multi_class" style="width: 100%;"></select>
+                                </div>
                                 <div class="d-flex mt-3">
                                     <button type="button" class="btn btn-primary mr-3" onclick="create_lesson_note_body()">Save changes</button>
                                     <button type="button" class="btn btn-outline-primary" onclick="show_lesson_note_body()">Cancel editing</button>
@@ -9737,49 +12213,107 @@ function get_lesson_note_body() {
         
     `);
 
-    ClassicEditor.create(document.querySelector("#lesson_body"), {
-        toolbar: {
-            shouldNotGroupWhenFull: true,
-            items: [
-                'heading', 'bold', 'italic', 'underline', 'strikethrough',
-                '|', 'bulletedList', 'numberedList', 'alignment',
-                '|', 'blockQuote', 'link', 'undo', 'redo',
-                '|', 'fontSize', 'fontColor', 'fontBackgroundColor', 'insertTable', 'imageUpload'
-            ]
-        },
-        // Enable image upload via SimpleUpload adapter. Remove heavy/unused plugins but keep image upload support.
-        removePlugins: ['MediaEmbed', 'EasyImage', 'CKFinder'],
-        simpleUpload: {
-            // Upload URL: controller will handle uploads when action=upload_lesson_image
-            uploadUrl: '../controller.php?action=upload_lesson_image',
-            // Optional headers (e.g., CSRF) can be added here if needed:
-            // headers: { 'X-CSRF-TOKEN': 'CSRF-Token' }
-        },
-        heading: {
-            options: [
-                { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
-                { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
-                { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
-                { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
-            ]
-        }
-    })
-        .then(editor => {
-            editorInstance = editor;
-            editorInstance.setData(''); // Set initial data
-            console.log("Editor initialized successfully!");
-            // Provide a fallback image upload control when the CKEditor upload adapter/plugin
-            // is not available (filerepository-no-upload-adapter). This allows users to upload
-            // an image via a simple file input and insert it into the editor content.
-            try {
-                const viewEl = document.querySelector('#lesson_note_body_view');
-                if (viewEl) {
-                    let uploadGroup = document.getElementById('lesson_image_upload_group');
-                    if (!uploadGroup) {
-                        uploadGroup = document.createElement('div');
-                        uploadGroup.id = 'lesson_image_upload_group';
-                        uploadGroup.style.marginTop = '8px';
-                        uploadGroup.innerHTML = `
+        ClassicEditor.create(document.querySelector("#lesson_body"), {
+            toolbar: {
+                shouldNotGroupWhenFull: true,
+                items: [
+                    "heading",
+                    "bold",
+                    "italic",
+                    "underline",
+                    "strikethrough",
+                    "|",
+                    "bulletedList",
+                    "numberedList",
+                    "alignment",
+                    "|",
+                    "blockQuote",
+                    "link",
+                    "undo",
+                    "redo",
+                    "|",
+                    "fontSize",
+                    "fontColor",
+                    "fontBackgroundColor",
+                    "insertTable",
+                    "imageUpload",
+                ],
+            },
+            // Enable image upload via SimpleUpload adapter. Remove heavy/unused plugins but keep image upload support.
+            removePlugins: ["MediaEmbed", "EasyImage", "CKFinder"],
+            simpleUpload: {
+                // Upload URL: controller will handle uploads when action=upload_lesson_image
+                uploadUrl: "../controller.php?action=upload_lesson_image",
+                // Optional headers (e.g., CSRF) can be added here if needed:
+                // headers: { 'X-CSRF-TOKEN': 'CSRF-Token' }
+            },
+            heading: {
+                options: [
+                    {
+                        model: "paragraph",
+                        title: "Paragraph",
+                        class: "ck-heading_paragraph",
+                    },
+                    {
+                        model: "heading1",
+                        view: "h1",
+                        title: "Heading 1",
+                        class: "ck-heading_heading1",
+                    },
+                    {
+                        model: "heading2",
+                        view: "h2",
+                        title: "Heading 2",
+                        class: "ck-heading_heading2",
+                    },
+                    {
+                        model: "heading3",
+                        view: "h3",
+                        title: "Heading 3",
+                        class: "ck-heading_heading3",
+                    },
+                ],
+            },
+        })
+            .then((editor) => {
+                editorInstance = editor;
+                editorInstance.setData(""); // Set initial data
+
+                // Populate multi-class select
+                populate_multi_class_select();
+
+                // Start editor in read-only mode (view mode). Editing is toggled via
+                // show_lesson_note_body_editor() which sets isReadOnly = false.
+                try {
+                    editorInstance.isReadOnly = true;
+                } catch (e) { }
+                // If a pending body was stored (user clicked Edit before editor ready), restore it
+                try {
+                    if (
+                        window.__pendingLessonBody &&
+                        typeof editorInstance.setData === "function"
+                    ) {
+                        editorInstance.setData(window.__pendingLessonBody);
+                        window.__pendingLessonBody = null;
+                    }
+                } catch (e) {
+                    console.warn("Could not apply pending lesson body to editor:", e);
+                }
+                console.log("Editor initialized successfully!");
+                // Provide a fallback image upload control when the CKEditor upload adapter/plugin
+                // is not available (filerepository-no-upload-adapter). This allows users to upload
+                // an image via a simple file input and insert it into the editor content.
+                try {
+                    const viewEl = document.querySelector("#lesson_note_body_view");
+                    if (viewEl) {
+                        let uploadGroup = document.getElementById(
+                            "lesson_image_upload_group"
+                        );
+                        if (!uploadGroup) {
+                            uploadGroup = document.createElement("div");
+                            uploadGroup.id = "lesson_image_upload_group";
+                            uploadGroup.style.marginTop = "8px";
+                            uploadGroup.innerHTML = `
                             <input type="file" id="lesson_image_input" accept="image/*" style="display:none;">
                             <button type="button" id="lesson_image_btn" class="btn btn-sm btn-secondary">Upload Image</button>
                             <span id="lesson_image_status" style="margin-left:10px"></span>
@@ -9789,186 +12323,479 @@ function get_lesson_note_body() {
                                 </div>
                                 <div style="font-size:12px; margin-top:4px; color:#666; display:flex; justify-content:space-between;">
                                     <span id="lesson_image_progress_text">0 B of 2 MB used</span>
-                                    <button type="button" id="lesson_image_reset" class="btn btn-sm btn-link" style="padding:0;">Reset</button>
+                                    <button type="button" id="lesson_image_reset" class="btn btn-sm btn-link d-none" style="padding:0;">Reset</button>
                                 </div>
                             </div>
                         `;
-                        // Insert upload controls after the view element
-                        viewEl.parentNode.insertBefore(uploadGroup, viewEl.nextSibling);
+                            // Insert upload controls after the view element
+                            viewEl.parentNode.insertBefore(uploadGroup, viewEl.nextSibling);
 
-                        const fileInput = document.getElementById('lesson_image_input');
-                        const uploadBtn = document.getElementById('lesson_image_btn');
-                        const statusEl = document.getElementById('lesson_image_status');
+                            const fileInput = document.getElementById("lesson_image_input");
+                            const uploadBtn = document.getElementById("lesson_image_btn");
+                            const statusEl = document.getElementById("lesson_image_status");
 
-                        uploadBtn.addEventListener('click', function () {
-                            fileInput.click();
-                        });
-
-                        // initialize global tracking state if not present
-                        if (!window.lessonImageUploadState) {
-                            window.lessonImageUploadState = {
-                                maxTotal: 2 * 1024 * 1024, // 2 MB
-                                used: 0,
-                                inProgress: false,
-                                // store names of files uploaded in this session
-                                files: []
-                            };
-                        }
-
-                        const progressWrap = document.getElementById('lesson_image_progress_wrap');
-                        const progressBar = document.getElementById('lesson_image_progress');
-                        const progressText = document.getElementById('lesson_image_progress_text');
-                        const resetBtn = document.getElementById('lesson_image_reset');
-
-                        function updateProgressUI() {
-                            const used = window.lessonImageUploadState.used || 0;
-                            const max = window.lessonImageUploadState.maxTotal;
-                            const pct = Math.min(100, Math.round((used / max) * 100));
-                            progressBar.style.width = pct + '%';
-                            progressText.textContent = bytesToHuman(used) + ' of ' + bytesToHuman(max) + ' used';
-                            if (used >= max) {
-                                uploadBtn.disabled = true;
-                                uploadBtn.classList.add('disabled');
-                            } else {
-                                uploadBtn.disabled = false;
-                                uploadBtn.classList.remove('disabled');
-                            }
-                            progressWrap.style.display = used > 0 ? 'block' : 'none';
-                        }
-
-                        resetBtn.addEventListener('click', function () {
-                            window.lessonImageUploadState.used = 0;
-                            updateProgressUI();
-                        });
-
-                        function bytesToHuman(n) {
-                            if (n < 1024) return n + ' B';
-                            if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
-                            return (n / (1024 * 1024)).toFixed(2) + ' MB';
-                        }
-
-                        fileInput.addEventListener('change', function (e) {
-                            const file = this.files && this.files[0];
-                            if (!file) return;
-
-                            // Check remaining quota
-                            const state = window.lessonImageUploadState;
-                            const remaining = state.maxTotal - (state.used || 0);
-                            if (file.size > remaining) {
-                                statusEl.textContent = 'File too large for remaining quota';
-                                return;
-                            }
-
-                            statusEl.textContent = 'Uploading...';
-                            progressWrap.style.display = 'block';
-
-                            const xhr = new XMLHttpRequest();
-                            const form = new FormData();
-                            form.append('image', file);
-
-                            xhr.open('POST', '../upload_image.php');
-
-                            // progress for this upload
-                            xhr.upload.addEventListener('progress', function (ev) {
-                                if (ev.lengthComputable) {
-                                    const percent = Math.round((ev.loaded / ev.total) * 100);
-                                    // show progress towards this file only
-                                    progressBar.style.width = percent + '%';
-                                    progressText.textContent = bytesToHuman((state.used || 0) + ev.loaded) + ' of ' + bytesToHuman(state.maxTotal) + ' used';
-                                }
+                            uploadBtn.addEventListener("click", function () {
+                                fileInput.click();
                             });
 
-                            xhr.addEventListener('load', function () {
+                            // initialize global tracking state if not present
+                            if (!window.lessonImageUploadState) {
+                                // files: array of { name: string, url?: string, size: number }
+                                window.lessonImageUploadState = {
+                                    maxTotal: 2 * 1024 * 1024, // 2 MB
+                                    inProgress: false,
+                                    // store uploaded file metadata
+                                    files: [],
+                                };
+                            }
+
+                            // Helper: compute used bytes from known files
+                            function computeUsedFromFiles() {
                                 try {
-                                    const resp = JSON.parse(xhr.responseText);
-                                    if (xhr.status >= 200 && xhr.status < 300 && resp && resp.url) {
-                                        // commit usage
-                                        state.used = (state.used || 0) + file.size;
-                                        // record uploaded filename (server returns 'name') or fallback to parsing from url
-                                        if (resp.name) {
-                                            state.files.push(resp.name);
-                                        } else if (resp.url) {
-                                            try {
-                                                const parts = resp.url.split('/');
-                                                const base = parts[parts.length - 1].split('?')[0];
-                                                if (base) state.files.push(base);
-                                            } catch (e) { }
-                                        }
-                                        updateProgressUI();
-
-                                        const insertImageByUrl = (url) => {
-                                            // console.log(url)
-                                            try {
-                                                if (editorInstance && editorInstance.model && editorInstance.model.schema && editorInstance.model.schema.checkChild) {
-                                                    editorInstance.model.change(writer => {
-                                                        const imageElement = writer.createElement('imageBlock', { src: url });
-                                                        editorInstance.model.insertContent(imageElement, editorInstance.model.document.selection);
-                                                    });
-                                                } else if (editorInstance && typeof editorInstance.execute === 'function') {
-                                                    try {
-                                                        editorInstance.execute('imageInsert', { source: url });
-                                                    } catch (e) {
-                                                        const current = editorInstance.getData();
-                                                        editorInstance.setData(current + `<p><img src="${url}"/></p>`);
-                                                    }
-                                                } else {
-                                                    const current = editorInstance.getData ? editorInstance.getData() : '';
-                                                    if (typeof editorInstance.setData === 'function') {
-                                                        editorInstance.setData(current + `<p><img src="${url}"/></p>`);
-                                                    }
-                                                }
-                                                statusEl.textContent = 'Uploaded';
-                                            } catch (err) {
-                                                try {
-                                                    const current = editorInstance.getData();
-                                                    editorInstance.setData(current + `<p><img src="${url}"/></p>`);
-                                                    statusEl.textContent = 'Uploaded (fallback)';
-                                                } catch (err2) {
-                                                    console.error('Insert image error', err2);
-                                                    statusEl.textContent = 'Uploaded but insert failed';
-                                                }
-                                            }
-                                        };
-
-                                        insertImageByUrl(resp.url);
-                                    } else {
-                                        statusEl.textContent = resp && resp.error ? (resp.error.message || resp.error) : 'Upload failed';
-                                    }
-                                } catch (err) {
-                                    console.error('Upload parse error', err, xhr.responseText);
-                                    statusEl.textContent = 'Upload error';
+                                    const files = window.lessonImageUploadState.files || [];
+                                    return files.reduce((s, f) => s + (Number(f.size) || 0), 0);
+                                } catch (e) {
+                                    return 0;
                                 }
+                            }
+
+                            // Replace earlier used tracking by computing on-demand
+                            function updateProgressUI() {
+                                const used = computeUsedFromFiles();
+                                const state = window.lessonImageUploadState;
+                                const max = state.maxTotal;
+                                const pct = Math.min(100, Math.round((used / max) * 100));
+                                progressBar.style.width = pct + "%";
+                                progressText.textContent =
+                                    bytesToHuman(used) + " of " + bytesToHuman(max) + " used";
+                                if (used >= max) {
+                                    uploadBtn.disabled = true;
+                                    uploadBtn.classList.add("disabled");
+                                } else {
+                                    uploadBtn.disabled = false;
+                                    uploadBtn.classList.remove("disabled");
+                                }
+                                progressWrap.style.display = used > 0 ? "block" : "none";
+                            }
+
+                            const progressWrap = document.getElementById(
+                                "lesson_image_progress_wrap"
+                            );
+                            const progressBar = document.getElementById(
+                                "lesson_image_progress"
+                            );
+                            const progressText = document.getElementById(
+                                "lesson_image_progress_text"
+                            );
+                            const resetBtn = document.getElementById("lesson_image_reset");
+
+                            // (updateProgressUI replaced above to compute used from files)
+
+                            resetBtn.addEventListener("click", function () {
+                                // clear tracked files (only client-side for this session)
+                                window.lessonImageUploadState.files = [];
+                                updateProgressUI();
                             });
 
-                            xhr.addEventListener('error', function (ev) {
-                                console.error('XHR upload error', ev);
-                                statusEl.textContent = 'Upload error';
+                            function bytesToHuman(n) {
+                                if (n < 1024) return n + " B";
+                                if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
+                                return (n / (1024 * 1024)).toFixed(2) + " MB";
+                            }
+
+                            fileInput.addEventListener("change", function (e) {
+                                const file = this.files && this.files[0];
+                                if (!file) return;
+
+                                const state = window.lessonImageUploadState;
+                                const usedNow = computeUsedFromFiles();
+                                const remaining = state.maxTotal - usedNow;
+                                if (file.size > remaining) {
+                                    statusEl.textContent = "File too large for remaining quota";
+                                    return;
+                                }
+
+                                statusEl.textContent = "Uploading...";
+                                progressWrap.style.display = "block";
+
+                                const xhr = new XMLHttpRequest();
+                                const form = new FormData();
+                                form.append("image", file);
+
+                                xhr.open("POST", "../upload_image.php");
+
+                                // progress for this upload (visual per-file)
+                                xhr.upload.addEventListener("progress", function (ev) {
+                                    if (ev.lengthComputable) {
+                                        const percent = Math.round((ev.loaded / ev.total) * 100);
+                                        progressBar.style.width = percent + "%";
+                                        progressText.textContent =
+                                            bytesToHuman(usedNow + ev.loaded) +
+                                            " of " +
+                                            bytesToHuman(state.maxTotal) +
+                                            " used";
+                                    }
+                                });
+
+                                xhr.addEventListener("load", function () {
+                                    try {
+                                        const resp = JSON.parse(xhr.responseText);
+                                        if (
+                                            xhr.status >= 200 &&
+                                            xhr.status < 300 &&
+                                            resp &&
+                                            resp.url
+                                        ) {
+                                            // commit usage: store object with name/url/size
+                                            const parts =
+                                                (resp.name
+                                                    ? resp.name
+                                                    : resp.url.split("/").pop().split("?")[0]) || "";
+                                            state.files.push({
+                                                name: parts,
+                                                url: resp.url,
+                                                size: file.size,
+                                            });
+                                            updateProgressUI();
+
+                                            const insertImageByUrl = (url) => {
+                                                try {
+                                                    if (
+                                                        editorInstance &&
+                                                        editorInstance.model &&
+                                                        editorInstance.model.schema &&
+                                                        editorInstance.model.schema.checkChild
+                                                    ) {
+                                                        editorInstance.model.change((writer) => {
+                                                            const imageElement = writer.createElement(
+                                                                "imageBlock",
+                                                                { src: url }
+                                                            );
+                                                            editorInstance.model.insertContent(
+                                                                imageElement,
+                                                                editorInstance.model.document.selection
+                                                            );
+                                                        });
+                                                    } else if (
+                                                        editorInstance &&
+                                                        typeof editorInstance.execute === "function"
+                                                    ) {
+                                                        try {
+                                                            editorInstance.execute("imageInsert", {
+                                                                source: url,
+                                                            });
+                                                        } catch (e) {
+                                                            const current = editorInstance.getData();
+                                                            editorInstance.setData(
+                                                                current + `<p><img src="${url}"/></p>`
+                                                            );
+                                                        }
+                                                    } else {
+                                                        const current = editorInstance.getData
+                                                            ? editorInstance.getData()
+                                                            : "";
+                                                        if (typeof editorInstance.setData === "function") {
+                                                            editorInstance.setData(
+                                                                current + `<p><img src="${url}"/></p>`
+                                                            );
+                                                        }
+                                                    }
+                                                    statusEl.textContent = "Uploaded";
+                                                } catch (err) {
+                                                    try {
+                                                        const current = editorInstance.getData();
+                                                        editorInstance.setData(
+                                                            current + `<p><img src="${url}"/></p>`
+                                                        );
+                                                        statusEl.textContent = "Uploaded (fallback)";
+                                                    } catch (err2) {
+                                                        console.error("Insert image error", err2);
+                                                        statusEl.textContent = "Uploaded but insert failed";
+                                                    }
+                                                }
+                                            };
+
+                                            insertImageByUrl(resp.url);
+                                        } else {
+                                            statusEl.textContent =
+                                                resp && resp.error
+                                                    ? resp.error.message || resp.error
+                                                    : "Upload failed";
+                                        }
+                                    } catch (err) {
+                                        console.error("Upload parse error", err, xhr.responseText);
+                                        statusEl.textContent = "Upload error";
+                                    }
+                                });
+
+                                xhr.addEventListener("error", function (ev) {
+                                    console.error("XHR upload error", ev);
+                                    statusEl.textContent = "Upload error";
+                                });
+
+                                xhr.send(form);
                             });
 
-                            xhr.send(form);
-                        });
+                            // Scan existing images in the view and try to include their sizes
+                            (function includeExistingImagesSizes() {
+                                try {
+                                    const imgs = viewEl.querySelectorAll("img");
+                                    if (!imgs || imgs.length === 0) return;
+                                    const state = window.lessonImageUploadState;
+                                    // For each image, if URL looks same-origin or points to uploads folder, try a HEAD request
+                                    Array.from(imgs).forEach((img) => {
+                                        try {
+                                            const src = img.getAttribute("src") || img.src || "";
+                                            if (!src) return;
+                                            // avoid data: URIs
+                                            if (src.indexOf("data:") === 0) return;
+                                            // Only attempt for http(s) URLs or relative paths
+                                            const isHttp =
+                                                src.indexOf("http") === 0 ||
+                                                src.indexOf("//") === 0 ||
+                                                src.indexOf("/") === 0;
+                                            if (!isHttp) return;
+
+                                            // Try to build an absolute URL
+                                            let url = src;
+                                            try {
+                                                url = new URL(src, window.location.href).href;
+                                            } catch (e) { }
+
+                                            // Skip obvious external hosts (basic check)
+                                            try {
+                                                const urlObj = new URL(url);
+                                                if (urlObj.hostname !== window.location.hostname)
+                                                    return;
+                                            } catch (e) { }
+
+                                            // If we already tracked this file by name/url, skip
+                                            const base = url.split("/").pop().split("?")[0];
+                                            if (
+                                                (state.files || []).some(
+                                                    (f) => f.name === base || f.url === url
+                                                )
+                                            )
+                                                return;
+
+                                            // HEAD request to fetch Content-Length
+                                            const xhr = new XMLHttpRequest();
+                                            xhr.open("HEAD", url);
+                                            xhr.onreadystatechange = function () {
+                                                if (xhr.readyState === 4) {
+                                                    try {
+                                                        if (xhr.status >= 200 && xhr.status < 400) {
+                                                            const len =
+                                                                xhr.getResponseHeader("Content-Length");
+                                                            const size = len ? parseInt(len, 10) : 0;
+                                                            state.files.push({
+                                                                name: base,
+                                                                url: url,
+                                                                size: size,
+                                                            });
+                                                            updateProgressUI();
+                                                        }
+                                                    } catch (e) {
+                                                        /* ignore */
+                                                    }
+                                                }
+                                            };
+                                            // Add a small timeout so this doesn't block other init
+                                            setTimeout(() => {
+                                                try {
+                                                    xhr.send();
+                                                } catch (e) { }
+                                            }, 10);
+                                        } catch (e) {
+                                            /* ignore per-image errors */
+                                        }
+                                    });
+                                } catch (e) {
+                                    console.warn("includeExistingImagesSizes error", e);
+                                }
+                            })();
+
+                            // Ensure the UI shows the current usage immediately (may be 0)
+                            try {
+                                updateProgressUI();
+                            } catch (e) {
+                                /* ignore */
+                            }
+
+                            // Reconcile tracked files with the current images in the lesson view.
+                            // This will remove entries for images that were deleted and add sizes for
+                            // newly-added, same-origin images.
+                            function reconcileTrackedFilesWithView() {
+                                try {
+                                    const state = window.lessonImageUploadState;
+                                    if (!state) return;
+                                    // collect images from both the readonly view and the editor editable DOM (if present)
+                                    let imgs = [];
+                                    try {
+                                        imgs = imgs.concat(
+                                            Array.from(viewEl.querySelectorAll("img"))
+                                        );
+                                    } catch (e) { }
+                                    try {
+                                        const editableEl =
+                                            editorInstance &&
+                                            editorInstance.ui &&
+                                            editorInstance.ui.view &&
+                                            editorInstance.ui.view.editable &&
+                                            editorInstance.ui.view.editable.element;
+                                        if (editableEl)
+                                            imgs = imgs.concat(
+                                                Array.from(editableEl.querySelectorAll("img"))
+                                            );
+                                    } catch (e) { }
+                                    // dedupe
+                                    imgs = imgs.filter((v, i, a) => a.indexOf(v) === i);
+
+                                    const currentBases = new Set();
+                                    imgs.forEach((img) => {
+                                        try {
+                                            const src = img.getAttribute("src") || img.src || "";
+                                            if (!src) return;
+                                            const base = (
+                                                new URL(src, window.location.href).pathname
+                                                    .split("/")
+                                                    .pop() || ""
+                                            ).split("?")[0];
+                                            if (base) currentBases.add(base);
+                                        } catch (e) {
+                                            const src = img.getAttribute("src") || "";
+                                            const base = src.split("/").pop().split("?")[0];
+                                            if (base) currentBases.add(base);
+                                        }
+                                    });
+
+                                    // remove tracked files not present anymore
+                                    state.files = (state.files || []).filter((f) => {
+                                        const fname =
+                                            f.name ||
+                                            (f.url || "").split("/").pop().split("?")[0] ||
+                                            "";
+                                        return currentBases.has(fname);
+                                    });
+
+                                    // add any current images not tracked yet (attempt HEAD for same-origin)
+                                    imgs.forEach((img) => {
+                                        try {
+                                            const src = img.getAttribute("src") || img.src || "";
+                                            if (!src) return;
+                                            if (src.indexOf("data:") === 0) return;
+                                            let url = src;
+                                            try {
+                                                url = new URL(src, window.location.href).href;
+                                            } catch (e) { }
+                                            // basic same-host check
+                                            try {
+                                                const urlObj = new URL(url);
+                                                if (urlObj.hostname !== window.location.hostname)
+                                                    return;
+                                            } catch (e) { }
+                                            const base = url.split("/").pop().split("?")[0];
+                                            if (!base) return;
+                                            if (
+                                                (state.files || []).some(
+                                                    (f) => f.name === base || f.url === url
+                                                )
+                                            )
+                                                return;
+
+                                            // HEAD request to try to get Content-Length
+                                            const xhr = new XMLHttpRequest();
+                                            xhr.open("HEAD", url);
+                                            xhr.onreadystatechange = function () {
+                                                if (xhr.readyState === 4) {
+                                                    try {
+                                                        if (xhr.status >= 200 && xhr.status < 400) {
+                                                            const len =
+                                                                xhr.getResponseHeader("Content-Length");
+                                                            const size = len ? parseInt(len, 10) : 0;
+                                                            state.files.push({
+                                                                name: base,
+                                                                url: url,
+                                                                size: size,
+                                                            });
+                                                            updateProgressUI();
+                                                        }
+                                                    } catch (e) {
+                                                        /* ignore */
+                                                    }
+                                                }
+                                            };
+                                            setTimeout(() => {
+                                                try {
+                                                    xhr.send();
+                                                } catch (e) { }
+                                            }, 10);
+                                        } catch (e) {
+                                            /* per-image ignore */
+                                        }
+                                    });
+
+                                    updateProgressUI();
+                                } catch (e) {
+                                    console.warn("reconcileTrackedFilesWithView error", e);
+                                }
+                            }
+
+                            // Observe the lesson view and the editor editable DOM for image add/remove changes so we can update the quota
+                            try {
+                                const observer = new MutationObserver(function (mutations) {
+                                    // simple throttle: run reconcile once per mutation batch
+                                    reconcileTrackedFilesWithView();
+                                });
+                                observer.observe(viewEl, {
+                                    childList: true,
+                                    subtree: true,
+                                    attributes: true,
+                                    attributeFilter: ["src"],
+                                });
+                                try {
+                                    const editableEl =
+                                        editorInstance &&
+                                        editorInstance.ui &&
+                                        editorInstance.ui.view &&
+                                        editorInstance.ui.view.editable &&
+                                        editorInstance.ui.view.editable.element;
+                                    if (editableEl) {
+                                        observer.observe(editableEl, {
+                                            childList: true,
+                                            subtree: true,
+                                            attributes: true,
+                                            attributeFilter: ["src"],
+                                        });
+                                    }
+                                } catch (e) {
+                                    /* ignore */
+                                }
+                            } catch (e) {
+                                console.warn("MutationObserver not available", e);
+                            }
+                        }
                     }
+                } catch (e) {
+                    console.error("Fallback upload init error", e);
                 }
-            } catch (e) {
-                console.error('Fallback upload init error', e);
-            }
 
-            // --- Image resize toolbar ---
-            try {
-                // Create floating toolbar element
-                let imgToolbar = document.getElementById('ck_img_resize_toolbar');
-                if (!imgToolbar) {
-                    imgToolbar = document.createElement('div');
-                    imgToolbar.id = 'ck_img_resize_toolbar';
-                    imgToolbar.style.position = 'absolute';
-                    imgToolbar.style.display = 'none';
-                    imgToolbar.style.zIndex = 9999;
-                    imgToolbar.style.background = '#fff';
-                    imgToolbar.style.border = '1px solid #ddd';
-                    imgToolbar.style.padding = '6px';
-                    imgToolbar.style.borderRadius = '4px';
-                    imgToolbar.style.boxShadow = '0 2px 6px rgba(0,0,0,0.15)';
-                    imgToolbar.innerHTML = `
+                // --- Image resize toolbar ---
+                try {
+                    // Create floating toolbar element
+                    let imgToolbar = document.getElementById("ck_img_resize_toolbar");
+                    if (!imgToolbar) {
+                        imgToolbar = document.createElement("div");
+                        imgToolbar.id = "ck_img_resize_toolbar";
+                        imgToolbar.style.position = "absolute";
+                        imgToolbar.style.display = "none";
+                        imgToolbar.style.zIndex = 9999;
+                        imgToolbar.style.background = "#fff";
+                        imgToolbar.style.border = "1px solid #ddd";
+                        imgToolbar.style.padding = "6px";
+                        imgToolbar.style.borderRadius = "4px";
+                        imgToolbar.style.boxShadow = "0 2px 6px rgba(0,0,0,0.15)";
+                        imgToolbar.innerHTML = `
                         <button class="btn btn-sm btn-light ck-img-size-btn" data-size="25">25%</button>
                         <button class="btn btn-sm btn-light ck-img-size-btn" data-size="50">50%</button>
                         <button class="btn btn-sm btn-light ck-img-size-btn" data-size="75">75%</button>
@@ -9977,109 +12804,419 @@ function get_lesson_note_body() {
                         <button class="btn btn-sm btn-primary" id="ck_img_apply_px" style="margin-left:6px;">Apply</button>
                         <button class="btn btn-sm btn-outline-secondary" id="ck_img_remove_style" style="margin-left:6px;">Reset</button>
                     `;
-                    document.body.appendChild(imgToolbar);
-                }
+                        document.body.appendChild(imgToolbar);
+                    }
 
-                let currentImage = null;
+                    let currentImage = null;
 
-                // Helper to position toolbar near an element
-                function positionToolbarForElement(el) {
-                    const rect = el.getBoundingClientRect();
-                    const toolbarRect = imgToolbar.getBoundingClientRect();
-                    // place above the image if possible
-                    let top = window.scrollY + rect.top - toolbarRect.height - 8;
-                    if (top < window.scrollY + 5) top = window.scrollY + rect.bottom + 8; // below if not enough space
-                    let left = window.scrollX + rect.left;
-                    imgToolbar.style.top = top + 'px';
-                    imgToolbar.style.left = left + 'px';
-                    imgToolbar.style.display = 'block';
-                }
+                    // Helper to position toolbar near an element
+                    function positionToolbarForElement(el) {
+                        const rect = el.getBoundingClientRect();
+                        const toolbarRect = imgToolbar.getBoundingClientRect();
+                        // place above the image if possible
+                        let top = window.scrollY + rect.top - toolbarRect.height - 8;
+                        if (top < window.scrollY + 5)
+                            top = window.scrollY + rect.bottom + 8; // below if not enough space
+                        let left = window.scrollX + rect.left;
+                        imgToolbar.style.top = top + "px";
+                        imgToolbar.style.left = left + "px";
+                        imgToolbar.style.display = "block";
+                    }
 
-                // Click handler inside the editor to detect images
-                const editable = editor.ui ? editor.ui.view.editable.element : document.querySelector('.ck-editor__editable');
-                if (editable) {
-                    editable.addEventListener('click', function (ev) {
-                        const target = ev.target;
-                        if (target && target.tagName && target.tagName.toLowerCase() === 'img') {
-                            currentImage = target;
-                            positionToolbarForElement(target);
-                            // Pre-fill custom px with current width (if set as px)
-                            const width = target.style.width || target.getAttribute('width') || '';
-                            const px = width && width.indexOf('%') === -1 ? parseInt(width, 10) || '' : '';
-                            document.getElementById('ck_img_custom_px').value = px;
-                        } else {
-                            currentImage = null;
-                            imgToolbar.style.display = 'none';
+                    // Helper to apply a visual width that overrides common layout constraints
+                    function applyVisualWidth(el, widthVal) {
+                        try {
+                            if (!el || !widthVal) return;
+                            // ensure width is explicit and important so parent CSS (min-width, flex) doesn't override
+                            el.style.setProperty("width", widthVal, "important");
+                            el.style.setProperty("height", "auto", "important");
+                            // reset constraints that can block percentage sizing
+                            el.style.setProperty("min-width", "0", "important");
+                            el.style.setProperty("max-width", "none", "important");
+                            el.style.setProperty("flex", "0 0 auto", "important");
+                            el.style.setProperty("flex-grow", "0", "important");
+                            // make image block level so percentage widths behave predictably
+                            el.style.setProperty("display", "block", "important");
+                            // ensure object-fit doesn't crop unexpectedly
+                            el.style.setProperty("object-fit", "contain", "important");
+                        } catch (e) {
+                            try {
+                                el.style.width = widthVal;
+                            } catch (err) { }
                         }
-                    });
+                    }
 
-                    // Hide toolbar when clicking elsewhere
-                    document.addEventListener('click', function (ev) {
-                        if (!imgToolbar.contains(ev.target) && !editable.contains(ev.target)) {
-                            imgToolbar.style.display = 'none';
-                            currentImage = null;
+                    function clearVisualWidth(el) {
+                        try {
+                            if (!el) return;
+                            el.style.removeProperty("width");
+                            el.style.removeProperty("height");
+                            el.style.removeProperty("min-width");
+                            el.style.removeProperty("max-width");
+                            el.style.removeProperty("flex");
+                            el.style.removeProperty("flex-grow");
+                            el.style.removeProperty("display");
+                            el.style.removeProperty("object-fit");
+                        } catch (e) {
+                            /* ignore */
                         }
-                    });
+                    }
 
-                    // Toolbar button handlers
-                    imgToolbar.addEventListener('click', function (ev) {
-                        const btn = ev.target.closest('.ck-img-size-btn');
-                        if (btn && currentImage) {
-                            const size = btn.getAttribute('data-size');
-                            currentImage.style.width = size + '%';
-                            // reflect change into editor model if possible
-                            try { currentImage.removeAttribute('height'); } catch (e) { }
-                        }
-                        if (ev.target && ev.target.id === 'ck_img_apply_px' && currentImage) {
-                            const val = parseInt(document.getElementById('ck_img_custom_px').value, 10);
-                            if (!isNaN(val) && val > 0) {
-                                currentImage.style.width = val + 'px';
+                    // Click handler inside the editor to detect images
+                    const editable = editor.ui
+                        ? editor.ui.view.editable.element
+                        : document.querySelector(".ck-editor__editable");
+                    if (editable) {
+                        // Listen for clicks and use closest to find images even if nested (e.g., inside figure)
+                        editable.addEventListener("click", function (ev) {
+                            const targetImg =
+                                ev.target && ev.target.closest
+                                    ? ev.target.closest("img")
+                                    : null;
+                            if (targetImg) {
+                                currentImage = targetImg;
+                                positionToolbarForElement(targetImg);
+                                // Pre-fill custom px with current width (if set as px)
+                                const width =
+                                    targetImg.style.width ||
+                                    targetImg.getAttribute("width") ||
+                                    "";
+                                const px =
+                                    width && width.indexOf("%") === -1
+                                        ? parseInt(width, 10) || ""
+                                        : "";
+                                const cust = document.getElementById("ck_img_custom_px");
+                                if (cust) cust.value = px;
+                            } else {
+                                currentImage = null;
+                                imgToolbar.style.display = "none";
                             }
-                        }
-                        if (ev.target && ev.target.id === 'ck_img_remove_style' && currentImage) {
-                            currentImage.style.width = '';
-                            currentImage.removeAttribute('width');
-                        }
-                    });
+                        });
+
+                        // Hide toolbar when clicking elsewhere
+                        document.addEventListener("click", function (ev) {
+                            if (
+                                !imgToolbar.contains(ev.target) &&
+                                !editable.contains(ev.target)
+                            ) {
+                                imgToolbar.style.display = "none";
+                                currentImage = null;
+                            }
+                        });
+
+                        // Toolbar button handlers
+                        imgToolbar.addEventListener("click", function (ev) {
+                            const btn = ev.target.closest(".ck-img-size-btn");
+                            if (btn && currentImage) {
+                                const size = btn.getAttribute("data-size");
+                                applyVisualWidth(currentImage, size + "%");
+                                try {
+                                    currentImage.removeAttribute("height");
+                                } catch (e) { }
+                            }
+                            if (
+                                ev.target &&
+                                ev.target.id === "ck_img_apply_px" &&
+                                currentImage
+                            ) {
+                                const val = parseInt(
+                                    document.getElementById("ck_img_custom_px").value,
+                                    10
+                                );
+                                if (!isNaN(val) && val > 0) {
+                                    applyVisualWidth(currentImage, val + "px");
+                                }
+                            }
+                            if (
+                                ev.target &&
+                                ev.target.id === "ck_img_remove_style" &&
+                                currentImage
+                            ) {
+                                clearVisualWidth(currentImage);
+                                currentImage.removeAttribute("width");
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error("Image toolbar init error", e);
                 }
-            } catch (e) {
-                console.error('Image toolbar init error', e);
-            }
-        })
-        .catch(error => {
-            console.error("Error initializing editor:", error);
-        });
 
+                // Helper: ensure the resized image style is persisted into the editor data
+                function syncImageToEditor(imgEl) {
+                    try {
+                        if (!editorInstance) return;
 
+                        // If editor has a model and we can map DOM to model, try to update via model.change
+                        if (
+                            editorInstance.model &&
+                            editorInstance.editing &&
+                            typeof editorInstance.editing.view._renderer === "object"
+                        ) {
+                            // Best-effort: update by finding image element in editor data by src and replace its style/width
+                            const src = imgEl.getAttribute("src") || imgEl.src || "";
+                            if (!src) return;
 
+                            // Retrieve current editor HTML
+                            let html = editorInstance.getData();
+
+                            // Create a DOM parser to modify the image tag corresponding to this src
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(
+                                "<div>" + html + "</div>",
+                                "text/html"
+                            );
+                            // Find images with matching src (use endsWith compare to allow absolute/relative differences)
+                            const imgs = Array.from(doc.querySelectorAll("img"));
+                            let matched = false;
+                            for (let i = 0; i < imgs.length; i++) {
+                                const iSrc = imgs[i].getAttribute("src") || imgs[i].src || "";
+                                if (!iSrc) continue;
+                                // Compare by filename at end to tolerate query strings
+                                const baseA = iSrc.split("/").pop().split("?")[0];
+                                const baseB = src.split("/").pop().split("?")[0];
+                                if (baseA === baseB || iSrc === src) {
+                                    // copy inline width/style attributes from imgEl
+                                    const widthStyle = imgEl.style.width || "";
+                                    if (widthStyle) {
+                                        imgs[i].setAttribute(
+                                            "style",
+                                            (imgs[i].getAttribute("style") || "") +
+                                            " width: " +
+                                            widthStyle +
+                                            ";"
+                                        );
+                                        imgs[i].setAttribute("width", ""); // keep style-driven width
+                                    } else {
+                                        // remove width/style if cleared
+                                        let st = imgs[i].getAttribute("style") || "";
+                                        st = st.replace(/\bwidth\s*:\s*[^;]+;?/gi, "");
+                                        if (st.trim()) imgs[i].setAttribute("style", st);
+                                        else imgs[i].removeAttribute("style");
+                                        imgs[i].removeAttribute("width");
+                                    }
+                                    matched = true;
+                                    // Do not break — update all matching images
+                                }
+                            }
+
+                            if (matched) {
+                                // Serialize back to HTML and set data
+                                const newHtml = doc.body.firstChild.innerHTML;
+                                editorInstance.setData(newHtml);
+                            }
+                            return;
+                        }
+
+                        // Fallback: direct replace in editor HTML string by src
+                        const src = imgEl.getAttribute("src") || imgEl.src || "";
+                        if (!src) return;
+                        let data = editorInstance.getData();
+                        // build regex to find the img tag with this src (escape special chars)
+                        const esc = src.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+                        const re = new RegExp(
+                            "(<img[^>]*src=[\"']?" + esc + "[\"']?[^>]*>)",
+                            "gi"
+                        );
+                        const match = data.match(re);
+                        if (match && match.length > 0) {
+                            // pick first occurrence and update style attribute
+                            const originalTag = match[0];
+                            // create a DOM element to manipulate
+                            const tmp = document.createElement("div");
+                            tmp.innerHTML = originalTag;
+                            const img = tmp.querySelector("img");
+                            if (!img) return;
+                            // copy computed style width
+                            const widthStyle = imgEl.style.width || "";
+                            if (widthStyle) {
+                                img.setAttribute(
+                                    "style",
+                                    (img.getAttribute("style") || "") +
+                                    " width: " +
+                                    widthStyle +
+                                    ";"
+                                );
+                                img.setAttribute("width", "");
+                            } else {
+                                let st = img.getAttribute("style") || "";
+                                st = st.replace(/\bwidth\s*:\s*[^;]+;?/gi, "");
+                                if (st.trim()) img.setAttribute("style", st);
+                                else img.removeAttribute("style");
+                                img.removeAttribute("width");
+                            }
+                            const newTag = tmp.innerHTML;
+                            data = data.replace(re, newTag);
+                            editorInstance.setData(data);
+                        }
+                    } catch (err) {
+                        console.error("syncImageToEditor error", err);
+                    }
+                }
+            })
+            .catch((error) => {
+                console.error("Error initializing editor:", error);
+            });
+    } // end init-once
 
     $.ajax({
         url: "../controller.php",
         type: "post",
         data: {
-            "class_id": $("#select_class_field").val(),
-            "subject_id": $("#select_subject_field").val(),
-            "week_id": $(".week_btn.active").attr("data-id"),
-            'type': 'body',
-            "action": "get_lesson_note"
+            class_id: $("#select_class_field").val(),
+            subject_id: $("#select_subject_field").val(),
+            week_id: $(".week_btn.active").attr("data-id"),
+            term_id: $('.lesson_term.select_btn.active').attr('data-name') || $('.term.select_btn.active').attr('data-name') || '',
+
+            type: "body",
+            action: "get_lesson_note",
         },
         beforeSend: () => {
-            $("#lesson_body_view").html("Loading...")
+            $("#lesson_body_view").html("Loading...");
         },
         success: (response) => {
-            const data = !response ? '' : JSON.parse(response);
-            // Keep the full content in the editor and show full content in the view
-            editorInstance.setData(data.content || '');
-            $("#lesson_body_view").html(data.content || "<i>No content here yet</i>");
-
+            //   const data = !response ? "" : response;
+            const data = !response ? "" : JSON.parse(response);
+            const contentHtml = data.content || "<i>No content here yet</i>";
+            // Update the view HTML
+            $("#lesson_body_view").html(contentHtml);
+            // If editor exists and is initialized, update its data too but keep it readOnly
+            try {
+                if (editorInstance && typeof editorInstance.setData === "function") {
+                    // Only update the editor data so that toggling to edit will reflect latest content
+                    editorInstance.setData(contentHtml);
+                    try {
+                        editorInstance.isReadOnly = true;
+                    } catch (e) { }
+                }
+            } catch (e) {
+                console.warn(
+                    "Could not set editor data on get_lesson_note_body success:",
+                    e
+                );
+            }
         },
         error: (error) => {
             console.error("Error fetching lesson note:", error);
-        }
+        },
     });
 }
-// alert("kl")
 function show_lesson_note_body_editor() {
+    // Copy current view HTML into the editor but convert inline img style widths
+    // into a width attribute (percent or px) before setData, since CKEditor5 may
+    // strip style attributes but often preserves the width attribute on images.
+    try {
+        const viewEl = document.getElementById('lesson_body_view');
+        const viewHtml = viewEl ? viewEl.innerHTML : '';
+
+        // Create a clone DOM so we can capture a map of image src/filename -> width
+        // and prepare HTML to pass to CKEditor. We'll reapply widths into the
+        // editable DOM after CKEditor renders since CKEditor may strip styles.
+        let preparedHtml = viewHtml;
+        const imgWidthMap = {}; // { 'full/src.png': '200px', 'basename.png': '200px' }
+        try {
+            if (viewEl) {
+                const clone = viewEl.cloneNode(true);
+                const imgs = clone.querySelectorAll('img');
+                imgs.forEach(img => {
+                    // Prefer inline style width, then data-width, then width attribute
+                    let widthVal = img.style && img.style.width ? img.style.width.trim() : '';
+                    if (!widthVal) widthVal = img.getAttribute('data-width') || img.getAttribute('width') || '';
+                    if (widthVal) {
+                        // normalize numeric to px, keep percent
+                        if (/^\d+$/.test(widthVal)) widthVal = widthVal + 'px';
+                        const src = img.getAttribute('src') || '';
+                        const base = src.split('/').pop().split('?')[0];
+                        if (src) imgWidthMap[src] = widthVal;
+                        if (base) imgWidthMap[base] = widthVal;
+                    }
+                });
+                // Remove inline style width from prepared HTML to reduce CKEditor conflicts;
+                // we'll reapply sizes to the editable DOM after setData using imgWidthMap.
+                clone.querySelectorAll('img').forEach(img => { if (img.style) img.style.width = ''; });
+                preparedHtml = clone.innerHTML;
+            }
+        } catch (err) {
+            console.warn('Error preparing images for editor setData:', err);
+            preparedHtml = viewHtml;
+        }
+
+        if (editorInstance && typeof editorInstance.setData === 'function') {
+            // Ensure editor container is visible so the editable element exists and toolbar
+            // handlers can attach to it. Show editor container first (it will be hidden
+            // visually by caller if needed).
+            try { $("#lesson_note_body_editor").show(); } catch (e) { }
+
+            // When applying preparedHtml, keep both width attribute and style width for
+            // maximum compatibility. Many CKEditor instances preserve width attribute.
+            // So convert preparedHtml img tags to include style width if width attr exists.
+            try {
+                const tmpWrap = document.createElement('div');
+                tmpWrap.innerHTML = preparedHtml;
+                tmpWrap.querySelectorAll('img').forEach(im => {
+                    const w = im.getAttribute('width');
+                    if (w && !(im.style && im.style.width)) {
+                        try { applyVisualWidth(im, w); } catch (e) { im.style.width = w; }
+                    }
+                });
+                preparedHtml = tmpWrap.innerHTML;
+            } catch (err) {
+                console.warn('Could not sync width attribute -> style before setData', err);
+            }
+
+            editorInstance.setData(preparedHtml);
+            // attempt to focus editable area
+            try {
+                const editableEl = editorInstance.ui && editorInstance.ui.getEditableElement && editorInstance.ui.getEditableElement();
+                if (editableEl && typeof editableEl.focus === 'function') editableEl.focus();
+                // After setData, CKEditor renders the editable DOM. Re-apply widths
+                // we captured from the view DOM using imgWidthMap. Match by full src
+                // first, then by basename.
+                setTimeout(() => {
+                    try {
+                        const ed = editorInstance.ui && editorInstance.ui.getEditableElement && editorInstance.ui.getEditableElement();
+                        if (ed) {
+                            ed.querySelectorAll('img').forEach(im => {
+                                try {
+                                    const src = im.getAttribute('src') || '';
+                                    const base = src.split('/').pop().split('?')[0];
+                                    const widthToApply = (src && imgWidthMap[src]) || (base && imgWidthMap[base]) || im.getAttribute('data-width') || im.getAttribute('width') || '';
+                                    if (widthToApply) {
+                                        try { applyVisualWidth(im, widthToApply); } catch (e) { try { im.style.width = widthToApply; } catch (_) { } }
+                                        // clear layout constraints on parent elements which often override percent widths
+                                        try {
+                                            let p = im.parentElement;
+                                            let depth = 0;
+                                            while (p && depth < 4) {
+                                                try {
+                                                    p.style.setProperty('min-width', '0', 'important');
+                                                    p.style.setProperty('max-width', '100%', 'important');
+                                                    p.style.setProperty('flex', '0 0 auto', 'important');
+                                                    p.style.setProperty('flex-grow', '0', 'important');
+                                                    p.style.setProperty('display', 'block', 'important');
+                                                } catch (err) { }
+                                                p = p.parentElement;
+                                                depth++;
+                                            }
+                                        } catch (err) { }
+                                    } else {
+                                        // if no widthToApply, clear any visual overrides
+                                        try { clearVisualWidth(im); } catch (e) { }
+                                    }
+                                } catch (e) { }
+                            });
+                        }
+                    } catch (e) {
+                        console.warn('Could not reapply image widths in editable DOM:', e);
+                    }
+                }, 80);
+            } catch (e) { }
+        } else {
+            window.__pendingLessonBody = preparedHtml;
+        }
+    } catch (e) {
+        console.warn('Error copying view HTML to editor:', e);
+    }
+
     $("#lesson_note_body_editor").show()
     $("#lesson_note_body_view").hide()
 }
@@ -10099,121 +13236,200 @@ function show_lesson_note_topic_view() {
     $("#lesson_note_topic_body").show()
 }
 
+// function create_lesson_note_body() {
+//     show_lesson_note_body()
+
+//     // Prefer the visible editable DOM contents so inline styles applied by the
+//     // floating toolbar (e.g., img.style.width) are preserved. Fallback to
+//     // editorInstance.getData() when the editable element is not available.
+//     let bodyContent = '';
+//     try {
+//         // CKEditor5 editable area element
+//         const editableEl = document.querySelector('.ck-editor__editable') || (editorInstance && editorInstance.ui && editorInstance.ui.getEditableElement && editorInstance.ui.getEditableElement());
+//         if (editableEl && editableEl.innerHTML && editableEl.innerHTML.trim().length > 0) {
+//             bodyContent = editableEl.innerHTML;
+//         }
+//     } catch (e) {
+//         console.warn('Could not read editable DOM innerHTML:', e);
+//     }
+
+//     if (!bodyContent && editorInstance && typeof editorInstance.getData === 'function') {
+//         bodyContent = editorInstance.getData();
+//     }
+
+//     // Normalize images in the bodyContent: add data-width attribute so we can
+//     // re-apply the width when the editor renders (CKEditor may strip style).
+//     try {
+//         const parser = new DOMParser();
+//         const doc = parser.parseFromString('<div>' + bodyContent + '</div>', 'text/html');
+//         const imgs = doc.querySelectorAll('img');
+//         imgs.forEach(img => {
+//             let w = img.style && img.style.width ? img.style.width.trim() : '';
+//             if (!w) w = img.getAttribute('width') || '';
+//             if (w) img.setAttribute('data-width', w);
+//         });
+//         bodyContent = doc.body.firstChild.innerHTML;
+//     } catch (e) {
+//         console.warn('Could not normalize image widths before save:', e);
+//     }
+
+//     $.ajax({
+//         url: "../controller.php",
+//         type: "POST",
+//         data: {
+//             "class_id": $("#select_class_field").val(),
+//             "subject_id": $("#select_subject_field").val(),
+//             "week_id": $(".week_btn.active").attr("data-id"),
+//             // "topic": $("#lesson_topic").val(),
+//             "body": bodyContent,
+//             "action": "create_lesson_note_body",
+//         },
+//         success: (response) => {
+//             console.log("Lesson note saved:", response);
+//             get_lesson_note_body()
+//             setTimeout(get_notes_week_view, 100)
+//         },
+//         error: (error) => {
+//             console.error("Error saving lesson note:", error);
+//         }
+//     });
+// }
+// function create_lesson_note_topic() {
+//     show_lesson_note_topic_view()
+//     $.ajax({
+//         url: "../controller.php",
+//         type: "POST",
+//         data: {
+//             "class_id": $("#select_class_field").val(),
+//             "subject_id": $("#select_subject_field").val(),
+//             "week_id": $(".week_btn.active").attr("data-id"),
+//             "topic": $("#lesson_topic").val(),
+//             // "body": editorInstance.getData(),
+//             "action": "create_lesson_note_topic",
+//         },
+//         success: (response) => {
+//             console.log("Lesson note saved:", response);
+//             get_lesson_note_topic()
+//             setTimeout(get_notes_week_view, 100)
+
+//         },
+//         error: (error) => {
+//             console.error("Error saving lesson note:", error);
+//         }
+//     });
+// }
 function create_lesson_note_body() {
-    show_lesson_note_body()
-    // Before saving, attempt to delete any files we uploaded this session that are no longer present in the editor
+    show_lesson_note_body();
+
+    // Prefer the visible editable DOM contents so inline styles applied by the
+    // floating toolbar (e.g., img.style.width) are preserved. Fallback to
+    // editorInstance.getData() when the editable element is not available.
+    let bodyContent = "";
     try {
-        const editorHtml = editorInstance.getData();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(editorHtml, 'text/html');
-        const imgs = Array.from(doc.querySelectorAll('img')).map(i => i.getAttribute('src') || '');
-        const basenames = imgs.map(u => {
-            try { return u ? u.split('/').pop().split('?')[0] : ''; } catch (e) { return ''; }
-        }).filter(Boolean);
-
-        const state = window.lessonImageUploadState || { files: [] };
-        const toDelete = (state.files || []).filter(f => basenames.indexOf(f) === -1);
-
-        // perform deletions serially to avoid overloading
-        const deleteNext = () => {
-            if (!toDelete.length) return doSave();
-            const fname = toDelete.shift();
-            fetch('../upload_image.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'action=delete&file=' + encodeURIComponent(fname)
-            })
-                .then(r => r.json())
-                .then(res => {
-                    // remove from state.files even if deletion failed
-                    state.files = (state.files || []).filter(x => x !== fname);
-                    deleteNext();
-                })
-                .catch(err => {
-                    console.error('delete error', err);
-                    // still continue
-                    state.files = (state.files || []).filter(x => x !== fname);
-                    deleteNext();
-                });
-        };
-
-        const doSave = () => {
-            $.ajax({
-                url: "../controller.php",
-                type: "POST",
-                data: {
-                    "class_id": $("#select_class_field").val(),
-                    "subject_id": $("#select_subject_field").val(),
-                    "week_id": $(".week_btn.active").attr("data-id"),
-                    // "topic": $("#lesson_topic").val(),
-                    "body": editorInstance.getData(),
-                    "action": "create_lesson_note_body",
-                },
-                success: (response) => {
-                    console.log("Lesson note saved:", response);
-                    // if server returned debug info, log it
-                    try { if (response && response.debug) console.log('server debug:', response.debug); } catch (e) { }
-                    get_lesson_note_body()
-                    setTimeout(get_notes_week_view, 100)
-                },
-                error: (error) => {
-                    console.error("Error saving lesson note:", error);
-                }
-            });
-        };
-
-        // start deletion chain
-        deleteNext();
+        // CKEditor5 editable area element
+        const editableEl =
+            document.querySelector(".ck-editor__editable") ||
+            (editorInstance &&
+                editorInstance.ui &&
+                editorInstance.ui.getEditableElement &&
+                editorInstance.ui.getEditableElement());
+        if (
+            editableEl &&
+            editableEl.innerHTML &&
+            editableEl.innerHTML.trim().length > 0
+        ) {
+            bodyContent = editableEl.innerHTML;
+        }
     } catch (e) {
-        console.error('save error', e);
-        // fallback: just save
-        $.ajax({
-            url: "../controller.php",
-            type: "POST",
-            data: {
-                "class_id": $("#select_class_field").val(),
-                "subject_id": $("#select_subject_field").val(),
-                "week_id": $(".week_btn.active").attr("data-id"),
-                // "topic": $("#lesson_topic").val(),
-                "body": editorInstance.getData(),
-                "action": "create_lesson_note_body",
-            },
-            success: (response) => {
-                console.log("Lesson note saved:", response);
-                get_lesson_note_body()
-                setTimeout(get_notes_week_view, 100)
-            },
-            error: (error) => {
-                console.error("Error saving lesson note:", error);
-            }
-        });
+        console.warn("Could not read editable DOM innerHTML:", e);
     }
-}
-function create_lesson_note_topic() {
-    show_lesson_note_topic_view()
+
+    if (
+        !bodyContent &&
+        editorInstance &&
+        typeof editorInstance.getData === "function"
+    ) {
+        bodyContent = editorInstance.getData();
+    }
+
+    // Normalize images in the bodyContent: add data-width attribute so we can
+    // re-apply the width when the editor renders (CKEditor may strip style).
+    try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(
+            "<div>" + bodyContent + "</div>",
+            "text/html"
+        );
+        const imgs = doc.querySelectorAll("img");
+        imgs.forEach((img) => {
+            let w = img.style && img.style.width ? img.style.width.trim() : "";
+            if (!w) w = img.getAttribute("width") || "";
+            if (w) img.setAttribute("data-width", w);
+        });
+        bodyContent = doc.body.firstChild.innerHTML;
+    } catch (e) {
+        console.warn("Could not normalize image widths before save:", e);
+    }
+
+    // Determine class_id(s) to save to. Use the multi-select from the body editor if available/populated,
+    // otherwise fallback to the main class selector.
+    let selectedClasses = $("#lesson_note_multi_class").val();
+    if (!selectedClasses || selectedClasses.length === 0) {
+        selectedClasses = $("#select_class_field").val();
+    }
+
     $.ajax({
         url: "../controller.php",
         type: "POST",
         data: {
-            "class_id": $("#select_class_field").val(),
-            "subject_id": $("#select_subject_field").val(),
-            "week_id": $(".week_btn.active").attr("data-id"),
-            "topic": $("#lesson_topic").val(),
-            // "body": editorInstance.getData(),
-            "action": "create_lesson_note_topic",
+            class_id: selectedClasses,
+            subject_id: $("#select_subject_field").val(),
+            week_id: $(".week_btn.active").attr("data-id"),
+            // "topic": $("#lesson_topic").val(),
+            body: bodyContent,
+            action: "create_lesson_note_body",
         },
         success: (response) => {
             console.log("Lesson note saved:", response);
-            get_lesson_note_topic()
-            setTimeout(get_notes_week_view, 100)
-
+            get_lesson_note_body();
+            setTimeout(get_notes_week_view, 100);
         },
         error: (error) => {
             console.error("Error saving lesson note:", error);
-        }
+        },
     });
 }
+function create_lesson_note_topic() {
+    show_lesson_note_topic_view();
 
+    // Determine class_id(s) to save to. Use the multi-select from the body editor if available/populated,
+    // otherwise fallback to the main class selector.
+    let selectedClasses = $("#lesson_note_multi_class").val();
+    if (!selectedClasses || selectedClasses.length === 0) {
+        selectedClasses = $("#select_class_field").val();
+    }
+
+    $.ajax({
+        url: "../controller.php",
+        type: "POST",
+        data: {
+            class_id: selectedClasses,
+            subject_id: $("#select_subject_field").val(),
+            week_id: $(".week_btn.active").attr("data-id"),
+            topic: $("#lesson_topic").val(),
+            // "body": editorInstance.getData(),
+            action: "create_lesson_note_topic",
+        },
+        success: (response) => {
+            console.log("Lesson note saved:", response);
+            get_lesson_note_topic();
+            setTimeout(get_notes_week_view, 100);
+        },
+        error: (error) => {
+            console.error("Error saving lesson note:", error);
+        },
+    });
+}
 var draggableInstance;
 var extraEventsDraggableInstance;
 
@@ -10878,45 +14094,158 @@ function resetReportZoom() {
     applyReportScale();
 }
 // track score change starts
+// async function preview_report_card_multiple(page_type,sessionOrTerm) {
+//     console.log("sessionOrTerm",sessionOrTerm)
+//     const previewModal = $('#report_preview_modal');
+//     const previewContent = $('#preview-content');
+//     const loadingDiv = $('#preview-loading');
+//     const printButton = $('#print-button');
+//     const loadingStatus = $('.loading-status');
+
+//     // Reset state
+//     loadedReports = 0;
+//     previewContent.empty();
+//     printButton.prop('disabled', true);
+//     // resetReportZoom(); // Reset scale when opening modal
+
+//     // Show modal and loading indicator
+//     previewModal.modal('show');
+//     loadingDiv.show();
+
+//     // Get parameters
+//     let student_ids, term_id, class_id;
+//     if (page_type == 'report_page') {
+//         student_ids = $(".bulk_report_ids").val().split(",")
+//         term_id = $("#select_term_field").val()
+//         if (term_id == 'cum') {
+//             sessionOrTerm = 'session';
+//             term_id = 3;
+//         }
+//         class_id = $("#select_class_field_report").val()
+//     }
+//     else if (page_type == 'student_page') {
+//         student_ids = $("#select_student_field").val().split(",")
+//         term_id = $(".select_btn.term.active").attr("data-name")
+//         class_id = $("#select_class_field").val()
+//     }
+//     // const student_ids = $('.bulk_report_ids').val().split(',') || $("#select_student_field").val().split(",");
+//     // alert(student_ids)
+//     // // const student_ids = $('.bulk_report_ids').val().split(',') || $("#select_student_field").val().split(",");
+//     // const term_id = $('#select_term_field').val() || $(".select_btn.term.active").attr("data-name");
+//     const session_id = $('#select_session_field').val();
+//     // const class_id = $('#select_class_field_report').val() || $("#select_class_field").val();
+
+//     totalReports = student_ids.length;
+//     loadingStatus.text(`Loading report 0 of ${totalReports}...`);
+
+//     // Load reports one by one
+//     for (const student_id of student_ids) {
+//         try {
+//             // First get the grading data
+//             const gradingData = await $.ajax({
+//                 url: '../controller.php',
+//                 type: 'post',
+//                 data: {
+//                     action: 'get_grading_score_data',
+//                     session_id,
+//                     student_id,
+//                     class_id,
+//                     term_id
+//                 }
+//             });
+
+//             data = JSON.parse(gradingData);
+//             settingsData = data.settingsData[0];
+//             student_score_data = data.score_data;
+
+//             // Then get the report card HTML
+//             let myschl = null;
+//              const reportCard = await $.ajax({
+//                 url: myschl == 13 ? '../single_report_card-homat.php' : '../single_report_card.php',
+//                 type: 'POST',
+//                 data: { student_id, class_id, session_id, term_id,sessionOrTerm, }
+//             });
+
+//             // Create a container for this specific report
+//             const reportDiv = $('<div>').addClass('single-report').html(reportCard);
+//             previewContent.append(reportDiv);
+
+//             const tableContainer = reportDiv.find('#table_visuals_display_report');
+//             const commentContainer = reportDiv.find('.student_behaviour_skills');
+//             await set_behaviour_comment_report(term_id, session_id, student_id, class_id, 'view', commentContainer);
+//             // alert(myschl)
+//             if(myschl == 13) {
+//                 if (sessionOrTerm == 'session') {
+//                     await format_student_cummulative_table_report(student_score_data, student_id, session_id, class_id, settingsData.grade, tableContainer);
+//                 } else if (term_id == '2') {
+//                     await format_2nd_term_student_cummulative_table_report(student_score_data, student_id, session_id, class_id, settingsData.grade, tableContainer);
+//                 } else {
+//                     await format_student_table_report(student_score_data, term_id, session_id, class_id, settingsData.grade, tableContainer);
+//                 }
+//             }else {
+//                 if(sessionOrTerm == 'session'){
+//                     await format_student_cummulative_table_report(student_score_data, student_id, session_id, class_id, settingsData.grade, tableContainer);
+//                 }else{
+//                     await format_student_table_report(student_score_data, term_id, session_id, class_id, settingsData.grade, tableContainer);
+//                 }
+//             }
+
+//             loadedReports++;
+//             loadingStatus.text(`Loading report ${loadedReports} of ${totalReports}...`);
+
+//             // Enable print button when all reports are loaded
+//             if (loadedReports === totalReports) {
+//                 loadingDiv.hide();
+//                 printButton.prop('disabled', false);
+//             }
+//         } catch (error) {
+//             console.error('Error loading report:', error);
+//             // Update status to show error
+//             loadingStatus.text(`Error loading report for student ${student_id}: ${error.message}`);
+//         }
+//     }
+// }
 async function preview_report_card_multiple(page_type, sessionOrTerm) {
-    console.log("sessionOrTerm", sessionOrTerm)
-    const previewModal = $('#report_preview_modal');
-    const previewContent = $('#preview-content');
-    const loadingDiv = $('#preview-loading');
-    const printButton = $('#print-button');
-    const loadingStatus = $('.loading-status');
+    console.log("we neeeeeeeeeeeeeeeeeeeee")
+    console.log("sessionOrTerm", sessionOrTerm);
+    const previewModal = $("#report_preview_modal");
+    const previewContent = $("#preview-content");
+    const loadingDiv = $("#preview-loading");
+    const printButton = $("#print-button");
+    const downloadButton = $("#download-pdf-button");
+    const loadingStatus = $(".loading-status");
 
     // Reset state
     loadedReports = 0;
     previewContent.empty();
-    printButton.prop('disabled', true);
+    printButton.prop("disabled", true);
+    downloadButton.prop("disabled", true);
     // resetReportZoom(); // Reset scale when opening modal
 
     // Show modal and loading indicator
-    previewModal.modal('show');
+    previewModal.modal("show");
     loadingDiv.show();
 
     // Get parameters
     let student_ids, term_id, class_id;
-    if (page_type == 'report_page') {
-        student_ids = $(".bulk_report_ids").val().split(",")
-        term_id = $("#select_term_field").val()
-        if (term_id == 'cum') {
-            sessionOrTerm = 'session';
+    if (page_type == "report_page") {
+        student_ids = $(".bulk_report_ids").val().split(",");
+        term_id = $("#select_term_field").val();
+        if (term_id == "cum") {
+            sessionOrTerm = "session";
             term_id = 3;
         }
-        class_id = $("#select_class_field_report").val()
-    }
-    else if (page_type == 'student_page') {
-        student_ids = $("#select_student_field").val().split(",")
-        term_id = $(".select_btn.term.active").attr("data-name")
-        class_id = $("#select_class_field").val()
+        class_id = $("#select_class_field_report").val();
+    } else if (page_type == "student_page") {
+        student_ids = $("#select_student_field").val().split(",");
+        term_id = $(".select_btn.term.active").attr("data-name");
+        class_id = $("#select_class_field").val();
     }
     // const student_ids = $('.bulk_report_ids').val().split(',') || $("#select_student_field").val().split(",");
     // alert(student_ids)
     // // const student_ids = $('.bulk_report_ids').val().split(',') || $("#select_student_field").val().split(",");
     // const term_id = $('#select_term_field').val() || $(".select_btn.term.active").attr("data-name");
-    const session_id = $('#select_session_field').val();
+    const session_id = $("#select_session_field").val();
     // const class_id = $('#select_class_field_report').val() || $("#select_class_field").val();
 
     totalReports = student_ids.length;
@@ -10927,68 +14256,119 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
         try {
             // First get the grading data
             const gradingData = await $.ajax({
-                url: '../controller.php',
-                type: 'post',
+                url: "../controller.php",
+                type: "post",
                 data: {
-                    action: 'get_grading_score_data',
+                    action: "get_grading_score_data",
                     session_id,
                     student_id,
                     class_id,
-                    term_id
-                }
+                    term_id,
+                },
             });
 
-            data = JSON.parse(gradingData);
+            data = gradingData;
+            // data = JSON.parse(gradingData);
             settingsData = data.settingsData[0];
             student_score_data = data.score_data;
 
             // Then get the report card HTML
+            let myschl = null;
             const reportCard = await $.ajax({
-                url: myschl == 13 ? '../single_report_card-homat.php' : '../single_report_card.php',
-                type: 'POST',
-                data: { student_id, class_id, session_id, term_id, sessionOrTerm, }
+                url:
+                    myschl == 13
+                        ? "../single_report_card-homat.php"
+                        : "../single_report_card.php",
+                type: "POST",
+                data: { student_id, class_id, session_id, term_id, sessionOrTerm },
             });
 
             // Create a container for this specific report
-            const reportDiv = $('<div>').addClass('single-report').html(reportCard);
+            const reportDiv = $("<div>").addClass("single-report").html(reportCard);
             previewContent.append(reportDiv);
 
-            const tableContainer = reportDiv.find('#table_visuals_display_report');
-            const commentContainer = reportDiv.find('.student_behaviour_skills');
-            await set_behaviour_comment_report(term_id, session_id, student_id, class_id, 'view', commentContainer);
+            const tableContainer = reportDiv.find("#table_visuals_display_report");
+            const commentContainer = reportDiv.find(".student_behaviour_skills");
+            await set_behaviour_comment_report(
+                term_id,
+                session_id,
+                student_id,
+                class_id,
+                "view",
+                commentContainer
+            );
             // alert(myschl)
             if (myschl == 13) {
-                if (sessionOrTerm == 'session') {
-                    await format_student_cummulative_table_report(student_score_data, student_id, session_id, class_id, settingsData.grade, tableContainer);
-                } else if (term_id == '2') {
-                    await format_2nd_term_student_cummulative_table_report(student_score_data, student_id, session_id, class_id, settingsData.grade, tableContainer);
+                if (sessionOrTerm == "session") {
+                    await format_student_cummulative_table_report(
+                        student_score_data,
+                        student_id,
+                        session_id,
+                        class_id,
+                        settingsData.grade,
+                        tableContainer
+                    );
+                } else if (term_id == "2") {
+                    await format_2nd_term_student_cummulative_table_report(
+                        student_score_data,
+                        student_id,
+                        session_id,
+                        class_id,
+                        settingsData.grade,
+                        tableContainer
+                    );
                 } else {
-                    await format_student_table_report(student_score_data, term_id, session_id, class_id, settingsData.grade, tableContainer);
+                    await format_student_table_report(
+                        student_score_data,
+                        term_id,
+                        session_id,
+                        class_id,
+                        settingsData.grade,
+                        tableContainer
+                    );
                 }
             } else {
-                if (sessionOrTerm == 'session') {
-                    await format_student_cummulative_table_report(student_score_data, student_id, session_id, class_id, settingsData.grade, tableContainer);
+                if (sessionOrTerm == "session") {
+                    await format_student_cummulative_table_report(
+                        student_score_data,
+                        student_id,
+                        session_id,
+                        class_id,
+                        settingsData.grade,
+                        tableContainer
+                    );
                 } else {
-                    await format_student_table_report(student_score_data, term_id, session_id, class_id, settingsData.grade, tableContainer);
+                    await format_student_table_report(
+                        student_score_data,
+                        term_id,
+                        session_id,
+                        class_id,
+                        settingsData.grade,
+                        tableContainer
+                    );
                 }
             }
 
             loadedReports++;
-            loadingStatus.text(`Loading report ${loadedReports} of ${totalReports}...`);
+            loadingStatus.text(
+                `Loading report ${loadedReports} of ${totalReports}...`
+            );
 
-            // Enable print button when all reports are loaded
+            // Enable buttons when all reports are loaded
             if (loadedReports === totalReports) {
                 loadingDiv.hide();
-                printButton.prop('disabled', false);
+                printButton.prop("disabled", false);
+                downloadButton.prop("disabled", false);
             }
         } catch (error) {
-            console.error('Error loading report:', error);
+            console.error("Error loading report:", error);
             // Update status to show error
-            loadingStatus.text(`Error loading report for student ${student_id}: ${error.message}`);
+            loadingStatus.text(
+                `Error loading report for student ${student_id}: ${error.message}`
+            );
         }
     }
 }
-
 async function format_student_table_report(student_score_data, term, session_id, class_id, grading, container) {
     // let settingsData = JSON.parse(settingsData)
     return new Promise((resolve) => {
@@ -11299,8 +14679,8 @@ async function format_2nd_term_student_cummulative_table_report(student_score_da
                         ${settingsData.ca3 == 0 ? '' : '<th>CA3</th>'}
                         ${settingsData.pra == 0 ? '' : '<th>Practical</th>'}
                         ${settingsData.exa == 0 ? '' : '<th>Exam</th>'}
-                        <th>1st</th>
-                        <th>2nd</th>
+                        <th style="text-align:center;">1st</th>
+                        <th style="text-align:center">2nd</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -11329,8 +14709,8 @@ async function format_2nd_term_student_cummulative_table_report(student_score_da
                     ${settingsData.pra == 0 ? '' : `<td>${getScoreForTerm(subjectRecords, '2', 'Practical')}</td>`}
                     ${settingsData.exa == 0 ? '' : `<td>${getScoreForTerm(subjectRecords, '2', 'Exam')}</td>`}
                     <!-- Term Totals -->
-                    <td>${term1TotalScore > 0 || term1MaxObtainable > 0 ? term1TotalScore.toFixed(0) : '-'}</td>
-                    <td>${term2TotalScore > 0 || term2MaxObtainable > 0 ? term2TotalScore.toFixed(0) : '-'}</td>
+                    <td style="text-align:center">${term1TotalScore > 0 || term1MaxObtainable > 0 ? term1TotalScore.toFixed(0) : '-'}</td>
+                    <td style="text-align:center">${term2TotalScore > 0 || term2MaxObtainable > 0 ? term2TotalScore.toFixed(0) : '-'}</td>
                     <!-- Cumulative Stats -->
                     <td>${cumulativeScore > 0 || cumulativeMaxObtainable > 0 ? cumulativeScore.toFixed(0) : '-'}</td>
                     <td>${averageScore > 0 ? averageScore.toFixed(0) : '-'}</td>
@@ -11348,10 +14728,70 @@ async function format_2nd_term_student_cummulative_table_report(student_score_da
         setTimeout(resolve, 100);
     });
 }
-async function set_behaviour_comment_report(term, session, student_id, class_id, pagetype, container) {
+// async function set_behaviour_comment_report(term, session, student_id, class_id, pagetype, container) {
+//     // alert('kkk')
+//     if ($("#report_page").val() === 'report_scores') {
+//         pagetype = 'report'
+//     }
+
+//     return new Promise((resolve) => {
+//         $.ajax({
+//             url: "../controller.php",
+//             type: "post",
+//             data: {
+//                 'action': 'getbehaviour_comment',
+//                 term,
+//                 session,
+//                 student_id,
+//                 class_id,
+//                 pagetype
+//             },
+//             success: (data) => {
+//                 data = data.trim();
+//                 data = JSON.parse(data);
+//                 // alert(data.staff_classId)
+//                 // let staff_classId_json = JSON.parse(data.staff_classId)
+//                 // alert((data.staff_classId).includes(class_id))
+//                 thebehavedata = data.comment;
+//                 // alert('ll')
+//                 function getPercentage(score) {
+//                     switch (score) {
+//                         case "5": return "5";
+//                         case "4": return "4";
+//                         case "3": return "3";
+//                         case "2": return "2";
+//                         case "1": return "1";
+//                         default: return "Not rated";
+//                     }
+//                 }
+//                 if (thebehavedata == '') {
+//                     let behave = ['punctuality', 'classattendance', 'resptoass', 'Politeness', 'Honesty', 'selfcontrol', 'relationship', 'responsibility', 'organizationability', 'Neatness', 'Obedience', 'Creativity', 'Writing', 'Fluency', 'Sport', 'Games', 'DrawingPainting', 'Music', 'HandlingTools', 'Crafts'];
+
+//                     behave.map((key) => {
+//                         container.find(`.${key}`).html(getPercentage(0))
+//                     })
+//                 } else {
+//                     par = JSON.parse(thebehavedata)
+//                     Object.entries(par).forEach(([key, value]) => {
+//                         container.find(`.${key}`).html(getPercentage(value))
+//                     })
+//                 }
+//                 resolve();
+//             }
+//         })
+//     });
+// }
+async function set_behaviour_comment_report(
+    term,
+    session,
+    student_id,
+    class_id,
+    pagetype,
+    container
+) {
     // alert('kkk')
-    if ($("#report_page").val() === 'report_scores') {
-        pagetype = 'report'
+    if ($("#report_page").val() === "report_scores") {
+        pagetype = "report";
     }
 
     return new Promise((resolve) => {
@@ -11359,16 +14799,17 @@ async function set_behaviour_comment_report(term, session, student_id, class_id,
             url: "../controller.php",
             type: "post",
             data: {
-                'action': 'getbehaviour_comment',
+                action: "getbehaviour_comment",
                 term,
                 session,
                 student_id,
                 class_id,
-                pagetype
+                pagetype,
             },
             success: (data) => {
-                data = data.trim();
-                data = JSON.parse(data);
+                data = data;
+                // data = data.trim();
+                // data = JSON.parse(data);
                 // alert(data.staff_classId)
                 // let staff_classId_json = JSON.parse(data.staff_classId)
                 // alert((data.staff_classId).includes(class_id))
@@ -11376,32 +14817,71 @@ async function set_behaviour_comment_report(term, session, student_id, class_id,
                 // alert('ll')
                 function getPercentage(score) {
                     switch (score) {
-                        case "5": return "5";
-                        case "4": return "4";
-                        case "3": return "3";
-                        case "2": return "2";
-                        case "1": return "1";
-                        default: return "Not rated";
+                        case "5":
+                            return "5";
+                        case "4":
+                            return "4";
+                        case "3":
+                            return "3";
+                        case "2":
+                            return "2";
+                        case "1":
+                            return "1";
+                        default:
+                            return "Not rated";
                     }
                 }
-                if (thebehavedata == '') {
-                    let behave = ['punctuality', 'classattendance', 'resptoass', 'Politeness', 'Honesty', 'selfcontrol', 'relationship', 'responsibility', 'organizationability', 'Neatness', 'Obedience', 'Creativity', 'Writing', 'Fluency', 'Sport', 'Games', 'DrawingPainting', 'Music', 'HandlingTools', 'Crafts'];
-
+                if (thebehavedata == "") {
+                    let behave =
+                        typeof window.schoolSkills !== "undefined" &&
+                            Array.isArray(window.schoolSkills) &&
+                            window.schoolSkills.length > 0
+                            ? window.schoolSkills
+                            : [
+                                "punctuality",
+                                "classattendance",
+                                "resptoass",
+                                "Politeness",
+                                "Honesty",
+                                "selfcontrol",
+                                "relationship",
+                                "responsibility",
+                                "organizationability",
+                                "Neatness",
+                                "Obedience",
+                                "Creativity",
+                                "Writing",
+                                "Fluency",
+                                "Sport",
+                                "Games",
+                                "DrawingPainting",
+                                "Music",
+                                "HandlingTools",
+                                "Crafts",
+                            ];
+                    if (
+                        typeof window.schoolHiddenSkills !== "undefined" &&
+                        Array.isArray(window.schoolHiddenSkills)
+                    ) {
+                        behave = behave.filter(
+                            (skill) => !window.schoolHiddenSkills.includes(skill)
+                        );
+                    }
+                    console.log("new skills", behave)
                     behave.map((key) => {
-                        container.find(`.${key}`).html(getPercentage(0))
-                    })
+                        container.find(`.${key}`).html(getPercentage(0));
+                    });
                 } else {
-                    par = JSON.parse(thebehavedata)
+                    par = JSON.parse(thebehavedata);
                     Object.entries(par).forEach(([key, value]) => {
-                        container.find(`.${key}`).html(getPercentage(value))
-                    })
+                        container.find(`.${key}`).html(getPercentage(value));
+                    });
                 }
                 resolve();
-            }
-        })
+            },
+        });
     });
 }
-
 function printReports() {
     // Get the content to print
     const content = document.getElementById('preview-content');
@@ -11648,3 +15128,15 @@ function track_scores_changes() {
 
 
 $('.select2').select2()
+
+// if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+//   navigator.serviceWorker.controller.postMessage({
+//     type: 'precache',
+//     urls: [
+//       'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-bs4.min.js',
+//       'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-bs4.min.css',
+//     //   'https://cdnjs.cloudflare.com/ajax/libs/mathquill/0.10.1/mathquill.min.css',
+//     //   'https://cdnjs.cloudflare.com/ajax/libs/mathquill/0.10.1/mathquill.min.js'
+//     ]
+//   });
+// }

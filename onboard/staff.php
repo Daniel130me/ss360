@@ -22,6 +22,34 @@ include_once("../model/connect.php");
   <!-- Theme style -->
   <link rel="stylesheet" href="../dist/css/adminlte.css">
   <style>
+    /* Background image for the onboard pages */
+    body.register-page {
+      background-image: url('../dist/img/school_bg.jpg');
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      position: relative;
+    }
+
+    /* Optional dark overlay to improve contrast */
+    body.register-page::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 0;
+    }
+
+    /* Make the container and cards appear above the overlay */
+    .container,
+    .register-logo,
+    .card,
+    .register-box {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+  <style>
     @media (max-width: 576px) {
       .photo_resize {
         height: 215px;
@@ -31,8 +59,9 @@ include_once("../model/connect.php");
   </style>
 </head>
 
-<body class="hold-transition register-page mt-5" style="">
+<body class="hold-transition register-page mt-5">
   <div class="container" style="">
+  <div class="container">
     <!-- <div class="register-box" style="max-width: 60%; width:auto;"> -->
 
 

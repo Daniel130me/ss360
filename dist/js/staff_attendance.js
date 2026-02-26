@@ -16,6 +16,10 @@ async function initializeScanner() {
 
         // Only create new scanner if it doesn't exist
         if (!scanner) {
+            if (typeof Instascan === 'undefined') {
+                showError('Scanner library (Instascan) failed to load. Please check your internet connection or contact support.');
+                return;
+            }
             scanner = new Instascan.Scanner({
                 video: document.getElementById('preview'),
                 mirror: false,
@@ -95,6 +99,10 @@ async function initializeScanner() {
         }
 
         // Get cameras
+        if (typeof Instascan === 'undefined') {
+            showError('Scanner library (Instascan) failed to load. Please check your internet connection or contact support.');
+            return;
+        }
         const cameras = await Instascan.Camera.getCameras();
 
         if (cameras.length === 0) {
@@ -463,61 +471,61 @@ const GEO_TARGET_LNG = maplong;
 const GEO_ACCEPT_RADIUS_M = mapradius; // meters
 // alert(maplong)
 
-function _toRad(deg){ return deg * Math.PI / 180; }
-function _haversineDistance(lat1, lon1, lat2, lon2){
+function _toRad(deg) { return deg * Math.PI / 180; }
+function _haversineDistance(lat1, lon1, lat2, lon2) {
     const R = 6371000;
     const dLat = _toRad(lat2 - lat1);
     const dLon = _toRad(lon2 - lon1);
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(_toRad(lat1)) * Math.cos(_toRad(lat2)) *
-              Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(_toRad(lat1)) * Math.cos(_toRad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
 }
 // alert('men')
 // toastr.success('we are one')
-function _showMsg(msg, type='info'){
+function _showMsg(msg, type = 'info') {
     if (window.toastr && typeof toastr[type] === 'function') toastr[type](msg);
     else alert(msg);
 }
 
 // Attach handler: when '#takemyattendance' is clicked, check location then post
-$(document).on('click', '#takemyattendance', function(e){
+$(document).on('click', '#takemyattendance', function (e) {
     e.preventDefault();
-    if (!navigator.geolocation){
+    if (!navigator.geolocation) {
         _showMsg('Geolocation is not supported by your browser', 'error');
         return;
     }
-    navigator.geolocation.getCurrentPosition(function(position){
+    navigator.geolocation.getCurrentPosition(function (position) {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
         const dist = _haversineDistance(lat, lng, GEO_TARGET_LAT, GEO_TARGET_LNG);
-        if (dist <= GEO_ACCEPT_RADIUS_M){
-            _showMsg('You are within the allowed area. Recording attendance...', 'info');
-            if (typeof sendGeoAttendance === 'function'){
-                sendGeoAttendance(lat, lng).done(function(res){
-                    if (res && res.status == 1){
+        if (dist <= GEO_ACCEPT_RADIUS_M) {
+            _showMsg(`You are within the allowed area. Recording attendance...`, 'info');
+            if (typeof sendGeoAttendance === 'function') {
+                sendGeoAttendance(lat, lng).done(function (res) {
+                    if (res && res.status == 1) {
                         _showMsg(res.message || 'Attendance recorded', 'success');
                         if (window.attendanceTable && typeof attendanceTable.ajax !== 'undefined') attendanceTable.ajax.reload(null, false);
-                    } else if (res && res.status == 2){
+                    } else if (res && res.status == 2) {
                         _showMsg(res.message || 'Attendance already completed', 'info');
                         if (window.attendanceTable && typeof attendanceTable.ajax !== 'undefined') attendanceTable.ajax.reload(null, false);
                     } else {
                         _showMsg(res.message || 'Unable to record attendance', 'error');
                     }
-                }).fail(function(){
+                }).fail(function () {
                     _showMsg('Server error while recording attendance', 'error');
                 });
             } else {
                 _showMsg('Attendance function missing', 'error');
             }
         } else {
-            _showMsg('Kindly stay within the allowed area to take attendance.');
+            _showMsg(`Kindly stay within the allowed area to take attendance.`);
             // alert('Your location: Lat ' + lat + '\nLng ' + lng + '\nDistance: ' + Math.round(dist) + ' m');
         }
-    }, function(err){
+    }, function (err) {
         let msg = '';
-        switch(err.code){
+        switch (err.code) {
             case err.PERMISSION_DENIED: msg = 'Permission denied. Please allow location access.'; break;
             case err.POSITION_UNAVAILABLE: msg = 'Location unavailable.'; break;
             case err.TIMEOUT: msg = 'Location request timed out.'; break;

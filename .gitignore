@@ -9,3 +9,8 @@ ss360(2).zip
 error_log
 onboard/error_log
 ss360-workspace.code-workspace
+PHPMailer.zip
+PHPMailer/
+PHPMailer-old
+vendor
+uploads

@@ -11,6 +11,13 @@ $student_id = $_SESSION['userid'];
 include_once("model/connect.php");
 include_once("model/functions.php");
 
+// Get current student info
+$student_sql = mysqli_query($conn, "SELECT firstname, lastname, middlename, admission_no, class_id FROM students WHERE id='$student_id' AND school_id='{$_SESSION['school_id']}'");
+$student_info = mysqli_fetch_assoc($student_sql);
+$student_fullname = $student_info ? trim($student_info['firstname'] . ' ' . $student_info['lastname'] . ' ' . $student_info['middlename']) : '';
+$admission_no = $student_info['admission_no'] ?? '';
+$class_name = $student_info ? get_class_by_classid($student_info['class_id']) : '';
+
 // Get assessment info
 $sql = "SELECT a.*, s.subject 
         FROM assessment a 
@@ -38,7 +45,8 @@ $question_count = mysqli_fetch_assoc($questions_result)['total'];
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f4f6f9; /* Light gray background */
+            background-color: #f4f6f9;
+            /* Light gray background */
             color: #333;
             display: flex;
             justify-content: center;
@@ -58,7 +66,8 @@ $question_count = mysqli_fetch_assoc($questions_result)['total'];
         }
 
         .card-header {
-            background-color: #007bff; /* Primary blue */
+            background-color: #007bff;
+            /* Primary blue */
             color: #fff;
             border-radius: 10px 10px 0 0;
             padding: 20px;
@@ -72,8 +81,10 @@ $question_count = mysqli_fetch_assoc($questions_result)['total'];
         }
 
         .assessment-details {
-            background-color: #e9f5ff; /* Light blue */
-            color: #0056b3; /* Darker blue */
+            background-color: #e9f5ff;
+            /* Light blue */
+            color: #0056b3;
+            /* Darker blue */
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -99,17 +110,21 @@ $question_count = mysqli_fetch_assoc($questions_result)['total'];
         }
 
         .instruction-list li::before {
-            content: '\f058'; /* Checkmark icon */
+            content: '\f058';
+            /* Checkmark icon */
             font-family: 'Font Awesome 6 Free';
             font-weight: 900;
             position: absolute;
             left: 0;
-            color: #28a745; /* Green */
+            color: #28a745;
+            /* Green */
         }
 
         .warning-alert {
-            background-color: #fff3cd; /* Light yellow */
-            color: #856404; /* Dark yellow */
+            background-color: #fff3cd;
+            /* Light yellow */
+            color: #856404;
+            /* Dark yellow */
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -121,7 +136,8 @@ $question_count = mysqli_fetch_assoc($questions_result)['total'];
         }
 
         .start-button {
-            background-color: #28a745; /* Green */
+            background-color: #28a745;
+            /* Green */
             color: #fff;
             border: none;
             padding: 15px 30px;
@@ -132,7 +148,8 @@ $question_count = mysqli_fetch_assoc($questions_result)['total'];
         }
 
         .start-button:hover {
-            background-color: #218838; /* Darker green */
+            background-color: #218838;
+            /* Darker green */
         }
 
         .icon-container {
@@ -146,16 +163,51 @@ $question_count = mysqli_fetch_assoc($questions_result)['total'];
             font-size: 4rem;
             color: #007bff;
         }
+        .icon-container i {
+            font-size: 4rem;
+            color: #007bff;
+        }
+
+        .no-access-container {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .no-access-icon {
+            font-size: 5rem;
+            color: #dc3545;
+            /* Red for emphasis */
+            margin-bottom: 20px;
+        }
+
+        .no-access-message {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #333;
+        }
     </style>
 </head>
 
 <body>
     <div class="instruction-card">
+        <?php if (in_array($student_id, explode(',', $assessment['blacklist_students']))) { ?>
+            <div class="no-access-container">
+                <div class="no-access-icon">
+                    <i class="fas fa-ban"></i>
+                </div>
+                <p class="no-access-message">You do not have access to this assessment.</p>
+                <p>Please contact your administrator if you believe this is an error.</p>
+            </div>
+        <?php exit;
+        } ?>
         <div class="card-header">
             <h3 class="card-title">
                 <i class="fas fa-book-open mr-2"></i>
                 <?= htmlspecialchars($assessment['subject']) ?> Assessment Instructions
             </h3>
+            <div class="student-info" style="margin-top:8px;font-size:0.95rem;color:#f1f1f1;">
+                Student: <?= htmlspecialchars($student_fullname) ?> &nbsp; | &nbsp; Class: <?= htmlspecialchars($class_name) ?> &nbsp; | &nbsp; ADM No: <?= htmlspecialchars(strtoupper($admission_no)) ?>
+            </div>
         </div>
         <div class="card-body">
             <div class="icon-container">
@@ -163,27 +215,27 @@ $question_count = mysqli_fetch_assoc($questions_result)['total'];
             </div>
             <div class="assessment-details">
                 <strong>Assessment Details:</strong><br>
-                <i class="fas fa-clock mr-1"></i> Duration: <?php 
-                    $hours = floor($assessment['duration'] / 60);
-                    $minutes = $assessment['duration'] % 60;
-                    if ($hours > 0) {
-                        echo $hours . ':' . str_pad($minutes, 2, '0', STR_PAD_LEFT) . ':00';
-                    } else {
-                        echo $minutes . ':00';
-                    }
-                ?><br>
+                <i class="fas fa-clock mr-1"></i> Duration: <?php
+                                                            $hours = floor($assessment['duration'] / 60);
+                                                            $minutes = $assessment['duration'] % 60;
+                                                            if ($hours > 0) {
+                                                                echo $hours . ':' . str_pad($minutes, 2, '0', STR_PAD_LEFT) . ':00';
+                                                            } else {
+                                                                echo $minutes . ':00';
+                                                            }
+                                                            ?><br>
                 <i class="fas fa-question-circle mr-1"></i> Total Questions: <?= $question_count ?>
             </div>
 
             <h5><i class="fas fa-info-circle mr-2"></i> Important Instructions:</h5>
             <ul class="instruction-list">
-                <li>This assessment contains <?= $question_count ?> questions and must be completed within <?php 
-                    if ($hours > 0) {
-                        echo $hours . ' hour' . ($hours > 1 ? 's' : '') . ($minutes > 0 ? ' and ' . $minutes . ' minute' . ($minutes > 1 ? 's' : '') : '');
-                    } else {
-                        echo $minutes . ' minute' . ($minutes > 1 ? 's' : '');
-                    }
-                ?>.</li>
+                <li>This assessment contains <?= $question_count ?> questions and must be completed within <?php
+                                                                                                            if ($hours > 0) {
+                                                                                                                echo $hours . ' hour' . ($hours > 1 ? 's' : '') . ($minutes > 0 ? ' and ' . $minutes . ' minute' . ($minutes > 1 ? 's' : '') : '');
+                                                                                                            } else {
+                                                                                                                echo $minutes . ' minute' . ($minutes > 1 ? 's' : '');
+                                                                                                            }
+                                                                                                            ?>.</li>
                 <li>Once you start the assessment, the timer cannot be paused.</li>
                 <li>Do not close the browser window or navigate away from the assessment page.</li>
                 <li>Switching browser tabs or windows may result in automatic submission.</li>

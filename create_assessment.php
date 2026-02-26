@@ -9,6 +9,49 @@ include_once("model/functions.php");
 $school_id = $_SESSION['school_id'];
 $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3];
 $school_settings = json_decode($_SESSION['skul_settings'], true);
+// var_dump($school_settings);
+$assessment_id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+$assessment_data = [
+    'id' => null,
+    'subject_id' => null,
+    'assessment_type' => 1,
+    'instruction' => '',
+    'duration' => 20,
+    'duration_set' => 1,
+    'deadline_date' => '',
+    'deadline_time' => '00:00:00',
+    'deadline_set' => 0,
+    'class_ids' => '',
+    'desired_score' => 0,
+    'round_off_decimal' => 0,
+    'term' => 1,
+    'score_destination' => '6'
+];
+
+if ($assessment_id) {
+    $sql = "SELECT * FROM assessment WHERE id = '$assessment_id'";
+    $result = mysqli_query($conn, $sql);
+    if ($row = mysqli_fetch_assoc($result)) {
+        $assessment_data = $row;
+    }
+}
+$questions_data = [];
+if ($assessment_id) {
+    $q_sql = "SELECT * FROM questions WHERE ass_id = '$assessment_id' AND deleted = 0";
+    $q_res = mysqli_query($conn, $q_sql);
+    while ($q_row = mysqli_fetch_assoc($q_res)) {
+        $options = [];
+        $o_sql = "SELECT * FROM options WHERE question_id = '{$q_row['id']}'";
+        $o_res = mysqli_query($conn, $o_sql);
+        while ($o_row = mysqli_fetch_assoc($o_res)) {
+            $options[] = $o_row;
+        }
+        $questions_data[] = [
+            'question' => $q_row,
+            'options' => $options
+        ];
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -27,13 +70,12 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
     <!-- Theme style -->
     <link rel="stylesheet" href="../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
     <!-- Select2 -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
-    <!-- summernote -->
-    <link rel="stylesheet" href="../plugins/summernote/summernote-bs4.min.css">
-    <!-- <link rel="stylesheet" href="../plugins/select2/css/select2.min.css"> -->
+    <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" /> -->
+    <link rel="stylesheet" href="../plugins/select2/css/select2.min.css">
     <!-- daterange picker -->
     <link rel="stylesheet" href="../plugins/daterangepicker/daterangepicker.css">
     <link rel="stylesheet" href="../plugins/toastr/toastr.min.css">
+    <link rel="stylesheet" href="../plugins/summernote/summernote-bs4.min.css">
     <link rel="stylesheet" href="../dist/css/adminlte.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.2.2/css/fixedColumns.dataTables.min.css">
@@ -51,13 +93,14 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
         <!-- Navbar -->
         <nav class="main-header navbar border-bottom-0 navbar-expand justify-content-between bg1">
             <!-- <div class=""> -->
-            <!-- <div> -->
 
             <!-- Left navbar links -->
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i
+                            class="muted-text fas fa-bars"></i></a>
                 </li>
+
             </ul>
 
             <!-- Right navbar links -->
@@ -100,11 +143,10 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                 </li>
             </ul>
             <!-- </div> -->
-            <!-- </div> -->
-
         </nav>
         <!-- /.navbar -->
 
+        <!-- Main Sidebar Container -->
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-light-primary elevation-4">
             <!-- Brand Logo -->
@@ -219,10 +261,36 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="lesson_note" class="nav-link active">
+                            <a href="staff_attendance" class="nav-link">
                                 <p class="d-flex">
-                                    <i class="material-symbols-outlined pr-2">list</i>
-                                    Lesson Note
+                                    <i class="material-symbols-outlined pr-2">add_chart</i>
+                                    Staff Attendance
+                                </p>
+                            </a>
+                        </li>
+                        <?php if ($_SESSION['school_id'] == 27 || $_SESSION['school_id'] == 13) {  ?>
+                            <li class="nav-item">
+                                <a href="lesson_note" class="nav-link">
+                                    <p class="d-flex">
+                                        <i class="material-symbols-outlined pr-2">list</i>
+                                        Lesson Note
+                                    </p>
+                                </a>
+                            </li>
+                        <?php } ?>
+                        <li class="nav-item">
+                            <a href="assessment" class="nav-link active">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">app_registration</i>
+                                    Assessments
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="payments" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">payments</i>
+                                    Payments
                                 </p>
                             </a>
                         </li>
@@ -242,14 +310,14 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="reports" class="nav-link">
-                                <p class="d-flex">
-                                    <i class="material-symbols-outlined pr-2">list</i>
-                                    Reports
-                                </p>
-                            </a>
-                        </li>
+                        <!--<li class="nav-item">-->
+                        <!--    <a href="reports" class="nav-link">-->
+                        <!--        <p class="d-flex">-->
+                        <!--            <i class="material-symbols-outlined pr-2">list</i>-->
+                        <!--            Reports-->
+                        <!--        </p>-->
+                        <!--    </a>-->
+                        <!--</li>-->
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
@@ -281,7 +349,18 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                                             </div>
                                         </div>
 
-                                        <div class="col-12 col-md-9" id="select_assessment_single">
+                                        <div class="col-12 col-md-3" id="select_term_single">
+                                            <div class="form-group align-left">
+                                                <label for="" class="mb-0">Select Term</label>
+                                                <div class="assessment_term_btn d-flex flex-wrap" style="gap:10px;">
+                                                    <button type="button" class="btn term_btn select_btn <?= $assessment_data['term'] == 1 ? 'active' : '' ?>" data-id="1" onclick="toggle_term_btn(this)">First</button>
+                                                    <button type="button" class="btn term_btn select_btn <?= $assessment_data['term'] == 2 ? 'active' : '' ?>" data-id="2" onclick="toggle_term_btn(this)">Second</button>
+                                                    <button type="button" class="btn term_btn select_btn <?= $assessment_data['term'] == 3 ? 'active' : '' ?>" data-id="3" onclick="toggle_term_btn(this)">Third</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 col-md-6" id="select_assessment_single">
                                             <div class="form-group align-left">
                                                 <label for="" class="mb-0">Select Assessment</label>
                                                 <div class="assessment_type_btn d-flex flex-wrap" style="gap:15px;">
@@ -331,17 +410,17 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                                                 <div class="form-group mb-0 col-12 col-sm-4">
                                                     <div class="input-group mb-3 d-flex align-items-center">
                                                         <label for="" class="mb-0">Duration:</label>
-                                                        <input type="number" min='1' class="form-control" id="assessment_duration" value="<?= $assessment_data['duration'] ?>" placeholder="20">
+                                                        <input required type="number" min='1' class="form-control" id="assessment_duration" value="<?= $assessment_data['duration'] ?>" placeholder="20">
                                                         <div class="input-group-prepend">
                                                             <select class="form-control" id="duration_unit">
                                                                 <option value="1">Minutes</option>
                                                                 <option value="2">Hours</option>
                                                             </select>
                                                         </div>
-                                                        <div class="input-group-prepend icheck-gray-dark ml-2">
-                                                            <input <?= $assessment_data['duration_set'] ? 'checked' : '' ?> class="class-checkbox" type="checkbox" id="set_duration_checkbox">
-                                                            <label for="set_duration_checkbox">Set Duration</label>
-                                                        </div>
+                                                        <!--<div class="input-group-prepend icheck-gray-dark ml-2">-->
+                                                        <!--    <input <?= $assessment_data['duration_set'] ? 'checked' : '' ?> class="class-checkbox" type="checkbox" id="set_duration_checkbox">-->
+                                                        <!--    <label for="set_duration_checkbox">Set Duration</label>-->
+                                                        <!--</div>-->
                                                     </div>
                                                 </div>
                                             </div>
@@ -351,10 +430,10 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                                                         <label for="" class="mb-0">Deadline Date:</label>
                                                         <input type="date" class="form-control" id="deadline_date" value="<?= $assessment_data['deadline_date'] ?>">
                                                         <input type="time" class="form-control" id="deadline_time" value="<?= $assessment_data['deadline_time'] ?>">
-                                                        <div class="input-group-prepend icheck-gray-dark ml-2">
-                                                            <input <?= $assessment_data['deadline_Set'] ? 'checked' : '' ?> class="class-checkbox" type="checkbox" id="set_deadline_checkbox">
-                                                            <label for="set_deadline_checkbox">Set Deadline</label>
-                                                        </div>
+                                                        <!--<div class="input-group-prepend icheck-gray-dark ml-2">-->
+                                                        <!--    <input <?= $assessment_data['deadline_Set'] ? 'checked' : '' ?> class="class-checkbox" type="checkbox" id="set_deadline_checkbox">-->
+                                                        <!--    <label for="set_deadline_checkbox">Set Deadline</label>-->
+                                                        <!--</div>-->
                                                     </div>
                                                 </div>
                                             </div>
@@ -456,8 +535,9 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                                                 <?php endforeach; ?>
                                             </div>
                                             <button type="button" class="btn btn-primary mt-3" id="add-question-btn">Add New Question</button>
+                                            <button type="button" class="btn btn-primary mt-3" id="import-question-btn">Import Question</button>
                                             <div class="d-flex justify-content-end mb-3">
-                                                <button type="button" class="btn btn-primary" onclick="saveEntireAssessment()">Save Assessment</button>
+                                                <button type="button" class="btn btn-primary" onclick="saveEntireAssessment_for_create_assessment()">Save Assessment</button>
                                             </div>
                                         </div>
                                     </div>
@@ -467,65 +547,125 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Add modal for existing assessment warning -->
-        <div class="modal fade" id="existingAssessmentModal" tabindex="-1" role="dialog" aria-labelledby="existingAssessmentModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <p class="modal-title" id="existingAssessmentModalLabel">Existing Assessment Found</p>
-                    </div>
-                    <div class="modal-body">
-                        An assessment already exists for the selected class(es). Select another class(es).
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="handleExistingAssessmentResponse(false)">Reassign classes</button>
-                        <!-- <button type="button" class="btn btn-primary" onclick="handleExistingAssessmentResponse(true)">Continue</button> -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Add modal for selecting classes -->
-        <div class="modal fade" id="assess_classesModal" tabindex="-1" role="dialog" aria-labelledby="assess_classesModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="assess_classesModalLabel">Select Classes</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div id="classes-list">
-                            <!-- Classes will be loaded here dynamically -->
+            <!-- Add modal for existing assessment warning -->
+            <div class="modal fade" id="existingAssessmentModal" tabindex="-1" role="dialog" aria-labelledby="existingAssessmentModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <p class="modal-title" id="existingAssessmentModalLabel">Existing Assessment Found</p>
+                        </div>
+                        <div class="modal-body">
+                            An assessment already exists for the selected class(es). Select another class(es).
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" onclick="handleExistingAssessmentResponse(false)">Reassign classes</button>
+                            <!-- <button type="button" class="btn btn-primary" onclick="handleExistingAssessmentResponse(true)">Continue</button> -->
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" onclick="saveSelectedClasses()">Save</button>
+                </div>
+            </div>
+
+            <!-- Add modal for selecting classes -->
+            <div class="modal fade" id="assess_classesModal" tabindex="-1" role="dialog" aria-labelledby="assess_classesModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="assess_classesModalLabel">Select Classes</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="classes-list">
+                                <!-- Classes will be loaded here dynamically -->
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveSelectedClasses()">Save</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Add remove class confirmation modal -->
-        <div class="modal fade" id="removeClassModal" tabindex="-1" role="dialog" aria-labelledby="removeClassModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="removeClassModalLabel">Remove Class</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+            <!-- Add remove class confirmation modal -->
+            <div class="modal fade" id="removeClassModal" tabindex="-1" role="dialog" aria-labelledby="removeClassModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="removeClassModalLabel">Remove Class</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to remove this class?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-danger" onclick="confirmRemoveClass()">Remove</button>
+                        </div>
                     </div>
-                    <div class="modal-body">
-                        Are you sure you want to remove this class?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-danger" onclick="confirmRemoveClass()">Remove</button>
+                </div>
+            </div>
+            <!-- Import Questions Modal -->
+            <div class="modal fade" id="importQuestionsModal" tabindex="-1" role="dialog" aria-labelledby="importQuestionsModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="importQuestionsModalLabel">Import Questions</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <label>Term</label>
+                                    <select class="form-control" id="import_term_filter">
+                                        <option value="all">All Terms</option>
+                                        <option value="1">First</option>
+                                        <option value="2">Second</option>
+                                        <option value="3">Third</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Type</label>
+                                    <select class="form-control" id="import_type_filter">
+                                        <option value="all">All Types</option>
+                                        <option value="1">Assignment</option>
+                                        <option value="2">CA</option>
+                                        <option value="3">Exam</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Subject</label>
+                                    <select class="form-control" id="import_subject_filter">
+                                        <option value="all">All Subjects</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="import-questions-list" style="max-height: 500px; overflow-y: auto;">
+                                <!-- Questions will be loaded here directly -->
+                                <p class="text-muted text-center py-5">Please select Term, Type, and Subject to load questions.</p>
+                            </div>
+
+                            <div id="import_pagination" class="d-flex justify-content-between align-items-center mt-3" style="display: none !important;">
+                                <div>
+                                    <span>Page <span id="import_current_page">1</span> of <span id="import_total_pages">1</span></span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-secondary btn-sm" id="import_prev_btn" disabled>Previous</button>
+                                    <button class="btn btn-secondary btn-sm" id="import_next_btn" disabled>Next</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="import_selected_btn">Import Selected</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -536,9 +676,9 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
         <script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
         <!-- Select2 -->
 
-        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script> -->
 
-        <!-- <script src="../plugins/select2/js/select2.full.min.js"></script> -->
+        <script src="../plugins/select2/js/select2.full.min.js"></script>
         <!-- AdminLTE App -->
         <script src="../dist/js/adminlte.min.js"></script>
         <!-- <script src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
@@ -556,9 +696,7 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
         </script>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
-        <!-- Summernote -->
-        <script src="../plugins/summernote/summernote-bs4.min.js"></script>
-        <script src="../dist/js/skul.js?v=w3q125sj"></script>
+        <script src="../dist/js/skul.js"></script>
         <!-- date-range-picker -->
         <script src="../plugins/moment/moment.min.js"></script>
         <script src="../plugins/daterangepicker/daterangepicker.js"></script>
@@ -567,8 +705,11 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
             var existingAssessmentId = null;
             var classElementToRemove = null;
         </script>
+
+
+
         <script src="../dist/js/assessment_image_buffer.js"></script>
-        <script src="../dist/js/examination.js?v=001"></script>
+        <script src="../dist/js/examination.js?v=90-restored-v1"></script>
         <script>
             // Add event listeners for form changes
             $(document).ready(function() {
@@ -585,7 +726,9 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                     originalSaveSelectedClasses();
                     checkExistingAssessment();
                 };
-
+                $('#add-question-btn').click(function() {
+                    addNewQuestion();
+                });
                 // addNewQuestion();
             });
         </script>

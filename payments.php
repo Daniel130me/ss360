@@ -1,6 +1,10 @@
 <?php
 session_start();
-
+if($_SESSION['manage_payment'] == 0) {
+?>    
+<script>history.back()</script>
+<?php
+}
 if (!isset($_SESSION['userid'])) {
     header("Location: login");
     exit();

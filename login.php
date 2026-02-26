@@ -1,7 +1,9 @@
 <?php
 // echo $_SESSION['url'];
+// session_start();
 $select = mysqli_query($conn, "SELECT back_pic,logo FROM school WHERE url='{$_SESSION['url']}'");
 $row = mysqli_fetch_assoc($select);
+// var_dump($row);
 // echo "here";
 // exit;
 // print_r($row);
@@ -57,7 +59,7 @@ $row = mysqli_fetch_assoc($select);
                         <div class="form-group mb-3">
                             <div class="row justify-content-between">
                                 <label for="" class="col-6">PIN<span class="text-danger">*</span></label>
-                                <a href="forgot_password" class="col-6 text-right accent"></a>
+                                <a href="forgot_password" class="col-6 text-right accent">Forgot PIN?</a>
                             </div>
                             <input type="password" name="password" class="form-control" placeholder="Enter your pin" required>
                         </div>

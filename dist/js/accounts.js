@@ -1246,7 +1246,7 @@ $(document).ready(function () {
         // alert("lkj")
         // if ($.fn.DataTable.isDataTable('#student_payment_recordTable')) {
         //         // $('#student_payment_recordTable').DataTable().ajax.reload();
-        // }
+        // 
         $('#student_payment_recordTable').DataTable({
             scrollX: true,
             scrollY: '50vh',

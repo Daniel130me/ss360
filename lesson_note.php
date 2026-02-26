@@ -7,6 +7,8 @@ if (!isset($_SESSION['userid'])) {
 include_once("model/connect.php");
 include_once("model/functions.php");
 $school_id = $_SESSION['school_id'];
+// echo $_SERVER['SCRIPT_NAME'];
+// exit;
 $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3];
 // $school_id = $_SESSION['school_id'];
 // $_SESSION['term_id'];
@@ -51,19 +53,19 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
 
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
-
-        <!-- Navbar -->
-        <nav class="main-header navbar border-bottom-0 navbar-expand justify-content-between bg1">
+  
+             <!-- Navbar -->
+    <nav class="main-header navbar border-bottom-0 navbar-expand justify-content-between bg1">
             <!-- <div class=""> -->
-            <!-- <div> -->
 
             <!-- Left navbar links -->
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i
+                            class="muted-text fas fa-bars"></i></a>
                 </li>
-            </ul>
 
+            </ul>
             <!-- Right navbar links -->
             <ul class="navbar-nav align-items-center">
                 <li class="nav-item dropdown">
@@ -104,20 +106,19 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                 </li>
             </ul>
             <!-- </div> -->
-            <!-- </div> -->
-
         </nav>
-        <!-- /.navbar -->
+    <!-- /.navbar -->
 
-        <!-- Main Sidebar Container -->
-        <aside class="main-sidebar sidebar-light-primary elevation-4">
+    <!-- Main Sidebar Container -->
+    <!-- Main Sidebar Container -->
+           <aside class="main-sidebar sidebar-light-primary elevation-4">
             <!-- Brand Logo -->
             <a href="" class="brand-link">
                 <img src="../uploads/<?= $_SESSION['logo'] ?>" alt="<?= $_SESSION['school_name'] ?>" class="brand-image" style="opacity: .8">
                 <span class="brand-text font-weight-light" style="visibility: hidden;">Rus</span>
             </a>
-
-
+           
+            
             <!-- <div href="" class="px-15 pt-15 border-bottom" style="padding-bottom: 30px;">
                 <img src="../uploads/<= $_SESSION['logo'] ?>" style="height: 200px; object-fit:cover;" alt="Logo"
                     class="brand-image img-circle elevation-5 w-100">
@@ -128,10 +129,9 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
 
             <!-- Sidebar -->
             <div class="sidebar">
-
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                    <ul class="nav nav-pills nav-sidebar flex-column pb-5" data-widget="treeview" role="menu"
                         data-accordion="false">
 
                         <li class="nav-item">
@@ -188,8 +188,8 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                                 </p>
                             </a>
                         </li>
-
-
+                        
+                        
                         <li class="nav-item">
                             <a href="post_scores" class="nav-link">
                                 <p class="d-flex">
@@ -222,6 +222,16 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                                 </p>
                             </a>
                         </li>
+                        <?php if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4 || $_SESSION['staff_type'] == 5) { ?>
+                        <li class="nav-item">
+                            <a href="staff_attendance" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">add_chart</i>
+                                   Staff Attendance
+                                </p>
+                            </a>
+                        </li>
+                        <?php } ?>
                         <li class="nav-item">
                             <a href="lesson_note" class="nav-link active">
                                 <p class="d-flex">
@@ -230,6 +240,26 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                                 </p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="assessment" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">app_registration</i>
+                                    Assessments
+                                </p>
+                            </a>
+                        </li>
+                        <?php
+                         if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4 || $_SESSION['staff_type'] == 7) {
+                             ?>
+                        <li class="nav-item">
+                            <a href="payments" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">payments</i>
+                                    Payments
+                                </p>
+                            </a>
+                        </li>
+                        <?php } ?>
                         <li class="nav-item">
                             <a href="time_table" class="nav-link">
                                 <p class="d-flex">
@@ -290,20 +320,23 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                                     </ol>
                                 </div>
                                 <div>
-                                    <!-- <div class="row">
+                                    <div class="row">
                                         <div class="col-12 col-md-12 my-md-0">
                                             <div class="form-group">
+                                                <label for="" class="mb-0">Select Term</label>
                                                 <div class="w-100">
-                                                    <button class="btn select_btn lesson_note active mr-2" onclick="note_toggle(this,'create')">Create Note</button>
-                                                    <button class="btn select_btn lesson_note mr-2" onclick="note_toggle(this,'view')">View Note</button>
+                                                    <button class="btn select_btn lesson_term <?= $_SESSION['term_id'] == 1 ? 'active' : '' ?> mr-2" data-name="1" onclick="toggle_lesson_term(this)">1st Term</button>
+                                                    <button class="btn select_btn lesson_term <?= $_SESSION['term_id'] == 2 ? 'active' : '' ?> mr-2" data-name="2" onclick="toggle_lesson_term(this)">2nd Term</button>
+                                                    <button class="btn select_btn lesson_term <?= $_SESSION['term_id'] == 3 ? 'active' : '' ?> mr-2" data-name="3" onclick="toggle_lesson_term(this)">3rd Term</button>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div> -->
+                                    </div>
                                      <!--<div class="mb-3 alert alert-info">-->
                                      <!--       <p>Please enroll a student to activate the classes</p>-->
                                      <!--   </div>-->
                                     <div class="row">
+
                                        
                                         <div class="col-12 col-md-3" id="select_class_single">
                                             <div class="form-group align-left">
@@ -370,13 +403,10 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
     <script src="../plugins/summernote/summernote-bs4.min.js"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/@wiris/mathtype-ckeditor5@7.30.0/plugin.min.js"></script> -->
-    <script>
-
-    </script>
-
+  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 
-    <script src="../dist/js/skul.js?v=w3q125"></script>
+    <script src="../dist/js/skul.js"></script>
     <!-- date-range-picker -->
     <script src="../plugins/moment/moment.min.js"></script>
     <script src="../plugins/daterangepicker/daterangepicker.js"></script>

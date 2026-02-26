@@ -8,6 +8,7 @@ if (!isset($_SESSION['userid'])) {
 include_once("model/connect.php");
 include_once("model/functions.php");
 $school_id = $_SESSION['school_id'];
+$hidden_skills = json_decode($_SESSION['hidden_row'], true) ?? [];
 // $parent_id = $_SESSION['userid'];
 $student_id = $_GET['id'];
 $date = date("Y-m-d");
@@ -39,6 +40,7 @@ s.id='{$_GET['id']}'");
 while ($row = mysqli_fetch_array($select)) {
     $data[] = array(
         'photo' => $row['photo'],
+        'admission_no' => $row['admission_no'],
         'id' => $row['id'],
         'classname' => $row['classname'],
         'firstname' => $row['firstname'],
@@ -279,16 +281,16 @@ while ($row = mysqli_fetch_array($select)) {
                         </li>
                         <?php
                         if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
-                        ?>
-                            <li class="nav-item">
-                                <a href="settings" class="nav-link">
-                                    <p class="d-flex">
-                                        <i class="material-symbols-outlined pr-2">tune</i>
-                                        Settings
-                                    </p>
-                                </a>
-                            </li>
-                        <?php
+                            ?>
+                                    <li class="nav-item">
+                                        <a href="settings" class="nav-link">
+                                            <p class="d-flex">
+                                                <i class="material-symbols-outlined pr-2">tune</i>
+                                                Settings
+                                            </p>
+                                        </a>
+                                    </li>
+                                <?php
                         }
                         ?>
                         <li class="nav-item">
@@ -474,6 +476,10 @@ while ($row = mysqli_fetch_array($select)) {
                                 <h3 style="font-size: 1.3rem; font-weight:bold;" class="text-primary"><?= $data[0]['lastname'] . ' ' . $data[0]['firstname'] . ' ' . $data[0]['middlename'] ?></h3>
                                 <!-- <h3 style="font-size: 1.6rem; font-weight:bold;" class="text-primary"><?= $data[0]['lastname'] . ' ' . $data[0]['firstname'] . ' ' . $data[0]['middlename'] ?></h3> -->
                             </div>
+                            <div>
+                                <h4 style="font-size: 1.3rem; font-weight:bold;" class="text-primary"><?= $data[0]['admission_no'] ?></h4>
+                                <!-- <h3 style="font-size: 1.6rem; font-weight:bold;" class="text-primary"><?= $data[0]['lastname'] . ' ' . $data[0]['firstname'] . ' ' . $data[0]['middlename'] ?></h3> -->
+                            </div>
                             <p class="font-weight-bold muted-text">Basic Data</p>
                             <div class="d-flex justify-content-between flex-wrap mt-2" style="column-gap: 40px; row-gap: 10px;">
                                 <!-- <div class="">
@@ -550,6 +556,23 @@ while ($row = mysqli_fetch_array($select)) {
                         </div>
                     </div>
                     <div class="container-fluid col-md-9">
+                        <div class="input-group mb-3 d-flex align-items-md-center align-items-start" style="width: 300px;">
+                            <label for="" class="mb-0 mr-2 text-muted">Select Session:</label>
+                            <select class="form-control select2" onchange="get_score_data()" id="select_session_field" style="width: 50%;">
+                                <?php
+                                $select = mysqli_query($conn, "SELECT id,session FROM sessions ORDER BY session ASC");
+                                while ($row = mysqli_fetch_array($select)) {
+                                    if ($row['id'] == $_SESSION['session_id']) {
+                                        echo '<option value="' . $row['id'] . '" selected>' . $row['session'] . '</option>';
+                                    } else {
+                                        ?>
+                                                        <option value="<?= $row['id'] ?>"><?= $row['session'] ?></option>
+                                                <?php
+                                    }
+                                }
+                                ?>
+                            </select>
+                        </div>
                         <div class="py-3 px-15 bg-white data_overlay" style="height:300px; border-radius: 10px; position: relative">
                             <p class="font-weight-bold">Loading...</p>
                         </div>
@@ -557,23 +580,6 @@ while ($row = mysqli_fetch_array($select)) {
                             <div class="container-fluid" id="">
                                 <div class="py-3 px-15 bg-white space_content_box" style="border-radius: 10px; position: relative">
                                     <!-- <div id=""> -->
-                                    <div class="input-group mb-3 d-flex align-items-md-center align-items-start" style="width: 300px;">
-                                        <label for="" class="mb-0 mr-2 text-muted">Select Session:</label>
-                                        <select class="form-control select2" onchange="get_score_data()" id="select_session_field" style="width: 50%;">
-                                            <?php
-                                            $select = mysqli_query($conn, "SELECT id,session FROM sessions ORDER BY session ASC");
-                                            while ($row = mysqli_fetch_array($select)) {
-                                                if ($row['id'] == $_SESSION['session_id']) {
-                                                    echo '<option value="' . $row['id'] . '" selected>' . $row['session'] . '</option>';
-                                                } else {
-                                            ?>
-                                                    <option value="<?= $row['id'] ?>"><?= $row['session'] ?></option>
-                                            <?php
-                                                }
-                                            }
-                                            ?>
-                                        </select>
-                                    </div>
                                     <div id="filterTerm" class="w-100">
                                         <ul class="menu-scrollbar px-0" id="" role="" style="flex-wrap: nowrap; overflow: auto; width: 100%; white-space: nowrap">
                                             <button class="btn select_btn term my-1 <?= $_SESSION['term_id'] == '1' ? 'active' : '' ?> mr-2" data-name="1" id="first" onclick="toggletermfilterClass(this)">1st Term</button>
@@ -615,42 +621,60 @@ while ($row = mysqli_fetch_array($select)) {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr>
-                                                            <td>Punctuality</td>
-                                                            <td class="punctuality"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Classroom attendance</td>
-                                                            <td class="classattendance"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Response to assignment</td>
-                                                            <td class="resptoass"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Neatness</td>
-                                                            <td class="Neatness"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Politeness</td>
-                                                            <td class="Politeness"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Honesty</td>
-                                                            <td class="Honesty"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Self control</td>
-                                                            <td class="selfcontrol"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Relationship with others</td>
-                                                            <td class="relationship"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Organizational Ability</td>
-                                                            <td class="organizationability"></td>
-                                                        </tr>
+                                                        <?php if (!in_array('punctuality', $hidden_skills)): ?>
+                                                            <tr>
+                                                                <td>Punctuality</td>
+                                                                <td class="punctuality"></td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                        <?php if (!in_array('classattendance', $hidden_skills)): ?>
+                                                            <tr>
+                                                                <td>Classroom attendance</td>
+                                                                <td class="classattendance"></td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                        <?php if (!in_array('resptoass', $hidden_skills)): ?>
+                                                            <tr>
+                                                                <td>Response to assignment</td>
+                                                                <td class="resptoass"></td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                        <?php if (!in_array('Neatness', $hidden_skills)): ?>
+                                                            <tr>
+                                                                <td>Neatness</td>
+                                                                <td class="Neatness"></td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                        <?php if (!in_array('Politeness', $hidden_skills)): ?>
+                                                            <tr>
+                                                                <td>Politeness</td>
+                                                                <td class="Politeness"></td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                        <?php if (!in_array('Honesty', $hidden_skills)): ?>
+                                                            <tr>
+                                                                <td>Honesty</td>
+                                                                <td class="Honesty"></td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                        <?php if (!in_array('selfcontrol', $hidden_skills)): ?>
+                                                            <tr>
+                                                                <td>Self control</td>
+                                                                <td class="selfcontrol"></td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                        <?php if (!in_array('relationship', $hidden_skills)): ?>
+                                                            <tr>
+                                                                <td>Relationship with others</td>
+                                                                <td class="relationship"></td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                        <?php if (!in_array('organizationability', $hidden_skills)): ?>
+                                                            <tr>
+                                                                <td>Organizational Ability</td>
+                                                                <td class="organizationability"></td>
+                                                            </tr>
+                                                        <?php endif; ?>
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -665,46 +689,66 @@ while ($row = mysqli_fetch_array($select)) {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr>
-                                                            <td>Obedience</td>
-                                                            <td class="Obedience"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Creativity</td>
-                                                            <td class="Creativity"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Writing</td>
-                                                            <td class="Writing"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Fluency</td>
-                                                            <td class="Fluency"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Sport</td>
-                                                            <td class="Sport"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Games</td>
-                                                            <td class="Games"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Drawing & Painting</td>
-                                                            <td class="DrawingPainting"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Music Performance</td>
-                                                            <td class="Music"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Handling Tools</td>
-                                                            <td class="HandlingTools"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Craft</td>
-                                                            <td class="Crafts"></td>
-                                                        </tr>
+                                                        <?php if (!in_array('Obedience', $hidden_skills)): ?>
+                                                            <tr>
+                                                                <td>Obedience</td>
+                                                                <td class="Obedience"></td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                        <?php if (!in_array('Creativity', $hidden_skills)): ?>
+                                                            <tr>
+                                                                <td>Creativity</td>
+                                                                <td class="Creativity"></td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                        <?php if (!in_array('Writing', $hidden_skills)): ?>
+                                                            <tr>
+                                                                <td>Writing</td>
+                                                                <td class="Writing"></td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                        <?php if (!in_array('Fluency', $hidden_skills)): ?>
+                                                            <tr>
+                                                                <td>Fluency</td>
+                                                                <td class="Fluency"></td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                        <?php if (!in_array('Sport', $hidden_skills)): ?>
+                                                            <tr>
+                                                                <td>Sport</td>
+                                                                <td class="Sport"></td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                        <?php if (!in_array('Games', $hidden_skills)): ?>
+                                                            <tr>
+                                                                <td>Games</td>
+                                                                <td class="Games"></td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                        <?php if (!in_array('DrawingPainting', $hidden_skills)): ?>
+                                                            <tr>
+                                                                <td>Drawing & Painting</td>
+                                                                <td class="DrawingPainting"></td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                        <?php if (!in_array('Music', $hidden_skills)): ?>
+                                                            <tr>
+                                                                <td>Music Performance</td>
+                                                                <td class="Music"></td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                        <?php if (!in_array('HandlingTools', $hidden_skills)): ?>
+                                                            <tr>
+                                                                <td>Handling Tools</td>
+                                                                <td class="HandlingTools"></td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                        <?php if (!in_array('Crafts', $hidden_skills)): ?>
+                                                            <tr>
+                                                                <td>Craft</td>
+                                                                <td class="Crafts"></td>
+                                                            </tr>
+                                                        <?php endif; ?>
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -740,8 +784,8 @@ while ($row = mysqli_fetch_array($select)) {
                                 <?php
                                 $select = mysqli_query($conn, "SELECT id, subject FROM subjects ORDER BY subject ASC");
                                 while ($row = mysqli_fetch_array($select)) {
-                                ?>
-                                    <option value="<?= $row['id'] ?>"><?= $row['subject'] ?></option>
+                                    ?>
+                                            <option value="<?= $row['id'] ?>"><?= $row['subject'] ?></option>
                                 <?php } ?>
                             </select>
                         </div>
@@ -750,8 +794,8 @@ while ($row = mysqli_fetch_array($select)) {
                                 <?php
                                 $select = mysqli_query($conn, "SELECT id, session FROM sessions ORDER BY session ASC");
                                 while ($row = mysqli_fetch_array($select)) {
-                                ?>
-                                    <option value="<?= $row['id'] ?>"><?= $row['session'] ?></option>
+                                    ?>
+                                            <option value="<?= $row['id'] ?>"><?= $row['session'] ?></option>
                                 <?php } ?>
                             </select>
                         </div>

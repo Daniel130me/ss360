@@ -18,6 +18,33 @@ session_start();
     <link rel="stylesheet" href="../plugins/toastr/toastr.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="../dist/css/adminlte.css">
+    <style>
+        /* Background image for the onboard page */
+        body.register-page {
+            background-image: url('../school_bg.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            /* ensure content is readable over the image */
+            position: relative;
+        }
+
+        /* Optional dark overlay to improve contrast */
+        .register-page::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 0;
+        }
+
+        /* Make the register box appear above the overlay */
+        .register-box,
+        .card {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
 </head>
 
 <body class="hold-transition register-page">

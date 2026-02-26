@@ -142,12 +142,13 @@ if (isset($_GET['id'])) {
 
 // echo $parameter[4];
 // exit;
+// if($parameter[3])
 if ($parameter[3] == 'onboard') {
     include("onboard/$parameter[4].php");
     exit;
 }
 // echo $parameter[3];
-$pages = array("comment_ai","student_class_notes", "billings", "assignments", "results", "analytics", "assessment_result", "take_assessment", "student_portal", "student_portal_profile", "create_assessment", "assessment", "scan_qr", "scan_staff_qr","payments", "my_payment", "payment_success", "time_table", "lesson_note", "attendance", "staff_attendance", "onboard", "404", "comment", "communication", "parent_portal", "waiting", "attendance", "register_staff_self", "dashboard", "change_password", "change_password_parent", "profile", "parent_profile", 'class', "staff", "employee", "each_user", "reports", "post_scores", "view_scores", "settings", "login", "students", "subjects", "logout");
+$pages = array("verify_otp","reset_password","enter_otp","forgot_password","graduates","comment_ai","student_class_notes", "billings", "assignments", "results", "analytics", "assessment_result", "take_assessment", "student_portal", "student_portal_profile", "create_assessment", "assessment", "scan_qr", "scan_staff_qr","payments", "my_payment", "payment_success", "time_table", "lesson_note", "attendance", "staff_attendance", "onboard", "404", "comment", "communication", "parent_portal", "waiting", "attendance", "register_staff_self", "dashboard", "change_password", "change_password_parent", "profile", "parent_profile", 'class', "staff", "employee", "each_user", "reports", "post_scores", "view_scores", "settings", "login", "students", "subjects", "logout");
 
 if (in_array($parameter[3], $pages)) {
     include($parameter[3] . ".php");

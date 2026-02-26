@@ -24,9 +24,8 @@ $school_id = $_SESSION['school_id'];
     <!-- Theme style -->
     <link rel="stylesheet" href="../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
     <!-- Select2 -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
-
-    <!-- <link rel="stylesheet" href="../plugins/select2/css/select2.min.css"> -->
+    <!-- Using local Select2 for consistency -->
+    <link rel="stylesheet" href="../plugins/select2/css/select2.min.css">
     <link rel="stylesheet" href="../plugins/toastr/toastr.min.css">
     <link rel="stylesheet" href="../dist/css/adminlte.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
@@ -53,7 +52,7 @@ $school_id = $_SESSION['school_id'];
             background-color: transparent !important;
         }
 
-        
+
 
         .filter_Select+.select2-container {
             width: 150px !important;
@@ -121,8 +120,8 @@ $school_id = $_SESSION['school_id'];
                 <img src="../uploads/<?= $_SESSION['logo'] ?>" alt="<?= $_SESSION['school_name'] ?>" class="brand-image" style="opacity: .8">
                 <span class="brand-text font-weight-light" style="visibility: hidden;">Rus</span>
             </a>
-           
-            
+
+
             <!-- <div href="" class="px-15 pt-15 border-bottom" style="padding-bottom: 30px;">
                 <img src="../..//<= $_SESSION['logo'] ?>" style="height: 200px; object-fit:cover;" alt="Logo"
                     class="brand-image img-circle elevation-5 w-100">
@@ -193,8 +192,8 @@ $school_id = $_SESSION['school_id'];
                                 </p>
                             </a>
                         </li>
-                        
-                        
+
+
                         <li class="nav-item">
                             <a href="post_scores" class="nav-link">
                                 <p class="d-flex">
@@ -227,7 +226,7 @@ $school_id = $_SESSION['school_id'];
                                 </p>
                             </a>
                         </li>
-                         <li class="nav-item">
+                        <li class="nav-item">
                             <a href="lesson_note" class="nav-link">
                                 <p class="d-flex">
                                     <i class="material-symbols-outlined pr-2">list</i>
@@ -297,6 +296,11 @@ $school_id = $_SESSION['school_id'];
                     </div>
                 </div>
                 <div class="container-fluid mt-4">
+                            <div>
+                            <select id="myselect" class="select2" style="width: 100%;">
+
+                            </select>
+                        </div>
                     <div class="py-3 px-15 bg-white" style="border-radius: 10px;">
 
                         <?php
@@ -353,18 +357,11 @@ $school_id = $_SESSION['school_id'];
                     <form class="transfer_student_modal" onsubmit="transfer_student_modal(event, 'student_table', '../display_student_table.php')" action="controller.php">
                         <div class="form-group">
                             <label for="select_class_transfer_field">Select class to transfer student(s) to</label>
-                            <select class="form-control select2" name="class_id" onchange="getstudents(this.value)" id="select_class_transfer_field" style="width: 100%;" required>
-                                <option value="">Select class</option>
-                                <?php
-                                $select = mysqli_query($conn, "SELECT id, classname FROM class WHERE school_id='$school_id'");
-                                while ($row = mysqli_fetch_array($select)) {
-                                ?>
-                                    <option value="<?= $row['id'] ?>"><?= $row['classname'] ?></option>
-                                <?php
-                                }
-                                ?>
+                            <select class="form-control select2" name="class_id" onchange="getstudents(this.value)" id="classes_select" style="width: 100%;" required>
+                                
                             </select>
                         </div>
+                
                         <input type="hidden" name="action" value="transfer_students">
                         <input type="hidden" name="ids" value="" class="bulk_transfer_ids">
                         <div class="card-foot">
@@ -374,6 +371,32 @@ $school_id = $_SESSION['school_id'];
                             </div>
                             <p class="warning small text-danger" style="display: none;"></p>
                             <button type="submit" id="student_transfer_btn" class="btn-sm btn-primary">Transfer Now</button>
+                            <button type="button" class="btn btn-grey" data-dismiss="modal" aria-label="Close">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="reset_student_password_modal">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <form class="reset_student_password_modal" onsubmit="reset_student_password_modal(event)">
+                        <div class="form-group">
+                            <label for="select_class_transfer_field">Set a New Password</label>
+                            <input type="password" name="new_password" class="form-control" required>
+                        </div>
+
+                        <input type="hidden" name="action" value="reset_student_password">
+                        <input type="hidden" name="id" value="" id="student_id_for_password_reset">
+                        <div class="card-foot">
+                            <div class="alert myalert alert-dismissible" style="display: none;">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <p class="warning small text-danger"></p>
+                            </div>
+                            <p class="warning small text-danger" style="display: none;"></p>
+                            <button type="submit" id="reset_student_password_btn" class="btn-sm btn-primary">Reset</button>
                             <button type="button" class="btn btn-grey" data-dismiss="modal" aria-label="Close">Close</button>
                         </div>
                     </form>
@@ -541,7 +564,7 @@ $school_id = $_SESSION['school_id'];
                                 <div class="text-center">
                                     <small class="text-danger" id="add_student_data_warning" style="display: none;">Staff already added</small>
                                 </div>
-                                <button type="submit" id="add_student_btn" class="btn btn-primary">Register</button>
+                                <button type="submit" for="add_student_modal_id" id="add_student_btn" class="btn btn-primary">Register</button>
                                 <button type="button" class="btn btn-grey" class="close" data-dismiss="modal" aria-label="Close">Cancel</button>
                             </div>
                         </div>
@@ -603,11 +626,8 @@ $school_id = $_SESSION['school_id'];
     <script src="../plugins/jquery/jquery.min.js"></script>
     <!-- Bootstrap 4 -->
     <script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- Select2 -->
-
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
-
-     <script src="../plugins/select2/js/select2.full.min.js"></script> 
+    <!-- Select2 (using local for consistency) -->
+    <script src="../plugins/select2/js/select2.full.min.js"></script>
     <!-- AdminLTE App -->
     <script src="../dist/js/adminlte.min.js"></script>
     <!-- <script src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
@@ -617,7 +637,34 @@ $school_id = $_SESSION['school_id'];
 
     <!-- <script>$('.select2').select2()</script> -->
     <script src="../dist/js/skul.js"></script>
+    <script>
+        // Initialize select2 and load class groups via AJAX
+        $(function() {
+            function initClassSelect(data) {
+                $('#classes_select').empty();
+                $('#classes_select').select2({
+                    data: data,
+                    width: 'resolve'
+                });
+            }
 
+            // Fetch grouped classes from the server
+            $.ajax({
+                url: '../controller.php',
+                data: { "action":"get_current_graduate_classes" },
+                type: 'POST',
+                // method: 'POST',
+                dataType: 'json'
+            }).done(function(response) {
+                // response expected to be an array of groups [{text, children: [{id,text}, ...]}, ...]
+                initClassSelect(response);
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                console.error('Failed to load classes for select2:', textStatus, errorThrown);
+                // fallback to empty select
+                initClassSelect([]);
+            });
+        });
+    </script>
 
 
 

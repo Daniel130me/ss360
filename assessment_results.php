@@ -9,65 +9,74 @@ include_once("model/connect.php");
 include_once("model/functions.php");
 
 $assessment_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-$class_id = isset($_GET['class_id']) ? intval($_GET['class_id']) : 0;
+// Accept single or comma-separated class IDs (e.g. ?class_id=45 or ?class_id=45,44)
+$class_id_raw = isset($_GET['class_id']) ? $_GET['class_id'] : '';
+$class_ids = [];
+if ($class_id_raw !== '') {
+    // split on comma, cast to int and keep only positive ints
+    $parts = explode(',', $class_id_raw);
+    foreach ($parts as $p) {
+        $v = intval($p);
+        if ($v > 0) $class_ids[] = $v;
+    }
+}
+if (empty($class_ids)) {
+    // fallback to a non-matching id to avoid accidental full-table matches
+    $class_ids = [0];
+}
+$class_id_list = implode(',', $class_ids);
 
 // Get assessment details
+
 $assessment_query = "SELECT a.*, s.subject FROM assessment a 
                     JOIN subjects s ON a.subject_id = s.id 
-                    WHERE a.id = ?";
-$stmt = $conn->prepare($assessment_query);
-$stmt->bind_param("i", $assessment_id);
-$stmt->execute();
-$assessment = $stmt->get_result()->fetch_assoc();
+                    WHERE a.id = $assessment_id";
+$assessment = $conn->query($assessment_query)->fetch_assoc();
 
 // Get all students who haven't attempted
-$not_attempted_query = "SELECT s.id, s.firstname, s.lastname 
+
+
+// Students who haven't attempted in any of the selected classes
+echo $not_attempted_query = "SELECT s.id, s.firstname, s.lastname, c.classname 
                        FROM students s 
-                       LEFT JOIN assessment_results ar ON s.id = ar.student_id AND ar.assessment_id = ?
-                       WHERE s.class_id = ? AND ar.id IS NULL";
-$stmt = $conn->prepare($not_attempted_query);
-$stmt->bind_param("ii", $assessment_id, $class_id);
-$stmt->execute();
-$not_attempted = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+                       LEFT JOIN class c ON s.class_id = c.id
+                       LEFT JOIN assessment_results ar ON s.id = ar.student_id AND ar.assessment_id = $assessment_id
+                       WHERE s.class_id IN ($class_id_list) AND ar.id IS NULL";
+$not_attempted = $conn->query($not_attempted_query)->fetch_all(MYSQLI_ASSOC);
 
 // Get results with filters
-$where = "WHERE ar.assessment_id = ?";
-$params = [$assessment_id];
-$types = "i";
 
+// Build results filter and include class filter so results are limited to the selected classes
+$where = "WHERE ar.assessment_id = $assessment_id AND s.class_id IN ($class_id_list)";
 if (isset($_GET['score_min'])) {
-    $where .= " AND ar.percentage_score >= ?";
-    $params[] = $_GET['score_min'];
-    $types .= "d";
+    $score_min = floatval($_GET['score_min']);
+    $where .= " AND ar.percentage_score >= $score_min";
 }
-
 if (isset($_GET['score_max'])) {
-    $where .= " AND ar.percentage_score <= ?";
-    $params[] = $_GET['score_max'];
-    $types .= "d";
+    $score_max = floatval($_GET['score_max']);
+    $where .= " AND ar.percentage_score <= $score_max";
 }
-
-$order_by = isset($_GET['sort']) ? $_GET['sort'] : 'submitted_at DESC';
-
+$requested_sort = isset($_GET['sort']) ? $_GET['sort'] : '';
+// whitelist allowed sort values to avoid SQL injection
+$allowed_sorts = [
+    'submitted_at DESC',
+    'percentage_score DESC',
+    'percentage_score ASC'
+];
+$order_by = in_array($requested_sort, $allowed_sorts, true) ? $requested_sort : 'submitted_at DESC';
 $results_query = "SELECT ar.*, s.firstname, s.lastname 
                  FROM assessment_results ar
                  JOIN students s ON ar.student_id = s.id 
                  $where
                  ORDER BY $order_by";
-
-$stmt = $conn->prepare($results_query);
-$stmt->bind_param($types, ...$params);
-$stmt->execute();
-$results = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$results = $conn->query($results_query)->fetch_all(MYSQLI_ASSOC);
 
 // Calculate class average
+
 $avg_query = "SELECT AVG(percentage_score) as avg_score 
               FROM assessment_results 
-              WHERE assessment_id = ?";
-$stmt = $conn->prepare($avg_query);
-$stmt->bind_param("i", $assessment_id);
-$stmt->execute();
-$avg_score = $stmt->get_result()->fetch_assoc()['avg_score'];
+              WHERE assessment_id = $assessment_id";
+$avg_score = $conn->query($avg_query)->fetch_assoc()['avg_score'];
 ?>
 
 <!DOCTYPE html>
@@ -107,16 +116,18 @@ $avg_score = $stmt->get_result()->fetch_assoc()['avg_score'];
 
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
+
         <!-- Navbar -->
-        <nav class="main-header navbar border-bottom-0 navbar-expand justify-content-between">
+        <nav class="main-header navbar border-bottom-0 navbar-expand justify-content-between bg1">
             <!-- <div class=""> -->
-            <!-- <div> -->
 
             <!-- Left navbar links -->
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i
+                            class="muted-text fas fa-bars"></i></a>
                 </li>
+
             </ul>
 
             <!-- Right navbar links -->
@@ -159,10 +170,10 @@ $avg_score = $stmt->get_result()->fetch_assoc()['avg_score'];
                 </li>
             </ul>
             <!-- </div> -->
-            <!-- </div> -->
-
         </nav>
         <!-- /.navbar -->
+
+        <!-- Main Sidebar Container -->
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-light-primary elevation-4">
             <!-- Brand Logo -->
@@ -277,10 +288,36 @@ $avg_score = $stmt->get_result()->fetch_assoc()['avg_score'];
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="lesson_note" class="nav-link active">
+                            <a href="staff_attendance" class="nav-link">
                                 <p class="d-flex">
-                                    <i class="material-symbols-outlined pr-2">list</i>
-                                    Lesson Note
+                                    <i class="material-symbols-outlined pr-2">add_chart</i>
+                                    Staff Attendance
+                                </p>
+                            </a>
+                        </li>
+                        <?php if ($_SESSION['school_id'] == 27 || $_SESSION['school_id'] == 13) {  ?>
+                            <li class="nav-item">
+                                <a href="lesson_note" class="nav-link">
+                                    <p class="d-flex">
+                                        <i class="material-symbols-outlined pr-2">list</i>
+                                        Lesson Note
+                                    </p>
+                                </a>
+                            </li>
+                        <?php } ?>
+                        <li class="nav-item">
+                            <a href="assessment" class="nav-link active">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">app_registration</i>
+                                    Assessments
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="payments" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">payments</i>
+                                    Payments
                                 </p>
                             </a>
                         </li>
@@ -300,14 +337,14 @@ $avg_score = $stmt->get_result()->fetch_assoc()['avg_score'];
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="reports" class="nav-link">
-                                <p class="d-flex">
-                                    <i class="material-symbols-outlined pr-2">list</i>
-                                    Reports
-                                </p>
-                            </a>
-                        </li>
+                        <!--<li class="nav-item">-->
+                        <!--    <a href="reports" class="nav-link">-->
+                        <!--        <p class="d-flex">-->
+                        <!--            <i class="material-symbols-outlined pr-2">list</i>-->
+                        <!--            Reports-->
+                        <!--        </p>-->
+                        <!--    </a>-->
+                        <!--</li>-->
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
@@ -381,103 +418,158 @@ $avg_score = $stmt->get_result()->fetch_assoc()['avg_score'];
                                 </div>
                             </div>
                         </div>
-                          <!-- Results Table -->
-                          <table id="results-table" class="table table-striped">
-                                <thead>
+                        <!-- Results Table -->
+                        <table id="results-table" class="table table-striped" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Score</th>
+                                    <th>Questions Attempted</th>
+                                    <th>Percentage</th>
+                                    <th>Submitted At</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($results as $result): ?>
                                     <tr>
-                                        <th>Student Name</th>
-                                        <th>Score</th>
-                                        <th>Questions Attempted</th>
-                                        <th>Percentage</th>
-                                        <th>Submitted At</th>
-                                        <th>Action</th>
+                                        <td><?php echo htmlspecialchars($result['firstname'] . ' ' . $result['lastname']); ?></td>
+                                        <td><?php echo $result['score']; ?>/<?php echo $result['total_questions']; ?></td>
+                                        <td>
+                                            <?php
+                                            $answers_array = json_decode($result['answers'], true);
+                                            echo is_array($answers_array) ? count($answers_array) : 0;
+                                            ?>
+                                        </td>
+                                        <td><?php echo number_format($result['percentage_score'], 1); ?>%</td>
+                                        <td><?php echo date('Y-m-d H:i', strtotime($result['submitted_at'])); ?></td>
+                                        <td>
+                                            <a href="view_student_result?id=<?php echo $result['id']; ?>"
+                                                class="btn btn-sm btn-primary m-1">View Details</a>
+                                            <button type="button" onclick="launch_modal_reset_assessment('<?= $result['assessment_id'] ?>','<?= $result['student_id'] ?>')" class="btn btn-sm btn-danger">Reset Assessment</button>
+
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($results as $result): ?>
-                                        <tr>
-                                            <td><?php echo htmlspecialchars($result['firstname'] . ' ' . $result['lastname']); ?></td>
-                                            <td><?php echo $result['score']; ?>/<?php echo $result['total_questions']; ?></td>
-                                            <td><?php echo substr_count($result['answers'], '"'); ?></td>
-                                            <td><?php echo number_format($result['percentage_score'], 1); ?>%</td>
-                                            <td><?php echo date('Y-m-d H:i', strtotime($result['submitted_at'])); ?></td>
-                                            <td>
-                                                <a href="view_student_result?id=<?php echo $result['id']; ?>"
-                                                    class="btn btn-sm btn-primary">View Details</a>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <!-- <div class="container-fluid mb-2">
-                    <div class="pt-3 px-15 bg-white" style="border-radius: 10px;">
-                        <div class="d-flex justify-content-between align-items-center">
-                          
-                        </div>
-                    </div>
-                </div> -->
                 <div class="container-fluid">
-
-                    <!-- Filters -->
-                    <!-- <div class="card mb-4">
-                        <div class="card-body">
-                            <form method="GET" class="row">
-                                <input type="hidden" name="id" value="<?php echo $assessment_id; ?>">
-                                <div class="col-md-3">
-                                    <label>Min Score:</label>
-                                    <input type="number" name="score_min" class="form-control" value="<?php echo $_GET['score_min'] ?? ''; ?>">
-                                </div>
-                                <div class="col-md-3">
-                                    <label>Max Score:</label>
-                                    <input type="number" name="score_max" class="form-control" value="<?php echo $_GET['score_max'] ?? ''; ?>">
-                                </div>
-                                <div class="col-md-3">
-                                    <label>Sort By:</label>
-                                    <select name="sort" class="form-control">
-                                        <option value="submitted_at DESC">Latest First</option>
-                                        <option value="percentage_score DESC">Highest Score</option>
-                                        <option value="percentage_score ASC">Lowest Score</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <button type="submit" class="btn btn-primary mt-4">Apply Filters</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div> -->
-
-
-
-
 
                     <!-- Not Attempted List -->
                     <div class="card mt-4">
                         <div class="card-header">
-                            <h5>Students Yet to Attempt</h5>
+                            <h4>Students Yet to Attempt</h4>
                         </div>
                         <div class="card-body">
-                            <ul class="list-group">
+                            <div class="row">
                                 <?php foreach ($not_attempted as $student): ?>
-                                    <li class="list-group-item">
-                                        <?php echo htmlspecialchars($student['firstname'] . ' ' . $student['lastname']); ?>
-                                    </li>
+                                    <div class="col-md-4">
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <h5 class="card-title"><?php echo htmlspecialchars($student['firstname'] . ' ' . $student['lastname']); ?></h5>
+                                                <p class="card-text">Class: <?php echo htmlspecialchars($student['classname']); ?></p>
+                                                <!-- button to blacklist student from attempting the assessment -->
+                                                <?php
+                                                $is_blacklisted = in_array($student['id'], explode(',', $assessment['blacklist_students']));
+                                                $button_class = $is_blacklisted ? 'btn-success' : 'btn-danger';
+                                                $button_text = $is_blacklisted ? 'Allow Attempt' : 'Disallow Attempt';
+                                                $button_data_status = $is_blacklisted ? 0 : 1;
+                                                ?>
+                                                <button type="button" data-status="<?php echo $button_data_status; ?>" onclick="disallow_attempt(this,'<?= $assessment_id ?>','<?= $student['id'] ?>')" class="btn btn-sm <?php echo $button_class; ?> float-right"><?php echo $button_text; ?></button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 <?php endforeach; ?>
-                            </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
         </div>
     </div>
+    <div class="modal fade" id="reset_assessment_modal" tabindex="-1" role="dialog" aria-labelledby="reset_assessment_modal_label" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <input type="hidden" id="assessment_id" value="">
+                    <input type="hidden" id="student_id" value="">
+                    <p class="mb-3">Are you sure to reset the assessment?</p>
+                    <div class="d-flex">
+                        <button type="button" id="reset_assessment_modal_btn" onclick="reset_assessment()" class="btn btn-primary">Reset Assessment</button>
+                        <button type="button" class="btn btn-grey" class="close" data-dismiss="modal" aria-label="Close">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <script src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/datatables.min.js"></script>
+    <!-- jQuery -->
+    <script src="../plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Select2 -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+    <!-- <script src="../plugins/select2/js/select2.full.min.js"></script> -->
+    <!-- AdminLTE App -->
+    <script src="../dist/js/adminlte.min.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
+    <script src="../plugins/toastr/toastr.min.js"></script>
+    <!-- <script>$('.select2').select2()</script> -->
+    <!-- Summernote -->
+    <script src="../plugins/summernote/summernote-bs4.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@wiris/mathtype-ckeditor5@7.30.0/plugin.min.js"></script> -->
     <script>
+
+    </script>
+
+    <!-- Summernote -->
+    <script src="../plugins/summernote/summernote-bs4.min.js"></script>
+    <script src="../dist/js/examination.js"></script>
+
+    <script src="../dist/js/skul.js?v=w3q125sj"></script>
+    <!-- date-range-picker -->
+    <script src="../plugins/moment/moment.min.js"></script>
+    <script src="../plugins/daterangepicker/daterangepicker.js"></script>
+
+    <script>
+        function disallow_attempt(event,assessment_id, student_id) {
+            // var assessment_id = $('#assessment_id').val();
+            // var student_id = $('#student_id').val();
+            // return false
+            $.ajax({
+                url: '../controller_new.php',
+                type: 'POST',
+                data: {
+                    action: 'disallow_attempt',
+                    assessment_id: assessment_id,
+                    student_id: student_id,
+                    status: $(event).attr('data-status')
+                },
+                success:(data) => {
+                    console.log('here1')
+                    if(data){
+                        console.log('here2')
+                        // data = JSON.parse(data)
+                        if(data.status == 1){
+                            console.log('here3')
+                            $(event).removeClass('btn-danger').addClass('btn-success').html('Allow Attempt').attr('data-status', 0)
+                        }else {
+                            console.log('here4')
+                            $(event).removeClass('btn-success').addClass('btn-danger').html('Disallow Attempt').attr('data-status', 1)
+                        }
+                    }
+                }
+            })
+        }
         $(document).ready(function() {
+            // alert('h')
             $('#results-table').DataTable({
+                repponsive:true,
+                scrollX:true,
                 pageLength: 25,
                 order: [
                     [4, 'desc']

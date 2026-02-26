@@ -112,7 +112,7 @@ if ($attempt = mysqli_fetch_assoc($attempt_check)) {
 }
 
 // Get questions
-$questions_sql = "SELECT * FROM questions WHERE ass_id = '$assessment_id'";
+$questions_sql = "SELECT * FROM questions WHERE ass_id = '$assessment_id' AND deleted=0";
 $questions_result = mysqli_query($conn, $questions_sql);
 $total_questions = mysqli_num_rows($questions_result);
 ?>
@@ -260,10 +260,11 @@ $total_questions = mysqli_num_rows($questions_result);
                 action: 'getQuestionIds',
                 assessment_id: $('#assessmentId').val()
             },
-            success: function(response) {
-                questionIds = response; // Assuming response is in the format {1: "question id", 2: "question id"}
-                console.log(questionIds);
-            },
+                success: function(response) {
+                    // response may be { question_ids: [...] } — normalize to an array
+                    questionIds = response && response.question_ids ? response.question_ids : response;
+                    console.log('Loaded questionIds:', questionIds);
+                },
             error: function() {
                 console.error('Failed to load question IDs');
             }

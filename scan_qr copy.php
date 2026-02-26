@@ -294,7 +294,7 @@ while ($row = mysqli_fetch_array($select)) {
     <script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
     <!-- Select2 -->
     <!-- Include Instascan library -->
-    <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/schmich/instascan-builds@master/instascan.min.js"></script>
     <script>
         let scanner = null;
         let isFlashOn = false;
