@@ -70,12 +70,13 @@ if ($assessment_id) {
     <!-- Theme style -->
     <link rel="stylesheet" href="../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
     <!-- Select2 -->
-    <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" /> -->
-    <link rel="stylesheet" href="../plugins/select2/css/select2.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- summernote -->
+    <link rel="stylesheet" href="../plugins/summernote/summernote-bs4.min.css">
+    <!-- <link rel="stylesheet" href="../plugins/select2/css/select2.min.css"> -->
     <!-- daterange picker -->
     <link rel="stylesheet" href="../plugins/daterangepicker/daterangepicker.css">
     <link rel="stylesheet" href="../plugins/toastr/toastr.min.css">
-    <link rel="stylesheet" href="../plugins/summernote/summernote-bs4.min.css">
     <link rel="stylesheet" href="../dist/css/adminlte.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.2.2/css/fixedColumns.dataTables.min.css">
@@ -535,7 +536,6 @@ if ($assessment_id) {
                                                 <?php endforeach; ?>
                                             </div>
                                             <button type="button" class="btn btn-primary mt-3" id="add-question-btn">Add New Question</button>
-                                            <button type="button" class="btn btn-primary mt-3" id="import-question-btn">Import Question</button>
                                             <div class="d-flex justify-content-end mb-3">
                                                 <button type="button" class="btn btn-primary" onclick="saveEntireAssessment_for_create_assessment()">Save Assessment</button>
                                             </div>
@@ -547,125 +547,65 @@ if ($assessment_id) {
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Add modal for existing assessment warning -->
-            <div class="modal fade" id="existingAssessmentModal" tabindex="-1" role="dialog" aria-labelledby="existingAssessmentModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <p class="modal-title" id="existingAssessmentModalLabel">Existing Assessment Found</p>
-                        </div>
-                        <div class="modal-body">
-                            An assessment already exists for the selected class(es). Select another class(es).
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" onclick="handleExistingAssessmentResponse(false)">Reassign classes</button>
-                            <!-- <button type="button" class="btn btn-primary" onclick="handleExistingAssessmentResponse(true)">Continue</button> -->
-                        </div>
+        <!-- Add modal for existing assessment warning -->
+        <div class="modal fade" id="existingAssessmentModal" tabindex="-1" role="dialog" aria-labelledby="existingAssessmentModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <p class="modal-title" id="existingAssessmentModalLabel">Existing Assessment Found</p>
+                    </div>
+                    <div class="modal-body">
+                        An assessment already exists for the selected class(es). Select another class(es).
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="handleExistingAssessmentResponse(false)">Reassign classes</button>
+                        <!-- <button type="button" class="btn btn-primary" onclick="handleExistingAssessmentResponse(true)">Continue</button> -->
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Add modal for selecting classes -->
-            <div class="modal fade" id="assess_classesModal" tabindex="-1" role="dialog" aria-labelledby="assess_classesModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="assess_classesModalLabel">Select Classes</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+        <!-- Add modal for selecting classes -->
+        <div class="modal fade" id="assess_classesModal" tabindex="-1" role="dialog" aria-labelledby="assess_classesModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="assess_classesModalLabel">Select Classes</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="classes-list">
+                            <!-- Classes will be loaded here dynamically -->
                         </div>
-                        <div class="modal-body">
-                            <div id="classes-list">
-                                <!-- Classes will be loaded here dynamically -->
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary" onclick="saveSelectedClasses()">Save</button>
-                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="saveSelectedClasses()">Save</button>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Add remove class confirmation modal -->
-            <div class="modal fade" id="removeClassModal" tabindex="-1" role="dialog" aria-labelledby="removeClassModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="removeClassModalLabel">Remove Class</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            Are you sure you want to remove this class?
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-danger" onclick="confirmRemoveClass()">Remove</button>
-                        </div>
+        <!-- Add remove class confirmation modal -->
+        <div class="modal fade" id="removeClassModal" tabindex="-1" role="dialog" aria-labelledby="removeClassModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="removeClassModalLabel">Remove Class</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                </div>
-            </div>
-            <!-- Import Questions Modal -->
-            <div class="modal fade" id="importQuestionsModal" tabindex="-1" role="dialog" aria-labelledby="importQuestionsModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-xl" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="importQuestionsModalLabel">Import Questions</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row mb-3">
-                                <div class="col-md-3">
-                                    <label>Term</label>
-                                    <select class="form-control" id="import_term_filter">
-                                        <option value="all">All Terms</option>
-                                        <option value="1">First</option>
-                                        <option value="2">Second</option>
-                                        <option value="3">Third</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label>Type</label>
-                                    <select class="form-control" id="import_type_filter">
-                                        <option value="all">All Types</option>
-                                        <option value="1">Assignment</option>
-                                        <option value="2">CA</option>
-                                        <option value="3">Exam</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label>Subject</label>
-                                    <select class="form-control" id="import_subject_filter">
-                                        <option value="all">All Subjects</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div id="import-questions-list" style="max-height: 500px; overflow-y: auto;">
-                                <!-- Questions will be loaded here directly -->
-                                <p class="text-muted text-center py-5">Please select Term, Type, and Subject to load questions.</p>
-                            </div>
-
-                            <div id="import_pagination" class="d-flex justify-content-between align-items-center mt-3" style="display: none !important;">
-                                <div>
-                                    <span>Page <span id="import_current_page">1</span> of <span id="import_total_pages">1</span></span>
-                                </div>
-                                <div>
-                                    <button class="btn btn-secondary btn-sm" id="import_prev_btn" disabled>Previous</button>
-                                    <button class="btn btn-secondary btn-sm" id="import_next_btn" disabled>Next</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" id="import_selected_btn">Import Selected</button>
-                        </div>
+                    <div class="modal-body">
+                        Are you sure you want to remove this class?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger" onclick="confirmRemoveClass()">Remove</button>
                     </div>
                 </div>
             </div>
@@ -676,9 +616,9 @@ if ($assessment_id) {
         <script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
         <!-- Select2 -->
 
-        <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script> -->
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 
-        <script src="../plugins/select2/js/select2.full.min.js"></script>
+        <!-- <script src="../plugins/select2/js/select2.full.min.js"></script> -->
         <!-- AdminLTE App -->
         <script src="../dist/js/adminlte.min.js"></script>
         <!-- <script src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
@@ -696,6 +636,8 @@ if ($assessment_id) {
         </script>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+        <!-- Summernote -->
+        <script src="../plugins/summernote/summernote-bs4.min.js"></script>
         <script src="../dist/js/skul.js"></script>
         <!-- date-range-picker -->
         <script src="../plugins/moment/moment.min.js"></script>
@@ -705,11 +647,8 @@ if ($assessment_id) {
             var existingAssessmentId = null;
             var classElementToRemove = null;
         </script>
-
-
-
         <script src="../dist/js/assessment_image_buffer.js"></script>
-        <script src="../dist/js/examination.js?v=90-restored-v1"></script>
+        <script src="../dist/js/examination.js?v=0032itiswellnow"></script>
         <script>
             // Add event listeners for form changes
             $(document).ready(function() {

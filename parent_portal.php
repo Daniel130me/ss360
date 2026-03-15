@@ -182,6 +182,39 @@ while ($row = mysqli_fetch_array($select)) {
             margin-bottom: 16px;
             z-index: 1000;
         }
+
+        .btn-print-report {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 18px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            color: #fff;
+            background: linear-gradient(135deg, #1e1f20 0%, #000000 60%, #3a3a3a 100%);
+            border: none;
+            border-radius: 50px;
+            box-shadow: 0 3px 10px rgba(0, 123, 255, 0.35);
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+        }
+
+        .btn-print-report:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(0, 123, 255, 0.45);
+            filter: brightness(1.08);
+        }
+
+        .btn-print-report:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
+            filter: brightness(0.96);
+        }
+
+        .btn-print-report i {
+            font-size: 0.85em;
+        }
     </style>
 </head>
 
@@ -414,10 +447,10 @@ while ($row = mysqli_fetch_array($select)) {
                                 <!--    </div>-->
                                 <!--    <div class="d-flex justify-content-between align-items-center mb-3">-->
                                 <!--        <button type="button" id="send_message_to_teacher_btn" class="btn btn-primary btn-sm">Send</button>-->
-                                        <!--<div class="d-flex align-items-center">-->
-                                        <!--    <span class="material-symbols-outlined mr-2">sms</span>-->
-                                        <!--    <p class="mb-0 font-weight-bold text-muted">Send SMS</p>-->
-                                        <!--</div>-->
+                                <!--<div class="d-flex align-items-center">-->
+                                <!--    <span class="material-symbols-outlined mr-2">sms</span>-->
+                                <!--    <p class="mb-0 font-weight-bold text-muted">Send SMS</p>-->
+                                <!--</div>-->
                                 <!--    </div>-->
                                 <!--</div>-->
 
@@ -426,43 +459,43 @@ while ($row = mysqli_fetch_array($select)) {
                         </div>
                     </div>
                     <div class="container-fluid col-12 col-md-9 px-0 mt-3">
-                                    <div class="input-group mb-3 align-items-md-center align-items-start pl-2" style="width: 300px;">
-                                        <label for="" class="mb-0 mr-2 text-muted">Select Session:</label>
-                                        <select class="form-control select2" onchange="get_score_data()" id="select_session_field" style="width: 50%;">
-                                            <?php
-                                            $select = mysqli_query($conn, "SELECT id,session FROM sessions ORDER BY session ASC");
-                                            while ($row = mysqli_fetch_array($select)) {
-                                                if ($row['id'] == $_SESSION['session_id']) {
-                                                    echo '<option value="' . $row['id'] . '" selected>' . $row['session'] . '</option>';
-                                                } else {
-                                            ?>
-                                                    <option value="<?= $row['id'] ?>"><?= $row['session'] ?></option>
-                                            <?php
-                                                }
-                                            }
-                                            ?>
-                                        </select>
-                                    </div>
-                                        <div class="card p-3" id="payment_card" style="max-width: 300px;">
-                                            <div class="card-body p-0">
-                                                <div class="d-flex align-items-center mb-2">
-                                                    <span class="material-symbols-outlined text-danger mr-2">request_quote</span>
-                                                    <p class="mb-0">Amount due: <span class="font-weight-bold" id="amount_due_parent">...</span></p>
-                                                </div>
-                                                <div class="d-flex align-items-center mb-2">
-                                                    <span class="material-symbols-outlined text-success mr-2">price_check</span>
-                                                    <p class="mb-0">Amount paid: <span class="font-weight-bold" id="total_amount_paid_parent">...</span></p>
-                                                </div>
-                                                <div class="d-flex align-items-center mb-3">
-                                                    <span class="material-symbols-outlined text-warning mr-2">account_balance_wallet</span>
-                                                    <p class="mb-0">Balance: <span class="font-weight-bold" id="balance_parent">...</span></p>
-                                                </div>
-                                                <button type="button" class="btn btn-sm btn-outline-primary w-100" onclick="payment_breakdown_modal()">
-                                                    <span class="material-symbols-outlined" style="font-size: 1.2em; vertical-align: middle;">visibility</span>
-                                                    See payment breakdown
-                                                </button>
-                                            </div>
-                                        </div>
+                        <div class="input-group mb-3 align-items-md-center align-items-start pl-2" style="width: 300px;">
+                            <label for="" class="mb-0 mr-2 text-muted">Select Session:</label>
+                            <select class="form-control select2" onchange="get_score_data()" id="select_session_field" style="width: 50%;">
+                                <?php
+                                $select = mysqli_query($conn, "SELECT id,session FROM sessions ORDER BY session ASC");
+                                while ($row = mysqli_fetch_array($select)) {
+                                    if ($row['id'] == $_SESSION['session_id']) {
+                                        echo '<option value="' . $row['id'] . '" selected>' . $row['session'] . '</option>';
+                                    } else {
+                                ?>
+                                        <option value="<?= $row['id'] ?>"><?= $row['session'] ?></option>
+                                <?php
+                                    }
+                                }
+                                ?>
+                            </select>
+                        </div>
+                        <div class="card p-3" id="payment_card" style="max-width: 300px;">
+                            <div class="card-body p-0">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="material-symbols-outlined text-danger mr-2">request_quote</span>
+                                    <p class="mb-0">Amount due: <span class="font-weight-bold" id="amount_due_parent">...</span></p>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="material-symbols-outlined text-success mr-2">price_check</span>
+                                    <p class="mb-0">Amount paid: <span class="font-weight-bold" id="total_amount_paid_parent">...</span></p>
+                                </div>
+                                <div class="d-flex align-items-center mb-3">
+                                    <span class="material-symbols-outlined text-warning mr-2">account_balance_wallet</span>
+                                    <p class="mb-0">Balance: <span class="font-weight-bold" id="balance_parent">...</span></p>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-primary w-100" onclick="payment_breakdown_modal()">
+                                    <span class="material-symbols-outlined" style="font-size: 1.2em; vertical-align: middle;">visibility</span>
+                                    See payment breakdown
+                                </button>
+                            </div>
+                        </div>
                         <div class="py-3 px-15 bg-white data_overlay" style="border-radius: 10px; position: relative"></div>
                         <div class="thecontentbox" style="display: none">
                             <div class="container-fluid" id="">
@@ -475,6 +508,20 @@ while ($row = mysqli_fetch_array($select)) {
                                             <button class="btn select_btn term my-1 <?= $_SESSION['term_id'] == '3' ? 'active' : '' ?> mr-2" data-name="3" id="third" onclick="toggletermfilterClass(this)">3rd Term</button>
                                             <button class="btn select_btn term my-1 mr-2" data-name="summary" id="summary" onclick="toggletermfilterClass(this)">Summary</button>
                                         </ul>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <div id="reportLinksContainer" class="d-flex flex-wrap mt-3 mb-2" style="gap: 10px;">
+                                            <!-- Custom report links will be loaded here -->
+                                        </div>
+
+                                        <div class="d-flex flex-wrap mt-3 mb-2" style="gap: 10px;">
+                                            <button class="btn-print-report" id="preview-term-pdf" onclick="preview_report_card_multiple('student_page','term')">
+                                                <i class="fas fa-print"></i> Term Report
+                                            </button>
+                                            <button class="btn-print-report" id="preview-session-pdf" onclick="preview_report_card_multiple('student_page','session')">
+                                                <i class="fas fa-print"></i> Cumulative Report
+                                            </button>
+                                        </div>
                                     </div>
                                     <div class="">
                                         <button type="button" style="padding: 4px 1px 0px 2px; background-color:white; border-radius: 5px; border:none;"
@@ -509,58 +556,58 @@ while ($row = mysqli_fetch_array($select)) {
                                                     </thead>
                                                     <tbody>
                                                         <?php if (!in_array('punctuality', $hidden_skills)): ?>
-                                                        <tr>
-                                                            <td>Punctuality</td>
-                                                            <td class="punctuality"></td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td>Punctuality</td>
+                                                                <td class="punctuality"></td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                         <?php if (!in_array('classattendance', $hidden_skills)): ?>
-                                                        <tr>
-                                                            <td>Classroom attendance</td>
-                                                            <td class="classattendance"></td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td>Classroom attendance</td>
+                                                                <td class="classattendance"></td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                         <?php if (!in_array('resptoass', $hidden_skills)): ?>
-                                                        <tr>
-                                                            <td>Response to assignment</td>
-                                                            <td class="resptoass"></td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td>Response to assignment</td>
+                                                                <td class="resptoass"></td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                         <?php if (!in_array('Neatness', $hidden_skills)): ?>
-                                                        <tr>
-                                                            <td>Neatness</td>
-                                                            <td class="Neatness"></td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td>Neatness</td>
+                                                                <td class="Neatness"></td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                         <?php if (!in_array('Politeness', $hidden_skills)): ?>
-                                                        <tr>
-                                                            <td>Politeness</td>
-                                                            <td class="Politeness"></td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td>Politeness</td>
+                                                                <td class="Politeness"></td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                         <?php if (!in_array('Honesty', $hidden_skills)): ?>
-                                                        <tr>
-                                                            <td>Honesty</td>
-                                                            <td class="Honesty"></td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td>Honesty</td>
+                                                                <td class="Honesty"></td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                         <?php if (!in_array('selfcontrol', $hidden_skills)): ?>
-                                                        <tr>
-                                                            <td>Self control</td>
-                                                            <td class="selfcontrol"></td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td>Self control</td>
+                                                                <td class="selfcontrol"></td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                         <?php if (!in_array('relationship', $hidden_skills)): ?>
-                                                        <tr>
-                                                            <td>Relationship with others</td>
-                                                            <td class="relationship"></td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td>Relationship with others</td>
+                                                                <td class="relationship"></td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                         <?php if (!in_array('organizationability', $hidden_skills)): ?>
-                                                        <tr>
-                                                            <td>Organizational Ability</td>
-                                                            <td class="organizationability"></td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td>Organizational Ability</td>
+                                                                <td class="organizationability"></td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                     </tbody>
                                                 </table>
@@ -577,72 +624,71 @@ while ($row = mysqli_fetch_array($select)) {
                                                     </thead>
                                                     <tbody>
                                                         <?php if (!in_array('Obedience', $hidden_skills)): ?>
-                                                        <tr>
-                                                            <td>Obedience</td>
-                                                            <td class="Obedience"></td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td>Obedience</td>
+                                                                <td class="Obedience"></td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                         <?php if (!in_array('Creativity', $hidden_skills)): ?>
-                                                        <tr>
-                                                            <td>Creativity</td>
-                                                            <td class="Creativity"></td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td>Creativity</td>
+                                                                <td class="Creativity"></td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                         <?php if (!in_array('Writing', $hidden_skills)): ?>
-                                                        <tr>
-                                                            <td>Writing</td>
-                                                            <td class="Writing"></td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td>Writing</td>
+                                                                <td class="Writing"></td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                         <?php if (!in_array('Fluency', $hidden_skills)): ?>
-                                                        <tr>
-                                                            <td>Fluency</td>
-                                                            <td class="Fluency"></td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td>Fluency</td>
+                                                                <td class="Fluency"></td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                         <?php if (!in_array('Sport', $hidden_skills)): ?>
-                                                        <tr>
-                                                            <td>Sport</td>
-                                                            <td class="Sport"></td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td>Sport</td>
+                                                                <td class="Sport"></td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                         <?php if (!in_array('Games', $hidden_skills)): ?>
-                                                        <tr>
-                                                            <td>Games</td>
-                                                            <td class="Games"></td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td>Games</td>
+                                                                <td class="Games"></td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                         <?php if (!in_array('DrawingPainting', $hidden_skills)): ?>
-                                                        <tr>
-                                                            <td>Drawing & Painting</td>
-                                                            <td class="DrawingPainting"></td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td>Drawing & Painting</td>
+                                                                <td class="DrawingPainting"></td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                         <?php if (!in_array('Music', $hidden_skills)): ?>
-                                                        <tr>
-                                                            <td>Music Performance</td>
-                                                            <td class="Music"></td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td>Music Performance</td>
+                                                                <td class="Music"></td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                         <?php if (!in_array('HandlingTools', $hidden_skills)): ?>
-                                                        <tr>
-                                                            <td>Handling Tools</td>
-                                                            <td class="HandlingTools"></td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td>Handling Tools</td>
+                                                                <td class="HandlingTools"></td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                         <?php if (!in_array('Crafts', $hidden_skills)): ?>
-                                                        <tr>
-                                                            <td>Craft</td>
-                                                            <td class="Crafts"></td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td>Craft</td>
+                                                                <td class="Crafts"></td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                     </tbody>
                                                 </table>
                                             </div>
                                         </div>
-                                        <button class="btn accent font-weight-bold w-100 btn-md-auto" id="preview-pdf" onclick="preview_report_card_multiple('student_page','term')">Print Student Report Card</button>
-                                        <button class="btn accent font-weight-bold w-100 btn-md-auto" id="preview-pdf" onclick="preview_report_card_multiple('student_page','session')">Print Student Cumulative Report Card</button>
-                                  </div>
+
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -796,7 +842,7 @@ while ($row = mysqli_fetch_array($select)) {
         </div>
     </div>
     <!-- ./wrapper -->
-     <!-- payment breakdown modal -->
+    <!-- payment breakdown modal -->
     <div class="modal fade" id="payment_breakdown_modal">
         <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
             <div class="modal-content">
@@ -817,7 +863,7 @@ while ($row = mysqli_fetch_array($select)) {
             </div>
         </div>
     </div>
-  <!-- Payment Receipt Preview Modal -->
+    <!-- Payment Receipt Preview Modal -->
     <div class="modal fade" id="paymentReceiptPreviewModal" tabindex="-1" role="dialog"
         aria-labelledby="paymentReceiptPreviewModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
@@ -850,7 +896,7 @@ while ($row = mysqli_fetch_array($select)) {
             </div>
         </div>
     </div>
-       <!-- Invoice Preview Modal (for Preview Payment Invoice) -->
+    <!-- Invoice Preview Modal (for Preview Payment Invoice) -->
     <div class="modal fade" id="invoicePreviewModal" tabindex="-1" role="dialog" aria-labelledby="invoicePreviewModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
             <div class="modal-content">
@@ -890,14 +936,12 @@ while ($row = mysqli_fetch_array($select)) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
     <script src="../plugins/chart.js/Chart.min.js"></script>
     <script>
-        
         var skul_settings = <?= $_SESSION['skul_settings'] ?>;
-        let myschl = <?php echo $_SESSION['school_id']?>
+        let myschl = <?php echo $_SESSION['school_id'] ?>
     </script>
-        <script src="../dist/js/accounts.js?v=113join"></script>
+    <script src="../dist/js/accounts.js?v=113join"></script>
     <script src="../dist/js/skul.js?v=0op"></script>
     <script>
-
         setTimeout(get_score_data(),
             setTimeout(() => {
                 get_notices('<?= $_SESSION['userid'] ?>', '0')
@@ -905,7 +949,17 @@ while ($row = mysqli_fetch_array($select)) {
 
         $(document).ready(function() {
             get_billing_data();
-            // block of code to diplay card sits here
+            fetchParentPortalReports();
+
+            // Fetch reports when session changes
+            $('#select_session_field').on('change', function() {
+                setTimeout(fetchParentPortalReports, 100);
+            });
+
+            // Fetch reports when term changes (hooking into toggletermfilterClass)
+            $(document).on('click', '.select_btn.term', function() {
+                setTimeout(fetchParentPortalReports, 100);
+            });
 
             // Ensure listeners are attached only once, potentially using .off().on()
             $(document).off('click', '#zoom-in-btn').on('click', '#zoom-in-btn', zoomInReport);
@@ -916,9 +970,55 @@ while ($row = mysqli_fetch_array($select)) {
             $('#report_preview_modal').on('hidden.bs.modal', function() {
                 resetReportZoom();
             });
+        });
 
-            // ... other document ready code ...
-            // init(); // Assuming init() sets up other things
+        function fetchParentPortalReports() {
+            let session_id = $('#select_session_field').val();
+            let term_id = $('.select_btn.term.active').data('name');
+
+            if (!session_id || !term_id) return;
+
+            $.ajax({
+                url: '../report_controller.php',
+                type: 'POST',
+                data: {
+                    action: 'fetch_reports',
+                    session_id: session_id,
+                    term_id: term_id
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        renderParentReportLinks(response.data);
+                    }
+                },
+                error: function() {
+                    console.error("Failed to fetch reports for parent portal.");
+                }
+            });
+        }
+
+        function renderParentReportLinks(reports) {
+            let container = $('#reportLinksContainer');
+            container.empty();
+
+            let activeReports = reports.filter(r => r.status == 1 || r.status == '1');
+
+            if (activeReports.length > 0) {
+                activeReports.forEach(report => {
+                    let linkHtml = `
+                        <button type="button" class="btn-print-report report-link-btn" data-id="${report.id}">
+                            <i class="fas fa-file-alt"></i> ${report.report_name}
+                        </button>
+                    `;
+                    container.append(linkHtml);
+                });
+            }
+        }
+
+        $(document).on('click', '.report-link-btn', function() {
+            let report_id = $(this).attr('data-id');
+            preview_custom_report_card(report_id);
         });
     </script>
 

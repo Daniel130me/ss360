@@ -34,7 +34,7 @@ session_start();
             content: "";
             position: absolute;
             inset: 0;
-            background: rgba(0,0,0,0.45);
+            background: rgba(0, 0, 0, 0.45);
             z-index: 0;
         }
 
@@ -48,9 +48,9 @@ session_start();
 </head>
 
 <body class="hold-transition register-page">
-    <div class="register-box">
+    <div class="register-box" style="max-width:1440px; width:auto;">
         <div class="register-logo">
-            <a>Register Your school</a>
+            <a class="text-white">Register Your school</a>
         </div>
 
         <div class="card">
@@ -59,20 +59,28 @@ session_start();
 
                 <form class="onboard_form" action="controller.php" runat="server" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="reg_school">
-                    <div class="input-group mb-3">
+                    <div class="form-group mb-3">
+                        <label>School name</label>
                         <input type="text" name="name" class="form-control" placeholder="School name" required>
                     </div>
-                    <div class="input-group mb-3">
+                    <div class="form-group mb-3">
+                        <label>School full address</label>
                         <input type="text" name="address" autocomplete="address-level1" class="form-control" placeholder="e.g 15, John Doe Street" required>
                     </div>
-                    <div class="input-group mb-3">
-                        <input type="text" name="city" class="form-control" placeholder="e.g Ikeja" required>
-                    </div>
-                    <div class="input-group mb-3">
-                        <input type="text" name="state" class="form-control" placeholder="e.g Lagos" required>
-                    </div>
-                    <div class="input-group mb-3">
-                        <input type="text" name="country" class="form-control" placeholder="e.g Nigeria" required>
+                    <div class="row">
+
+                        <div class="form-group mb-3 col-12 col-sm-6">
+                            <label>City</label>
+                            <input type="text" name="city" class="form-control" placeholder="e.g Ikeja" required>
+                        </div>
+                        <div class="form-group mb-3 col-12 col-sm-6">
+                            <label>State</label>
+                            <input type="text" name="state" class="form-control" placeholder="e.g Lagos" required>
+                        </div>
+                        <div class="form-group mb-3 col-12 col-sm-6">
+                            <label>Country</label>
+                            <input type="text" name="country" class="form-control" placeholder="e.g Nigeria" required>
+                        </div>
                     </div>
                     <div class="form-group mr-3" style="position:relative; max-width: 100px;">
                         <img id="image_profile_preview" title="click to select logo" src="../dist/img/logo-placeholder.png" alt="Logo" width="100" height="100">
@@ -89,6 +97,7 @@ session_start();
                         <div class="col-12">
                             <button type="submit" class="btn btn-primary btn-block">Next</button>
                         </div>
+                        <p>By continuing, you have agreed to our <a style="text-decoration:underlined;" class="accent" href="https://schoolsuite360.com/terms.html">Terms of Service</a></p>
                         <!-- /.col -->
                     </div>
                 </form>

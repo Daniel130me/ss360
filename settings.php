@@ -413,10 +413,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   data-target="#pills-settings" type="button" role="tab" aria-controls="pills-settings"
                   aria-selected="false">Settings</button>
               </li>
-              <li class="nav-item" role="presentation">
+              <li class="nav-item d-none" role="presentation">
                 <button class="pill-link link-primary" id="pills-skills-tab" data-toggle="pill"
                   data-target="#pills-skills" type="button" role="tab" aria-controls="pills-skills"
-                  aria-selected="false">Skills Configuration</button>
+                  aria-selected="false">Skills/Ratings Setup</button>
               </li>
             </ul>
           </div>

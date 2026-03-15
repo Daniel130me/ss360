@@ -1,7 +1,8 @@
 <?php
 // error_reporting(E_ALL);
 $date = date("Y-m-d H:i:s");
-function getSSessionName($id) {
+function getSSessionName($id)
+{
     global $conn;
     $query = "SELECT session FROM sessions WHERE id = '$id'";
     $result = mysqli_query($conn, $query);
@@ -12,7 +13,8 @@ function getSSessionName($id) {
     return 'Unknown Session';
 }
 
-function getTermName($id) {
+function getTermName($id)
+{
     switch ($id) {
         case 1:
             return 'First Term';
@@ -24,7 +26,8 @@ function getTermName($id) {
             return 'Unknown Term';
     }
 }
-function get_class_id_by_student_id($student_id) {
+function get_class_id_by_student_id($student_id)
+{
     global $conn;
     $select = mysqli_query($conn, "SELECT class_id FROM students WHERE id='$student_id' AND school_id='{$_SESSION['school_id']}'");
     if ($row = mysqli_fetch_array($select)) {
@@ -44,59 +47,62 @@ function get_lateness_time()
     }
     return '08:00'; // Return '08:00' if query fails
 }
-function get_changes_log($action_type = null, $limit = 50) {
+function get_changes_log($action_type = null, $limit = 50)
+{
     global $conn;
-    
+
     $school_id = $_SESSION['school_id'];
     $query = "SELECT * FROM change_log 
               WHERE school_id = '$school_id' ";
-              
+
     if ($action_type) {
         $query .= "AND action_type = '$action_type' ";
     }
-    
+
     $query .= "ORDER BY timestamp DESC LIMIT $limit";
-    
-    
+
+
     $result = mysqli_query($conn, $query);
-    
+
     $logs = [];
     while ($row = mysqli_fetch_assoc($result)) {
         $row['changes'] = json_decode($row['changes'], true);
         $logs[] = $row;
     }
-    
+
     return $logs;
 }
-function save_changes_to_log($changes, $action_type) {
+function save_changes_to_log($changes, $action_type)
+{
     global $conn, $date;
-    
+
     // Prepare the data
     $session_id = $_SESSION['session_id'];
     $term_id = $_SESSION['term_id'];
     $user_id = $_SESSION['userid'] ?? '0';
     $school_id = $_SESSION['school_id'] ?? '0';
     // $timestamp = date("Y-m-d H:i:s");
-    
+
     // Convert changes array to JSON
     $changes_json = json_encode($changes, JSON_PRETTY_PRINT);
     // var_dump($changes_json);
-    
+
     $query = "INSERT INTO change_log (user_id,session_id,term_id, action_type, changes, timestamp, school_id) 
               VALUES ('$user_id','$session_id','$term_id','$action_type', '$changes_json', '$date', '$school_id')";
-              
+
     $result = mysqli_query($conn, $query);
-    
+
     return $result;
 }
 
-function compare_staff_changes($old_data, $new_data) {
+function compare_staff_changes($old_data, $new_data)
+{
     $changes = [];
-    
+
     // Fields to track (excluding technical fields like passwords, tokens etc)
     $tracked_fields = [
         'firstname' => 'First Name',
-        'lastname' => 'Last Name', 
+        'lastname' => 'Last Name',
         'middlename' => 'Middle Name',
         'gender' => 'Gender',
         'phone' => 'Phone Number',
@@ -114,14 +120,14 @@ function compare_staff_changes($old_data, $new_data) {
         if (isset($old_data[$field]) && isset($new_data[$field])) {
             $old_value = trim($old_data[$field]);
             $new_value = trim($new_data[$field]);
-            
+
             // Compare values
             if ($old_value !== $new_value) {
                 // Special handling for staff_type/staff_role
                 if ($field === 'staff_type' && isset($new_data['staff_role'])) {
                     $new_value = $new_data['staff_role'];
                 }
-                
+
                 $changes[$field] = [
                     'field' => $label,
                     'old' => $old_value,
@@ -134,35 +140,36 @@ function compare_staff_changes($old_data, $new_data) {
     return $changes;
 }
 
-function compare_student_scores_changes($old_scores, $new_scores) {
+function compare_student_scores_changes($old_scores, $new_scores)
+{
     $changes = [];
-    
+
     // Create lookup array for old scores by subject_id
     $old_scores_lookup = [];
     foreach ($old_scores as $old_score) {
         $old_scores_lookup[$old_score['subject_id']] = $old_score;
     }
-    
+
     // Compare each new score entry
     foreach ($new_scores as $new_score) {
         // Skip entries with 'NAN'
         if ($new_score['subjectOrNameId'] === 'NAN') {
             continue;
         }
-        
+
         $subject_id = $new_score['subjectOrNameId'];
         $student_id = $new_score['studentId'];
-        
+
         // Track components to compare
         $components = [
             'ca1' => 'CA1 Score',
             'ca1Total' => 'CA1 Total Possible',
-            'ca2' => 'CA2 Score', 
+            'ca2' => 'CA2 Score',
             'ca2Total' => 'CA2 Total Possible',
             'ca3' => 'CA3 Score',
             'ca3Total' => 'CA3 Total Possible',
             'pra' => 'Practical Score',
-            'praTotal' => 'Practical Total Possible', 
+            'praTotal' => 'Practical Total Possible',
             'exam' => 'Exam Score',
             'examTotal' => 'Exam Total Possible'
         ];
@@ -172,13 +179,13 @@ function compare_student_scores_changes($old_scores, $new_scores) {
         // Check if we have old scores for this subject
         if (isset($old_scores_lookup[$subject_id])) {
             $old_score = $old_scores_lookup[$subject_id];
-            
+
             // Compare each score component
             foreach ($components as $key => $label) {
                 $new_key = $key;
                 if ($key === 'pra') $new_key = 'practical';
                 if ($key === 'praTotal') $new_key = 'practicalTotal';
-                
+
                 $old_value = isset($old_score[$key]) ? (int)$old_score[$key] : 0;
                 $new_value = isset($new_score[$new_key]) ? (int)$new_score[$new_key] : 0;
 
@@ -200,7 +207,7 @@ function compare_student_scores_changes($old_scores, $new_scores) {
                 $new_key = $key;
                 if ($key === 'pra') $new_key = 'practical';
                 if ($key === 'praTotal') $new_key = 'practicalTotal';
-                
+
                 $new_value = isset($new_score[$new_key]) ? (int)$new_score[$new_key] : 0;
                 if ($new_value !== 0) {
                     $student_changes[] = [
@@ -214,7 +221,7 @@ function compare_student_scores_changes($old_scores, $new_scores) {
                 }
             }
         }
-        
+
         // Store changes by student_id instead of subject_id
         if (!empty($student_changes)) {
             if (!isset($changes[$student_id])) {
@@ -223,35 +230,36 @@ function compare_student_scores_changes($old_scores, $new_scores) {
             $changes[$student_id] = array_merge($changes[$student_id], $student_changes);
         }
     }
-    
+
     return $changes;
 }
 
 
-function compare_subject_scores_changes($old_scores, $new_scores) {
+function compare_subject_scores_changes($old_scores, $new_scores)
+{
     $changes = [];
-    
+
     // Create lookup array for old scores by student_id
     $old_scores_lookup = [];
     foreach ($old_scores as $old_score) {
-        $old_scores_lookup[isset($old_score['student_id']) ? $old_score['student_id']  : $old_score['subjectOrNameId'] ] = $old_score;
+        $old_scores_lookup[isset($old_score['student_id']) ? $old_score['student_id']  : $old_score['subjectOrNameId']] = $old_score;
     }
-    
+
     // Compare each new score entry
     foreach ($new_scores as $new_score) {
         // Skip entries with 'NAN' 
         if ($new_score['subjectOrNameId'] === 'NAN') {
             continue;
         }
-        
+
         $student_id = $new_score['subjectOrNameId'];
         $subject_id = $new_score['subjectId'];
         $student_changes = [];
-        
+
         // Check if student existed in old scores
         if (isset($old_scores_lookup[$student_id])) {
             $old_score = $old_scores_lookup[$student_id];
-            
+
             // Compare each component
             $components = [
                 'ca1' => 'CA1 Score',
@@ -260,7 +268,7 @@ function compare_subject_scores_changes($old_scores, $new_scores) {
                 'ca2Total' => 'CA2 Total Possible',
                 'ca3' => 'CA3 Score',
                 'ca3Total' => 'CA3 Total Possible',
-                'pra' => 'Practical Score', 
+                'pra' => 'Practical Score',
                 'praTotal' => 'Practical Total Possible',
                 'exam' => 'Exam Score',
                 'examTotal' => 'Exam Total Possible'
@@ -285,10 +293,10 @@ function compare_subject_scores_changes($old_scores, $new_scores) {
             // This is a new score entry - record all non-zero values as changes
             $components = [
                 'ca1' => 'CA1 Score',
-                'ca1Total' => 'CA1 Total Possible', 
+                'ca1Total' => 'CA1 Total Possible',
                 'ca2' => 'CA2 Score',
                 'ca2Total' => 'CA2 Total Possible',
-                'ca3' => 'CA3 Score', 
+                'ca3' => 'CA3 Score',
                 'ca3Total' => 'CA3 Total Possible',
                 'pra' => 'Practical Score',
                 'praTotal' => 'Practical Total Possible',
@@ -316,7 +324,7 @@ function compare_subject_scores_changes($old_scores, $new_scores) {
             $changes[$student_id] = $student_changes;
         }
     }
-    
+
     return $changes;
 }
 
@@ -444,7 +452,7 @@ function does_it_exist($what_to_select, $tbl, $condition)
 
 function calculate_age($birthdate)
 {
-    if($birthdate == '0000-00-00') {
+    if ($birthdate == '0000-00-00') {
         return 'Nil';
     }
     // return $birthdate;
@@ -481,7 +489,7 @@ function get_total_student_in_class($classid)
 //         AND class_id='$class_id' 
 //         AND school_id='{$_SESSION['school_id']}'
 //         AND total > 0"); // Only sum scores greater than zero
-    
+
 //     $row = mysqli_fetch_array($select);
 //     return $row['total_score'] ?? 0; // Return 0 if no scores found or if total_score is NULL
 // }
@@ -496,19 +504,13 @@ function get_total_score_per_student($studentid, $term_id, $session_id, $class_i
     //     AND class_id='$class_id' 
     //     AND school_id='{$_SESSION['school_id']}'
     //     AND total > 0"; // Only sum scores greater than zero
-     $query = "SELECT SUM(total) AS total_score 
+    $query = "SELECT SUM(total) AS total_score 
         FROM skulscores 
         WHERE student_id='$studentid' 
         AND session_id='$session_id' 
         AND class_id='$class_id' 
         AND school_id='{$_SESSION['school_id']}'
-        AND (
-            ca1Total > 0 OR
-            ca2Total > 0 OR
-            ca3Total > 0 OR
-            praTotal > 0 OR
-            examTotal > 0
-        )"; // Only sum scores where at least one total is greater than zero
+        AND total > 0"; // Only sum scores greater than zero
 
     if ($sessionOrTerm == 'term') {
         $query .= " AND term_id='$term_id'";
@@ -547,21 +549,14 @@ function get_total_obtainables($studentid, $term_id, $session_id, $class_id, $se
     //     AND school_id='{$_SESSION['school_id']}'
     //     AND session_id='$session_id'
     //     AND total > 0"; // Only count subjects with scores greater than 0
-$query = "SELECT COUNT(*) as subject_count 
+    $query = "SELECT COUNT(*) as subject_count 
         FROM skulscores 
         WHERE student_id='$studentid' 
         AND class_id='$class_id' 
         AND school_id='{$_SESSION['school_id']}'
         AND session_id='$session_id'
-        AND total > 0
-        AND (
-            ca1Total > 0 OR
-            ca2Total > 0 OR
-            ca3Total > 0 OR
-            praTotal > 0 OR
-            examTotal > 0
-        )"; // Only count subjects where at least one total is greater than zero and total > 0
-// ubjects where at least one total is greater than zero
+        AND total > 0"; // Only count subjects with scores greater than 0
+    // ubjects where at least one total is greater than zero
 
     if ($sessionOrTerm == 'term') {
         $query .= " AND term_id='$term_id'";
@@ -596,7 +591,7 @@ $query = "SELECT COUNT(*) as subject_count
 //     }
 //     // $total_obtainable = $count * 100;
 //     $total_obtainable = get_total_obtainables($studentid, $term_id, $session_id, $class_id);
-    
+
 //     if ($count > 0) {
 //         return number_format((($total / $total_obtainable) * 100),0,'.',"");
 //     } else {
@@ -614,7 +609,7 @@ function calculate_total_percentage($studentid, $term_id, $session_id, $class_id
         $count += 1;
     }
     // $total_obtainable = $count * 100;
-    $total_obtainable = get_total_obtainables($studentid, $term_id, $session_id, $class_id,$sessionOrTerm);
+    $total_obtainable = get_total_obtainables($studentid, $term_id, $session_id, $class_id, $sessionOrTerm);
 
     if ($count > 0) {
         return number_format((($total / $total_obtainable) * 100), 0, '.', "");
@@ -625,38 +620,59 @@ function calculate_total_percentage($studentid, $term_id, $session_id, $class_id
 
 function deleteFile($filePath)
 {
-    if (is_file($filePath)) { 
-        if (unlink($filePath)) { 
+    if (is_file($filePath)) {
+        if (unlink($filePath)) {
             return true;
         } else {
             error_log("Failed to delete file: " . $filePath . " - " . error_get_last()['message']);
             return false;
         }
     } else {
-       
+
         return false;
     }
 }
 
-function onboard_settings($phone, $email, $staff_type)
+function onboard_settings($phone, $email, $staff_type, $staff_id = null)
 {
     global $conn, $date;
-    $select = mysqli_query($conn, "SELECT id FROM staff WHERE phone='$phone' AND email='$email'");
-    if ($row = mysqli_fetch_array($select)) {
-        $_SESSION['userid'] = $row['id']; //id => 23, name => sola
-        $_SESSION['phone'] = $phone;
-        $_SESSION['email'] = $email;
-        $_SESSION['staff_type'] = $staff_type;
-        $grading = '{"A":"70","B":"60","C":"50","D":"40","E":"30","F":"0"}';
-        $update = mysqli_query($conn, "UPDATE school SET createdby='{$row['id']}' WHERE id='{$_SESSION['school_id']}'");
-        $insertsetting = mysqli_query($conn, "INSERT INTO skul_settings (session_id,term_id,ca1,ca2,exam,school_id,grading,datecreated,createdby) VALUES('{$_SESSION['session_id']}', '{$_SESSION['term_id']}',1,1,1,'{$_SESSION['school_id']}','$grading','$date','{$row['id']}')");
-        $insertsub_cat = mysqli_query(
-            $conn,
-            "INSERT INTO subject_cat (category_name,createdby, datecreated,subject_ids,school_id) 
-                    VALUES('Primary','{$row['id']}','$date','65,92,4,16,62,2,23,15,58,1,14,19','{$_SESSION['school_id']}')"
-        );
-        echo json_encode(array('status' => '1', 'location' => "../{$_SESSION['url']}/"));
+    
+    if (!$staff_id) {
+        $select = mysqli_query($conn, "SELECT id FROM staff WHERE phone='$phone' AND email='$email'");
+        if ($row = mysqli_fetch_array($select)) {
+            $staff_id = $row['id'];
+        } else {
+            throw new Exception("Staff record not found for onboarding settings.");
+        }
     }
+
+    $_SESSION['userid'] = $staff_id;
+    $_SESSION['phone'] = $phone;
+    $_SESSION['email'] = $email;
+    $_SESSION['staff_type'] = $staff_type;
+    
+    $grading = '{"A":"70","B":"60","C":"50","D":"40","E":"30","F":"0"}';
+    
+    $update = mysqli_query($conn, "UPDATE school SET createdby='$staff_id' WHERE id='{$_SESSION['school_id']}'");
+    if (!$update) {
+        throw new Exception("Failed to update school creator: " . mysqli_error($conn));
+    }
+
+    $insertsetting = mysqli_query($conn, "INSERT INTO skul_settings (session_id,term_id,ca1,ca2,exam,school_id,grading,datecreated,createdby) VALUES('{$_SESSION['session_id']}', '{$_SESSION['term_id']}',1,1,1,'{$_SESSION['school_id']}','$grading','$date','$staff_id')");
+    if (!$insertsetting) {
+        throw new Exception("Failed to insert school settings: " . mysqli_error($conn));
+    }
+
+    $insertsub_cat = mysqli_query(
+        $conn,
+        "INSERT INTO subject_cat (category_name,createdby, datecreated,subject_ids,school_id) 
+                VALUES('Primary','$staff_id','$date','65,92,4,16,62,2,23,15,58,1,14,19','{$_SESSION['school_id']}')"
+    );
+    if (!$insertsub_cat) {
+        throw new Exception("Failed to insert subject categories: " . mysqli_error($conn));
+    }
+
+    return true;
 }
 
 function register_student_without_photo($pfname, $plname, $hashedpassword, $parentphone, $parentemail, $address, $city, $state, $country, $firstname, $lastname, $middlename, $class_id, $gender, $dob, $phone, $email, $school_id)
@@ -682,7 +698,7 @@ function register_student_without_photo($pfname, $plname, $hashedpassword, $pare
     }
 }
 
-function register_student_with_photo($pfname,$plname,$hashedpassword,$parentphone,$parentemail,$address,$city, $state,$country,$firstname,$lastname,$middlename,$class_id,$gender,$dob,$phone,$email,$school_id)
+function register_student_with_photo($pfname, $plname, $hashedpassword, $parentphone, $parentemail, $address, $city, $state, $country, $firstname, $lastname, $middlename, $class_id, $gender, $dob, $phone, $email, $school_id)
 {
     global $conn, $date;
     $path = "uploads/";
@@ -717,51 +733,68 @@ function register_student_with_photo($pfname,$plname,$hashedpassword,$parentphon
 }
 
 // Common validation functions
-function validate_phone($phone) {
+function validate_phone($phone)
+{
     return empty($phone) || preg_match('/^[0-9]{11}$/', $phone);
 }
 
-function validate_student_number($number) {
+function validate_student_number($number)
+{
     return is_numeric($number) && $number > 0 && $number <= 10000;
 }
 
-function validate_session_id($session_id) {
+function validate_session_id($session_id)
+{
     return in_array($session_id, [1, 2, 3]);
 }
 
-function validate_term_id($term_id) {
+function validate_term_id($term_id)
+{
     return in_array($term_id, [1, 2, 3]);
 }
 
-function get_session_name($session_id) {
-    switch($session_id) {
-        case 1: return '2023/2024';
-        case 2: return '2024/2025';
-        case 3: return '2025/2026';
-        default: return '';
+function get_session_name($session_id)
+{
+    switch ($session_id) {
+        case 1:
+            return '2023/2024';
+        case 2:
+            return '2024/2025';
+        case 3:
+            return '2025/2026';
+        default:
+            return '';
     }
 }
 
-function get_term_name($term_id) {
-    switch($term_id) {
-        case 1: return 'First Term';
-        case 2: return 'Second Term';
-        case 3: return 'Third Term';
-        default: return '';
+function get_term_name($term_id)
+{
+    switch ($term_id) {
+        case 1:
+            return 'First Term';
+        case 2:
+            return 'Second Term';
+        case 3:
+            return 'Third Term';
+        default:
+            return '';
     }
 }
 
-function calculate_amount($student_number) {
+function calculate_amount($student_number)
+{
     $amount_per_student = 500;
     return $student_number * $amount_per_student;
 }
 
-function sanitize_input($data) {
+function sanitize_input($data)
+{
     return htmlspecialchars(strip_tags(trim($data)));
 }
 
 // Payment helper functions
-function verify_flutterwave_payment($transaction_id) {
+function verify_flutterwave_payment($transaction_id)
+{
     $curl = curl_init();
     curl_setopt_array($curl, array(
         CURLOPT_URL => "https://api.flutterwave.com/v3/transactions/{$transaction_id}/verify",
@@ -783,7 +816,8 @@ function verify_flutterwave_payment($transaction_id) {
     return ['status' => 'success', 'data' => json_decode($response)];
 }
 
-function save_payment_to_database($conn, $payment_data) {
+function save_payment_to_database($conn, $payment_data)
+{
     $query = "INSERT INTO payments (
         transaction_id, tx_ref, amount, email, phone, name, payment_date,
         school_id, session_id, term_id, student_number, payment_purpose,
@@ -796,7 +830,8 @@ function save_payment_to_database($conn, $payment_data) {
 
     $stmt = mysqli_prepare($conn, $query);
     if ($stmt) {
-        mysqli_stmt_bind_param($stmt, 
+        mysqli_stmt_bind_param(
+            $stmt,
             'ssdssssissssss',
             $payment_data['transaction_id'],
             $payment_data['tx_ref'],
@@ -818,12 +853,13 @@ function save_payment_to_database($conn, $payment_data) {
         mysqli_stmt_close($stmt);
         return $result;
     }
-    
+
     return false;
 }
 
 // Error handling function
-function handle_payment_error($message, $redirect = true) {
+function handle_payment_error($message, $redirect = true)
+{
     if ($redirect) {
         header('Location: my_payment.php?status=error&message=' . urlencode($message));
         exit;
@@ -831,11 +867,12 @@ function handle_payment_error($message, $redirect = true) {
     return ['status' => 'error', 'message' => $message];
 }
 
-function get_grade($percentage, $grading_system) {
+function get_grade($percentage, $grading_system)
+{
     if (empty($grading_system)) {
         return 'N/A'; // Return Not Available if no grading system is defined
     }
-    
+
     foreach ($grading_system as $grade => $min_score) {
         if ($percentage >= (float)$min_score) {
             return $grade;
@@ -891,7 +928,8 @@ function get_attendance_present($student_id, $term_id, $session_id)
     // return $row['total_presence'];
 }
 
-function get_attendance_absent($student_id, $term_id, $session_id) {
+function get_attendance_absent($student_id, $term_id, $session_id)
+{
     global $conn, $setrow;
     $present_days = get_attendance_present($student_id, $term_id, $session_id);
     $school_open = (int)$setrow['school_open'];
@@ -909,7 +947,8 @@ function get_school_amount()
     }
     return 0;
 }
-function get_school_id_by_url($url) {
+function get_school_id_by_url($url)
+{
     global $conn;
     $query = "SELECT id FROM school WHERE url = '$url'";
     $result = mysqli_query($conn, $query);
@@ -942,4 +981,3 @@ function get_school_id_by_url($url) {
 //     $row = mysqli_fetch_array($select);
 //     return $row['subject_count'] * 100; // Each subject has a maximum score of 100
 // }
-?>

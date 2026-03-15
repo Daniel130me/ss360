@@ -328,7 +328,8 @@ function get_notices(userid, usertype) {
         data: { action: 'get_msg', usertype, userid, },
         success: (resp) => {
             console.log(resp)
-            resp = JSON.parse(resp)
+            resp = resp
+            // resp = JSON.parse(resp)
             if (resp.status == '1') {
                 data = resp.data
                 console.log(data)
@@ -511,8 +512,20 @@ function calculateGrade1(percentage, gradingSystem) {
     return Object.keys(gradingSystem).pop();
 }
 function format_grade(gradingSystem) {
-    let formattedString = gradingSystem.replace(/([A-Z]):/g, '"$1":').replace(/:/g, ': ');
-    return JSON.parse(formattedString)
+    if (typeof gradingSystem !== 'string') return gradingSystem;
+    try {
+        // Try direct parse first if it's already well-formatted JSON
+        return JSON.parse(gradingSystem);
+    } catch (e) {
+        // Fallback to legacy formatting if direct parse fails
+        try {
+            let formattedString = gradingSystem.replace(/([A-Z]):/g, '"$1":').replace(/:/g, ': ');
+            return JSON.parse(formattedString);
+        } catch (e2) {
+            console.error("Failed to parse grading system:", gradingSystem);
+            return {};
+        }
+    }
 }
 
 
@@ -1006,7 +1019,8 @@ function get_score_data() {
             // alert(data.length)
             // if(data.length == 0){
             // }
-            student_score_data = JSON.parse(data)
+            student_score_data = data
+            // student_score_data = JSON.parse(data)
             if (student_score_data.length <= 1) {
                 $(".data_overlay").html(`
                         <p class="font-weight-bold">No score record for this student</p>
@@ -3042,8 +3056,8 @@ function by_class_view_content() {
             $(".data_overlay").show();
         },
         success: (data) => {
-            data = data;
-            // data = JSON.parse(data);
+            // data = data;
+            data = JSON.parse(data);
             let grader = format_grade(skul_settings["grading"]);
             if (data.length <= 1) {
                 $(".data_overlay").html(`
@@ -7654,8 +7668,10 @@ function set_behaviour_comment(term, session, student_id, class_id, pagetype) {
             pagetype,
         },
         success: (data) => {
-            data = data.trim();
-            data = JSON.parse(data);
+            // data = data;
+            data = data;
+            // data = data.trim();
+            // data = JSON.parse(data);
             // alert(data.staff_classId)
             // let staff_classId_json = JSON.parse(data.staff_classId)
             // alert((data.staff_classId).includes(class_id))
@@ -7881,8 +7897,10 @@ function get_teacher_comment(term, session, student_id, class_id, pagetype) {
         type: 'POST',
         data: { 'action': 'get_comment', term, session, student_id, class_id, pagetype },
         success: (data) => {
-            data = data.trim();
-            data = JSON.parse(data)
+            data = data
+            // data = JSON.parse(data)
+            // data = data.trim();
+            // data = JSON.parse(data)
             let datacount = data.length;
             // alert(noofdata)
             data.map((item) => {
@@ -14093,6 +14111,190 @@ function resetReportZoom() {
     currentReportScale = 1.0;
     applyReportScale();
 }
+
+/**
+ * Preview a custom report card
+ * @param {string|number} report_id - The ID of the custom report to preview
+ */
+async function preview_custom_report_card(report_id) {
+    const reportModal = $('#report_preview_modal');
+    const previewContent = $('#preview-content');
+    const loadingOverlay = $('.loading-overlay-report');
+
+    // Show modal and loading state
+    reportModal.modal('show');
+    previewContent.empty();
+    loadingOverlay.show();
+    $('#print_report_btn, #download_report_btn').attr('disabled', true);
+
+    try {
+        // 1. Fetch custom report settings
+        let reportResponse = await $.ajax({
+            url: '../report_controller.php',
+            type: 'POST',
+            data: { action: 'fetch_report_by_id', report_id: report_id },
+            dataType: 'json'
+        });
+
+        // Ensure reportResponse is an object
+        if (typeof reportResponse === 'string') {
+            try {
+                reportResponse = JSON.parse(reportResponse);
+            } catch (e) {
+                console.error("JSON parse error:", reportResponse);
+                throw new Error("Invalid response format from server");
+            }
+        }
+
+        if (reportResponse.status !== 'success') {
+            throw new Error(reportResponse.message || 'Failed to fetch report settings');
+        }
+
+        const reportData = reportResponse.data;
+        const customAssessments = JSON.parse(reportData.assessment_type || "[]").map(a => a.toLowerCase());
+        const session_id = reportData.session_id;
+        const term_id = reportData.term_id;
+        const school_id = reportData.school_id;
+
+        // 2. Fetch student score data
+        // For parent portal, we assume the student_id is available correctly. 
+        // We'll get it from the session/context if needed, but usually, parent_portal.php has it.
+        // In preview_report_card_multiple, it uses a global or passed student_id.
+        // Let's assume we can get student_id from the context or a global.
+        const activeStudentId = $('#select_student_field').val() || '';
+        const activeClassId = $('#select_class_field').val() || '';
+
+        let scoreResponse = await $.ajax({
+            url: "../controller.php",
+            type: "post",
+            data: {
+                action: "get_grading_score_data",
+                session_id: session_id,
+                student_id: activeStudentId,
+                class_id: activeClassId,
+                term_id: term_id,
+            },
+            dataType: 'json'
+        });
+
+        // Robust parsing for scoreResponse
+        if (typeof scoreResponse === 'string') {
+            try {
+                scoreResponse = JSON.parse(scoreResponse);
+            } catch (e) {
+                console.error("Score response parse error:", scoreResponse);
+                throw new Error("Invalid score data format from server");
+            }
+        }
+
+        console.log("scoreResponse received:", scoreResponse);
+        if (!scoreResponse || !scoreResponse.score_data) {
+            console.error("Missing score_data in response:", scoreResponse);
+            throw new Error('Failed to fetch score data');
+        }
+
+        // Set globals for other functions
+        student_score_data = scoreResponse.score_data;
+
+        if (!scoreResponse.settingsData || !scoreResponse.settingsData[0]) {
+            console.error("Missing settingsData in scoreResponse:", scoreResponse);
+            throw new Error('Failed to fetch school settings for this term');
+        }
+
+        settingsData = scoreResponse.settingsData[0];
+        const grading = settingsData.grade;
+
+        // Override settingsData based on custom report assessments
+        settingsData.ca1 = customAssessments.includes('ca1') ? 1 : 0;
+        settingsData.ca2 = customAssessments.includes('ca2') ? 1 : 0;
+        settingsData.ca3 = customAssessments.includes('ca3') ? 1 : 0;
+        settingsData.pra = customAssessments.includes('pra') ? 1 : 0;
+        settingsData.exa = customAssessments.includes('exa') ? 1 : 0;
+
+        // 3. Fetch custom report card HTML
+        const reportCardHtml = await $.ajax({
+            url: "../custom_report_card.php",
+            type: "POST",
+            data: {
+                student_id: activeStudentId,
+                class_id: activeClassId,
+                session_id: session_id,
+                term_id: term_id,
+                report_id: report_id,
+                sessionOrTerm: 'term'
+            },
+        });
+
+        previewContent.html(reportCardHtml);
+
+        // 4. Render the table with custom calculations
+        const tableContainer = previewContent.find('.table_visuals_display_report_custom');
+        await format_student_table_report(
+            student_score_data,
+            term_id,
+            session_id,
+            activeClassId,
+            grading,
+            tableContainer,
+            customAssessments
+        );
+
+        // 5. Update performance summary in the header
+        updateCustomReportSummary(previewContent, customAssessments, grading);
+
+        // 6. Set behavior/skills ratings (reusing existing function if possible)
+        await set_behaviour_comment_report(
+            term_id,
+            session_id,
+            activeStudentId,
+            activeClassId,
+            'term',
+            previewContent
+        );
+
+        loadingOverlay.hide();
+        $('#print_report_btn, #download_report_btn').attr('disabled', false);
+        currentReportScale = 1.0;
+        applyReportScale();
+
+    } catch (error) {
+        console.error('Custom Report Preview Error:', error);
+        previewContent.html(`<div class="alert alert-danger">Error: ${error.message}</div>`);
+        loadingOverlay.hide();
+    }
+}
+
+/**
+ * Calculates and updates the summary for a custom report
+ */
+function updateCustomReportSummary(container, customAssessments, gradingParam) {
+    let totalScore = 0;
+    let totalObtainable = 0;
+
+    container.find('#view_student_score_table tbody tr').each(function () {
+        const rowTotal = parseFloat($(this).find('.total-score').text()) || 0;
+        let rowMaxTotal = $(this).data('max-total');
+
+        // Ensure rowMaxTotal is a valid number, default to 100 ONLY if undefined or null
+        if (rowMaxTotal === undefined || rowMaxTotal === null) {
+            rowMaxTotal = 100;
+        } else {
+            rowMaxTotal = parseFloat(rowMaxTotal) || 0;
+        }
+
+        totalScore += rowTotal;
+        totalObtainable += rowMaxTotal;
+    });
+
+    const percentage = totalObtainable > 0 ? Math.round((totalScore / totalObtainable) * 100) : 0;
+    const grader = format_grade(gradingParam);
+    const grade = calculateGrade1(percentage, grader);
+
+    container.find('.custom-total-score').text(totalScore.toFixed(1));
+    container.find('.custom-total-obtainable').text(totalObtainable);
+    container.find('.custom-percentage').text(percentage + '%');
+    container.find('.custom-grade').text(grade);
+}
 // track score change starts
 // async function preview_report_card_multiple(page_type,sessionOrTerm) {
 //     console.log("sessionOrTerm",sessionOrTerm)
@@ -14369,21 +14571,28 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
         }
     }
 }
-async function format_student_table_report(student_score_data, term, session_id, class_id, grading, container) {
-    // let settingsData = JSON.parse(settingsData)
+async function format_student_table_report(student_score_data, term, session_id, class_id, grading, container, customAssessments = null) {
     return new Promise((resolve) => {
-        let grader = format_grade(grading)
-        // return
-        // const nwdata = student_score_data.filter(item => item.term_id == term && item.session_id == session_id && item.class_id == class_id)
-        // const nwdata = Object.entries(student_score_data.map(([inde, item]) => item.term_id == term && item.session_id == session_id && item.class_id == class_id)
-        const nwdata = student_score_data.filter(item =>
-            item.term_id == term &&
-            item.session_id == session_id &&
-            item.class_id == class_id &&
-            // Add condition to filter out zero totals
-            parseFloat(item.Total) > 0
-        );
-        console.log("nw", nwdata)
+        let grader = format_grade(grading);
+        console.log("format_student_table_report filter params:", { term, session_id, class_id, customAssessments });
+        const nwdata = student_score_data.filter(item => {
+            const matches = item.term_id == term &&
+                item.session_id == session_id &&
+                item.class_id == class_id;
+
+            if (!matches) return false;
+
+            const rowMaxTotal = customAssessments ? calculate_row_max_total(item, customAssessments) : 100;
+
+            // For custom reports, only show if max possible score > 0
+            if (customAssessments) {
+                return rowMaxTotal > 0;
+            }
+
+            // For standard reports, show if there's any score recorded
+            return parseFloat(item.Total) > 0;
+        });
+        console.log("nwdata after filter:", nwdata);
         let str = ''
         if (nwdata.length > 0) {
             str = `
@@ -14392,7 +14601,7 @@ async function format_student_table_report(student_score_data, term, session_id,
       <tr>
           <th>Subjects</th>
           <th class="${settingsData.ca1 == 0 ? 'd-none' : ''}">CA1</th>
-          <th class="${settingsData.ca1 == 0 ? 'd-none' : ''}">CA2</th>
+          <th class="${settingsData.ca2 == 0 ? 'd-none' : ''}">CA2</th>
           <th class="${settingsData.ca3 == 0 ? 'd-none' : ''}">CA3</th>
           <th class="${settingsData.pra == 0 ? 'd-none' : ''}">Practical</th>
           <th class="${settingsData.exa == 0 ? 'd-none' : ''}">Exam</th>
@@ -14407,17 +14616,18 @@ async function format_student_table_report(student_score_data, term, session_id,
             // if () {
             nwdata.forEach(item => {
                 console.log('subj', item.subject_id)
+                const rowMaxTotal = customAssessments ? calculate_row_max_total(item, customAssessments) : 100;
                 str += `
-  <tr>
+      <tr data-max-total="${rowMaxTotal}">
       <td>${item.subject}</td>
-      <td class="score ${settingsData.ca1 == 0 ? 'd-none' : ''}">${item.CA1}</td>
-      <td class="score ${settingsData.ca2 == 0 ? 'd-none' : ''}">${item.CA2}</td>
-      <td class="score ${settingsData.ca3 == 0 ? 'd-none' : ''}">${item.CA3}</td>
-      <td class="score ${settingsData.pra == 0 ? 'd-none' : ''}">${item.Practical}</td>
-      <td class="score ${settingsData.exa == 0 ? 'd-none' : ''}">${item.Exam}</td>
-      <td class="total-score">${item.Total}</td>
-      <td class="percentage">${get_subject_percentage(item.subject_id, term, session_id, class_id)}</td>
-      <td>${calculateGrade1(get_subject_percentage(item.subject_id, term, session_id, class_id), grader)}</td>
+      <td class="score ${settingsData.ca1 == 0 ? 'd-none' : ''}">${parseFloat(item.ca1Total) > 0 ? item.CA1 : '-'}</td>
+      <td class="score ${settingsData.ca2 == 0 ? 'd-none' : ''}">${parseFloat(item.ca2Total) > 0 ? item.CA2 : '-'}</td>
+      <td class="score ${settingsData.ca3 == 0 ? 'd-none' : ''}">${parseFloat(item.ca3Total) > 0 ? item.CA3 : '-'}</td>
+      <td class="score ${settingsData.pra == 0 ? 'd-none' : ''}">${parseFloat(item.praTotal) > 0 ? item.Practical : '-'}</td>
+      <td class="score ${settingsData.exa == 0 ? 'd-none' : ''}">${parseFloat(item.exaTotal) > 0 ? item.Exam : '-'}</td>
+      <td class="total-score">${customAssessments ? calculate_row_total(item, customAssessments) : item.Total}</td>
+      <td class="percentage">${customAssessments ? calculate_row_percentage(item, customAssessments) : get_subject_percentage(item.subject_id, term, session_id, class_id)}</td>
+      <td>${calculateGrade1(customAssessments ? calculate_row_percentage(item, customAssessments) : get_subject_percentage(item.subject_id, term, session_id, class_id), grader)}</td>
   </tr>
 `
                 // }
@@ -14429,6 +14639,38 @@ async function format_student_table_report(student_score_data, term, session_id,
         container.html(str);
         setTimeout(resolve, 100);
     });
+}
+
+function calculate_row_total(item, assessments) {
+    let total = 0;
+    const lowerAssessments = assessments.map(a => a.toLowerCase());
+    if (lowerAssessments.includes('ca1') && parseFloat(item.ca1Total) > 0) total += parseFloat(item.CA1) || 0;
+    if (lowerAssessments.includes('ca2') && parseFloat(item.ca2Total) > 0) total += parseFloat(item.CA2) || 0;
+    if (lowerAssessments.includes('ca3') && parseFloat(item.ca3Total) > 0) total += parseFloat(item.CA3) || 0;
+    if (lowerAssessments.includes('practical') && parseFloat(item.praTotal) > 0) total += parseFloat(item.Practical) || 0;
+    if (lowerAssessments.includes('exam') && parseFloat(item.exaTotal) > 0) total += parseFloat(item.Exam) || 0;
+    return total;
+}
+
+function calculate_row_max_total(item, assessments) {
+    let maxTotal = 0;
+    const lowerAssessments = assessments.map(a => a.toLowerCase());
+    if (lowerAssessments.includes('ca1')) maxTotal += parseFloat(item.ca1Total) || 0;
+    if (lowerAssessments.includes('ca2')) maxTotal += parseFloat(item.ca2Total) || 0;
+    if (lowerAssessments.includes('ca3')) maxTotal += parseFloat(item.ca3Total) || 0;
+    if (lowerAssessments.includes('practical')) maxTotal += parseFloat(item.praTotal) || 0;
+    if (lowerAssessments.includes('exam')) maxTotal += parseFloat(item.exaTotal) || 0;
+    return maxTotal;
+}
+
+function calculate_row_percentage(item, assessments) {
+    let total = calculate_row_total(item, assessments);
+    let maxTotal = calculate_row_max_total(item, assessments);
+
+    if (maxTotal > 0) {
+        return Math.round((total / maxTotal) * 100).toString();
+    }
+    return "0";
 }
 async function format_student_cummulative_table_report(student_score_data, student_id, session_id, class_id, grading_param, containerSelector) {
     // student_score_data: Array of all score objects

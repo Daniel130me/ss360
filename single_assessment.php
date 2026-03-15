@@ -99,13 +99,17 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
     <!-- Theme style -->
     <link rel="stylesheet" href="../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
     <!-- Select2 -->
-    <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" /> -->
-    <link rel="stylesheet" href="../plugins/select2/css/select2.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- summernote -->
+    <!--<link rel="stylesheet" href="../plugins/summernote/summernote-bs4.min.css">-->
+    <!--<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-bs4.min.css" integrity="sha512-rDHV59PgRefDUbMm2lSjvf0ZhXZy3wgROFyao0JxZPGho3oOuWejq/ELx0FOZJpgaE5QovVtRN65Y3rrb7JhdQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mathquill/0.10.1/mathquill.min.css" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="../plugins/select2/css/select2.min.css"> -->
 
     <!-- daterange picker -->
     <link rel="stylesheet" href="../plugins/daterangepicker/daterangepicker.css">
     <link rel="stylesheet" href="../plugins/toastr/toastr.min.css">
-    <link rel="stylesheet" href="../plugins/summernote/summernote-bs4.min.css">
     <link rel="stylesheet" href="../dist/css/adminlte.css">
     <!--<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">-->
     <!--<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.2.2/css/fixedColumns.dataTables.min.css">-->
@@ -114,6 +118,10 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
         .accent_active {
             background-color: #007bff;
             color: white;
+        }
+
+        .select2-container {
+            display: none !important;
         }
     </style>
 </head>
@@ -591,8 +599,6 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                             <button type="button" class="btn btn-secondary" id="prev-page-btn">Previous</button>
                             <span>Page <span id="current-page"><?= $page ?></span> / <span id="total-pages"><?= $total_pages ?></span></span>
                             <button type="button" class="btn btn-secondary" id="next-page-btn">Next</button>
-                            <!-- Import Question: only visible on last page or when there is a single page -->
-                            <button type="button" class="btn btn-info mr-2" id="import-question-btn" <?= ($page != $total_pages) ? 'style="display:none"' : '' ?>>Import Questions</button>
                             <!-- Add New Question: only visible on last page or when there is a single page -->
                             <button type="button" class="btn btn-primary" id="add-question-btn" <?= ($page != $total_pages) ? 'style="display:none"' : '' ?>>Add New Question</button>
                             <!-- <button type="button" class="btn btn-success ml-auto" id="save-page-btn">Save Page</button> -->
@@ -707,9 +713,9 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
     <script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- Select2 -->
 
-    <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 
-    <script src="../plugins/select2/js/select2.full.min.js"></script>
+    <!-- <script src="../plugins/select2/js/select2.full.min.js"></script> -->
     <!-- AdminLTE App -->
     <script src="../dist/js/adminlte.min.js"></script>
     <!-- <script src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
@@ -718,8 +724,14 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
     <script src="../plugins/toastr/toastr.min.js"></script>
     <!-- <script>$('.select2').select2()</script> -->
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>-->
-    <script src="../plugins/summernote/summernote-bs4.min.js"></script>
+    <!-- Summernote -->
+    <!--<script src="../plugins/summernote/summernote-bs4.min.js"></script>-->
+    <!--<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>-->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-bs4.min.js" integrity="sha512-/DlF8zrT3XyUWEK7bmU1v7Q0kMXctQfqNwyzCNBB/mdUFxz87bq3X4TqadyuQBJW39g29t1tLNbHYLpXLs1zVA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathquill/0.10.1/mathquill.min.js"></script>
+    <!--<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>-->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@wiris/mathtype-ckeditor5@7.30.0/plugin.min.js"></script> -->
     <script>
 
     </script>
@@ -735,69 +747,8 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
         var existingAssessmentId = <?= $_GET['id'] ?>;
         var classElementToRemove = null;
     </script>
-
-    <!-- Import Questions Modal -->
-    <div class="modal fade" id="importQuestionsModal" tabindex="-1" role="dialog" aria-labelledby="importQuestionsModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="importQuestionsModalLabel">Import Questions</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row mb-3">
-                        <div class="col-md-3">
-                            <label>Term</label>
-                            <select class="form-control" id="import_term_filter">
-                                <option value="all">All Terms</option>
-                                <option value="1">First</option>
-                                <option value="2">Second</option>
-                                <option value="3">Third</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label>Type</label>
-                            <select class="form-control" id="import_type_filter">
-                                <option value="all">All Types</option>
-                                <option value="1">Assignment</option>
-                                <option value="2">CA</option>
-                                <option value="3">Exam</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label>Subject</label>
-                            <select class="form-control" id="import_subject_filter">
-                                <option value="all">All Subjects</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div id="import-questions-list" style="max-height: 500px; overflow-y: auto;">
-                        <!-- Questions will be loaded here directly -->
-                        <p class="text-muted text-center py-5">Please select Term, Type, and Subject to load questions.</p>
-                    </div>
-
-                    <div id="import_pagination" class="d-flex justify-content-between align-items-center mt-3" style="display: none !important;">
-                        <div>
-                            <span>Page <span id="import_current_page">1</span> of <span id="import_total_pages">1</span></span>
-                        </div>
-                        <div>
-                            <button class="btn btn-secondary btn-sm" id="import_prev_btn" disabled>Previous</button>
-                            <button class="btn btn-secondary btn-sm" id="import_next_btn" disabled>Next</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="import_selected_btn">Import Selected</button>
-                </div>
-            </div>
-        </div>
-    </div>
     <script src="../dist/js/assessment_image_buffer.js"></script>
-    <script src="../dist/js/examination.js?v=90-restored-v1"></script>
+    <script src="../dist/js/examination.js?v=90poklk"></script>
     <script>
         // alert("mkm")
         // Add event listeners for form changes
