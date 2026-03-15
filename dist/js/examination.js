@@ -40,7 +40,8 @@ function get_all_classes_for_assessment(assess_id) {
       assessment_id: assess_id
     },
     success: function (response) {
-      let data = JSON.parse(response);
+      let data = response;
+      // let data = JSON.parse(response);
       let classes = data.data;
       let str = '';
 

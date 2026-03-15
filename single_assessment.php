@@ -601,6 +601,7 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                             <button type="button" class="btn btn-secondary" id="next-page-btn">Next</button>
                             <!-- Add New Question: only visible on last page or when there is a single page -->
                             <button type="button" class="btn btn-primary" id="add-question-btn" <?= ($page != $total_pages) ? 'style="display:none"' : '' ?>>Add New Question</button>
+                            <button type="button" class="btn btn-info" id="import-question-btn" onclick="openImportQuestionModal()" <?= ($page != $total_pages) ? 'style="display:none"' : '' ?>>Import Question</button>
                             <!-- <button type="button" class="btn btn-success ml-auto" id="save-page-btn">Save Page</button> -->
                             <button type="button" class="btn btn-primary d-block" id="save-all-btn">Save Assessment</button>
                         </div>
@@ -678,6 +679,75 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
         </div>
     </div>
 
+    <!-- Import Question Modal -->
+    <div class="modal fade" id="importQuestionModal" tabindex="-1" role="dialog" aria-labelledby="importQuestionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="importQuestionModalLabel">Import Question from Bank</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body bg-light">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group border bg-white p-2 rounded">
+                                <label>Subject</label>
+                                <select class="form-control" id="import_subject_filter"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group border bg-white p-2 rounded">
+                                <label>Source Type</label>
+                                <select class="form-control" id="import_source_type">
+                                    <option value="">Select Type</option>
+                                    <option value="Local">Local (School)</option>
+                                    <option value="Exam bodies">Exam Bodies (WAEC/JAMB)</option>
+                                    <option value="Topics">Topics</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group border bg-white p-2 rounded">
+                                <label>Class</label>
+                                <select class="form-control" id="import_class_filter"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="import_dynamic_filter_container" style="display:none;">
+                        <div class="col-md-12">
+                            <div class="form-group border bg-white p-2 rounded" id="import_exam_body_container" style="display:none;">
+                                <label>Exam Body</label>
+                                <select class="form-control" id="import_exam_body"></select>
+                            </div>
+                            <div class="form-group border bg-white p-2 rounded" id="import_topic_container" style="display:none;">
+                                <label>Topic</label>
+                                <select class="form-control" id="import_topic"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <h6 class="font-weight-bold">Questions</h6>
+                    <div id="import-questions-list" style="max-height: 400px; overflow-y:auto;" class="mb-3">
+                        <div class="alert alert-info">Please select Subject, Class, and Source Type to view questions.</div>
+                    </div>
+
+                    <div id="import-pagination" class="d-flex justify-content-between align-items-center bg-white p-2 rounded shadow-sm" style="display:none !important;">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="import-prev-btn" disabled>Previous</button>
+                        <span id="import-page-info" class="font-weight-bold text-muted">Page 1 / 1</span>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="import-next-btn" disabled>Next</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-info" id="import-submit-btn" onclick="importSelectedQuestions()">Import Selected Questions</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Unsaved changes modal -->
     <div class="modal fade" id="unsavedChangesModal" tabindex="-1" role="dialog" aria-labelledby="unsavedChangesModalLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog" role="document">
@@ -749,6 +819,7 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
     </script>
     <script src="../dist/js/assessment_image_buffer.js"></script>
     <script src="../dist/js/examination.js?v=90poklk"></script>
+    <script src="../dist/js/import_question.js?v=001"></script>
     <script>
         // alert("mkm")
         // Add event listeners for form changes
