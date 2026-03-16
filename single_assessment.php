@@ -602,6 +602,7 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                             <!-- Add New Question: only visible on last page or when there is a single page -->
                             <button type="button" class="btn btn-primary" id="add-question-btn" <?= ($page != $total_pages) ? 'style="display:none"' : '' ?>>Add New Question</button>
                             <button type="button" class="btn btn-info" id="import-question-btn" onclick="openImportQuestionModal()" <?= ($page != $total_pages) ? 'style="display:none"' : '' ?>>Import Question</button>
+                            <button type="button" class="btn btn-success" id="ai-question-btn" onclick="openAIGeneratorModal()" <?= ($page != $total_pages) ? 'style="display:none"' : '' ?>>Generate Question with AI</button>
                             <!-- <button type="button" class="btn btn-success ml-auto" id="save-page-btn">Save Page</button> -->
                             <button type="button" class="btn btn-primary d-block" id="save-all-btn">Save Assessment</button>
                         </div>
@@ -748,6 +749,54 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
         </div>
     </div>
 
+    <!-- AI Question Generator Modal -->
+    <div class="modal fade" id="aiQuestionGeneratorModal" tabindex="-1" role="dialog" aria-labelledby="aiQuestionGeneratorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="aiQuestionGeneratorModalLabel">Generate Questions with AI</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body bg-light">
+                    <div class="form-group border bg-white p-2 rounded">
+                        <label>Topic / Context</label>
+                        <textarea class="form-control ai-summernote" id="ai_topic" rows="3" placeholder="E.g., Newton's laws of motion, Photosynthesis..."></textarea>
+                    </div>
+                    <div class="form-group border bg-white p-2 rounded">
+                        <label>Level of Difficulty</label>
+                        <select class="form-control" id="ai_difficulty">
+                            <option value="Easy">Easy</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="Hard">Hard</option>
+                        </select>
+                    </div>
+                    <div class="form-group border bg-white p-2 rounded">
+                        <label>Number of Questions</label>
+                        <input type="number" class="form-control" id="ai_num_questions" value="3" min="1" max="5">
+                        <small class="text-muted">Maximum 5 questions per generation.</small>
+                    </div>
+                    <div id="ai-loading-indicator" style="display:none; text-align:center; padding:10px;">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <p class="mt-2 mb-0">Generating questions with AI. This may take a moment...</p>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-between">
+                    <div>
+                        <span id="ai-usage-display" class="badge badge-info p-2" style="display:none; font-size: 14px;">Daily Limit: <span id="ai-usage-count">0</span> / 5</span>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-success" id="ai-generate-btn" onclick="generateQuestionsWithAI()">Generate</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Unsaved changes modal -->
     <div class="modal fade" id="unsavedChangesModal" tabindex="-1" role="dialog" aria-labelledby="unsavedChangesModalLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog" role="document">
@@ -820,6 +869,8 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
     <script src="../dist/js/assessment_image_buffer.js"></script>
     <script src="../dist/js/examination.js?v=90poklk"></script>
     <script src="../dist/js/import_question.js?v=001"></script>
+    <script src="https://unpkg.com/turndown/dist/turndown.js"></script>
+    <script src="../dist/js/ai_question_generator.js?v=001"></script>
     <script>
         // alert("mkm")
         // Add event listeners for form changes

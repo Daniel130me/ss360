@@ -538,6 +538,7 @@ if ($assessment_id) {
                                             <div class="d-flex mt-3 mb-3" style="gap:10px;">
                                                 <button type="button" class="btn btn-primary" id="add-question-btn">Add New Question</button>
                                                 <button type="button" class="btn btn-info" onclick="openImportQuestionModal()">Import Question</button>
+                                                <button type="button" class="btn btn-success" onclick="openAIGeneratorModal()">Generate Question with AI</button>
                                             </div>
                                             <div class="d-flex justify-content-end mb-3">
                                                 <button type="button" class="btn btn-primary" onclick="saveEntireAssessment_for_create_assessment()">Save Assessment</button>
@@ -683,6 +684,55 @@ if ($assessment_id) {
             </div>
         </div>
 
+        <!-- AI Question Generator Modal -->
+        <div class="modal fade" id="aiQuestionGeneratorModal" tabindex="-1" role="dialog" aria-labelledby="aiQuestionGeneratorModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title" id="aiQuestionGeneratorModalLabel">Generate Questions with AI</h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body bg-light">
+                        <div class="form-group border bg-white p-2 rounded">
+                            <label>Topic / Context</label>
+                            <textarea class="form-control ai-summernote" id="ai_topic" rows="3" placeholder="E.g., Newton's laws of motion, Photosynthesis..."></textarea>
+                        </div>
+                        <div class="form-group border bg-white p-2 rounded">
+                            <label>Level of Difficulty</label>
+                            <select class="form-control" id="ai_difficulty">
+                                <option value="Easy">Easy</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="Hard">Hard</option>
+                            </select>
+                        </div>
+                        <div class="form-group border bg-white p-2 rounded">
+                            <label>Number of Questions</label>
+                            <input type="number" class="form-control" id="ai_num_questions" value="3" min="1" max="5">
+                            <small class="text-muted">Maximum 5 questions per generation.</small>
+                        </div>
+                        <div id="ai-loading-indicator" style="display:none; text-align:center; padding:10px;">
+                            <div class="spinner-border text-success" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <p class="mt-2 mb-0">Generating questions with AI. This may take a moment...</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-between">
+                        <div>
+                            <span id="ai-usage-display" class="badge badge-info p-2" style="display:none; font-size: 14px;">Daily Limit: <span id="ai-usage-count">0</span> / 5</span>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-success" id="ai-generate-btn" onclick="generateQuestionsWithAI()">Generate</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
         <script src="../plugins/jquery/jquery.min.js"></script>
         <!-- Bootstrap 4 -->
         <script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -722,6 +772,8 @@ if ($assessment_id) {
         <script src="../dist/js/assessment_image_buffer.js"></script>
         <script src="../dist/js/examination.js?v=0032itiswellnow"></script>
         <script src="../dist/js/import_question.js?v=001"></script>
+        <script src="https://unpkg.com/turndown/dist/turndown.js"></script>
+        <script src="../dist/js/ai_question_generator.js?v=001"></script>
         <script>
             // Add event listeners for form changes
             $(document).ready(function() {
