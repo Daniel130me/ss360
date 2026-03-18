@@ -1,4 +1,4 @@
-# index.php
+index.php
 build.zip
 css.zip
 error_log
@@ -6,11 +6,8 @@ skulz(2).zip
 skulz(3).zip
 skulz.zip
 ss360(2).zip
-error_log
-onboard/error_log
-ss360-workspace.code-workspace
-PHPMailer.zip
-PHPMailer/
-PHPMailer-old
-vendor
+well-known (4).zip
+uploads/*
 uploads
+oldfiles
+uploads/

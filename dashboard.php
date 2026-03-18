@@ -16,7 +16,7 @@ $school_id = $_SESSION['school_id'];
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Dashboard | <?= get_staff_fullname_by_id($_SESSION['userid']) ?></title>
+    <title>Dashboard | <?= get_staff_fullname_by_id($_SESSION['userid'])?></title>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
@@ -136,13 +136,11 @@ $school_id = $_SESSION['school_id'];
                         <div class="user-panel d-flex align-items-center">
                             <span class="material-symbols-outlined">arrow_drop_down</span>
                             <div class="image pl-0">
-                                <img src="../uploads/<?= $_SESSION['staff_photo'] ?>" class="img-circle elevation-2"
-                                    alt="User Image">
+                                <img src="../uploads/<?= $_SESSION['staff_photo'] ?>" class="img-circle elevation-2" alt="User Image">
                             </div>
                             <div class="info d-none d-sm-inline-block">
                                 <p style="font-size: 14px;" class="mb-0 d-block">
-                                    <?= $_SESSION['firstname'] . ' ' . $_SESSION['lastname'] ?>
-                                </p>
+                                    <?= $_SESSION['firstname'] . ' ' . $_SESSION['lastname'] ?></p>
                                 <p style="font-size: 12px;" class="d-block mb-0 accent">
                                     <?= get_staff_type_in_name($_SESSION['staff_type']) ?>
                                 </p>
@@ -157,13 +155,13 @@ $school_id = $_SESSION['school_id'];
                             <span class="material-symbols-outlined mr-2">lock</span> Change PIN
                         </a>
                         <?php
-                        if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
+                            if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
                             ?>
-                            <a href="my_payment" class="dropdown-item text-muted d-flex">
-                                <span class="material-symbols-outlined mr-2">payments</span> Billing
-                            </a>
-                            <?php
-                        } ?>
+                        <a href="my_payment" class="dropdown-item text-muted d-flex">
+                            <span class="material-symbols-outlined mr-2">payments</span> Billing
+                        </a>
+                        <?php
+                            }?>
                         <a href="logout" class="dropdown-item text-muted d-flex">
                             <span class="material-symbols-outlined mr-2">logout</span> Logout
                         </a>
@@ -179,12 +177,11 @@ $school_id = $_SESSION['school_id'];
         <aside class="main-sidebar sidebar-light-primary elevation-4">
             <!-- Brand Logo -->
             <a href="" class="brand-link">
-                <img src="../uploads/<?= $_SESSION['logo'] ?>" alt="<?= $_SESSION['school_name'] ?>" class="brand-image"
-                    style="opacity: .8">
+                <img src="../uploads/<?= $_SESSION['logo'] ?>" alt="<?= $_SESSION['school_name'] ?>" class="brand-image" style="opacity: .8">
                 <span class="brand-text font-weight-light" style="visibility: hidden;">Rus</span>
             </a>
-
-
+           
+            
             <!-- <div href="" class="px-15 pt-15 border-bottom" style="padding-bottom: 30px;">
                 <img src="../uploads/<= $_SESSION['logo'] ?>" style="height: 200px; object-fit:cover;" alt="Logo"
                     class="brand-image img-circle elevation-5 w-100">
@@ -211,7 +208,7 @@ $school_id = $_SESSION['school_id'];
                         </li>
                         <?php
                         if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
-                            ?>
+                        ?>
                             <li class="nav-item">
                                 <a href="settings" class="nav-link">
                                     <p class="d-flex">
@@ -220,7 +217,7 @@ $school_id = $_SESSION['school_id'];
                                     </p>
                                 </a>
                             </li>
-                            <?php
+                        <?php
                         }
                         ?>
                         <li class="nav-item">
@@ -255,8 +252,8 @@ $school_id = $_SESSION['school_id'];
                                 </p>
                             </a>
                         </li>
-
-
+                        
+                        
                         <li class="nav-item">
                             <a href="post_scores" class="nav-link">
                                 <p class="d-flex">
@@ -293,19 +290,19 @@ $school_id = $_SESSION['school_id'];
                             <a href="staff_attendance" class="nav-link">
                                 <p class="d-flex">
                                     <i class="material-symbols-outlined pr-2">add_chart</i>
-                                    Staff Attendance
+                                   Staff Attendance
                                 </p>
                             </a>
                         </li>
-                        <?php if ($_SESSION['school_id'] == 27 || $_SESSION['school_id'] == 13) { ?>
-                            <li class="nav-item">
-                                <a href="lesson_note" class="nav-link">
-                                    <p class="d-flex">
-                                        <i class="material-symbols-outlined pr-2">list</i>
-                                        Lesson Note
-                                    </p>
-                                </a>
-                            </li>
+                        <?php if($_SESSION['school_id'] == 27 || $_SESSION['school_id']==13){  ?>
+                        <li class="nav-item">
+                            <a href="lesson_note" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">list</i>
+                                    Lesson Note
+                                </p>
+                            </a>
+                        </li>
                         <?php } ?>
                         <li class="nav-item">
                             <a href="assessment" class="nav-link">
@@ -315,7 +312,7 @@ $school_id = $_SESSION['school_id'];
                                 </p>
                             </a>
                         </li>
-
+                        
                         <li class="nav-item">
                             <a href="payments" class="nav-link">
                                 <p class="d-flex">
@@ -353,8 +350,7 @@ $school_id = $_SESSION['school_id'];
                 <!-- /.sidebar-menu -->
             </div>
             <a href="" class="brand-link" style="background:white; position: fixed; bottom:0;">
-                <img src="../dist/img/company_logo.png" alt="Schoolsuite360" class="brand-image img-circle elevation-3"
-                    style="opacity: .8">
+                <img src="../dist/img/company_logo.png" alt="Schoolsuite360" class="brand-image img-circle elevation-3" style="opacity: .8">
                 <span class="brand-text font-weight-light">Schoolsuite360</span>
             </a>
             <!-- /.sidebar -->
@@ -500,8 +496,7 @@ $school_id = $_SESSION['school_id'];
                     <div class="row">
                         <div class="col-md-4">
                             <div class="card card-primary">
-                                <div class="card-header border-transparent"
-                                    style="border-radius: 10px 10px; box-shadow: 0px 4px 12px -2px #adaaaa;">
+                                <div class="card-header border-transparent" style="border-radius: 10px 10px; box-shadow: 0px 4px 12px -2px #adaaaa;">
                                     <p class="card-title">Notice</p>
 
                                     <div class="card-tools">
@@ -537,7 +532,7 @@ $school_id = $_SESSION['school_id'];
                                     <ul class="users-list clearfix px-2">
                                         <?php
                                         if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
-                                            ?>
+                                        ?>
                                             <li style="width: 70px;">
                                                 <a href="settings" class="btn btn-circle btn-primary mb-1">
                                                     <i class="material-symbols-outlined">tune</i>
@@ -550,12 +545,12 @@ $school_id = $_SESSION['school_id'];
                                                 </a>
                                                 <a href="settings" class="users-list-name">Billing</a>
                                             </li>
-                                            <li style="width: 90px;">
-                                                <a href="staff_attendance" class="btn btn-circle btn-primary mb-1">
-                                                    <i class="material-symbols-outlined">add_chart</i>
-                                                </a>
-                                                <a href="staff_attendance" class="users-list-name">Staff Attendance</a>
-                                            </li>
+                                        <li style="width: 90px;">
+                                            <a href="staff_attendance" class="btn btn-circle btn-primary mb-1">
+                                                <i class="material-symbols-outlined">add_chart</i>
+                                            </a>
+                                            <a href="staff_attendance" class="users-list-name">Staff Attendance</a>
+                                        </li>
                                         <?php } ?>
                                         <li style="width: 78px;">
                                             <a href="profile" class="btn btn-circle btn-primary mb-1">
@@ -615,13 +610,13 @@ $school_id = $_SESSION['school_id'];
                                         </li>
                                         <?php
                                         if ($_SESSION['manage_payment'] == 1) {
-                                            ?>
-                                            <li style="width: 90px;">
-                                                <a href="payments" class="btn btn-circle btn-primary mb-1">
-                                                    <i class="material-symbols-outlined">payments</i>
-                                                </a>
-                                                <a href="payments" class="users-list-name">Payments</a>
-                                            </li>
+                                        ?>
+                                        <li style="width: 90px;">
+                                            <a href="payments" class="btn btn-circle btn-primary mb-1">
+                                                <i class="material-symbols-outlined">payments</i>
+                                            </a>
+                                            <a href="payments" class="users-list-name">Payments</a>
+                                        </li>
                                         <?php } ?>
                                     </ul>
                                     <!-- /.users-list -->
@@ -629,8 +624,7 @@ $school_id = $_SESSION['school_id'];
                                 <!-- /.card-footer -->
                             </div>
                             <div class="card card-primary">
-                                <div class="card-header border-transparent"
-                                    style="border-radius: 10px 10px; box-shadow: 0px 4px 12px -2px #adaaaa;">
+                                <div class="card-header border-transparent" style="border-radius: 10px 10px; box-shadow: 0px 4px 12px -2px #adaaaa;">
                                     <p class="card-title">Classes</p>
 
                                     <div class="card-tools">
@@ -654,7 +648,7 @@ $school_id = $_SESSION['school_id'];
                                                 <?php
                                                 $select = mysqli_query($conn, "SELECT id, classname FROM class WHERE school_id='{$_SESSION['school_id']}'");
                                                 while ($row = mysqli_fetch_array($select)) {
-                                                    ?>
+                                                ?>
                                                     <tr>
                                                         <td><?= $row['classname'] ?></td>
                                                         <td><?= get_no_of_student_by_id($row['id']) ?></td>
@@ -669,7 +663,7 @@ $school_id = $_SESSION['school_id'];
 
                                 <!-- /.card-footer -->
                             </div>
-
+                            
                         </div>
                         <!-- Left col -->
                         <div class="col-md-8">
@@ -677,8 +671,7 @@ $school_id = $_SESSION['school_id'];
                                 <div class="col-md-12">
                                     <!-- USERS LIST -->
                                     <div class="card">
-                                        <div class="card-header"
-                                            style="background-color: #f9eeee91; border-bottom:1px solid #ffe6e6;">
+                                        <div class="card-header" style="background-color: #f9eeee91; border-bottom:1px solid #ffe6e6;">
                                             <p class="card-title">List of Staff</p>
 
                                             <div class="card-tools">
@@ -694,12 +687,11 @@ $school_id = $_SESSION['school_id'];
                                                 <?php
                                                 $selectstaff = mysqli_query($conn, "SELECT s.photo,s.firstname,s.lastname, c.classname, t.type FROM staff s, class c, staff_type t WHERE t.id=s.staff_type AND c.id=s.class_id AND s.school_id='{$_SESSION['school_id']}' ORDER BY s.lastname ASC LIMIT 10");
                                                 while ($row = mysqli_fetch_array($selectstaff)) {
-                                                    ?>
+                                                ?>
 
                                                     <li style="width: 90px;">
                                                         <img src="../uploads/<?= $row['photo'] ?>" class="elevation-1"
-                                                            style="height: 70px; width: 70px; border: 3px solid #f3f3f3; object-fit: cover;"
-                                                            alt="User Image">
+                                                            style="height: 70px; width: 70px; border: 3px solid #f3f3f3; object-fit: cover;" alt="User Image">
                                                         <a class="users-list-name"><?= $row['lastname'] ?></a>
                                                         <span class="users-list-date"><?= $row['type'] ?></span>
                                                     </li>
@@ -714,8 +706,7 @@ $school_id = $_SESSION['school_id'];
                                         <!-- /.card-footer -->
                                     </div>
                                     <div class="card">
-                                        <div class="card-header"
-                                            style="background-color: #f9eeee91; border-bottom:1px solid #ffe6e6;">
+                                        <div class="card-header" style="background-color: #f9eeee91; border-bottom:1px solid #ffe6e6;">
                                             <p class="card-title">List of Students</p>
 
                                             <div class="card-tools">
@@ -737,13 +728,12 @@ $school_id = $_SESSION['school_id'];
                                                     $selectstaff = mysqli_query($conn, "SELECT s.id,s.photo,s.firstname,s.lastname, c.classname FROM students s, class c WHERE c.id=s.class_id AND class_id='{$_SESSION['class_id']}' AND s.school_id='{$_SESSION['school_id']}' ORDER BY s.lastname ASC");
                                                 }
                                                 while ($row = mysqli_fetch_array($selectstaff)) {
-                                                    ?>
+                                                ?>
 
                                                     <li style="width: 90px;">
                                                         <a href="students?id=<?= $row['id'] ?>">
                                                             <img src="../uploads/<?= $row['photo'] ?>" class="elevation-1"
-                                                                style="height: 70px; width: 70px; border: 3px solid #f3f3f3; object-fit: cover;"
-                                                                alt="User Image">
+                                                                style="height: 70px; width: 70px; border: 3px solid #f3f3f3; object-fit: cover;" alt="User Image">
                                                             <a class="users-list-name"><?= $row['lastname'] ?></a>
                                                             <span class="users-list-date"><?= $row['classname'] ?></span>
                                                         </a>

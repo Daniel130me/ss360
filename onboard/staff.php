@@ -22,9 +22,9 @@ include_once("../model/connect.php");
   <!-- Theme style -->
   <link rel="stylesheet" href="../dist/css/adminlte.css">
   <style>
-    /* Background image for the onboard pages */
+   /* Background image for the onboard pages */
     body.register-page {
-      background-image: url('../dist/img/school_bg.jpg');
+      background-image: url('../school_bg.jpg');
       background-size: cover;
       background-position: center center;
       background-repeat: no-repeat;
@@ -48,8 +48,6 @@ include_once("../model/connect.php");
       position: relative;
       z-index: 1;
     }
-  </style>
-  <style>
     @media (max-width: 576px) {
       .photo_resize {
         height: 215px;
@@ -59,15 +57,14 @@ include_once("../model/connect.php");
   </style>
 </head>
 
-<body class="hold-transition register-page mt-5">
+<body class="hold-transition register-page" style="">
   <div class="container" style="">
-  <div class="container">
     <!-- <div class="register-box" style="max-width: 60%; width:auto;"> -->
 
 
     <div class=>
       <div class="register-logo">
-        <p>Register</p>
+        <p class="text-white">Register</p>
       </div>
       <div class="">
         <!-- <p class="login-box-msg">A little about your school</p> -->

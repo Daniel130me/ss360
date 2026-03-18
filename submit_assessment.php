@@ -34,7 +34,7 @@ try {
     mysqli_stmt_close($stmt);
     
     // Get total number of questions first
-    $total_query = "SELECT COUNT(*) as total FROM questions WHERE ass_id = ?";
+    $total_query = "SELECT COUNT(*) as total FROM questions WHERE ass_id = ? and deleted=0";
     $stmt = mysqli_prepare($conn, $total_query);
     if (!$stmt) {
         throw new Exception("Prepare failed: (" . $conn->errno . ") " . $conn->error);
@@ -59,7 +59,7 @@ try {
         $processed_questions[] = $question_id;
 
         // Check if this question belongs to this assessment
-        $question_check = "SELECT id FROM questions WHERE id = ? AND ass_id = ?";
+        $question_check = "SELECT id FROM questions WHERE id = ? AND ass_id = ? and deleted=0";
         $stmt = mysqli_prepare($conn, $question_check);
         if (!$stmt) {
             throw new Exception("Prepare failed: (" . $conn->errno . ") " . $conn->error);
@@ -76,7 +76,7 @@ try {
         mysqli_stmt_close($stmt);
 
         // Check if answer is correct
-        $sql = "SELECT answer FROM options WHERE question_id = ? AND id = ?";
+        $sql = "SELECT answer FROM options WHERE question_id = ? and deleted=0 AND id = ?";
         $stmt = mysqli_prepare($conn, $sql);
         if (!$stmt) {
             throw new Exception("Prepare failed: (" . $conn->errno . ") " . $conn->error);
@@ -169,6 +169,7 @@ try {
                 throw new Exception("Query failed: " . mysqli_error($conn));
             }
         }
+
 
     // Delete progress data
     mysqli_query($conn, "DELETE FROM assessment_progress 

@@ -1,488 +1,745 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- SEO Meta Tags -->
-    <meta name="description"
-        content="SchoolSuite360">
-    <meta name="author" content="node71.com">
-
-    <!-- OG Meta Tags to improve the way the post looks when you share the page on LinkedIn, Facebook, Google+ -->
-    <meta property="og:site_name" content="" /> <!-- website name -->
-    <meta property="og:site" content="" /> <!-- website link -->
-    <meta property="og:title" content="" /> <!-- title shown in the actual shared post -->
-    <meta property="og:description" content="" /> <!-- description shown in the actual shared post -->
-    <meta property="og:image" content="" /> <!-- image link, make sure it's jpg -->
-    <meta property="og:url" content="" /> <!-- where do you want your post to link to -->
-    <meta property="og:type" content="article" />
-
-    <!-- Website Title -->
-    <title>SchoolSuite360</title>
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=search" />
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&display=swap&subset=latin-ext" rel="stylesheet">
-    <link href="css/bootstrap.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <!--<link href="css/fontawesome-all.css" rel="stylesheet">-->
-    <link href="css/swiper.css" rel="stylesheet">
-    <link href="css/magnific-popup.css" rel="stylesheet">
-    <link href="css/styles.css" rel="stylesheet">
-
-    <!-- Favicon  -->
-    <link rel="icon" href="images/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- OG Meta Tags to improve the way the post looks when you share the page on LinkedIn, Facebook, Google+ -->
+<meta property="og:site_name" content="SchoolSuite360" /> <!-- website name -->
+<meta property="og:site" content="https://schoolsuite360.com" /> <!-- website link -->
+<meta property="og:title" content="SchoolSuite360 – Modern School Management Solution" /> <!-- title shown in the actual shared post -->
+<meta property="og:description" content="Empowering schools with smart tools for communication, scheduling, and student management. Discover the future of education with SchoolSuite360." /> <!-- description shown in the actual shared post -->
+<meta property="og:image" content="https://schoolsuite360.com/images/og-image.jpg" /> <!-- image link, make sure it's jpg -->
+<meta property="og:url" content="https://schoolsuite360.com/index.html" /> <!-- where do you want your post to link to -->
+<meta property="og:type" content="article" />
+    <title>SchoolSuite360 - Modern School Management Solution</title>
+    <!-- Load Tailwind CSS for utility classes -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Font Awesome for feature and social icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMD/CD+QCNI5f7HofT0T6W5h4vR8t/M9eK79l1fC3p70t5N5p5D5r0Vf5C5T5E5Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        .card {
-            border-radius: 10px;
-        }
-        .pad-20 {
-            padding-left: 20px;
+        /* Configure Tailwind to use Inter font and custom colors */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+        /* Custom Variables for a sleek, light aesthetic with vibrant gradients */
+        :root {
+            --color-primary-light: #FFFFFF; /* Main background - White */
+            --color-secondary-light: #F9FAFB; /* Near-white background for subtle contrast */
+            --color-text-dark: #1F2937; /* Dark text for light backgrounds */
+            --color-anchor-dark: #374151;
+            
+            /* Primary Gradient Colors (NEW: Blue/Indigo) */
+            --color-gradient-start: #3B82F6; /* Blue-500 */
+            --color-gradient-end: #4F46E5; /* Indigo-600 */
+            
+            /* Secondary Accent Colors (Purple, Orange, Green) */
+            --color-purple: #8B5CF6; /* Violet */
+            --color-orange: #F97316; /* Orange */
+            --color-green: #10B981; /* Emerald */
         }
 
-        .pad-20 li {
-            /* color: red; */
-            font-size: 15px;
-            line-height: 20px;
-            margin-bottom: 5px;
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-primary-light);
+            color: var(--color-text-dark);
+            transition: background-color 0.3s, color 0.3s;
+            scroll-behavior: smooth;
         }
 
-        .feature_card_body .card-title,
-        .why_card_body .card-title {
-            font-size: 18px;
+        /* --- Sticky Navbar Styling (LIGHT transparent background) --- */
+        .sticky-nav {
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+        
+        /* Desktop Menu Link Colors */
+        .nav-link-dark {
+             color: var(--color-anchor-dark);
+             transition: color 0.2s ease-in-out;
+        }
+        .nav-link-dark:hover {
+             color: var(--color-gradient-end); /* New Indigo hover */
         }
 
-        .why_card_body .card-body-p {
-            font-size: 15px;
-            margin-bottom: 0;
+        /* --- Custom Primary Button Style (Blue/Indigo Gradient) --- */
+        .btn-primary {
+            background: linear-gradient(90deg, var(--color-gradient-start), var(--color-gradient-end));
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            /* Using a blue/indigo shadow now */
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3); 
+            border-radius: 9999px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.5); 
+        }
+
+        /* --- Card/Feature Hover Effect for LIGHT sections --- */
+        .feature-card-light {
+            background-color: var(--color-card-bg-light);
+            transition: all 0.3s ease-in-out;
+            border: 1px solid #E5E7EB;
+        }
+
+        .feature-card-light:hover {
+            transform: translateY(-5px);
+            /* Updated shadow color */
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.15); 
+            border-color: var(--color-gradient-end);
+        }
+        
+        /* --- Base Gradient Border Utility (used on Why Us cards) --- */
+        .gradient-border-base {
+            position: relative;
+            z-index: 1;
+            background-color: var(--color-card-bg-light); 
+            border-radius: 0.75rem;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        /* Define the common mask for the gradient border effect */
+        .gradient-border-base::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 0.75rem;
+            padding: 2px;
+            -webkit-mask: 
+                linear-gradient(#fff 0 0) content-box, 
+                linear-gradient(#fff 0 0);
+            mask: 
+                linear-gradient(#fff 0 0) content-box, 
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            z-index: -1;
+            opacity: 0.5;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        /* Hover effects */
+        .gradient-border-base:hover::before {
+            opacity: 1;
+            transform: translateY(-3px);
+        }
+        .gradient-border-base:hover {
+             transform: translateY(-3px);
+             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 1. Primary Blue/Indigo Gradient (Default) */
+        .gradient-border-blue-indigo::before {
+            background: linear-gradient(to right, var(--color-gradient-start), var(--color-gradient-end));
+        }
+
+        /* 2. Purple/Orange Gradient (Existing Accent) */
+        .gradient-border-purple-orange::before {
+            background: linear-gradient(to right, var(--color-purple), var(--color-orange));
+        }
+
+        /* 3. Green/Indigo Gradient (Green blending with New Blue) */
+        .gradient-border-green-indigo::before {
+            background: linear-gradient(to right, var(--color-green), var(--color-gradient-end));
+        }
+
+        /* Utility Classes for secondary accent colors */
+        .text-purple { color: var(--color-purple); }
+        .text-orange { color: var(--color-orange); }
+        .text-green { color: var(--color-green); }
+
+
+        /* Input styles focus color updated to new blue */
+        .input-light {
+            background-color: #F3F4F6;
+            color: var(--color-text-dark);
+            border-color: #D1D5DB;
+            transition: all 0.15s ease-in-out;
+        }
+        .input-light:focus {
+            border-color: var(--color-gradient-end) !important;
+            box-shadow: 0 0 0 1px var(--color-gradient-end) !important;
+        }
+
+        /* --- Scroll Animation States (Intersection Observer) --- */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .scroll-animate.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Mobile Menu Styles --- */
+        .mobile-menu-open {
+            display: flex;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: white; 
+            flex-direction: column;
+            padding: 1rem 0;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .mobile-menu-open .nav-link-dark {
+             padding: 0.75rem 1rem;
+             color: var(--color-text-dark);
+        }
+        .mobile-menu-open .nav-link-dark:hover {
+             background-color: #F3F4F6;
+             color: var(--color-gradient-end); /* New Indigo hover */
+        }
+
+        /* Carousel Styles */
+        .carousel-item {
+            display: none;
+            width: 100%;
+            height: auto; 
+            max-height: 600px;
+            object-fit: cover; 
+            transition: opacity 0.5s ease-in-out;
+        }
+        .carousel-item.active { display: block; opacity: 1; }
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #D1D5DB;
+            transition: background-color 0.3s, transform 0.3s;
+            cursor: pointer;
+            border: 1px solid #9CA3AF;
+        }
+        .carousel-dot.active {
+            background-color: var(--color-gradient-end);
+            border-color: var(--color-gradient-end);
+            transform: scale(1.2);
         }
     </style>
 </head>
+<body>
+    <!-- Sticky Navigation Bar -->
+    <header id="navbar" class="fixed top-0 left-0 w-full z-50 transition-all duration-300">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <!-- Logo/Title - Uses the primary gradient accent (Blue/Indigo) -->
+            <a href="#home" class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg p-1">
+                SS360
+            </a>
 
-<body data-spy="scroll" data-target=".fixed-top">
-
-    <!-- Preloader -->
-    <div class="spinner-wrapper">
-        <div class="spinner">
-            <div class="bounce1"></div>
-            <div class="bounce2"></div>
-            <div class="bounce3"></div>
-        </div>
-    </div>
-    <!-- end of preloader -->
-
-
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
-        <div class="container">
-
-            <!-- Text Logo - Use this if you don't have a graphic logo -->
-            <!-- <a class="navbar-brand logo-text page-scroll" href="index.html">Tivo</a> -->
-
-            <!-- Image Logo -->
-            <a class="navbar-brand logo-image" href="index.html"><img src="images/ss360 logo.png" alt="alternative"></a>
-
-            <!-- Mobile Menu Toggle Button -->
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
-                aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-awesome fas fa-bars"></span>
-                <span class="navbar-toggler-awesome fas fa-times"></span>
-            </button>
-            <!-- end of mobile menu toggle button -->
-
-            <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link page-scroll" href="#header">HOME <span class="sr-only">(current)</span></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link page-scroll" href="#features">FEATURES</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link page-scroll" href="#whyus">WHY US</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link page-scroll" href="#screenshot">SCREENSHOT</a>
-                    </li>
-                </ul>
+            <!-- Desktop Menu -->
+            <div class="hidden lg:flex space-x-8 items-center" id="desktop-menu">
+                <a href="#home" class="nav-link-dark font-medium">Home</a>
+                <a href="#features" class="nav-link-dark font-medium">Features</a>
+                <a href="#why-us" class="nav-link-dark font-medium">Why Us</a>
+                <a href="#screenshots" class="nav-link-dark font-medium">Screenshots</a>
+                <a href="#contact" class="nav-link-dark font-medium">Contact</a>
+                <a href="#contact" class="btn-primary text-white font-semibold px-6 py-2">
+                    Get Started
+                </a>
             </div>
-        </div> <!-- end of container -->
-    </nav> <!-- end of navbar -->
-    <!-- end of navigation -->
+
+            <!-- Mobile Menu Toggle -->
+            <button id="menu-toggle" class="lg:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <svg id="menu-icon-open" class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+                <svg id="menu-icon-close" class="w-6 h-6 text-gray-800 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </nav>
+
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden lg:hidden mobile-menu-open w-full">
+            <a href="#home" class="nav-link-dark block">Home</a>
+            <a href="#features" class="nav-link-dark block">Features</a>
+            <a href="#why-us" class="nav-link-dark block">Why Us</a>
+            <a href="#screenshots" class="nav-link-dark block">Screenshots</a>
+            <a href="#contact" class="nav-link-dark block">Contact</a>
+            <div class="p-4">
+                <a href="#contact" class="btn-primary text-white font-semibold w-full block text-center px-6 py-2">
+                    Get Started
+                </a>
+            </div>
+        </div>
+    </header>
+    <main>
+        <!-- 1. Home Section (Hero - LIGHT, vibrant accents) -->
+        <section id="home" class="container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 text-center min-h-[85vh] flex items-center justify-center bg-white">
+            <div class="max-w-4xl scroll-animate">
+                <h1 class="text-5xl sm:text-7xl lg:text-8xl font-extrabold leading-tight mb-6 text-gray-900">
+                    <!-- Updated gradient to Blue/Indigo -->
+                    Simplified
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-600">School Management</span>
+                    <br> Solution
+                </h1>
+                <p class="text-xl sm:text-2xl text-gray-600 mb-10">
+                    Simplify administration, enhance learning, and connect your entire educational ecosystem with a single, powerful solution.
+                </p>
+                <a href="#contact" class="btn-primary text-white font-bold text-lg px-10 py-4 inline-block">
+                    Request a Demo Today
+                </a>
+            </div>
+        </section>
+
+        <!-- 2. Features Section (Subtle Light Background) - Uses all new colors -->
+        <section id="features" class="py-20 lg:py-32 bg-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-2xl mx-auto text-center mb-16 scroll-animate">
+                    <!-- Accent text updated to a solid blue -->
+                    <span class="text-lg font-semibold text-indigo-600 uppercase tracking-wider">Core Capabilities</span>
+                    <h2 class="text-4xl sm:text-5xl font-bold mt-2 text-gray-900">Everything You Need in One Place</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Feature Card 1: New Blue Accent -->
+                    <div class="feature-card-light p-8 rounded-xl scroll-animate">
+                        <i class="fas fa-users text-4xl text-indigo-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-3 text-gray-900">Student Management</h3>
+                        <p class="text-gray-600">Streamline admissions, enrollments, and academic records with easy-to-use digital profiles.</p>
+                    </div>
+
+                    <!-- Feature Card 2: Purple Accent -->
+                    <div class="feature-card-light p-8 rounded-xl scroll-animate">
+                        <i class="fas fa-chalkboard-teacher text-4xl text-purple mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-3 text-gray-900">Staff Management</h3>
+                        <p class="text-gray-600">Manage teacher schedules, performance reviews, and administrative access securely and efficiently.</p>
+                    </div>
+
+                    <!-- Feature Card 3: Orange Accent -->
+                    <div class="feature-card-light p-8 rounded-xl scroll-animate">
+                        <i class="fas fa-calendar-check text-4xl text-orange mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-3 text-gray-900">Attendance Tracking</h3>
+                        <p class="text-gray-600">Automated, real-time attendance logging with parent notifications and comprehensive reporting.</p>
+                    </div>
+
+                    <!-- Feature Card 4: Green Accent -->
+                    <div class="feature-card-light p-8 rounded-xl scroll-animate">
+                        <i class="fas fa-clipboard-list text-4xl text-green mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-3 text-gray-900">Assessment Management</h3>
+                        <p class="text-gray-600">Design, administer, and analyze student assessments digitally, instantly calculating results.</p>
+                    </div>
+
+                    <!-- Feature Card 5: New Blue Accent -->
+                    <div class="feature-card-light p-8 rounded-xl scroll-animate">
+                        <i class="fas fa-comments text-4xl text-indigo-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-3 text-gray-900">Parent Portal & Comms</h3>
+                        <p class="text-gray-600">Foster transparent communication with a dedicated parent portal for grades, attendance, and announcements.</p>
+                    </div>
+
+                    <!-- Feature Card 6: New Blue Accent -->
+                    <div class="feature-card-light p-8 rounded-xl scroll-animate">
+                        <i class="fas fa-graduation-cap text-4xl text-indigo-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-3 text-gray-900">Customizable Grading</h3>
+                        <p class="text-gray-600">Flexible system to accommodate various curriculum and grading scales, tailored to your institution.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Why Us Section (LIGHT/WHITE with varied Gradient Accents) -->
+        <section id="why-us" class="py-20 lg:py-32 bg-white text-gray-900">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-2xl mx-auto text-center mb-16 scroll-animate">
+                    <!-- Accent text updated to a solid blue -->
+                    <span class="text-lg font-semibold text-indigo-600 uppercase tracking-wider">Our Commitment</span>
+                    <h2 class="text-4xl sm:text-5xl font-bold mt-2 text-gray-900">Why SchoolSuite360 Stands Out</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <!-- Why Us Item 1: Primary Blue/Indigo Gradient Border -->
+                    <div class="flex items-start gradient-border-base gradient-border-blue-indigo p-6 rounded-xl scroll-animate">
+                        <div class="text-5xl text-indigo-600 mr-6 flex-shrink-0">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-semibold mb-2">Simplicity</h3>
+                            <p class="text-gray-600">An incredibly intuitive interface ensures minimal training time and maximum user adoption among all staff, students, and parents.</p>
+                        </div>
+                    </div>
+
+                    <!-- Why Us Item 2: Purple/Orange Gradient Border -->
+                    <div class="flex items-start gradient-border-base gradient-border-purple-orange p-6 rounded-xl scroll-animate">
+                        <div class="text-5xl text-purple mr-6 flex-shrink-0">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-semibold mb-2">Flexibility</h3>
+                            <p class="text-gray-600">Highly customizable modules adapt to the unique needs of primary schools, high schools, and specialized academies alike.</p>
+                        </div>
+                    </div>
+
+                    <!-- Why Us Item 3: Green/Indigo Gradient Border -->
+                    <div class="flex items-start gradient-border-base gradient-border-green-indigo p-6 rounded-xl scroll-animate">
+                        <div class="text-5xl text-green mr-6 flex-shrink-0">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-semibold mb-2">Affordability</h3>
+                            <p class="text-gray-600">We offer competitive, transparent pricing models without hidden fees, providing the best value in school management.</p>
+                        </div>
+                    </div>
+
+                    <!-- Why Us Item 4: Primary Blue/Indigo Gradient Border -->
+                    <div class="flex items-start gradient-border-base gradient-border-blue-indigo p-6 rounded-xl scroll-animate">
+                        <div class="text-5xl text-indigo-600 mr-6 flex-shrink-0">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-semibold mb-2">Security</h3>
+                            <p class="text-gray-600">Top-tier data encryption and compliance measures ensure all sensitive student and staff information is fully protected.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Screenshots Section (Standard Light Background) -->
+        <section id="screenshots" class="py-20 lg:py-32 bg-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-2xl mx-auto text-center mb-16 scroll-animate">
+                    <!-- Accent text updated to a solid blue -->
+                    <span class="text-lg font-semibold text-indigo-600 uppercase tracking-wider">See It In Action</span>
+                    <h2 class="text-4xl sm:text-5xl font-bold mt-2 text-gray-900">Platform Screenshots</h2>
+                </div>
+
+                <div id="carousel-container" class="relative max-w-5xl mx-auto shadow-2xl rounded-xl overflow-hidden border border-gray-300 scroll-animate">
+                    <div id="screenshot-carousel">
+                        <!-- Placeholder Screenshots -->
+                        <img class="carousel-item active w-full" src="ss601.png" alt="SchoolSuite360 Dashboard" loading="lazy">
+                        <img class="carousel-item w-full" src="ss3602.png" alt="Staff Management Interface" loading="lazy">
+                        <img class="carousel-item w-full" src="ss3603.png" alt="Parent Portal Interface" loading="lazy">
+                        <img class="carousel-item w-full" src="ss3602.png" alt="Attendance Tracking Interface" loading="lazy">
+                    </div>
+
+                    <!-- Carousel Controls -->
+                    <button onclick="changeSlide(-1)" class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-gray-900 bg-opacity-30 text-white p-3 rounded-full hover:bg-opacity-50 transition focus:outline-none" aria-label="Previous slide">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button onclick="changeSlide(1)" class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-gray-900 bg-opacity-30 text-white p-3 rounded-full hover:bg-opacity-50 transition focus:outline-none" aria-label="Next slide">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+
+                    <!-- Carousel Dots Indicator -->
+                    <div id="carousel-dots" class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
+                        <!-- Dots will be generated by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Contact Section (Form - Subtle Gray Background) -->
+        <section id="contact" class="py-20 lg:py-32 bg-white text-gray-900">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-2xl mx-auto text-center mb-16 scroll-animate">
+                    <!-- Accent text updated to a solid blue -->
+                    <span class="text-lg font-semibold text-indigo-600 uppercase tracking-wider">Get In Touch</span>
+                    <h2 class="text-4xl sm:text-5xl font-bold mt-2 text-gray-900">Request a Personalized Demo</h2>
+                </div>
+
+                <!-- Contact Form Container (White BG, Shadow) -->
+                <div class="max-w-3xl mx-auto bg-gray-50 p-8 md:p-12 rounded-xl shadow-2xl scroll-animate border border-gray-200">
+                    <form id="contact-form" class="space-y-6" novalidate>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Name Field -->
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                                <input type="text" id="name" name="name" required class="w-full px-4 py-3 border rounded-lg input-light placeholder-gray-500 focus:ring-indigo-500 focus:border-indigo-500">
+                                <p id="name-error" class="text-sm text-red-600 mt-1 hidden">Please enter your name.</p>
+                            </div>
+
+                            <!-- Email Field -->
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
+                                <input type="email" id="email" name="email" required class="w-full px-4 py-3 border rounded-lg input-light placeholder-gray-500 focus:ring-indigo-500 focus:border-indigo-500">
+                                <p id="email-error" class="text-sm text-red-600 mt-1 hidden">Please enter a valid email address.</p>
+                            </div>
+                        </div>
+
+                        <!-- Phone Number Field -->
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number (Optional)</label>
+                            <input type="tel" id="phone" name="phone" class="w-full px-4 py-3 border rounded-lg input-light placeholder-gray-500 focus:ring-indigo-500 focus:border-indigo-500">
+                            <p id="phone-error" class="text-sm text-red-600 mt-1 hidden">Please enter a valid phone number (e.g., +1 555 123 4567).</p>
+                        </div>
+
+                        <!-- Message Field -->
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Your Message</label>
+                            <textarea id="message" name="message" rows="4" class="w-full px-4 py-3 border rounded-lg input-light placeholder-gray-500 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-primary text-white font-bold text-lg w-full px-6 py-3">
+                            Send Request
+                        </button>
+
+                        <!-- Custom Message Box for success/error -->
+                        <div id="form-message" class="mt-4 p-4 rounded-lg hidden text-center" role="alert"></div>
+                    </form>
+
+                    <!-- Company Contact Info -->
+                    <div class="mt-10 pt-6 border-t border-gray-300 text-center">
+                        <p class="text-gray-600 text-lg font-semibold mb-2">Our Contact Details</p>
+                        <p class="text-gray-800 mb-1"><i class="fas fa-envelope mr-2 text-indigo-600"></i> Email: <a href="mailto:schoolsuite360@gmail.com" class="text-indigo-600 hover:text-indigo-800 transition duration-200">schoolsuite360@gmail.com</a></p>
+                        <p class="text-gray-800"><i class="fas fa-phone mr-2 text-indigo-600"></i> Phone: <a href="tel:+2348063244568" class="text-indigo-600 hover:text-indigo-800 transition duration-200">+234-806-3244-568</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 6. Footer (Dark background for contrast anchor) -->
+    <footer class="bg-gray-800 py-10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <!-- Quick Links -->
+            <nav class="flex flex-wrap justify-center space-x-6 mb-6 text-gray-400">
+                <a href="#home" class="hover:text-indigo-400 transition duration-200">Home</a>
+                <a href="#features" class="hover:text-indigo-400 transition duration-200">Features</a>
+                <a href="#why-us" class="hover:text-indigo-400 transition duration-200">Why Us</a>
+                <a href="#contact" class="hover:text-indigo-400 transition duration-200">Contact</a>
+            </nav>
+
+            <!-- Social Media Icons -->
+            <div class="flex justify-center space-x-6 text-2xl mb-6">
+                <a href="#" aria-label="LinkedIn" class="text-gray-400 hover:text-indigo-400 transition duration-200"><i class="fab fa-linkedin"></i></a>
+                <a href="#" aria-label="Twitter" class="text-gray-400 hover:text-indigo-400 transition duration-200"><i class="fab fa-twitter-square"></i></a>
+                <a href="#" aria-label="Facebook" class="text-gray-400 hover:text-indigo-400 transition duration-200"><i class="fab fa-facebook-square"></i></a>
+            </div>
+
+            <!-- Copyright -->
+            <a class="text-gray-500" href="terms.html">Terms of service</a>
+            <p class="text-gray-500 text-sm">
+                &copy; <span id="current-year"></span> SchoolSuite360. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Section -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current year in footer
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+
+            // --- 1. Responsive Navbar Toggle ---
+            const menuToggle = document.getElementById('menu-toggle');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuIconOpen = document.getElementById('menu-icon-open');
+            const menuIconClose = document.getElementById('menu-icon-close');
+            const navLinks = document.querySelectorAll('.nav-link-dark');
+
+            function toggleMobileMenu() {
+                const isExpanded = mobileMenu.classList.contains('mobile-menu-open');
+                mobileMenu.classList.toggle('mobile-menu-open', !isExpanded);
+                mobileMenu.classList.toggle('hidden', isExpanded);
+                menuIconOpen.classList.toggle('hidden', !isExpanded);
+                menuIconClose.classList.toggle('hidden', isExpanded);
+            }
+
+            menuToggle.addEventListener('click', toggleMobileMenu);
+
+            // Close mobile menu when a link is clicked
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 1024 && !mobileMenu.classList.contains('hidden')) { 
+                        toggleMobileMenu();
+                    }
+                });
+            });
 
 
-    <!-- Header -->
-    <header id="header" class="header">
-        <div class="header-content">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-6 col-xl-5">
-                        <div class="text-container">
-                            <h1>Effortless School Management Starts Here.</h1>
-                            <p class="p-large"> A modern school management solution that empowers administrators,
-                                teachers, and parents with streamlined tools for success.</p>
-                            <a class="btn-solid-lg page-scroll" href="sign-up.html">CONTACT US</a>
-                        </div> <!-- end of text-container -->
-                    </div> <!-- end of col -->
-                    <div class="col-lg-6 col-xl-7">
-                        <div class="image-container">
-                            <div class="img-wrapper">
-                                <img class="img-fluid" src="images/ss360.png" alt="alternative">
-                            </div> <!-- end of img-wrapper -->
-                        </div> <!-- end of image-container -->
-                    </div> <!-- end of col -->
-                </div> <!-- end of row -->
-            </div> <!-- end of container -->
-        </div> <!-- end of header-content -->
-    </header> <!-- end of header -->
-    <svg class="header-frame" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"
-        viewBox="0 0 1920 310">
-        <defs>
-            <style>
-                .cls-1 {
-                    fill: #5f4def;
+            // --- 2. Sticky Navbar Class Trigger ---
+            const navbar = document.getElementById('navbar');
+            let isSticky = false;
+
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    if (!isSticky) {
+                        navbar.classList.add('sticky-nav');
+                        isSticky = true;
+                    }
+                } else {
+                    if (isSticky) {
+                        navbar.classList.remove('sticky-nav');
+                        isSticky = false;
+                    }
                 }
-            </style>
-        </defs>
-        <title>header-frame</title>
-        <path class="cls-1"
-            d="M0,283.054c22.75,12.98,53.1,15.2,70.635,14.808,92.115-2.077,238.3-79.9,354.895-79.938,59.97-.019,106.17,18.059,141.58,34,47.778,21.511,47.778,21.511,90,38.938,28.418,11.731,85.344,26.169,152.992,17.971,68.127-8.255,115.933-34.963,166.492-67.393,37.467-24.032,148.6-112.008,171.753-127.963,27.951-19.26,87.771-81.155,180.71-89.341,72.016-6.343,105.479,12.388,157.434,35.467,69.73,30.976,168.93,92.28,256.514,89.405,100.992-3.315,140.276-41.7,177-64.9V0.24H0V283.054Z" />
-    </svg>
-    <!-- end of header -->
+            });
 
 
+            // --- 3. Image Carousel for Screenshots ---
+            let currentSlide = 0;
+            const carousel = document.getElementById('screenshot-carousel');
+            const items = carousel ? carousel.querySelectorAll('.carousel-item') : [];
+            const dotsContainer = document.getElementById('carousel-dots');
 
+            // Initialize carousel dots
+            if (items.length > 0) {
+                items.forEach((item, index) => {
+                    const dot = document.createElement('div');
+                    dot.classList.add('carousel-dot');
+                    if (index === 0) dot.classList.add('active');
+                    dot.setAttribute('data-index', index);
+                    dot.onclick = () => showSlide(index);
+                    dotsContainer.appendChild(dot);
+                });
+            }
 
-    <!-- Description -->
-    <div id="features" class="cards-1">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="above-heading">Features</div>
-                    <h2 class="h2-heading">Powerful Features to Meet Every Need</h2>
-                </div> <!-- end of col -->
-            </div> <!-- end of row -->
-            <div class="row mx-2">
-                <!-- Card -->
-                <div class="card">
-                    <div class="text-left mb-2">
-                        <span class="material-symbols-outlined font-weight-bold"
-                            style="padding: 15px;background-color: #5f4dee;border-radius: 100%;color: white;box-shadow: 19px 0px #b8afff;;">search</span>
-                    </div>
-                    <div class="card-body text-left feature_card_body">
-                        <p class="mb-0 card-title features-title font-weight-bold">Student Management</p>
-                        <ul class="pad-20">
-                            <li>Enroll, view, or transfer students individually or in bulk.</li>
-                            <li>Access complete student profiles, including biodata, parent details, scores, and
-                                performance trends.</li>
-                            <li>Generate and download report cards for any term or session.</li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- end of card -->
-                <!-- Card -->
-                <div class="card">
-                    <div class="text-left mb-2">
-                        <span class="material-symbols-outlined font-weight-bold"
-                            style="padding: 15px;background-color: #19ca94;border-radius: 100%;color: white;box-shadow: 19px 0px #daf4ef;;">search</span>
-                    </div>
-                    <div class="card-body text-left feature_card_body">
-                        <p class="mb-0 card-title features-title font-weight-bold">Staff Management</p>
-                        <ul class="pad-20">
-                            <li>Register staff and assign them to specific classes or subjects.</li>
-                            <li>Control staff privileges and activate or deactivate access as needed.</li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- end of card -->
-                <!-- Card -->
-                <div class="card">
-                    <div class="text-left mb-2">
-                        <!-- <span class="material-symbols-outlined font-weight-bold"  -->
-                        <span class="material-symbols-outlined font-weight-bold"
-                            style="padding: 15px;background-color: #cc974f;border-radius: 100%;color: white;box-shadow: 19px 0px #edba75;;">search</span>
-                    </div>
-                    <div class="card-body text-left feature_card_body">
-                        <p class="mb-0 card-title features-title font-weight-bold">Attendance Tracking</p>
-                        <ul class="pad-20 pl-0">
-                            <li style="list-style: none; padding-left: 0;">Control staff privileges and activate or
-                                deactivate access as needed.</li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- end of card -->
-                <!-- Card -->
-                <div class="card">
-                    <div class="text-left mb-2">
-                        <span class="material-symbols-outlined font-weight-bold"
-                            style="padding: 15px;background-color: #ff556e;border-radius: 100%;color: white;box-shadow: 19px 0px #f8e5ea;;">search</span>
-                    </div>
-                    <div class="card-body text-left feature_card_body">
-                        <p class="mb-0 card-title features-title font-weight-bold">Assessment Management</p>
-                        <ul class="pad-20">
-                            <li style="padding-left: 0;">Support for various assessments (CA1, CA2, CA3, Practical,
-                                Examination) with customizable options.</li>
-                            <li style="padding-left: 0;">Teachers can post and review scores with ease.</li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- end of card -->
-                <!-- Card -->
-                <div class="card">
-                    <div class="text-left mb-2">
-                        <span class="material-symbols-outlined font-weight-bold"
-                            style="padding: 15px;background-color: #ffb30f;border-radius: 100%;color: white;box-shadow: 19px 0px #f8f1de;;">search</span>
-                    </div>
-                    <div class="card-body text-left feature_card_body">
-                        <p class="mb-0 card-title features-title font-weight-bold">Parent Portal</p>
-                        <ul class="pad-20">
-                            <li style="padding-left: 0;">Parents can log in to view their child’s academic and
-                                attendance records.</li>
-                            <li style="padding-left: 0;">Downloadable report cards make communication with parents
-                                seamless.</li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- end of card -->
-                <!-- Card -->
-                <div class="card">
-                    <div class="text-left mb-2">
-                        <span class="material-symbols-outlined font-weight-bold"
-                            style="padding: 15px;background-color: #50b9e8;border-radius: 100%;color: white;box-shadow: 19px 0px #e1f2fa;;">search</span>
-                    </div>
-                    <div class="card-body text-left feature_card_body">
-                        <p class="mb-0 card-title features-title font-weight-bold">Communication Tools</p>
-                        <ul class="pad-20">
-                            <li style="padding-left: 0;">Send individual or bulk messages via SMS or internal messaging.
-                            </li>
-                            <li style="padding-left: 0;">Ensure clear and efficient communication with both staff and
-                                parents.</li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- end of card -->
-                <!-- Card -->
-                <div class="card">
-                    <div class="text-left mb-2">
-                        <span class="material-symbols-outlined font-weight-bold"
-                            style="padding: 15px;background-color: #5f4dee;border-radius: 100%;color: white;box-shadow: 19px 0px #b8afff;;">search</span>
-                    </div>
-                    <div class="card-body text-left feature_card_body">
-                        <p class="mb-0 card-title features-title font-weight-bold">Customizable Links and Grading Systems</p>
-                        <ul class="pad-20">
-                            <li style="padding-left: 0;">Schools get a personalized login link for their staff and
-                                students.</li>
-                            <li style="padding-left: 0;">Grading systems and assessment types can be tailored to match
-                                the school’s preferences.</li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- end of card -->
-            </div> <!-- end of row -->
-        </div> <!-- end of container -->
-    </div>
-    <!-- end of cards-1 -->
-    <!-- end of description -->
+            function showSlide(index) {
+                items.forEach(item => item.classList.remove('active'));
+                const dots = dotsContainer.querySelectorAll('.carousel-dot');
+                dots.forEach(dot => dot.classList.remove('active'));
 
-    <!-- Features -->
-    <div id="whyus" class="tabs">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="above-heading">WHY SCHOOLSUITE360?</div>
-                    <h2 class="h2-heading">What Makes SchoolSuite360 Unique?</h2>
-                </div> <!-- end of col -->
-            </div> <!-- end of row -->
-            <div class="row m-2" style="gap: 20px;">
-                <!-- Card -->
-                <div class="card col-sm-3 mb-2">
-                    <div class="card-body text-left why_card_body">
-                        <p class="card-title features-title font-weight-bold">Simplicity</p>
-                        <p class="card-body-p">Our intuitive design eliminates the need for tutorials.</p>
-                    </div>
-                </div>
-                <!-- end of card -->
-                <!-- Card -->
-                <div class="card col-sm-3 mb-2">
-                    <div class="card-body text-left why_card_body">
-                        <p class="card-title features-title font-weight-bold">Flexibility</p>
-                        <p class="card-body-p">Tailor the platform to your school’s
-                            unique needs with custom grading systems, login links, and
-                            session-specific preferences.</p>
-                    </div>
-                </div>
-                <!-- end of card -->
-                <!-- Card -->
-                <div class="card col-sm-3 mb-2">
-                    <div class="card-body text-left why_card_body">
-                        <p class="card-title features-title font-weight-bold">Affordability</p>
-                        <p class="card-body-p">Cost-effective subscription plans that adapt to your school size.</p>
-                    </div>
-                </div>
-                <!-- end of card -->
-                <!-- Card -->
-                <div class="card col-sm-3 mb-2">
-                    <div class="card-body text-left why_card_body">
-                        <p class="card-title features-title font-weight-bold">Security</p>
-                        <p class="card-body-p">Robust access controls, privilege management, and account security.</p>
-                    </div>
-                </div>
-                <!-- end of card -->
-            </div> <!-- end of row -->
-        </div> <!-- end of container -->
-    </div> <!-- end of tabs -->
-    <!-- end of features -->
-
-    <!-- Testimonials -->
-    <div id="screenshot" class="slider-2">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-
-                    <!-- Text Slider -->
-                    <div class="slider-container">
-                        <div class="swiper-container text-slider">
-                            <div class="swiper-wrapper">
-
-                                <!-- Slide -->
-                                <div class="swiper-slide">
-                                    <img class="img-fluid" src="images/ss360.png" alt="alternative">
-                                </div> <!-- end of swiper-slide -->
-                                <!-- end of slide -->
-                                <!-- Slide -->
-                                <div class="swiper-slide">
-                                    <img class="img-fluid" src="images/ss1.png" alt="alternative">
-                                </div> <!-- end of swiper-slide -->
-                                <!-- end of slide -->
-                                <!-- Slide -->
-                                <div class="swiper-slide">
-                                    <img class="img-fluid" src="images/ss2.png" alt="alternative">
-                                </div> <!-- end of swiper-slide -->
-                                <!-- end of slide -->
-                                <!-- Slide -->
-                                <div class="swiper-slide">
-                                    <img class="img-fluid" src="images/ss3.png" alt="alternative">
-                                </div> <!-- end of swiper-slide -->
-                                <!-- end of slide -->
-
-
-
-
-
-                            </div> <!-- end of swiper-wrapper -->
-
-                            <!-- Add Arrows -->
-                            <div class="swiper-button-next"></div>
-                            <div class="swiper-button-prev"></div>
-                            <!-- end of add arrows -->
-
-                        </div> <!-- end of swiper-container -->
-                    </div> <!-- end of slider-container -->
-                    <!-- end of text slider -->
-
-                </div> <!-- end of col -->
-            </div> <!-- end of row -->
-        </div> <!-- end of container -->
-    </div> <!-- end of slider-2 -->
-    <!-- end of testimonials -->
-
-    <!-- Footer -->
-    <svg class="footer-frame" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"
-        viewBox="0 0 1920 79">
-        <defs>
-            <style>
-                .cls-2 {
-                    fill: #5f4def;
+                if (items[index]) {
+                    items[index].classList.add('active');
                 }
-            </style>
-        </defs>
-        <title>footer-frame</title>
-        <path class="cls-2"
-            d="M0,72.427C143,12.138,255.5,4.577,328.644,7.943c147.721,6.8,183.881,60.242,320.83,53.737,143-6.793,167.826-68.128,293-60.9,109.095,6.3,115.68,54.364,225.251,57.319,113.58,3.064,138.8-47.711,251.189-41.8,104.012,5.474,109.713,50.4,197.369,46.572,89.549-3.91,124.375-52.563,227.622-50.155A338.646,338.646,0,0,1,1920,23.467V79.75H0V72.427Z"
-            transform="translate(0 -0.188)" />
-    </svg>
-    <div class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="footer-col first">
-                        <h4>About SchoolSuite360</h4>
-                        <p class="p-small">SchoolSuite360 simplifies
-                            administrative tasks, enhances communication, and improves efficiency
-                            across the board.</p>
-                    </div>
-                </div> <!-- end of col -->
-                <div class="col-md-4">
-                    <div class="footer-col middle">
-                        <h4>Important Links</h4>
-                        <ul class="list-unstyled li-space-lg p-small">
-                            <li class="media">
-                                <i class="fas fa-square"></i>
-                                <div class="media-body"><a class="white" href="#header">home.com</a></div>
-                            </li>
-                            <li class="media">
-                                <i class="fas fa-square"></i>
-                                <div class="media-body"><a class="white" href="#features">features</a></div>
-                            </li>
-                            <li class="media">
-                                <i class="fas fa-square"></i>
-                                <div class="media-body"><a class="white" href="#whyus">Why us</a></div>
-                            </li>
-                            <li class="media">
-                                <i class="fas fa-square"></i>
-                                <div class="media-body"><a class="white" href="#screenshots">Screenshots</a></div>
-                            </li>
+                if (dots[index]) {
+                    dots[index].classList.add('active');
+                }
 
-                        </ul>
-                    </div>
-                </div> <!-- end of col -->
-                <div class="col-md-4">
-                    <div class="footer-col last">
-                        <h4>Contact</h4>
-                        <ul class="list-unstyled li-space-lg p-small">
-                            <li class="media">
-                                <i class="fas fa-phone-alt"></i>
-                                <div class="media-body"><a class="white"
-                                    href="tel:+2348160127318">2348160127318</a></div>
-                            </li>
-                            <li class="media">
-                                <i class="fas fa-envelope"></i>
-                                <div class="media-body"><a class="white"
-                                        href="mailto:schoolsuite360@gmail.com">schoolsuite360@gmail.com</a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div> <!-- end of col -->
-            </div> <!-- end of row -->
-        </div> <!-- end of container -->
-    </div> <!-- end of footer -->
-    <!-- end of footer -->
+                currentSlide = index;
+            }
 
-    <!-- Copyright -->
-    <div class="copyright">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <p class="p-small">Copyright © 2020 <a href="">Template by Inovatik</a></p>
-                </div> <!-- end of col -->
-            </div> <!-- enf of row -->
-        </div> <!-- end of container -->
-    </div> <!-- end of copyright -->
-    <!-- end of copyright -->
+            // Function to change slide by a step (1 for next, -1 for prev)
+            window.changeSlide = function(step) {
+                let newIndex = currentSlide + step;
+                if (newIndex >= items.length) {
+                    newIndex = 0;
+                } else if (newIndex < 0) {
+                    newIndex = items.length - 1;
+                }
+                showSlide(newIndex);
+            }
+
+            // Start auto-slide functionality
+            let slideInterval = setInterval(() => changeSlide(1), 5000); 
 
 
-    <!-- Scripts -->
-    <script src="js/jquery.min.js"></script> <!-- jQuery for Bootstrap's JavaScript plugins -->
-    <script src="js/popper.min.js"></script> <!-- Popper tooltip library for Bootstrap -->
-    <script src="js/bootstrap.min.js"></script> <!-- Bootstrap framework -->
-    <script src="js/jquery.easing.min.js"></script> <!-- jQuery Easing for smooth scrolling between anchors -->
-    <script src="js/swiper.min.js"></script> <!-- Swiper for image and text sliders -->
-    <script src="js/jquery.magnific-popup.js"></script> <!-- Magnific Popup for lightboxes -->
-    <script src="js/validator.min.js"></script> <!-- Validator.js - Bootstrap plugin that validates forms -->
-    <script src="js/scripts.js"></script> <!-- Custom scripts -->
+            // --- 4. Form Validation for Contact Page ---
+            const contactForm = document.getElementById('contact-form');
+            const formMessage = document.getElementById('form-message');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const phoneRegex = /^\+?(\d[\s\-]?)?(\(?\d{3}\)?[\s\-]?)?[\d\s\-]{7,15}$/; 
+
+            function displayMessage(message, isSuccess) {
+                formMessage.textContent = message;
+                formMessage.classList.remove('hidden', 'bg-red-900', 'bg-indigo-900', 'text-red-300', 'text-indigo-300', 'bg-red-100', 'text-red-800', 'bg-indigo-100', 'text-indigo-800');
+                if (isSuccess) {
+                    formMessage.classList.add('bg-indigo-100', 'text-indigo-800');
+                } else {
+                    formMessage.classList.add('bg-red-100', 'text-red-800');
+                }
+            }
+            
+            function toggleError(field, errorElement, condition, errorMessage) {
+                if (condition) {
+                    errorElement.textContent = errorMessage;
+                    errorElement.classList.remove('hidden');
+                    field.classList.add('border-red-500');
+                    return false;
+                } else {
+                    errorElement.classList.add('hidden');
+                    field.classList.remove('border-red-500');
+                    return true;
+                }
+            }
+
+
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                let isValid = true;
+                formMessage.classList.add('hidden'); 
+
+                const nameField = document.getElementById('name');
+                const emailField = document.getElementById('email');
+                const phoneField = document.getElementById('phone');
+                
+                // Validate Name (Required)
+                isValid = toggleError(nameField, document.getElementById('name-error'), 
+                                     nameField.value.trim() === '', 
+                                     'Please enter your full name.') && isValid;
+
+                // Validate Email (Required)
+                isValid = toggleError(emailField, document.getElementById('email-error'), 
+                                     !emailRegex.test(emailField.value.trim()), 
+                                     'Please enter a valid email address.') && isValid;
+
+                // Validate Phone (Optional but validates format if filled)
+                const phoneValue = phoneField.value.trim();
+                if (phoneValue !== '') {
+                    isValid = toggleError(phoneField, document.getElementById('phone-error'), 
+                                         !phoneRegex.test(phoneValue), 
+                                         'Please enter a valid phone number.') && isValid;
+                } else {
+                    document.getElementById('phone-error').classList.add('hidden');
+                    phoneField.classList.remove('border-red-500');
+                }
+
+                if (isValid) {
+                    // Simulate form submission
+                    console.log('Form Data Submitted:', {
+                        name: nameField.value,
+                        email: emailField.value,
+                        phone: phoneField.value,
+                        message: document.getElementById('message').value
+                    });
+
+                    displayMessage('Thank you! Your demo request has been sent. We will be in touch shortly.', true);
+                    contactForm.reset();
+                } else {
+                    displayMessage('Please correct the highlighted errors in the form before submitting.', false);
+                }
+            });
+
+
+            // --- 5. Scroll-Triggered Animations (Intersection Observer) ---
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                rootMargin: '0px',
+                threshold: 0.1
+            });
+
+            document.querySelectorAll('.scroll-animate').forEach(element => {
+                if (element.closest('#home')) {
+                     element.classList.add('is-visible');
+                } else {
+                     observer.observe(element);
+                }
+            });
+
+
+            // --- 6. Smooth Scroll Behavior for Anchor Links ---
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    if (this.getAttribute('href').startsWith('mailto') || this.getAttribute('href').startsWith('tel')) {
+                        return;
+                    }
+                    
+                    e.preventDefault();
+
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+
+                    if (targetElement) {
+                        const headerHeight = document.getElementById('navbar').offsetHeight || 80; 
+
+                        window.scrollTo({
+                            top: targetElement.offsetTop - headerHeight,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
 </body>
-
 </html>

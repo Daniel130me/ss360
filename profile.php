@@ -99,16 +99,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
 
+ 
         <!-- Navbar -->
         <nav class="main-header navbar border-bottom-0 navbar-expand justify-content-between bg1">
             <!-- <div class=""> -->
-            <!-- <div> -->
 
             <!-- Left navbar links -->
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i
+                            class="muted-text fas fa-bars"></i></a>
                 </li>
+
             </ul>
 
             <!-- Right navbar links -->
@@ -136,6 +138,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <a href="change_password" class="dropdown-item text-muted d-flex">
                             <span class="material-symbols-outlined mr-2">lock</span> Change PIN
                         </a>
+                        <?php
+                            if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
+                            ?>
+                        <a href="my_payment" class="dropdown-item text-muted d-flex">
+                            <span class="material-symbols-outlined mr-2">payments</span> Billing
+                        </a>
+                        <?php
+                            }?>
                         <a href="logout" class="dropdown-item text-muted d-flex">
                             <span class="material-symbols-outlined mr-2">logout</span> Logout
                         </a>
@@ -143,8 +153,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </li>
             </ul>
             <!-- </div> -->
-            <!-- </div> -->
-
         </nav>
         <!-- /.navbar -->
 
@@ -156,8 +164,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <img src="../uploads/<?= $_SESSION['logo'] ?>" alt="<?= $_SESSION['school_name'] ?>" class="brand-image" style="opacity: .8">
                 <span class="brand-text font-weight-light" style="visibility: hidden;">Rus</span>
             </a>
-
-
+           
+            
             <!-- <div href="" class="px-15 pt-15 border-bottom" style="padding-bottom: 30px;">
                 <img src="../uploads/<= $_SESSION['logo'] ?>" style="height: 200px; object-fit:cover;" alt="Logo"
                     class="brand-image img-circle elevation-5 w-100">
@@ -228,8 +236,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </p>
                             </a>
                         </li>
-
-
+                        
+                        
                         <li class="nav-item">
                             <a href="post_scores" class="nav-link">
                                 <p class="d-flex">
@@ -263,6 +271,48 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="staff_attendance" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">add_chart</i>
+                                   Staff Attendance
+                                </p>
+                            </a>
+                        </li>
+                        <?php if($_SESSION['school_id'] == 27 || $_SESSION['school_id']==13){  ?>
+                        <li class="nav-item">
+                            <a href="lesson_note" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">list</i>
+                                    Lesson Note
+                                </p>
+                            </a>
+                        </li>
+                        <?php } ?>
+                        <li class="nav-item">
+                            <a href="assessment" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">app_registration</i>
+                                    Assessments
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="payments" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">payments</i>
+                                    Payments
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="time_table" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">list</i>
+                                    Time Table
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="communication" class="nav-link">
                                 <p class="d-flex">
                                     <i class="material-symbols-outlined pr-2" style="font-size: 20px;">hub</i>
@@ -270,14 +320,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="reports" class="nav-link">
-                                <p class="d-flex">
-                                    <i class="material-symbols-outlined pr-2">list</i>
-                                    Reports
-                                </p>
-                            </a>
-                        </li>
+                        <!--<li class="nav-item">-->
+                        <!--    <a href="reports" class="nav-link">-->
+                        <!--        <p class="d-flex">-->
+                        <!--            <i class="material-symbols-outlined pr-2">list</i>-->
+                        <!--            Reports-->
+                        <!--        </p>-->
+                        <!--    </a>-->
+                        <!--</li>-->
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->

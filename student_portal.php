@@ -159,7 +159,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         <div class="content fade-in">
             <div class="container-fluid p-0">
-            <div class="hero-section">
+                <div class="hero-section d-flex flex-column align-items-center justify-content-center" style="position: relative;">
+                    <div style="position: absolute; top: 20px; right: 30px; z-index:1;">
+                        <a href="logout" title="Logout" style="color: #fff;">
+                            <span class="material-symbols-outlined" style="font-size: 2.2rem; vertical-align: middle;">logout</span>
+                        </a>
+                    </div>
+                    <img src="<?php echo isset($_SESSION['photo']) ? '../uploads/'.$_SESSION['photo'] : '../dist/img/avatar.png'; ?>" alt="Profile" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; box-shadow: 0 2px 8px rgba(99,102,241,0.15); margin-bottom: 18px; border: 3px solid #fff;">
                     <h1>Welcome, <?= $_SESSION['firstname'] ?>!</h1>
                     <p>Your personalized student portal. Access assignments, results, and more in one beautiful place.</p>
                 </div>
@@ -176,24 +182,24 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <div style="text-align: center; margin-bottom: 10px; color: #64748b; font-size: 0.98rem;">Check your academic performance and grades.</div>
                         <a href="results" class="portal-card-link">View Results &rarr;</a>
                     </div>
-                    <div class="portal-card">
-                        <span class="text-white bg-primary material-symbols-outlined">person</span>
-                        <div class="portal-card-title">My Profile</div>
-                        <div style="text-align: center; margin-bottom: 10px; color: #64748b; font-size: 0.98rem;">Update your personal information and settings.</div>
-                        <a href="student_portal_profile" class="portal-card-link">Edit Profile &rarr;</a>
-                    </div>
-                    <div class="portal-card">
+                     <div class="portal-card">
                         <span class="text-white bg-primary material-symbols-outlined">menu_book</span>
                         <div class="portal-card-title">Notes</div>
                         <div style="text-align: center; margin-bottom: 10px; color: #64748b; font-size: 0.98rem;">Access all class notes here</div>
                         <a href="student_class_notes" class="portal-card-link">View Notes &rarr;</a>
                     </div>
                     <div class="portal-card">
-                        <span class="text-white bg-primary material-symbols-outlined">account_balance_wallet</span>
-                        <div class="portal-card-title">Billing</div>
-                        <div style="text-align: center; margin-bottom: 10px; color: #64748b; font-size: 0.98rem;">View your payment history and bills.</div>
-                        <a href="student_billings" class="portal-card-link">View Billing &rarr;</a>
+                        <span class="text-white bg-primary material-symbols-outlined">person</span>
+                        <div class="portal-card-title">My Profile</div>
+                        <div style="text-align: center; margin-bottom: 10px; color: #64748b; font-size: 0.98rem;">Update your personal information and settings.</div>
+                        <a href="student_portal_profile" class="portal-card-link">Edit Profile &rarr;</a>
                     </div>
+                    <!--<div class="portal-card">-->
+                    <!--    <span class="text-white bg-primary material-symbols-outlined">account_balance_wallet</span>-->
+                    <!--    <div class="portal-card-title">Billing</div>-->
+                    <!--    <div style="text-align: center; margin-bottom: 10px; color: #64748b; font-size: 0.98rem;">View your payment history and bills.</div>-->
+                    <!--    <a href="" class="portal-card-link">View Billing &rarr;</a>-->
+                    <!--</div>-->
                     <div class="portal-card">
                         <span class="text-white bg-primary material-symbols-outlined">logout</span>
                         <div class="portal-card-title">Logout</div>

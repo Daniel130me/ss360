@@ -1,11 +1,9 @@
 <?php
 // echo $_SESSION['url'];
-// session_start();
-$select = mysqli_query($conn, "SELECT back_pic,logo FROM school WHERE url='{$_SESSION['url']}'");
-$row = mysqli_fetch_assoc($select);
-// var_dump($row);
 // echo "here";
 // exit;
+$select = mysqli_query($conn, "SELECT id,back_pic,logo,phone1 FROM school WHERE url='{$_SESSION['url']}'");
+$row = mysqli_fetch_assoc($select);
 // print_r($row);
 // exit;
 ?>
@@ -39,24 +37,23 @@ $row = mysqli_fetch_assoc($select);
             </div> -->
     
             <div class="card">
-                <div class="card-body register-card-body">
+                <div class="card-body register-card-body" style="border-radius: 20px;">
                     <!-- <p class="login-box-msg">A little about your school</p> -->
                     <!-- <div class="alert alert-warning alert-dismissible" id="login-access-alert" style="background-color:#fff9e5;">
                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                         <p>You have not been giving access yet, call admin.</p>
                     </div> -->
-                    <form class="loginform" action="../controller_new.php">
-                        <!-- <img src="../dist/img/avatar.png" class="shadow-lg" alt="User Image" width="100"> -->
-                        <?php if (!empty($row['logo']) && $row['logo'] !== 'logo-placeholder.jpg') : ?>
+                   <form class="loginform" action="../controller_new.php">
+                     <?php if (!empty($row['logo']) && $row['logo'] !== 'logo-placeholder.jpg') : ?>
                             <div class="d-flex justify-content-center align-items-center">
                                 <img id="image_profile_preview" class="py-3" style="width: 200px;" src="../uploads/<?= $row['logo'] ?>" alt="Photo">
                             </div>
-                        <?php endif; ?>
-                        <input type="hidden" name="action" value="login">
+                        <?php endif; ?>   
+                    <input type="hidden" name="action" value="login">
                         <div class="form-group mb-3">
                             <label for="">Phone number<span class="text-danger">*</span></label>
                             <input type="text" name="phone" class="form-control" placeholder="e.g 08136467317" autocomplete="tel" required>
-                            <small class="text-muted">Accepted format: 08136467317</small>
+                            <small class="text-muted">Accepted format: <?=$row['id'] == '27' ? '07055527775' : '08160127318' ?></small>
                         </div>
                         <div class="form-group mb-3">
                             <div class="row justify-content-between">
@@ -86,8 +83,8 @@ $row = mysqli_fetch_assoc($select);
     <script src="../dist/js/adminlte.min.js"></script>
     <!-- Toastr -->
     <script src="../plugins/toastr/toastr.min.js"></script>
-    <script src="../dist/js/skul.js?v=8bn"></script>
-    <script>
+    <script src="../dist/js/skul.js"></script>
+        <script>
         $(window).on('load', function() {
             $('.staff_login_btn').prop('disabled', false);
         });

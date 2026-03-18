@@ -19,6 +19,19 @@ $assessment_id = (int)$_POST['assessment_id'];
 $question_num = (int)$_POST['question_num'] - 1; // Convert to 0-based index
 
 // Get question with pagination
+// $sql = "SELECT q.*, GROUP_CONCAT(
+//             JSON_OBJECT(
+//                 'id', o.id,
+//                 'text', o.options,
+//                 'isAnswer', o.answer
+//             )
+//         ) as options
+//         FROM questions q
+//         LEFT JOIN options o ON q.id = o.question_id
+//         WHERE q.ass_id = ? and q.deleted=0
+//         GROUP BY q.id
+//         LIMIT ?, 1";
+
 $sql = "SELECT q.*, GROUP_CONCAT(
             JSON_OBJECT(
                 'id', o.id,

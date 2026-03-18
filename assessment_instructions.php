@@ -27,7 +27,7 @@ $result = mysqli_query($conn, $sql);
 $assessment = mysqli_fetch_assoc($result);
 
 // Get question count
-$questions_sql = "SELECT COUNT(*) as total FROM questions WHERE ass_id = '$assessment_id'";
+$questions_sql = "SELECT COUNT(*) as total FROM questions WHERE ass_id = '$assessment_id' AND deleted=0";
 $questions_result = mysqli_query($conn, $questions_sql);
 $question_count = mysqli_fetch_assoc($questions_result)['total'];
 ?>
@@ -200,13 +200,14 @@ $question_count = mysqli_fetch_assoc($questions_result)['total'];
             </div>
         <?php exit;
         } ?>
-        <div class="card-header">
+        <div class="card-header d-flex flex-column">
             <h3 class="card-title">
                 <i class="fas fa-book-open mr-2"></i>
                 <?= htmlspecialchars($assessment['subject']) ?> Assessment Instructions
             </h3>
             <div class="student-info" style="margin-top:8px;font-size:0.95rem;color:#f1f1f1;">
-                Student: <?= htmlspecialchars($student_fullname) ?> &nbsp; | &nbsp; Class: <?= htmlspecialchars($class_name) ?> &nbsp; | &nbsp; ADM No: <?= htmlspecialchars(strtoupper($admission_no)) ?>
+                
+                <?= htmlspecialchars($student_fullname) ?> &nbsp; | &nbsp; Class: <?= htmlspecialchars($class_name) ?> &nbsp; | &nbsp; ADM No: <?= htmlspecialchars(strtoupper($admission_no)) ?>
             </div>
         </div>
         <div class="card-body">
@@ -228,6 +229,9 @@ $question_count = mysqli_fetch_assoc($questions_result)['total'];
             </div>
 
             <h5><i class="fas fa-info-circle mr-2"></i> Important Instructions:</h5>
+            <?php if($assessment['instruction'] != ''){ ?>
+            <div style="padding: 15px; background-color: #fbfffb; border-radius: 10px; margin: 20px 0 20px 0;"><?=$assessment['instruction']?></div>
+            <?php } ?>
             <ul class="instruction-list">
                 <li>This assessment contains <?= $question_count ?> questions and must be completed within <?php
                                                                                                             if ($hours > 0) {

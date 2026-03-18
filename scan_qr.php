@@ -369,7 +369,7 @@ while ($row = mysqli_fetch_array($select)) {
     <script src="../plugins/toastr/toastr.min.js"></script>
     <!-- Select2 -->
     <!-- Include Instascan library -->
-    <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/schmich/instascan-builds@master/instascan.min.js"></script>
     <script>
         // Global variables
         let scanner = null;

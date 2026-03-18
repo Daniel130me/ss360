@@ -33,8 +33,8 @@ $payment_history = mysqli_query($conn, "SELECT * FROM payments WHERE school_id='
     <link href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@x.x.x/dist/select2-bootstrap4.min.css"
         rel="stylesheet" />
     <link href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" rel="stylesheet">
-    <!-- Theme style -->
-    <link rel="stylesheet" href="../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<!-- Theme style -->
+<link rel="stylesheet" href="../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
     <link rel="stylesheet" href="../plugins/toastr/toastr.min.css">
     <link rel="stylesheet" href="../dist/css/adminlte.css">
     <style>
@@ -368,19 +368,9 @@ $payment_history = mysqli_query($conn, "SELECT * FROM payments WHERE school_id='
                                                 <label for="session_id">Academic Session:</label>
                                                 <select class="form-control select2" id="session_id" name="session_id"
                                                     required style="width: 100%;">
-                                                    <?php
-                                                    $select_session = mysqli_query($conn, "SELECT id, session FROM sessions ORDER BY session ASC");
-
-                                                    while ($row_session = mysqli_fetch_array($select_session)) {
-                                                        if ($row['session'] === $row_session['id']) {
-                                                    ?>
-                                                            <option selected value="<?= $row_session['id'] ?>"><?= $row_session['session'] ?></option>
-                                                        <?php
-                                                        } else {
-                                                        ?>
-                                                            <option value="<?= $row_session['id'] ?>"><?= $row_session['session'] ?></option>
-                                                    <?php }
-                                                    } ?>
+                                                    <option value="1">2023/2024</option>
+                                                    <option value="2">2024/2025</option>
+                                                    <option value="3" selected>2025/2026</option>
                                                 </select>
                                             </div>
 
@@ -388,9 +378,9 @@ $payment_history = mysqli_query($conn, "SELECT * FROM payments WHERE school_id='
                                                 <label for="term_id">Term:</label>
                                                 <select class="form-control select2" id="term_id" name="term_id"
                                                     required style="width: 100%;">
-                                                    <option <?= $_SESSION['term_id'] == 1 ? 'selected' : '' ?> value="1">First Term</option>
-                                                    <option <?= $_SESSION['term_id'] == 2 ? 'selected' : '' ?> value="2">Second Term</option>
-                                                    <option <?= $_SESSION['term_id'] == 3 ? 'selected' : '' ?> value="3">Third Term</option>
+                                                     <option <?=$_SESSION['term_id'] == 1 ? 'selected' : ''?> value="1">First Term</option>
+                                                    <option <?=$_SESSION['term_id'] == 2 ? 'selected' : ''?> value="2">Second Term</option>
+                                                    <option <?=$_SESSION['term_id'] == 3 ? 'selected' : ''?> value="3">Third Term</option>            
                                                 </select>
                                             </div>
 
@@ -476,12 +466,12 @@ $payment_history = mysqli_query($conn, "SELECT * FROM payments WHERE school_id='
                         </div>
                     </div>
                 </div>
-
+                 
             </div>
-
+            
         </div>
     </div>
-    <!-- Activate Students Modal -->
+       <!-- Activate Students Modal -->
     <div class="modal fade" id="activateStudentsModal" tabindex="-1" role="dialog" aria-labelledby="activateStudentsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -787,12 +777,9 @@ $payment_history = mysqli_query($conn, "SELECT * FROM payments WHERE school_id='
         //         }
         //     });
         // }
-        function loadStudentsForActivation(classId = null) {
+   function loadStudentsForActivation(classId = null) {
             // --- Pagination state ---
-            window.studentActivationPagination = window.studentActivationPagination || {
-                page: 1,
-                per_page: 10
-            };
+            window.studentActivationPagination = window.studentActivationPagination || { page: 1, per_page: 10 };
             const page = window.studentActivationPagination.page;
             const per_page = window.studentActivationPagination.per_page;
 
@@ -849,7 +836,7 @@ $payment_history = mysqli_query($conn, "SELECT * FROM payments WHERE school_id='
                 }
             });
         }
-        // --- NEW: Event listener for pagination controls ---
+         // --- NEW: Event listener for pagination controls ---
         $(document).on('click', '#studentListContainer .pagination .page-link', function(e) {
             e.preventDefault();
             const page = parseInt($(this).data('page'));
@@ -930,7 +917,7 @@ $payment_history = mysqli_query($conn, "SELECT * FROM payments WHERE school_id='
 
 
         // --- NEW: Event listener for checkbox changes within the modal ---
-        $(document).on('change', '.student-activate-checkbox', function(event) {
+   $(document).on('change', '.student-activate-checkbox', function(event) {
             // Prevent modal from closing due to focus loss or bubbling
             event.preventDefault();
             event.stopPropagation();
@@ -939,7 +926,7 @@ $payment_history = mysqli_query($conn, "SELECT * FROM payments WHERE school_id='
 
 
         // --- NEW: Event listener for the "Activate Selected" button in the modal ---
-        $('#activateSelectedBtn').on('click', function() {
+          $('#activateSelectedBtn').on('click', function() {
             // Collect selected students and their class IDs
             const selectedStudents = [];
             $('.student-activate-checkbox:checked').each(function() {

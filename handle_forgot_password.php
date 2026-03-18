@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode(['status' => 'error', 'message' => 'Failed to save OTP. Please try again.']);
         exit;
     }
-echo "something";
+
     // Send OTP via email using PHPMailer
     $mail = new PHPMailer(true);
     try {

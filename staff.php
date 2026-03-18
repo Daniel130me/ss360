@@ -80,18 +80,18 @@ $school_id = $_SESSION['school_id'];
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
 
-        <!-- Navbar -->
-        <nav class="main-header navbar border-bottom-0 navbar-expand justify-content-between bg1">
+         <!-- Navbar -->
+    <nav class="main-header navbar border-bottom-0 navbar-expand justify-content-between bg1">
             <!-- <div class=""> -->
-            <!-- <div> -->
 
             <!-- Left navbar links -->
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i
+                            class="muted-text fas fa-bars"></i></a>
                 </li>
-            </ul>
 
+            </ul>
             <!-- Right navbar links -->
             <ul class="navbar-nav align-items-center">
                 <li class="nav-item dropdown">
@@ -132,22 +132,19 @@ $school_id = $_SESSION['school_id'];
                 </li>
             </ul>
             <!-- </div> -->
-            <!-- </div> -->
-
         </nav>
-        <!-- /.navbar -->
+    <!-- /.navbar -->
 
-        <!-- Main Sidebar Container -->
-        <!-- Main Sidebar Container -->
-        <!-- Main Sidebar Container -->
-        <aside class="main-sidebar sidebar-light-primary elevation-4">
+    <!-- Main Sidebar Container -->
+    <!-- Main Sidebar Container -->
+           <aside class="main-sidebar sidebar-light-primary elevation-4">
             <!-- Brand Logo -->
             <a href="" class="brand-link">
                 <img src="../uploads/<?= $_SESSION['logo'] ?>" alt="<?= $_SESSION['school_name'] ?>" class="brand-image" style="opacity: .8">
                 <span class="brand-text font-weight-light" style="visibility: hidden;">Rus</span>
             </a>
-
-
+           
+            
             <!-- <div href="" class="px-15 pt-15 border-bottom" style="padding-bottom: 30px;">
                 <img src="../uploads/<= $_SESSION['logo'] ?>" style="height: 200px; object-fit:cover;" alt="Logo"
                     class="brand-image img-circle elevation-5 w-100">
@@ -158,10 +155,9 @@ $school_id = $_SESSION['school_id'];
 
             <!-- Sidebar -->
             <div class="sidebar">
-
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                    <ul class="nav nav-pills nav-sidebar flex-column pb-5" data-widget="treeview" role="menu"
                         data-accordion="false">
 
                         <li class="nav-item">
@@ -218,8 +214,8 @@ $school_id = $_SESSION['school_id'];
                                 </p>
                             </a>
                         </li>
-
-
+                        
+                        
                         <li class="nav-item">
                             <a href="post_scores" class="nav-link">
                                 <p class="d-flex">
@@ -252,6 +248,17 @@ $school_id = $_SESSION['school_id'];
                                 </p>
                             </a>
                         </li>
+                        <?php if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4 || $_SESSION['staff_type'] == 5) { ?>
+                        <li class="nav-item">
+                            <a href="staff_attendance" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">add_chart</i>
+                                   Staff Attendance
+                                </p>
+                            </a>
+                        </li>
+                        <?php } ?>
+                        <?php if($_SESSION['school_id'] == 27 || $_SESSION['school_id']==13){  ?>
                         <li class="nav-item">
                             <a href="lesson_note" class="nav-link">
                                 <p class="d-flex">
@@ -260,6 +267,27 @@ $school_id = $_SESSION['school_id'];
                                 </p>
                             </a>
                         </li>
+                        <?php } ?>
+                        <li class="nav-item">
+                            <a href="assessment" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">app_registration</i>
+                                    Assessments
+                                </p>
+                            </a>
+                        </li>
+                        <?php
+                         if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4 || $_SESSION['staff_type'] == 7) {
+                             ?>
+                        <li class="nav-item">
+                            <a href="payments" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">payments</i>
+                                    Payments
+                                </p>
+                            </a>
+                        </li>
+                        <?php } ?>
                         <li class="nav-item">
                             <a href="time_table" class="nav-link">
                                 <p class="d-flex">
@@ -627,7 +655,7 @@ $school_id = $_SESSION['school_id'];
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
-    <script src="../dist/js/skul.js?v=99"></script>
+    <script src="../dist/js/skul.js"></script>
 </body>
 <script>
     // function preview_image12(event) {

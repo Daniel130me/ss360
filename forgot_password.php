@@ -19,24 +19,9 @@
 <body class="hold-transition login-page">
   <div class="login-box">
     <div class="card card-outline card-primary">
-      <div class="card-header text-center">
-        <a href="index.php" class="h1"><b>Company</b></a>
-      </div>
       <div class="card-body">
-        <p class="login-box-msg">Forgot your password? No problem. You can easily request a new password here.</p>
-
-        <ul class="nav nav-pills nav-justified mb-3" id="pills-tab" role="tablist">
-          <li class="nav-item">
-            <a class="nav-link active" id="pills-email-tab" data-toggle="pill" href="#pills-email" role="tab" aria-controls="pills-email" aria-selected="true">Email</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" id="pills-phone-tab" data-toggle="pill" href="#pills-phone" role="tab" aria-controls="pills-phone" aria-selected="false">Phone Number</a>
-          </li>
-        </ul>
-
+        <p class="login-box-msg">Enter your email to get OTP</p>
         <form id="forgotPasswordForm" method="post">
-          <div class="tab-content" id="pills-tabContent">
-            <div class="tab-pane fade show active" id="pills-email" role="tabpanel" aria-labelledby="pills-email-tab">
               <div class="input-group mb-3">
                 <input type="email" class="form-control" placeholder="Email" name="email">
                 <div class="input-group-append">
@@ -45,18 +30,6 @@
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="tab-pane fade" id="pills-phone" role="tabpanel" aria-labelledby="pills-phone-tab">
-              <div class="input-group mb-3">
-                <input type="tel" class="form-control" placeholder="Phone Number" name="phone">
-                <div class="input-group-append">
-                  <div class="input-group-text">
-                    <span class="fas fa-phone"></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
           <div class="row mt-3">
             <div class="col-12">
               <button type="submit" id="getOtpBtn" class="btn btn-primary btn-block">Get OTP</button>
@@ -64,7 +37,7 @@
           </div>
         </form>
         <p class="mt-3 mb-1">
-          <a href="login.php">Login</a>
+          <a href="login">Login</a>
         </p>
       </div>
       <!-- /.login-card-body -->
@@ -84,12 +57,12 @@
         e.preventDefault();
 
         var email = $('input[name="email"]').val();
-        var phone = $('input[name="phone"]').val();
+        // var phone = $('input[name="phone"]').val();
         var activeTab = $('.nav-pills .nav-link.active').attr('id');
         var submitBtn = $('#getOtpBtn');
 
         // We are only handling email for now as requested
-        if (activeTab === 'pills-email-tab') {
+        // if (activeTab === 'pills-email-tab') {
           if (email === '') {
             alert('Please enter your email address.');
             return;
@@ -117,9 +90,10 @@
               submitBtn.html('Get OTP').prop('disabled', false);
             }
           });
-        } else {
-          alert('Phone number recovery is not yet implemented.');
-        }
+        // } 
+        // else {
+        //   alert('Phone number recovery is not yet implemented.');
+        // }
       });
     });
   </script>

@@ -27,7 +27,7 @@ $date = date('Y-m-d H:i:s'); // Get current date and time
 header('Content-Type: application/json'); // Set content type for all responses
 
 switch ($action) {
-    case 'get_parent_billing':
+      case 'get_parent_billing':
         try {
             // Get filters from POST
             $student_id = isset($_POST['student_id']) ? intval($_POST['student_id']) : 0;
@@ -97,7 +97,7 @@ switch ($action) {
             echo json_encode(['success' => false, 'message' => 'Error fetching billing data.']);
         }
         break;
-
+        
     case 'get_payment_breakdown':
         try {
             $student_id = isset($_POST['student_id']) ? intval($_POST['student_id']) : 0;
@@ -199,7 +199,7 @@ switch ($action) {
             echo json_encode(['success' => false, 'message' => 'Error fetching payment breakdown.']);
         }
         break;
-
+        
     case 'email_receipt_pdf_data':
         // Send PDF as attachment (base64, not saved to disk)
         $input = json_decode(file_get_contents('php://input'), true);
@@ -1643,7 +1643,7 @@ switch ($action) {
             echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
         }
         break;
-    case 'get_invoice':
+          case 'get_invoice':
         // Return structured JSON for a bill invoice preview
         try {
             $bill_id = isset($_POST['bill_id']) ? intval($_POST['bill_id']) : 0;
@@ -1729,8 +1729,8 @@ switch ($action) {
             echo json_encode(['success' => false, 'message' => 'Server error']);
         }
         break;
-
-    case 'delete_record':
+        
+        case 'delete_record':
         try {
             $bill_id = isset($_POST['bill_id']) ? intval($_POST['bill_id']) : 0;
 
@@ -1771,6 +1771,7 @@ switch ($action) {
             echo json_encode(['success' => false, 'message' => 'Server error.']);
         }
         break;
+
 
     default:
         echo json_encode(['success' => false, 'message' => 'Invalid action specified.']);

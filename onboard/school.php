@@ -18,7 +18,7 @@ session_start();
     <link rel="stylesheet" href="../plugins/toastr/toastr.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="../dist/css/adminlte.css">
-    <style>
+     <style>
         /* Background image for the onboard page */
         body.register-page {
             background-image: url('../school_bg.jpg');
@@ -34,7 +34,7 @@ session_start();
             content: "";
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.45);
+            background: rgba(0,0,0,0.45);
             z-index: 0;
         }
 
@@ -64,23 +64,23 @@ session_start();
                         <input type="text" name="name" class="form-control" placeholder="School name" required>
                     </div>
                     <div class="form-group mb-3">
-                        <label>School full address</label>
+                         <label>School full address</label>
                         <input type="text" name="address" autocomplete="address-level1" class="form-control" placeholder="e.g 15, John Doe Street" required>
                     </div>
                     <div class="row">
-
-                        <div class="form-group mb-3 col-12 col-sm-6">
-                            <label>City</label>
-                            <input type="text" name="city" class="form-control" placeholder="e.g Ikeja" required>
-                        </div>
-                        <div class="form-group mb-3 col-12 col-sm-6">
-                            <label>State</label>
-                            <input type="text" name="state" class="form-control" placeholder="e.g Lagos" required>
-                        </div>
-                        <div class="form-group mb-3 col-12 col-sm-6">
-                            <label>Country</label>
-                            <input type="text" name="country" class="form-control" placeholder="e.g Nigeria" required>
-                        </div>
+                        
+                    <div class="form-group mb-3 col-12 col-sm-6">
+                         <label>City</label>
+                        <input type="text" name="city" class="form-control" placeholder="e.g Ikeja" required>
+                    </div>
+                    <div class="form-group mb-3 col-12 col-sm-6">
+                         <label>State</label>
+                        <input type="text" name="state" class="form-control" placeholder="e.g Lagos" required>
+                    </div>
+                    <div class="form-group mb-3 col-12 col-sm-6">
+                         <label>Country</label>
+                        <input type="text" name="country" class="form-control" placeholder="e.g Nigeria" required>
+                    </div>
                     </div>
                     <div class="form-group mr-3" style="position:relative; max-width: 100px;">
                         <img id="image_profile_preview" title="click to select logo" src="../dist/img/logo-placeholder.png" alt="Logo" width="100" height="100">

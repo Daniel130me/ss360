@@ -177,7 +177,7 @@ if (!empty($biorow['department'])) {
         <tr>
             <td colspan="3">
                 <h2 class="font-weight-bold text-center my-3" style="font-size:1.3rem;">
-                    <?= strtoupper($report_name) ?> - <?= $term_Note ?> <?= $_SESSION['session_name'] ?>
+                    <?= strtoupper($report_name) ?> - <?= $term_Note ?>  <?= $_SESSION['session_name'] ?>
                 </h2>
             </td>
         </tr>
