@@ -115,219 +115,249 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <body class="hold-transition sidebar-mini">
   <div class="wrapper">
 
-    <!-- Navbar -->
+          <!-- Navbar -->
     <nav class="main-header navbar border-bottom-0 navbar-expand justify-content-between bg1">
-      <!-- <div class=""> -->
-      <!-- <div> -->
+            <!-- <div class=""> -->
 
-      <!-- Left navbar links -->
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-        </li>
-      </ul>
+            <!-- Left navbar links -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i
+                            class="muted-text fas fa-bars"></i></a>
+                </li>
 
-      <!-- Right navbar links -->
-      <ul class="navbar-nav align-items-center">
-        <li class="nav-item dropdown">
-          <a class="" data-toggle="dropdown" href="#" style="height: auto;">
-            <div class="user-panel d-flex align-items-center">
-              <span class="material-symbols-outlined">arrow_drop_down</span>
-              <div class="image pl-0">
-                <img src="../uploads/<?= $_SESSION['staff_photo'] ?>" class="img-circle elevation-2" alt="User Image">
-              </div>
-              <div class="info d-none d-sm-inline-block">
-                <p style="font-size: 14px;" class="mb-0 d-block">
-                  <?= $_SESSION['firstname'] . ' ' . $_SESSION['lastname'] ?></p>
-                <p style="font-size: 12px;" class="d-block mb-0 accent">
-                  <?= get_staff_type_in_name($_SESSION['staff_type']) ?>
-                </p>
-              </div>
-            </div>
-          </a>
-          <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right p-2" style="border-radius: 10px;">
-            <a href="profile" class="dropdown-item text-muted d-flex">
-              <i class="material-symbols-outlined mr-2 d-inline">person</i> Profile
-            </a>
-            <a href="change_password" class="dropdown-item text-muted d-flex">
-              <span class="material-symbols-outlined mr-2">lock</span> Change PIN
-            </a>
-            <?php
-            if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
-            ?>
-              <a href="my_payment" class="dropdown-item text-muted d-flex">
-                <span class="material-symbols-outlined mr-2">payments</span> Billing
-              </a>
-            <?php
-            } ?>
-            <a href="logout" class="dropdown-item text-muted d-flex">
-              <span class="material-symbols-outlined mr-2">logout</span> Logout
-            </a>
-          </div>
-        </li>
-      </ul>
-      <!-- </div> -->
-      <!-- </div> -->
-
-    </nav>
+            </ul>
+            <!-- Right navbar links -->
+            <ul class="navbar-nav align-items-center">
+                <li class="nav-item dropdown">
+                    <a class="" data-toggle="dropdown" href="#" style="height: auto;">
+                        <div class="user-panel d-flex align-items-center">
+                            <span class="material-symbols-outlined">arrow_drop_down</span>
+                            <div class="image pl-0">
+                                <img src="../uploads/<?= $_SESSION['staff_photo'] ?>" class="img-circle elevation-2" alt="User Image">
+                            </div>
+                            <div class="info d-none d-sm-inline-block">
+                                <p style="font-size: 14px;" class="mb-0 d-block">
+                                    <?= $_SESSION['firstname'] . ' ' . $_SESSION['lastname'] ?></p>
+                                <p style="font-size: 12px;" class="d-block mb-0 accent">
+                                    <?= get_staff_type_in_name($_SESSION['staff_type']) ?>
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right p-2" style="border-radius: 10px;">
+                        <a href="profile" class="dropdown-item text-muted d-flex">
+                            <i class="material-symbols-outlined mr-2 d-inline">person</i> Profile
+                        </a>
+                        <a href="change_password" class="dropdown-item text-muted d-flex">
+                            <span class="material-symbols-outlined mr-2">lock</span> Change PIN
+                        </a>
+                        <?php
+                            if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
+                            ?>
+                        <a href="my_payment" class="dropdown-item text-muted d-flex">
+                            <span class="material-symbols-outlined mr-2">payments</span> Billing
+                        </a>
+                        <?php
+                            }?>
+                        <a href="logout" class="dropdown-item text-muted d-flex">
+                            <span class="material-symbols-outlined mr-2">logout</span> Logout
+                        </a>
+                    </div>
+                </li>
+            </ul>
+            <!-- </div> -->
+        </nav>
     <!-- /.navbar -->
 
     <!-- Main Sidebar Container -->
     <!-- Main Sidebar Container -->
-    <aside class="main-sidebar sidebar-light-primary elevation-4">
-      <!-- Brand Logo -->
-      <a href="" class="brand-link">
-        <img src="../uploads/<?= $_SESSION['logo'] ?>" alt="<?= $_SESSION['school_name'] ?>" class="brand-image" style="opacity: .8">
-        <span class="brand-text font-weight-light" style="visibility: hidden;">Rus</span>
-      </a>
-
-
-      <!-- <div href="" class="px-15 pt-15 border-bottom" style="padding-bottom: 30px;">
+           <aside class="main-sidebar sidebar-light-primary elevation-4">
+            <!-- Brand Logo -->
+            <a href="" class="brand-link">
+                <img src="../uploads/<?= $_SESSION['logo'] ?>" alt="<?= $_SESSION['school_name'] ?>" class="brand-image" style="opacity: .8">
+                <span class="brand-text font-weight-light" style="visibility: hidden;">Rus</span>
+            </a>
+           
+            
+            <!-- <div href="" class="px-15 pt-15 border-bottom" style="padding-bottom: 30px;">
                 <img src="../uploads/<= $_SESSION['logo'] ?>" style="height: 200px; object-fit:cover;" alt="Logo"
                     class="brand-image img-circle elevation-5 w-100">
             </div> -->
-      <div href="" class="py-2 px-15">
-        <p class="font-weight-bold text-tertiary"><?= $_SESSION['school_name'] ?></p>
-      </div>
+            <div href="" class="py-2 px-15">
+                <p class="font-weight-bold text-tertiary"><?= $_SESSION['school_name'] ?></p>
+            </div>
 
-      <!-- Sidebar -->
-      <div class="sidebar">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column pb-5" data-widget="treeview" role="menu"
+                        data-accordion="false">
 
-        <!-- Sidebar Menu -->
-        <nav class="mt-2">
-          <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
-            data-accordion="false">
+                        <li class="nav-item">
+                            <a href="dashboard" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">dashboard</i>
+                                    Dashboard
+                                </p>
+                            </a>
+                        </li>
+                        <?php
+                        if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
+                        ?>
+                            <li class="nav-item">
+                                <a href="settings" class="nav-link">
+                                    <p class="d-flex">
+                                        <i class="material-symbols-outlined pr-2">tune</i>
+                                        Settings
+                                    </p>
+                                </a>
+                            </li>
+                        <?php
+                        }
+                        ?>
+                        <li class="nav-item">
+                            <a href="staff" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">supervisor_account</i>
+                                    Staff
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="subjects" class="nav-link active">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">responsive_layout</i>
+                                    Subjects
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="class" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">app_registration</i>
+                                    Classes
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="students" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">supervisor_account</i>
+                                    Students
+                                </p>
+                            </a>
+                        </li>
+                        
+                        
+                        <li class="nav-item">
+                            <a href="post_scores" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">add_chart</i>
+                                    Post Scores
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="view_scores" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">signal_cellular_alt</i>
+                                    View Scores
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="comment" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">comment</i>
+                                    Comments
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="attendance" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">list</i>
+                                    Attendance
+                                </p>
+                            </a>
+                        </li>
+                        <?php if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4 || $_SESSION['staff_type'] == 5) { ?>
+                        <li class="nav-item">
+                            <a href="staff_attendance" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">add_chart</i>
+                                   Staff Attendance
+                                </p>
+                            </a>
+                        </li>
+                        <?php } ?>
+<?php if($_SESSION['school_id'] == 27 || $_SESSION['school_id']==13){  ?>
+                        <li class="nav-item">
+                            <a href="lesson_note" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">list</i>
+                                    Lesson Note
+                                </p>
+                            </a>
+                        </li>
+                        <?php } ?>
+                        <li class="nav-item">
+                            <a href="assessment" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">app_registration</i>
+                                    Assessments
+                                </p>
+                            </a>
+                        </li>
+                        <?php
+                         if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4 || $_SESSION['staff_type'] == 7) {
+                             ?>
+                        <li class="nav-item">
+                            <a href="payments" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">payments</i>
+                                    Payments
+                                </p>
+                            </a>
+                        </li>
+                        <?php } ?>
+                        <li class="nav-item">
+                            <a href="time_table" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">list</i>
+                                    Time Table
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="communication" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2" style="font-size: 20px;">hub</i>
+                                    Communication
+                                </p>
+                            </a>
+                        </li>
+                        <!--<li class="nav-item">-->
+                        <!--    <a href="reports" class="nav-link">-->
+                        <!--        <p class="d-flex">-->
+                        <!--            <i class="material-symbols-outlined pr-2">list</i>-->
+                        <!--            Reports-->
+                        <!--        </p>-->
+                        <!--    </a>-->
+                        <!--</li>-->
+                    </ul>
+                </nav>
+                <!-- /.sidebar-menu -->
+            </div>
+            <a href="" class="brand-link" style="background:white; position: fixed; bottom:0;">
+                <img src="../dist/img/company_logo.png" alt="Schoolsuite360" class="brand-image img-circle elevation-3" style="opacity: .8">
+                <span class="brand-text font-weight-light">Schoolsuite360</span>
+            </a>
+            <!-- /.sidebar -->
+        </aside>
 
-            <li class="nav-item">
-              <a href="dashboard" class="nav-link">
-                <p class="d-flex">
-                  <i class="material-symbols-outlined pr-2">dashboard</i>
-                  Dashboard
-                </p>
-              </a>
-            </li>
-            <?php
-            if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
-            ?>
-              <li class="nav-item">
-                <a href="settings" class="nav-link">
-                  <p class="d-flex">
-                    <i class="material-symbols-outlined pr-2">tune</i>
-                    Settings
-                  </p>
-                </a>
-              </li>
-            <?php
-            }
-            ?>
-            <li class="nav-item">
-              <a href="staff" class="nav-link">
-                <p class="d-flex">
-                  <i class="material-symbols-outlined pr-2">supervisor_account</i>
-                  Staff
-                </p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="subjects" class="nav-link active">
-                <p class="d-flex">
-                  <i class="material-symbols-outlined pr-2">responsive_layout</i>
-                  Subjects
-                </p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="class" class="nav-link">
-                <p class="d-flex">
-                  <i class="material-symbols-outlined pr-2">app_registration</i>
-                  Classes
-                </p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="students" class="nav-link">
-                <p class="d-flex">
-                  <i class="material-symbols-outlined pr-2">supervisor_account</i>
-                  Students
-                </p>
-              </a>
-            </li>
-
-
-            <li class="nav-item">
-              <a href="post_scores" class="nav-link">
-                <p class="d-flex">
-                  <i class="material-symbols-outlined pr-2">add_chart</i>
-                  Post Scores
-                </p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="view_scores" class="nav-link">
-                <p class="d-flex">
-                  <i class="material-symbols-outlined pr-2">signal_cellular_alt</i>
-                  View Scores
-                </p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="comment" class="nav-link">
-                <p class="d-flex">
-                  <i class="material-symbols-outlined pr-2">comment</i>
-                  Comments
-                </p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="attendance" class="nav-link">
-                <p class="d-flex">
-                  <i class="material-symbols-outlined pr-2">list</i>
-                  Attendance
-                </p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="lesson_note" class="nav-link">
-                <p class="d-flex">
-                  <i class="material-symbols-outlined pr-2">list</i>
-                  Lesson Note
-                </p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="time_table" class="nav-link">
-                <p class="d-flex">
-                  <i class="material-symbols-outlined pr-2">list</i>
-                  Time Table
-                </p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="communication" class="nav-link">
-                <p class="d-flex">
-                  <i class="material-symbols-outlined pr-2" style="font-size: 20px;">hub</i>
-                  Communication
-                </p>
-              </a>
-            </li>
-            <!--<li class="nav-item">-->
-            <!--  <a href="reports" class="nav-link">-->
-            <!--    <p class="d-flex">-->
-            <!--      <i class="material-symbols-outlined pr-2">list</i>-->
-            <!--      Reports-->
-            <!--    </p>-->
-            <!--  </a>-->
-            <!--</li>-->
-          </ul>
-        </nav>
-        <!-- /.sidebar-menu -->
-      </div>
-      <a href="" class="brand-link" style="background:white; position: fixed; bottom:0;">
-        <img src="../dist/img/company_logo.png" alt="Schoolsuite360" class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">Schoolsuite360</span>
-      </a>
-      <!-- /.sidebar -->
-    </aside>
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper" style="background-color: #f4f7fa; padding-bottom: 100px;">

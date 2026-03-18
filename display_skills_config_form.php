@@ -2,6 +2,7 @@
 session_start();
 include_once("model/connect.php");
 $school_id = $_SESSION['school_id'];
+
 $select = mysqli_query($conn, "SELECT hidden_skills FROM school WHERE id='$school_id'");
 $row = mysqli_fetch_array($select);
 $hidden_skills = json_decode($row['hidden_skills'], true) ?? [];

@@ -146,27 +146,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $current_time = date('H:i');
 
         // Get current record
-        $sql = "SELECT id, check_in, check_out FROM staff_attendance WHERE staff_id='$staff_id' AND school_id='$school_id' AND date='$today'";
-        $result = mysqli_query($conn, $sql);
+        $sql = "SELECT id, check_in, check_out FROM staff_attendance WHERE staff_id=? AND school_id=? AND date=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('iis', $staff_id, $school_id, $today);
+        $stmt->execute();
+        $stmt->store_result();
 
         $status = 'Absent';
         $status_map = ['Present' => 1, 'Absent' => 0, 'Late' => 2, 'Half Day' => 3];
-        if (mysqli_num_rows($result) > 0) {
-            $row = mysqli_fetch_assoc($result);
-            $att_id = $row['id'];
-            $db_check_in = $row['check_in'];
-            $db_check_out = $row['check_out'];
+        if ($stmt->num_rows > 0) {
+            $stmt->bind_result($att_id, $db_check_in, $db_check_out);
+            $stmt->fetch();
             // If no check-in, set check-in
             if (empty($db_check_in)) {
                 $db_check_in = $current_time;
                 $db_check_out = null;
                 $status = ($db_check_in > '08:00') ? 'Late' : 'Present';
                 $status_val = $status_map[$status];
-                $sql2 = "UPDATE staff_attendance SET check_in='$db_check_in', check_out=NULL, status='$status_val', mode='$mode', updated_at='$now', updated_by='$user_id' WHERE id='$att_id'";
-                if (mysqli_query($conn, $sql2)) {
+                // Update; do not store lat/lng (DB schema not changed). If you want to store coords, we must alter table.
+                $sql2 = "UPDATE staff_attendance SET check_in=?, check_out=NULL, status=?, mode=?, updated_at=?, updated_by=? WHERE id=?";
+                $stmt2 = $conn->prepare($sql2);
+                $stmt2->bind_param('siisii', $db_check_in, $status_val, $mode, $now, $user_id, $att_id);
+                $ok = $stmt2->execute();
+                if ($ok) {
                     echo json_encode(['status' => 1, 'message' => 'Check-in recorded']);
                 } else {
-                    echo json_encode(['status' => 0, 'message' => 'DB error: ' . mysqli_error($conn)]);
+                    echo json_encode(['status' => 0, 'message' => 'DB error']);
                 }
                 exit;
             }
@@ -175,11 +180,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $db_check_out = $current_time;
                 $status = ($db_check_in > '08:00') ? 'Late' : 'Present';
                 $status_val = $status_map[$status];
-                $sql2 = "UPDATE staff_attendance SET check_out='$db_check_out', status='$status_val', mode='$mode', updated_at='$now', updated_by='$user_id' WHERE id='$att_id'";
-                if (mysqli_query($conn, $sql2)) {
+                $sql2 = "UPDATE staff_attendance SET check_out=?, status=?, mode=?, updated_at=?, updated_by=? WHERE id=?";
+                $stmt2 = $conn->prepare($sql2);
+                $stmt2->bind_param('siisii', $db_check_out, $status_val, $mode, $now, $user_id, $att_id);
+                $ok = $stmt2->execute();
+                if ($ok) {
                     echo json_encode(['status' => 1, 'message' => 'Check-out recorded']);
                 } else {
-                    echo json_encode(['status' => 0, 'message' => 'DB error: ' . mysqli_error($conn)]);
+                    echo json_encode(['status' => 0, 'message' => 'DB error']);
                 }
                 exit;
             }

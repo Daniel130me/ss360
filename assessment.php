@@ -311,7 +311,6 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                                     </ol>
                                     <!-- add new assessment button -->
                                     <a href="create_assessment" class="btn btn-primary btn-sm mb-3 mt-4">Create New Assessment</a>
-                                    <!-- select term filters -->
                                     <div class="d-flex justify-content-between align-items-center flex-wrap">
                                         <div class="assessment_term_filters d-flex flex-wrap mb-3" style="gap:15px;">
                                             <button type="button" class="btn assessment_term_btn select_btn active" data-id="all">All Terms</button>
@@ -487,8 +486,8 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
             $(this).addClass('active');
             table.ajax.reload();
         });
-
-        $('.assessment_term_btn').click(function() {
+        
+           $('.assessment_term_btn').click(function() {
             $('.assessment_term_btn').removeClass('active');
             $(this).addClass('active');
             table.ajax.reload();

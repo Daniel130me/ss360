@@ -1,4 +1,4 @@
-// var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 (function(){
 var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
 s1.async=true;
@@ -7,8 +7,173 @@ s1.charset='UTF-8';
 s1.setAttribute('crossorigin','*');
 s0.parentNode.insertBefore(s1,s0);
 })();
+ 
+function get_billing_data() {
+    let student_id = $('#select_student_field').val();
+    let term_id = $('.term.select_btn.active').attr('data-name');
+    let session_id = $('#select_session_field').val();
+    let class_id = $('#select_class_field').val();
+    // show a lightweight loading state inside the existing payment card
+    var $body = $('#payment_card').find('.card-body');
+    if ($body.length === 0) {
+        // fallback: try to replace entire card if inner wrapper missing
+        $body = $('#payment_card');
+    }
+    $body.html('<div class="text-center p-3"><i class="fas fa-spinner fa-spin"></i><p class="mb-0 mt-2">Loading billing information&hellip;</p></div>');
 
+    $.ajax({
+        url: '../billing_controller.php',
+        type: 'POST',
+        data: {
+            action: 'get_parent_billing',
+            student_id,
+            term_id,
+            session_id,
+            class_id
+        },
+        dataType: 'json',
+        success: function (response) {
+            if (response && response.success) {
+                // Safely parse numbers and format with thousand separators
+                var due = parseFloat(response.amount_due) || 0;
+                var paid = parseFloat(response.total_amount_paid) || 0;
+                var balance = isNaN(parseFloat(response.balance)) ? (due - paid) : parseFloat(response.balance);
 
+                var fmt = function (n) {
+                    try {
+                        return Number(n).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                    } catch (e) {
+                        return n;
+                    }
+                };
+
+                var html = '';
+                html += '<div class="d-flex align-items-center mb-2">';
+                html += '    <span class="material-symbols-outlined text-danger mr-2">request_quote</span>';
+                html += '    <p class="mb-0">Amount due: <span class="font-weight-bold">' + fmt(due) + '</span></p>';
+                html += '</div>';
+                html += '<div class="d-flex align-items-center mb-2">';
+                html += '    <span class="material-symbols-outlined text-success mr-2">price_check</span>';
+                html += '    <p class="mb-0">Amount paid: <span class="font-weight-bold">' + fmt(paid) + '</span></p>';
+                html += '</div>';
+                html += '<div class="d-flex align-items-center mb-3">';
+                html += '    <span class="material-symbols-outlined text-warning mr-2">account_balance_wallet</span>';
+                html += '    <p class="mb-0">Balance: <span class="font-weight-bold">' + fmt(balance) + '</span></p>';
+                html += '</div>';
+                html += '<button type="button" class="btn btn-sm btn-outline-primary w-100" onclick="payment_breakdown_modal()">';
+                html += '    <span class="material-symbols-outlined" style="font-size: 1.2em; vertical-align: middle;">visibility</span>';
+                html += '    See payment breakdown';
+                html += '</button>';
+
+                $body.html(html);
+            } else {
+                var msg = (response && response.message) ? response.message : 'No billing data available.';
+                $body.html('<p class="text-muted text-center p-3">' + msg + '</p>');
+            }
+        },
+        error: function (xhr, status, err) {
+            $body.html('<p class="text-danger text-center p-3">Error fetching billing data.</p>');
+            console.error('get_billing_data error:', status, err, xhr && xhr.responseText);
+        }
+    });
+}
+// alert("cats")
+// function payment_breakdown_modal() {
+//     // Show modal and loading state
+//     $('#payment-breakdown-content').html('<div class="text-center py-4"><div class="spinner-border" role="status" aria-hidden="true"></div><div class="mt-2">Loading payment details&hellip;</div></div>');
+//     $('#payment_breakdown_modal').modal('show');
+
+//     // gather selection
+//     let student_id = $('#select_student_field').val();
+//     let term_id = $('.term.select_btn.active').attr('data-name') || '';
+//     let session_id = $('#select_session_field').val() || '';
+//     let class_id = $('#select_class_field').val() || '';
+
+//     if (!student_id || !term_id || !session_id) {
+//         $('#payment-breakdown-content').html('<p class="text-danger">Please select student, term and session.</p>');
+//         return;
+//     }
+
+//     function escapeHtml(str) {
+//         if (str === null || str === undefined) return '';
+//         return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+//     }
+
+//     $.ajax({
+//         url: '../billing_controller.php',
+//         type: 'POST',
+//         dataType: 'json',
+//         data: {
+//             action: 'get_payment_breakdown',
+//             student_id: student_id,
+//             term_id: term_id,
+//             session_id: session_id,
+//             class_id: class_id
+//         },
+//         success: function (resp) {
+//             if (!resp || !resp.success) {
+//                 $('#payment-breakdown-content').html('<p class="text-danger">Failed to load payment breakdown.</p>');
+//                 return;
+//             }
+
+//             const data = resp.data || [];
+//             if (data.length === 0) {
+//                 $('#payment-breakdown-content').html('<p>No payments or bills found for the selected filters.</p>');
+//                 return;
+//             }
+
+//             // Group by bill_id to create a timeline per bill
+//             const grouped = {};
+//             data.forEach(item => {
+//                 const bid = item.bill_id || 'no-bill';
+//                 if (!grouped[bid]) grouped[bid] = { bill_name: item.bill_name || ('Bill ' + bid), entries: [] };
+//                 grouped[bid].entries.push(item);
+//             });
+
+//             let html = '';
+//             Object.keys(grouped).forEach(bid => {
+//                 const group = grouped[bid];
+//                 html += `<div class="mb-4 p-3 border rounded">`;
+//                 html += `<div class="d-flex justify-content-between align-items-start mb-2">`;
+//                 html += `<div><strong>${escapeHtml(group.bill_name)}</strong></div>`;
+//                 html += `</div>`;
+
+//                 // timeline list
+//                 html += '<ul class="list-unstyled mb-0">';
+//                 // entries are expected ordered by date desc from server; normalize to desc
+//                 group.entries.sort((a, b) => (b.date_paid || '') > (a.date_paid || '') ? 1 : -1);
+//                 group.entries.forEach(entry => {
+//                     const date = entry.date_paid || entry.datecreated || '';
+//                     const amount = Number(entry.amount_newly_paid || 0);
+//                     const total_paid = Number(entry.total_amount_paid || 0);
+//                     const balance = Number(entry.balance || 0);
+//                     const method = entry.payment_method || '';
+//                     const desc = entry.description || '';
+
+//                     html += `<li class="mb-2">`;
+//                     html += `<div class="p-2 border rounded">`;
+//                     html += `<div class="d-flex justify-content-between">`;
+//                     html += `<div>`;
+//                     html += `<div><strong>₦${amount.toLocaleString()}</strong></div>`;
+//                     html += `<div class="small text-muted">${escapeHtml(desc)}${method ? ' — ' + escapeHtml(method) : ''}</div>`;
+//                     html += `</div>`;
+//                     html += `<div class="text-right small text-muted">${escapeHtml(date)}<div>Balance: ₦${balance.toLocaleString()}</div><div>Paid to date: ₦${total_paid.toLocaleString()}</div><a href="#paymentReceiptPreviewModal" class="float-right" data-toggle="modal" aria-expanded="false" data-bill_id="${entry.bill_id}" data-paymentid="${entry.id}" aria-controls="paymentReceiptPreviewModal">Preview Payment Receipt</a></div>`;
+//                     html += `</div>`;
+//                     html += `</div>`;
+//                     html += `</li>`;
+//                 });
+//                 html += '</ul>';
+//                 html += `</div>`;
+//             });
+
+//             $('#payment-breakdown-content').html(html);
+//         },
+//         error: function (xhr, status, err) {
+//             console.error(err);
+//             $('#payment-breakdown-content').html('<p class="text-danger">Error fetching payment breakdown.</p>');
+//         }
+//     });
+// }
 var student_score_data = [];
 // get_score_data()
 
@@ -754,8 +919,12 @@ function get_score_data() {
         return
     }
     // loadSettings().done(function (response) {
-    console.log("mmm", settingsData)
-    console.log(student_id, class_id, session_id, term_id)
+    // console.log("mmm", settingsData)
+    // console.log(student_id, class_id, session_id, term_id)
+    // console.log(student_id, class_id, session_id, term_id)
+    if ($("#report_page").val() === 'report_scores') {
+        setTimeout(get_billing_data, 100)
+    }
     $.ajax({
         url: "../controller.php",
         type: "post",
@@ -4198,7 +4367,7 @@ function delete_class_modal(event) {
         success: (data) => {
             data = JSON.parse(data)
             if (data.status == '1') {
-                $("#class_table").load('../display_class_table.php')
+                $("#class_table").load(`../display_class_table.php${ $("#class_page").val() == 'display_g_class' && '?is_g_table=1' }`)
                 setTimeout($("#delete_class_modal").modal("hide"), 200)
                 toastr.success("Updated Successfully")
             }
@@ -4267,6 +4436,10 @@ const init = () => {
     if ($("#class_page").val() === 'display_class') {
         $("#class_table").load('../display_class_table.php')
     }
+    if ($("#class_page").val() === 'display_g_class') {
+        $("#class_table").load('../display_class_table.php?is_g_table=1')
+    }
+    
     if ($("#settings_page").val() === 'view_Settings') {
         $("#school_info_placeholder_form").load('../display_school_info_form.php')
         $("#school_setting_placeholder_form").load('../display_school_setting_form.php')
@@ -4328,8 +4501,9 @@ function toggletermfilterClass(element) {
     // let session = $("#select_session_field").val()
     // let class = $("#select_class_field").val()
     $("#filterTerm button").removeClass('active');
-    console.log($(element).html())
+    // console.log($(element).html())
     $(element).addClass('active');
+    // console.log("some",$(element).attr('data-name'))
     // if (element === '1') {
     //     $("#first").addClass('active');
     // } else if (element === '2') {
@@ -4347,6 +4521,9 @@ function toggletermfilterClass(element) {
     //     } else if ($("#by_stud_btn").hasClass("active")) {
     //         // alert("stude") 
     check_result_toggle()
+    if($(element).attr('data-name') != 'summary'){
+        get_billing_data();
+    }
     //     }
     // }
     if ($("#report_page").val() === 'report_scores') {
@@ -9034,6 +9211,38 @@ function update_sub_cat_form(event) {
         }
     });
 }
+function add_g_class_data(event) {
+    event.preventDefault()
+    let formdata = new FormData(event.target);
+    $.ajax({
+        url: "../controller.php",
+        type: "post",
+        data: formdata,
+        contentType: false,
+        processData: false,
+        beforeSend: () => {
+            $("#create_class_btn").html('Processing')
+            $("#create_class_btn").attr('disabled', true)
+        },
+        success: (data) => {
+            $("#create_class_btn").html('Create Class')
+            $("#create_class_btn").attr('disabled', false)
+            data = JSON.parse(data)
+            if (data.status == '1') {
+                $(".myalert").hide()
+
+                $("#class_table").load('../display_class_table.php?is_g_table=1')
+                setTimeout($("#add_class_modal").modal("hide"), 200)
+                toastr.success(data.msg)
+                event.target.reset()
+                $('.select2').val(null).trigger('change')
+            } else {
+                $(".warning").html(data.err)
+                $(".myalert").show()
+            }
+        },
+    });
+}
 
 function add_class_data(event) {
     event.preventDefault()
@@ -9111,7 +9320,7 @@ function update_class_data(event) {
         success: (data) => {
             data = JSON.parse(data)
             if (data.status == '1') {
-                $("#class_table").load('../display_class_table.php')
+                 $("#class_table").load(`../display_class_table.php${data.is_graduate && '?is_g_table=1'}`)
                 setTimeout($("#edit_class_modal").modal("hide"), 200)
                 // toastr.success("Updated Successfully")
             }
@@ -9366,6 +9575,8 @@ $(".loginform").submit(function (event) {
             $($btn).html($btntext)
             // data = JSON.parse(data)
             if (data.status == '1') {
+                // alert(data.location)
+                
                 window.location = `./${data.location}`
             }
             else {
@@ -9375,34 +9586,36 @@ $(".loginform").submit(function (event) {
     });
 });
 
-function get_note_week_create() {
+
+function get_note_week_create(element=true) {
     $("#week_btns_container").html(
         `
-        <label for="" class="mb-0">Select Week</label>
+        <label for="" class="mb-2 text-dark">Select Week</label>
             <div class="week_btns d-flex flex-wrap" style="gap:15px;">
-                <button type="button" class="btn week_btn select_btn active" data-id="1" onclick="toggle_week_btn(this)">1</button>
-                <button type="button" class="btn week_btn select_btn" data-id="2" onclick="toggle_week_btn(this)">2</button>
-                <button type="button" class="btn week_btn select_btn" data-id="3" onclick="toggle_week_btn(this)">3</button>
-                <button type="button" class="btn week_btn select_btn" data-id="4" onclick="toggle_week_btn(this)">4</button>
-                <button type="button" class="btn week_btn select_btn" data-id="5" onclick="toggle_week_btn(this)">5</button>
-                <button type="button" class="btn week_btn select_btn" data-id="6" onclick="toggle_week_btn(this)">6</button>
-                <button type="button" class="btn week_btn select_btn" data-id="7" onclick="toggle_week_btn(this)">7</button>
-                <button type="button" class="btn week_btn select_btn" data-id="8" onclick="toggle_week_btn(this)">8</button>
-                <button type="button" class="btn week_btn select_btn" data-id="9" onclick="toggle_week_btn(this)">9</button>
-                <button type="button" class="btn week_btn select_btn" data-id="10" onclick="toggle_week_btn(this)">10</button>
-                <button type="button" class="btn week_btn select_btn" data-id="11" onclick="toggle_week_btn(this)">11</button>
-                <button type="button" class="btn week_btn select_btn" data-id="12" onclick="toggle_week_btn(this)">12</button>
-                <button type="button" class="btn week_btn select_btn" data-id="13" onclick="toggle_week_btn(this)">13</button>
-                <button type="button" class="btn week_btn select_btn" data-id="14" onclick="toggle_week_btn(this)">14</button>
-                <button type="button" class="btn week_btn select_btn" data-id="15" onclick="toggle_week_btn(this)">15</button>
-                <button type="button" class="btn week_btn select_btn" data-id="16" onclick="toggle_week_btn(this)">16</button>
-                <button type="button" class="btn week_btn select_btn" data-id="17" onclick="toggle_week_btn(this)">17</button>
+                <button type="button" class="btn week_btn select_btn active" data-id="1" onclick="toggle_week_btn(this, ${element})">${element ? '1' : 'Week 1'}</button>
+                <button type="button" class="btn week_btn select_btn" data-id="2" onclick="toggle_week_btn(this, ${element})">${element ? '2' : 'Week 2'}</button>
+                <button type="button" class="btn week_btn select_btn" data-id="3" onclick="toggle_week_btn(this, ${element})">${element ? '3' : 'Week 3'}</button>
+                <button type="button" class="btn week_btn select_btn" data-id="4" onclick="toggle_week_btn(this, ${element})">${element ? '4' : 'Week 4'}</button>
+                <button type="button" class="btn week_btn select_btn" data-id="5" onclick="toggle_week_btn(this, ${element})">${element ? '5' : 'Week 5'}</button>
+                <button type="button" class="btn week_btn select_btn" data-id="6" onclick="toggle_week_btn(this, ${element})">${element ? '6' : 'Week 6'}</button>
+                <button type="button" class="btn week_btn select_btn" data-id="7" onclick="toggle_week_btn(this, ${element})">${element ? '7' : 'Week 7'}</button>
+                <button type="button" class="btn week_btn select_btn" data-id="8" onclick="toggle_week_btn(this, ${element})">${element ? '8' : 'Week 8'}</button>
+                <button type="button" class="btn week_btn select_btn" data-id="9" onclick="toggle_week_btn(this, ${element})">${element ? '9' : 'Week 9'}</button>
+                <button type="button" class="btn week_btn select_btn" data-id="10" onclick="toggle_week_btn(this, ${element})">${element ? '10' : 'Week 10'}</button>
+                <button type="button" class="btn week_btn select_btn" data-id="11" onclick="toggle_week_btn(this, ${element})">${element ? '11' : 'Week 11'}</button>
+                <button type="button" class="btn week_btn select_btn" data-id="12" onclick="toggle_week_btn(this, ${element})">${element ? '12' : 'Week 12'}</button>
+                <button type="button" class="btn week_btn select_btn" data-id="13" onclick="toggle_week_btn(this, ${element})">${element ? '13' : 'Week 13'}</button>
+                <button type="button" class="btn week_btn select_btn" data-id="14" onclick="toggle_week_btn(this, ${element})">${element ? '14' : 'Week 14'}</button>
+                <button type="button" class="btn week_btn select_btn" data-id="15" onclick="toggle_week_btn(this, ${element})">${element ? '15' : 'Week 15'}</button>
+                <button type="button" class="btn week_btn select_btn" data-id="16" onclick="toggle_week_btn(this, ${element})">${element ? '16' : 'Week 16'}</button>
+                <button type="button" class="btn week_btn select_btn" data-id="17" onclick="toggle_week_btn(this, ${element})">${element ? '17' : 'Week 17'}</button>
         </div>
         `
     )
     setTimeout(get_notes_week_view, 100)
-    setTimeout(get_lesson_note, 100)
+    setTimeout(()=>get_lesson_note(element), 100)
 }
+
 
 function get_notes_week_view() {
     if (!$("#select_class_field").val() || !$("#select_subject_field").val() || !$(".week_btn.active").attr("data-id")) {
@@ -9433,24 +9646,65 @@ function get_notes_week_view() {
     })
 }
 
-
-
-
-function get_lesson_note() {
-    setTimeout(get_lesson_note_topic, 100)
-    setTimeout(get_lesson_note_body, 100)
+function get_lesson_note(element=true) {
+    setTimeout(element ? get_lesson_note_topic : get_class_note_topic, 100)
+    setTimeout(element ? get_lesson_note_body : get_class_note_body, 100)
 }
-
-function toggle_week_btn(event) {
+function toggle_week_btn(event, staff=true) {
     $(".week_btn.select_btn").removeClass("active")
     $(event).addClass("active")
-    get_lesson_note()
+    get_lesson_note(staff)
 }
+function toggle_subject_btn(event, staff=true) {
+    $(".subject_btn.select_btn").removeClass("active")
+    $(event).addClass("active")
+    get_lesson_note(staff)
+}
+
 
 
 
 let editorInstance;
 
+
+function get_class_note_topic() {
+    // const week_ids = Array.from(document.querySelectorAll(".week_btn.active")).map((item) => item.getAttribute("data-id"));
+    if (!$("#select_class_student").val() || !$(".subject_btn.select_btn.active").attr("data-id") || !$(".week_btn.active").attr("data-id")) {
+        return false;
+    }
+
+    $("#note_container_topic").html(`
+        <div class="mt-4">
+        <div class="py-3 px-15 bg-white" style="border-radius: 10px;">
+                <h5>Topic</h5>
+                <p id="lesson_topic_view" style="background-color: #fcfcfc; padding-top: 10px; padding-bottom: 10px; padding-left: 10px; padding-right: 10px; border-radius: 5px;"><i>Nothing here yet</i></p>
+            </div>
+        </div>
+    `);
+
+    $.ajax({
+        url: "../controller.php",
+        type: "post",
+        data: {
+            "class_id": $("#select_class_student").val(),
+            "subject_id": $(".subject_btn.select_btn.active").attr("data-id"),
+            "week_id": $(".week_btn.active").attr("data-id"),
+            "type": 'topic',
+            "action": "get_lesson_note"
+        },
+        beforeSend: () => {
+            $("#lesson_topic_view").html("Loading...")
+        },
+        success: (response) => {
+            const data = !response ? '' : JSON.parse(response);
+            $("#lesson_topic").val(data.topic || '');
+            $("#lesson_topic_view").html(data.topic || "<i>Nothing here yet</i>");
+        },
+        error: (error) => {
+            console.error("Error fetching lesson note:", error);
+        }
+    });
+}
 function get_lesson_note_topic() {
     // const week_ids = Array.from(document.querySelectorAll(".week_btn.active")).map((item) => item.getAttribute("data-id"));
     if (!$("#select_class_field").val() || !$("#select_subject_field").val() || !$(".week_btn.active").attr("data-id")) {
@@ -9501,7 +9755,459 @@ function get_lesson_note_topic() {
         }
     });
 }
+// alert("moocd")
+function get_class_note_body() {
+    if (!$("#select_class_student").val() || !$(".subject_btn.select_btn.active").attr("data-id") || !$(".week_btn.active").attr("data-id")) {
+        return false;
+    }
+    console.log("mmpemcy")
+    $("#note_container_body").html(`
+        
+                    <div class="mt-4">
+                        <div class="py-3 px-15 bg-white" style="border-radius: 10px;">
+                        <h5>Note</h5>    
+                        <div id="lesson_body_view"></div>
+                        </div>
+                    </div>
+        
+    `);
+    $.ajax({
+        url: "../controller.php",
+        type: "post",
+        data: {
+            "class_id": $("#select_class_student").val(),
+            "subject_id": $(".subject_btn.select_btn.active").attr("data-id"),
+            "week_id": $(".week_btn.active").attr("data-id"),
+            'type': 'body',
+            "action": "get_lesson_note"
+        },
+        beforeSend: () => {
+            $("#lesson_body_view").html("Loading...")
+        },
+        success: (response) => {
+            console.log("Response:", response);
+            const data = !response ? '' : JSON.parse(response);
+            // editorInstance.setData(data.content || '');
+            console.log("data", data)
+            // Extract all sections between <{ and }> (including HTML-escaped variants) and concatenate them
+            function extractAllInnerMarkers(content) {
+                if (!content || typeof content !== 'string') return '';
+                // First produce an "unescaped" version where &lt; and &gt; are restored
+                const unescapedContent = content.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+                const results = [];
 
+                // Use a global regex on the unescaped content to capture all marker blocks
+                const regex = /<\{([\s\S]*?)\}>/g;
+                let m;
+                while ((m = regex.exec(unescapedContent)) !== null) {
+                    if (m[1]) {
+                        // Trim outer whitespace but preserve inner HTML tags
+                        results.push(m[1].trim());
+                    }
+                    if (regex.lastIndex === m.index) regex.lastIndex++;
+                }
+
+                // Remove duplicates while preserving order
+                const seen = new Set();
+                const unique = results.filter(item => {
+                    if (seen.has(item)) return false;
+                    seen.add(item);
+                    return true;
+                });
+
+                // Join with spacing. The resulting string should contain HTML tags ready for insertion via .html()
+                return unique.join('\n\n');
+            }
+
+            const extractedAll = extractAllInnerMarkers(data.content || '');
+            console.log(extractedAll)
+            $("#lesson_body_view").html(extractedAll || "<i>No content here yet</i>");
+
+        },
+        error: (error) => {
+            console.error("Error fetching lesson note:", error);
+        }
+    });
+}
+// function get_lesson_note_body() {
+//     if (!$("#select_class_field").val() || !$("#select_subject_field").val() || !$(".week_btn.active").attr("data-id")) {
+//         return false;
+//     }
+//     if (editorInstance) {
+//         editorInstance.destroy()
+//             .then(() => {
+//                 console.log("Editor destroyed");
+//             })
+//             .catch(error => {
+//                 console.error("Error destroying editor:", error);
+//             });
+//     }
+
+//     $("#note_container_body").html(`
+        
+//                     <div class="mt-4">
+//                         <div class="py-3 px-15 bg-white" style="border-radius: 10px;">
+                            
+//                             <div class="form-group mb-0 w-100" id="lesson_note_body_editor" style="display:none;">
+//                                 <label class="">Content</label>
+//                                 <textarea id="lesson_body" name=""></textarea>
+//                                 <div class="d-flex mt-3">
+//                                     <button type="button" class="btn btn-primary mr-3" onclick="create_lesson_note_body()">Save changes</button>
+//                                     <button type="button" class="btn btn-outline-primary" onclick="show_lesson_note_body()">Cancel editing</button>
+//                                 </div>
+//                             </div>
+//                             <div class="form-group mb-0 w-100" id="lesson_note_body_view" style="display: inline-block;">
+//                                 <label class="">Content</label>
+//                                 <div id="lesson_body_view" style="background-color: #fcfcfc; padding-top: 10px; padding-bottom: 10px; padding-left: 10px; padding-right: 10px; border-radius: 5px;">        
+//                                 <i>No content here yet</i>
+//                                 </div>
+//                                 <a onclick="show_lesson_note_body_editor()" class="btn accent pl-0 pr-5 d-flex align-items-center">Edit content</a>
+//                             </div>
+//                         </div>
+//                     </div>
+        
+//     `);
+
+//     ClassicEditor.create(document.querySelector("#lesson_body"), {
+//         toolbar: {
+//             shouldNotGroupWhenFull: true,
+//             items: [
+//                 'heading', 'bold', 'italic', 'underline', 'strikethrough',
+//                 '|', 'bulletedList', 'numberedList', 'alignment',
+//                 '|', 'blockQuote', 'link', 'undo', 'redo',
+//                 '|', 'fontSize', 'fontColor', 'fontBackgroundColor', 'insertTable', 'imageUpload'
+//             ]
+//         },
+//         // Enable image upload via SimpleUpload adapter. Remove heavy/unused plugins but keep image upload support.
+//         removePlugins: ['MediaEmbed', 'EasyImage', 'CKFinder'],
+//         simpleUpload: {
+//             // Upload URL: controller will handle uploads when action=upload_lesson_image
+//             uploadUrl: '../controller.php?action=upload_lesson_image',
+//             // Optional headers (e.g., CSRF) can be added here if needed:
+//             // headers: { 'X-CSRF-TOKEN': 'CSRF-Token' }
+//         },
+//         heading: {
+//             options: [
+//                 { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+//                 { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+//                 { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+//                 { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+//             ]
+//         }
+//     })
+//         .then(editor => {
+//             editorInstance = editor;
+//             editorInstance.setData(''); // Set initial data
+//             console.log("Editor initialized successfully!");
+//             // Provide a fallback image upload control when the CKEditor upload adapter/plugin
+//             // is not available (filerepository-no-upload-adapter). This allows users to upload
+//             // an image via a simple file input and insert it into the editor content.
+//             try {
+//                 const viewEl = document.querySelector('#lesson_note_body_view');
+//                 if (viewEl) {
+//                     let uploadGroup = document.getElementById('lesson_image_upload_group');
+//                     if (!uploadGroup) {
+//                         uploadGroup = document.createElement('div');
+//                         uploadGroup.id = 'lesson_image_upload_group';
+//                         uploadGroup.style.marginTop = '8px';
+//                         uploadGroup.innerHTML = `
+//                             <input type="file" id="lesson_image_input" accept="image/*" style="display:none;">
+//                             <button type="button" id="lesson_image_btn" class="btn btn-sm btn-secondary">Upload Image</button>
+//                             <span id="lesson_image_status" style="margin-left:10px"></span>
+//                             <div id="lesson_image_progress_wrap" style="margin-top:8px; display:none;">
+//                                 <div style="height:6px; background:#e9ecef; border-radius:3px; overflow:hidden;">
+//                                     <div id="lesson_image_progress" style="height:6px; width:0%; background:#007bff;"></div>
+//                                 </div>
+//                                 <div style="font-size:12px; margin-top:4px; color:#666; display:flex; justify-content:space-between;">
+//                                     <span id="lesson_image_progress_text">0 B of 2 MB used</span>
+//                                     <button type="button" id="lesson_image_reset" class="btn btn-sm btn-link" style="padding:0;">Reset</button>
+//                                 </div>
+//                             </div>
+//                         `;
+//                         // Insert upload controls after the view element
+//                         viewEl.parentNode.insertBefore(uploadGroup, viewEl.nextSibling);
+
+//                         const fileInput = document.getElementById('lesson_image_input');
+//                         const uploadBtn = document.getElementById('lesson_image_btn');
+//                         const statusEl = document.getElementById('lesson_image_status');
+
+//                         uploadBtn.addEventListener('click', function () {
+//                             fileInput.click();
+//                         });
+
+//                         // initialize global tracking state if not present
+//                         if (!window.lessonImageUploadState) {
+//                             window.lessonImageUploadState = {
+//                                 maxTotal: 2 * 1024 * 1024, // 2 MB
+//                                 used: 0,
+//                                 inProgress: false,
+//                                 // store names of files uploaded in this session
+//                                 files: []
+//                             };
+//                         }
+
+//                         const progressWrap = document.getElementById('lesson_image_progress_wrap');
+//                         const progressBar = document.getElementById('lesson_image_progress');
+//                         const progressText = document.getElementById('lesson_image_progress_text');
+//                         const resetBtn = document.getElementById('lesson_image_reset');
+
+//                         function updateProgressUI() {
+//                             const used = window.lessonImageUploadState.used || 0;
+//                             const max = window.lessonImageUploadState.maxTotal;
+//                             const pct = Math.min(100, Math.round((used / max) * 100));
+//                             progressBar.style.width = pct + '%';
+//                             progressText.textContent = bytesToHuman(used) + ' of ' + bytesToHuman(max) + ' used';
+//                             if (used >= max) {
+//                                 uploadBtn.disabled = true;
+//                                 uploadBtn.classList.add('disabled');
+//                             } else {
+//                                 uploadBtn.disabled = false;
+//                                 uploadBtn.classList.remove('disabled');
+//                             }
+//                             progressWrap.style.display = used > 0 ? 'block' : 'none';
+//                         }
+
+//                         resetBtn.addEventListener('click', function () {
+//                             window.lessonImageUploadState.used = 0;
+//                             updateProgressUI();
+//                         });
+
+//                         function bytesToHuman(n) {
+//                             if (n < 1024) return n + ' B';
+//                             if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+//                             return (n / (1024 * 1024)).toFixed(2) + ' MB';
+//                         }
+
+//                         fileInput.addEventListener('change', function (e) {
+//                             const file = this.files && this.files[0];
+//                             if (!file) return;
+
+//                             // Check remaining quota
+//                             const state = window.lessonImageUploadState;
+//                             const remaining = state.maxTotal - (state.used || 0);
+//                             if (file.size > remaining) {
+//                                 statusEl.textContent = 'File too large for remaining quota';
+//                                 return;
+//                             }
+
+//                             statusEl.textContent = 'Uploading...';
+//                             progressWrap.style.display = 'block';
+
+//                             const xhr = new XMLHttpRequest();
+//                             const form = new FormData();
+//                             form.append('image', file);
+
+//                             xhr.open('POST', '../upload_image.php');
+
+//                             // progress for this upload
+//                             xhr.upload.addEventListener('progress', function (ev) {
+//                                 if (ev.lengthComputable) {
+//                                     const percent = Math.round((ev.loaded / ev.total) * 100);
+//                                     // show progress towards this file only
+//                                     progressBar.style.width = percent + '%';
+//                                     progressText.textContent = bytesToHuman((state.used || 0) + ev.loaded) + ' of ' + bytesToHuman(state.maxTotal) + ' used';
+//                                 }
+//                             });
+
+//                             xhr.addEventListener('load', function () {
+//                                 try {
+//                                     const resp = JSON.parse(xhr.responseText);
+//                                         if (xhr.status >= 200 && xhr.status < 300 && resp && resp.url) {
+//                                         // commit usage
+//                                         state.used = (state.used || 0) + file.size;
+//                                         // record uploaded filename (server returns 'name') or fallback to parsing from url
+//                                         if (resp.name) {
+//                                             state.files.push(resp.name);
+//                                         } else if (resp.url) {
+//                                             try {
+//                                                 const parts = resp.url.split('/');
+//                                                 const base = parts[parts.length - 1].split('?')[0];
+//                                                 if (base) state.files.push(base);
+//                                             } catch (e) {}
+//                                         }
+//                                         updateProgressUI();
+
+//                                         const insertImageByUrl = (url) => {
+//                                             try {
+//                                                 if (editorInstance && editorInstance.model && editorInstance.model.schema && editorInstance.model.schema.checkChild) {
+//                                                     editorInstance.model.change(writer => {
+//                                                         const imageElement = writer.createElement('imageBlock', { src: url });
+//                                                         editorInstance.model.insertContent(imageElement, editorInstance.model.document.selection);
+//                                                     });
+//                                                 } else if (editorInstance && typeof editorInstance.execute === 'function') {
+//                                                     try {
+//                                                         editorInstance.execute('imageInsert', { source: url });
+//                                                     } catch (e) {
+//                                                         const current = editorInstance.getData();
+//                                                         editorInstance.setData(current + `<p><img src="${url}"/></p>`);
+//                                                     }
+//                                                 } else {
+//                                                     const current = editorInstance.getData ? editorInstance.getData() : '';
+//                                                     if (typeof editorInstance.setData === 'function') {
+//                                                         editorInstance.setData(current + `<p><img src="${url}"/></p>`);
+//                                                     }
+//                                                 }
+//                                                 statusEl.textContent = 'Uploaded';
+//                                             } catch (err) {
+//                                                 try {
+//                                                     const current = editorInstance.getData();
+//                                                     editorInstance.setData(current + `<p><img src="${url}"/></p>`);
+//                                                     statusEl.textContent = 'Uploaded (fallback)';
+//                                                 } catch (err2) {
+//                                                     console.error('Insert image error', err2);
+//                                                     statusEl.textContent = 'Uploaded but insert failed';
+//                                                 }
+//                                             }
+//                                         };
+
+//                                         insertImageByUrl(resp.url);
+//                                     } else {
+//                                         statusEl.textContent = resp && resp.error ? (resp.error.message || resp.error) : 'Upload failed';
+//                                     }
+//                                 } catch (err) {
+//                                     console.error('Upload parse error', err, xhr.responseText);
+//                                     statusEl.textContent = 'Upload error';
+//                                 }
+//                             });
+
+//                             xhr.addEventListener('error', function (ev) {
+//                                 console.error('XHR upload error', ev);
+//                                 statusEl.textContent = 'Upload error';
+//                             });
+
+//                             xhr.send(form);
+//                         });
+//                     }
+//                 }
+//             } catch (e) {
+//                 console.error('Fallback upload init error', e);
+//             }
+
+//             // --- Image resize toolbar ---
+//             try {
+//                 // Create floating toolbar element
+//                 let imgToolbar = document.getElementById('ck_img_resize_toolbar');
+//                 if (!imgToolbar) {
+//                     imgToolbar = document.createElement('div');
+//                     imgToolbar.id = 'ck_img_resize_toolbar';
+//                     imgToolbar.style.position = 'absolute';
+//                     imgToolbar.style.display = 'none';
+//                     imgToolbar.style.zIndex = 9999;
+//                     imgToolbar.style.background = '#fff';
+//                     imgToolbar.style.border = '1px solid #ddd';
+//                     imgToolbar.style.padding = '6px';
+//                     imgToolbar.style.borderRadius = '4px';
+//                     imgToolbar.style.boxShadow = '0 2px 6px rgba(0,0,0,0.15)';
+//                     imgToolbar.innerHTML = `
+//                         <button class="btn btn-sm btn-light ck-img-size-btn" data-size="25">25%</button>
+//                         <button class="btn btn-sm btn-light ck-img-size-btn" data-size="50">50%</button>
+//                         <button class="btn btn-sm btn-light ck-img-size-btn" data-size="75">75%</button>
+//                         <button class="btn btn-sm btn-light ck-img-size-btn" data-size="100">100%</button>
+//                         <input id="ck_img_custom_px" type="number" placeholder="px" style="width:64px; margin-left:6px;" />
+//                         <button class="btn btn-sm btn-primary" id="ck_img_apply_px" style="margin-left:6px;">Apply</button>
+//                         <button class="btn btn-sm btn-outline-secondary" id="ck_img_remove_style" style="margin-left:6px;">Reset</button>
+//                     `;
+//                     document.body.appendChild(imgToolbar);
+//                 }
+
+//                 let currentImage = null;
+
+//                 // Helper to position toolbar near an element
+//                 function positionToolbarForElement(el) {
+//                     const rect = el.getBoundingClientRect();
+//                     const toolbarRect = imgToolbar.getBoundingClientRect();
+//                     // place above the image if possible
+//                     let top = window.scrollY + rect.top - toolbarRect.height - 8;
+//                     if (top < window.scrollY + 5) top = window.scrollY + rect.bottom + 8; // below if not enough space
+//                     let left = window.scrollX + rect.left;
+//                     imgToolbar.style.top = top + 'px';
+//                     imgToolbar.style.left = left + 'px';
+//                     imgToolbar.style.display = 'block';
+//                 }
+
+//                 // Click handler inside the editor to detect images
+//                 const editable = editor.ui ? editor.ui.view.editable.element : document.querySelector('.ck-editor__editable');
+//                 if (editable) {
+//                     editable.addEventListener('click', function (ev) {
+//                         const target = ev.target;
+//                         if (target && target.tagName && target.tagName.toLowerCase() === 'img') {
+//                             currentImage = target;
+//                             positionToolbarForElement(target);
+//                             // Pre-fill custom px with current width (if set as px)
+//                             const width = target.style.width || target.getAttribute('width') || '';
+//                             const px = width && width.indexOf('%') === -1 ? parseInt(width, 10) || '' : '';
+//                             document.getElementById('ck_img_custom_px').value = px;
+//                         } else {
+//                             currentImage = null;
+//                             imgToolbar.style.display = 'none';
+//                         }
+//                     });
+
+//                     // Hide toolbar when clicking elsewhere
+//                     document.addEventListener('click', function (ev) {
+//                         if (!imgToolbar.contains(ev.target) && !editable.contains(ev.target)) {
+//                             imgToolbar.style.display = 'none';
+//                             currentImage = null;
+//                         }
+//                     });
+
+//                     // Toolbar button handlers
+//                     imgToolbar.addEventListener('click', function (ev) {
+//                         const btn = ev.target.closest('.ck-img-size-btn');
+//                         if (btn && currentImage) {
+//                             const size = btn.getAttribute('data-size');
+//                             currentImage.style.width = size + '%';
+//                             // reflect change into editor model if possible
+//                             try { currentImage.removeAttribute('height'); } catch (e) {}
+//                         }
+//                         if (ev.target && ev.target.id === 'ck_img_apply_px' && currentImage) {
+//                             const val = parseInt(document.getElementById('ck_img_custom_px').value, 10);
+//                             if (!isNaN(val) && val > 0) {
+//                                 currentImage.style.width = val + 'px';
+//                             }
+//                         }
+//                         if (ev.target && ev.target.id === 'ck_img_remove_style' && currentImage) {
+//                             currentImage.style.width = '';
+//                             currentImage.removeAttribute('width');
+//                         }
+//                     });
+//                 }
+//             } catch (e) {
+//                 console.error('Image toolbar init error', e);
+//             }
+//         })
+//         .catch(error => {
+//             console.error("Error initializing editor:", error);
+//         });
+
+
+
+
+//     $.ajax({
+//         url: "../controller.php",
+//         type: "post",
+//         data: {
+//             "class_id": $("#select_class_field").val(),
+//             "subject_id": $("#select_subject_field").val(),
+//             "week_id": $(".week_btn.active").attr("data-id"),
+//             'type': 'body',
+//             "action": "get_lesson_note"
+//         },
+//         beforeSend: () => {
+//             $("#lesson_body_view").html("Loading...")
+//         },
+//         success: (response) => {
+//             const data = !response ? '' : JSON.parse(response);
+//             // Keep the full content in the editor and show full content in the view
+//             editorInstance.setData(data.content || '');
+//             $("#lesson_body_view").html(data.content || "<i>No content here yet</i>");
+
+//         },
+//         error: (error) => {
+//             console.error("Error fetching lesson note:", error);
+//         }
+//     });
+// }
 function get_lesson_note_body() {
     if (!$("#select_class_field").val() || !$("#select_subject_field").val() || !$(".week_btn.active").attr("data-id")) {
         return false;
@@ -9541,100 +10247,313 @@ function get_lesson_note_body() {
         
     `);
 
-    // Use a feature-rich editor configuration similar to the CKEditor 5 demo.
-    // This configuration uses the Classic build from CDN which includes many common plugins.
     ClassicEditor.create(document.querySelector("#lesson_body"), {
         toolbar: {
             shouldNotGroupWhenFull: true,
             items: [
-                'heading', '|',
-                'bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript', '|',
-                'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', '|',
-                'link', 'insertTable', 'blockQuote', 'code', '|',
-                'bulletedList', 'numberedList', 'todoList', '|',
-                'outdent', 'indent', 'alignment', '|',
-                'imageUpload', 'mediaEmbed', '|',
-                'undo', 'redo', 'removeFormat'
+                'heading', 'bold', 'italic', 'underline', 'strikethrough',
+                '|', 'bulletedList', 'numberedList', 'alignment',
+                '|', 'blockQuote', 'link', 'undo', 'redo',
+                '|', 'fontSize', 'fontColor', 'fontBackgroundColor', 'insertTable', 'imageUpload'
             ]
         },
-        // Enable table and image toolbars for better UX (these are no-ops if plugin not present in build)
-        table: {
-            contentToolbar: [ 'tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties' ]
-        },
-        image: {
-            toolbar: [ 'imageTextAlternative', 'imageStyle:alignLeft', 'imageStyle:alignCenter', 'imageStyle:alignRight' ]
+        // Enable image upload via SimpleUpload adapter. Remove heavy/unused plugins but keep image upload support.
+        removePlugins: ['MediaEmbed', 'EasyImage', 'CKFinder'],
+        simpleUpload: {
+            // Upload URL: controller will handle uploads when action=upload_lesson_image
+            uploadUrl: '../controller.php?action=upload_lesson_image',
+            // Optional headers (e.g., CSRF) can be added here if needed:
+            // headers: { 'X-CSRF-TOKEN': 'CSRF-Token' }
         },
         heading: {
             options: [
                 { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
                 { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
                 { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
-                { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' }
+                { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
             ]
         }
     })
         .then(editor => {
             editorInstance = editor;
             editorInstance.setData(''); // Set initial data
+            console.log("Editor initialized successfully!");
+            // Provide a fallback image upload control when the CKEditor upload adapter/plugin
+            // is not available (filerepository-no-upload-adapter). This allows users to upload
+            // an image via a simple file input and insert it into the editor content.
+            try {
+                const viewEl = document.querySelector('#lesson_note_body_view');
+                if (viewEl) {
+                    let uploadGroup = document.getElementById('lesson_image_upload_group');
+                    if (!uploadGroup) {
+                        uploadGroup = document.createElement('div');
+                        uploadGroup.id = 'lesson_image_upload_group';
+                        uploadGroup.style.marginTop = '8px';
+                        uploadGroup.innerHTML = `
+                            <input type="file" id="lesson_image_input" accept="image/*" style="display:none;">
+                            <button type="button" id="lesson_image_btn" class="btn btn-sm btn-secondary">Upload Image</button>
+                            <span id="lesson_image_status" style="margin-left:10px"></span>
+                            <div id="lesson_image_progress_wrap" style="margin-top:8px; display:none;">
+                                <div style="height:6px; background:#e9ecef; border-radius:3px; overflow:hidden;">
+                                    <div id="lesson_image_progress" style="height:6px; width:0%; background:#007bff;"></div>
+                                </div>
+                                <div style="font-size:12px; margin-top:4px; color:#666; display:flex; justify-content:space-between;">
+                                    <span id="lesson_image_progress_text">0 B of 2 MB used</span>
+                                    <button type="button" id="lesson_image_reset" class="btn btn-sm btn-link" style="padding:0;">Reset</button>
+                                </div>
+                            </div>
+                        `;
+                        // Insert upload controls after the view element
+                        viewEl.parentNode.insertBefore(uploadGroup, viewEl.nextSibling);
 
-            // Hide toolbar items for plugins that aren't available in the loaded build.
-            function pruneToolbar(ed) {
-                try {
-                    const pluginAvailability = {
-                        'imageUpload': ed.plugins.has('ImageUpload'),
-                        'mediaEmbed': ed.plugins.has('MediaEmbed'),
-                        'insertTable': ed.plugins.has('Table'),
-                        'font': ed.plugins.has('Font'),
-                        'fontColor': ed.plugins.has('FontColor'),
-                        'fontBackgroundColor': ed.plugins.has('FontBackgroundColor'),
-                        'todoList': ed.plugins.has('TodoList'),
-                        'alignment': ed.plugins.has('Alignment'),
-                        'blockQuote': ed.plugins.has('BlockQuote')
-                    };
+                        const fileInput = document.getElementById('lesson_image_input');
+                        const uploadBtn = document.getElementById('lesson_image_btn');
+                        const statusEl = document.getElementById('lesson_image_status');
 
-                    // Iterate toolbar DOM and hide buttons for unavailable plugins
-                    const toolbarView = ed.ui.view.toolbar; // ck5 toolbar view
-                    if (toolbarView && toolbarView.items) {
-                        toolbarView.items.forEach(itemView => {
-                            try {
-                                const label = itemView.label && itemView.label.toLowerCase ? itemView.label.toLowerCase() : '';
-                                // Map some label keywords to plugin keys
-                                if (label.includes('image') && !pluginAvailability.imageUpload) itemView.element.style.display = 'none';
-                                if (label.includes('media') && !pluginAvailability.mediaEmbed) itemView.element.style.display = 'none';
-                                if ((label.includes('table') || label.includes('insert table')) && !pluginAvailability.insertTable) itemView.element.style.display = 'none';
-                                if (label.includes('font') && !pluginAvailability.font) itemView.element.style.display = 'none';
-                                if (label.includes('color') && (!pluginAvailability.fontColor && !pluginAvailability.fontBackgroundColor)) itemView.element.style.display = 'none';
-                                if (label.includes('todo') && !pluginAvailability.todoList) itemView.element.style.display = 'none';
-                                if (label.includes('align') && !pluginAvailability.alignment) itemView.element.style.display = 'none';
-                            } catch (inner) {
-                                // ignore single item errors
+                        uploadBtn.addEventListener('click', function () {
+                            fileInput.click();
+                        });
+
+                        // initialize global tracking state if not present
+                        if (!window.lessonImageUploadState) {
+                            window.lessonImageUploadState = {
+                                maxTotal: 2 * 1024 * 1024, // 2 MB
+                                used: 0,
+                                inProgress: false,
+                                // store names of files uploaded in this session
+                                files: []
+                            };
+                        }
+
+                        const progressWrap = document.getElementById('lesson_image_progress_wrap');
+                        const progressBar = document.getElementById('lesson_image_progress');
+                        const progressText = document.getElementById('lesson_image_progress_text');
+                        const resetBtn = document.getElementById('lesson_image_reset');
+
+                        function updateProgressUI() {
+                            const used = window.lessonImageUploadState.used || 0;
+                            const max = window.lessonImageUploadState.maxTotal;
+                            const pct = Math.min(100, Math.round((used / max) * 100));
+                            progressBar.style.width = pct + '%';
+                            progressText.textContent = bytesToHuman(used) + ' of ' + bytesToHuman(max) + ' used';
+                            if (used >= max) {
+                                uploadBtn.disabled = true;
+                                uploadBtn.classList.add('disabled');
+                            } else {
+                                uploadBtn.disabled = false;
+                                uploadBtn.classList.remove('disabled');
                             }
+                            progressWrap.style.display = used > 0 ? 'block' : 'none';
+                        }
+
+                        resetBtn.addEventListener('click', function () {
+                            window.lessonImageUploadState.used = 0;
+                            updateProgressUI();
+                        });
+
+                        function bytesToHuman(n) {
+                            if (n < 1024) return n + ' B';
+                            if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+                            return (n / (1024 * 1024)).toFixed(2) + ' MB';
+                        }
+
+                        fileInput.addEventListener('change', function (e) {
+                            const file = this.files && this.files[0];
+                            if (!file) return;
+
+                            // Check remaining quota
+                            const state = window.lessonImageUploadState;
+                            const remaining = state.maxTotal - (state.used || 0);
+                            if (file.size > remaining) {
+                                statusEl.textContent = 'File too large for remaining quota';
+                                return;
+                            }
+
+                            statusEl.textContent = 'Uploading...';
+                            progressWrap.style.display = 'block';
+
+                            const xhr = new XMLHttpRequest();
+                            const form = new FormData();
+                            form.append('image', file);
+
+                            xhr.open('POST', '../upload_image.php');
+
+                            // progress for this upload
+                            xhr.upload.addEventListener('progress', function (ev) {
+                                if (ev.lengthComputable) {
+                                    const percent = Math.round((ev.loaded / ev.total) * 100);
+                                    // show progress towards this file only
+                                    progressBar.style.width = percent + '%';
+                                    progressText.textContent = bytesToHuman((state.used || 0) + ev.loaded) + ' of ' + bytesToHuman(state.maxTotal) + ' used';
+                                }
+                            });
+
+                            xhr.addEventListener('load', function () {
+                                try {
+                                    const resp = JSON.parse(xhr.responseText);
+                                        if (xhr.status >= 200 && xhr.status < 300 && resp && resp.url) {
+                                        // commit usage
+                                        state.used = (state.used || 0) + file.size;
+                                        // record uploaded filename (server returns 'name') or fallback to parsing from url
+                                        if (resp.name) {
+                                            state.files.push(resp.name);
+                                        } else if (resp.url) {
+                                            try {
+                                                const parts = resp.url.split('/');
+                                                const base = parts[parts.length - 1].split('?')[0];
+                                                if (base) state.files.push(base);
+                                            } catch (e) {}
+                                        }
+                                        updateProgressUI();
+
+                                        const insertImageByUrl = (url) => {
+                                            try {
+                                                if (editorInstance && editorInstance.model && editorInstance.model.schema && editorInstance.model.schema.checkChild) {
+                                                    editorInstance.model.change(writer => {
+                                                        const imageElement = writer.createElement('imageBlock', { src: url });
+                                                        editorInstance.model.insertContent(imageElement, editorInstance.model.document.selection);
+                                                    });
+                                                } else if (editorInstance && typeof editorInstance.execute === 'function') {
+                                                    try {
+                                                        editorInstance.execute('imageInsert', { source: url });
+                                                    } catch (e) {
+                                                        const current = editorInstance.getData();
+                                                        editorInstance.setData(current + `<p><img src="${url}"/></p>`);
+                                                    }
+                                                } else {
+                                                    const current = editorInstance.getData ? editorInstance.getData() : '';
+                                                    if (typeof editorInstance.setData === 'function') {
+                                                        editorInstance.setData(current + `<p><img src="${url}"/></p>`);
+                                                    }
+                                                }
+                                                statusEl.textContent = 'Uploaded';
+                                            } catch (err) {
+                                                try {
+                                                    const current = editorInstance.getData();
+                                                    editorInstance.setData(current + `<p><img src="${url}"/></p>`);
+                                                    statusEl.textContent = 'Uploaded (fallback)';
+                                                } catch (err2) {
+                                                    console.error('Insert image error', err2);
+                                                    statusEl.textContent = 'Uploaded but insert failed';
+                                                }
+                                            }
+                                        };
+
+                                        insertImageByUrl(resp.url);
+                                    } else {
+                                        statusEl.textContent = resp && resp.error ? (resp.error.message || resp.error) : 'Upload failed';
+                                    }
+                                } catch (err) {
+                                    console.error('Upload parse error', err, xhr.responseText);
+                                    statusEl.textContent = 'Upload error';
+                                }
+                            });
+
+                            xhr.addEventListener('error', function (ev) {
+                                console.error('XHR upload error', ev);
+                                statusEl.textContent = 'Upload error';
+                            });
+
+                            xhr.send(form);
                         });
                     }
-
-                    // Also hide any toolbar buttons matched by aria-label attribute
-                    const toolbarEls = document.querySelectorAll('.ck-toolbar .ck-button');
-                    toolbarEls.forEach(btn => {
-                        const aria = (btn.getAttribute('aria-label') || '').toLowerCase();
-                        if (aria.includes('image') && !pluginAvailability.imageUpload) btn.style.display = 'none';
-                        if (aria.includes('media') && !pluginAvailability.mediaEmbed) btn.style.display = 'none';
-                        if (aria.includes('table') && !pluginAvailability.insertTable) btn.style.display = 'none';
-                        if (aria.includes('font') && !pluginAvailability.font) btn.style.display = 'none';
-                        if ((aria.includes('font color') || aria.includes('font background')) && (!pluginAvailability.fontColor && !pluginAvailability.fontBackgroundColor)) btn.style.display = 'none';
-                        if (aria.includes('todo') && !pluginAvailability.todoList) btn.style.display = 'none';
-                        if (aria.includes('align') && !pluginAvailability.alignment) btn.style.display = 'none';
-                    });
-
-                    console.log('CKEditor: toolbar pruned based on available plugins', pluginAvailability);
-                } catch (e) {
-                    console.warn('CKEditor: error during toolbar pruning', e);
                 }
+            } catch (e) {
+                console.error('Fallback upload init error', e);
             }
 
-            pruneToolbar(editorInstance);
+            // --- Image resize toolbar ---
+            try {
+                // Create floating toolbar element
+                let imgToolbar = document.getElementById('ck_img_resize_toolbar');
+                if (!imgToolbar) {
+                    imgToolbar = document.createElement('div');
+                    imgToolbar.id = 'ck_img_resize_toolbar';
+                    imgToolbar.style.position = 'absolute';
+                    imgToolbar.style.display = 'none';
+                    imgToolbar.style.zIndex = 9999;
+                    imgToolbar.style.background = '#fff';
+                    imgToolbar.style.border = '1px solid #ddd';
+                    imgToolbar.style.padding = '6px';
+                    imgToolbar.style.borderRadius = '4px';
+                    imgToolbar.style.boxShadow = '0 2px 6px rgba(0,0,0,0.15)';
+                    imgToolbar.innerHTML = `
+                        <button class="btn btn-sm btn-light ck-img-size-btn" data-size="25">25%</button>
+                        <button class="btn btn-sm btn-light ck-img-size-btn" data-size="50">50%</button>
+                        <button class="btn btn-sm btn-light ck-img-size-btn" data-size="75">75%</button>
+                        <button class="btn btn-sm btn-light ck-img-size-btn" data-size="100">100%</button>
+                        <input id="ck_img_custom_px" type="number" placeholder="px" style="width:64px; margin-left:6px;" />
+                        <button class="btn btn-sm btn-primary" id="ck_img_apply_px" style="margin-left:6px;">Apply</button>
+                        <button class="btn btn-sm btn-outline-secondary" id="ck_img_remove_style" style="margin-left:6px;">Reset</button>
+                    `;
+                    document.body.appendChild(imgToolbar);
+                }
 
-            console.log("Editor initialized successfully!");
-            console.info('If some toolbar items are missing, create a custom CKEditor 5 build including the desired plugins and place it at `dist/js/ckeditor.js` then update the script include in `lesson_note.php` to use the local build for exact parity with the demo. I can generate the build config for you if you want.');
+                let currentImage = null;
+
+                // Helper to position toolbar near an element
+                function positionToolbarForElement(el) {
+                    const rect = el.getBoundingClientRect();
+                    const toolbarRect = imgToolbar.getBoundingClientRect();
+                    // place above the image if possible
+                    let top = window.scrollY + rect.top - toolbarRect.height - 8;
+                    if (top < window.scrollY + 5) top = window.scrollY + rect.bottom + 8; // below if not enough space
+                    let left = window.scrollX + rect.left;
+                    imgToolbar.style.top = top + 'px';
+                    imgToolbar.style.left = left + 'px';
+                    imgToolbar.style.display = 'block';
+                }
+
+                // Click handler inside the editor to detect images
+                const editable = editor.ui ? editor.ui.view.editable.element : document.querySelector('.ck-editor__editable');
+                if (editable) {
+                    editable.addEventListener('click', function (ev) {
+                        const target = ev.target;
+                        if (target && target.tagName && target.tagName.toLowerCase() === 'img') {
+                            currentImage = target;
+                            positionToolbarForElement(target);
+                            // Pre-fill custom px with current width (if set as px)
+                            const width = target.style.width || target.getAttribute('width') || '';
+                            const px = width && width.indexOf('%') === -1 ? parseInt(width, 10) || '' : '';
+                            document.getElementById('ck_img_custom_px').value = px;
+                        } else {
+                            currentImage = null;
+                            imgToolbar.style.display = 'none';
+                        }
+                    });
+
+                    // Hide toolbar when clicking elsewhere
+                    document.addEventListener('click', function (ev) {
+                        if (!imgToolbar.contains(ev.target) && !editable.contains(ev.target)) {
+                            imgToolbar.style.display = 'none';
+                            currentImage = null;
+                        }
+                    });
+
+                    // Toolbar button handlers
+                    imgToolbar.addEventListener('click', function (ev) {
+                        const btn = ev.target.closest('.ck-img-size-btn');
+                        if (btn && currentImage) {
+                            const size = btn.getAttribute('data-size');
+                            currentImage.style.width = size + '%';
+                            // reflect change into editor model if possible
+                            try { currentImage.removeAttribute('height'); } catch (e) {}
+                        }
+                        if (ev.target && ev.target.id === 'ck_img_apply_px' && currentImage) {
+                            const val = parseInt(document.getElementById('ck_img_custom_px').value, 10);
+                            if (!isNaN(val) && val > 0) {
+                                currentImage.style.width = val + 'px';
+                            }
+                        }
+                        if (ev.target && ev.target.id === 'ck_img_remove_style' && currentImage) {
+                            currentImage.style.width = '';
+                            currentImage.removeAttribute('width');
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error('Image toolbar init error', e);
+            }
         })
         .catch(error => {
             console.error("Error initializing editor:", error);
@@ -9658,6 +10577,7 @@ function get_lesson_note_body() {
         },
         success: (response) => {
             const data = !response ? '' : JSON.parse(response);
+            // Keep the full content in the editor and show full content in the view
             editorInstance.setData(data.content || '');
             $("#lesson_body_view").html(data.content || "<i>No content here yet</i>");
 
@@ -9667,7 +10587,6 @@ function get_lesson_note_body() {
         }
     });
 }
-
 function show_lesson_note_body_editor() {
     $("#lesson_note_body_editor").show()
     $("#lesson_note_body_view").hide()

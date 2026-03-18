@@ -13,8 +13,8 @@ const RUNTIME = `${CACHE_PREFIX}-runtime`;
 // dynamically after the worker activates (see message handler below).
 const PRECACHE_URLS = [
   '/',
-  '/index.php',
-  '/login.php',
+//   '/index.php',
+//   '/login.php',
   '/dist/css/adminlte.css',
   '/dist/js/adminlte.min.js',
   '/dist/js/skul.js',
@@ -25,7 +25,7 @@ const PRECACHE_URLS = [
   '/plugins/toastr/toastr.min.js',
   '/plugins/moment/moment.min.js',
   '/plugins/daterangepicker/daterangepicker.js',
-  '/uploads/company_logo.png'
+//   '/uploads/company_logo.png'
 ];
 
 // Common CDN files you may want to cache; these will be cached on-demand when
@@ -36,7 +36,9 @@ const COMMON_CDN_URLS = [
   'https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css',
   'https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-bs4.min.css',
-  'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-bs4.min.js'
+  'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-bs4.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/mathquill/0.10.1/mathquill.min.css',
+  'https://cdnjs.cloudflare.com/ajax/libs/mathquill/0.10.1/mathquill.min.js',
 ];
 
 self.addEventListener('install', event => {
@@ -124,3 +126,13 @@ self.addEventListener('message', event => {
     });
   }
 });
+
+// if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+//   navigator.serviceWorker.controller.postMessage({
+//     type: 'precache',
+//     urls: [
+//       'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-bs4.min.js',
+//       'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-bs4.min.css'
+//     ]
+//   });
+// }

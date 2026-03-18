@@ -320,7 +320,20 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                                     </ol>
                                 </div>
                                 <div>
-                                    <div class="row">
+                                    <!-- <div class="row">
+                                        <div class="col-12 col-md-12 my-md-0">
+                                            <div class="form-group">
+                                                <div class="w-100">
+                                                    <button class="btn select_btn lesson_note active mr-2" onclick="note_toggle(this,'create')">Create Note</button>
+                                                    <button class="btn select_btn lesson_note mr-2" onclick="note_toggle(this,'view')">View Note</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div> -->
+                                     <!--<div class="mb-3 alert alert-info">-->
+                                     <!--       <p>Please enroll a student to activate the classes</p>-->
+                                     <!--   </div>-->
+                                     <div class="row">
                                         <div class="col-12 col-md-12 my-md-0">
                                             <div class="form-group">
                                                 <label for="" class="mb-0">Select Term</label>
@@ -332,11 +345,7 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                                             </div>
                                         </div>
                                     </div>
-                                     <!--<div class="mb-3 alert alert-info">-->
-                                     <!--       <p>Please enroll a student to activate the classes</p>-->
-                                     <!--   </div>-->
                                     <div class="row">
-
                                        
                                         <div class="col-12 col-md-3" id="select_class_single">
                                             <div class="form-group align-left">

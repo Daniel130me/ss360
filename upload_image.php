@@ -132,8 +132,12 @@ try {
         echo json_encode($diag);
         exit;
     }
-    $baseUrl = dirname($_SERVER['SCRIPT_NAME']);
-    $url = $baseUrl . '/uploads/lesson_images/' . $name;
+    // retain this line in localhost
+    // // $baseUrl = dirname($_SERVER['SCRIPT_NAME']);
+    // $url = $baseUrl . '/uploads/lesson_images/' . $name;
+    
+    // retain this line in production
+    $url = '/uploads/lesson_images/' . $name;
     $size = filesize($dest);
 
     // clear any accidental output

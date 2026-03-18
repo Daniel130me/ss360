@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //         echo json_encode(array('status' => '0', 'err' => 'Staff Already Registered'));
     //     }
     // }
-    if ($action == 'reg_staff') {
+      if ($action == 'reg_staff') {
         $fname = test_input($_POST['firstname']);
         $lname = test_input($_POST['lastname']);
         $phone = test_input($_POST['phone']);
@@ -137,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode(array('status' => '0', 'err' => 'Staff Already Registered'));
         }
     }
-    if ($action == 'reg_school') {
+     if ($action == 'reg_school') {
         $name = test_input($_POST['name']);
         $address = test_input($_POST['address']);
         $city = test_input($_POST['city']);

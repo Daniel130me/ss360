@@ -58,7 +58,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $total_students = ($row = mysqli_fetch_assoc($result_total_students)) ? (int)$row['total_students'] : 0;
 
     // Fetch total activated students in payment_record
+    if($school_id==26) {
+    $query_activated = "SELECT count(*) as activated
+
+FROM students s
+INNER JOIN payment_record pr 
+       ON pr.student_id = s.id 
+       AND pr.term_id = '$term_id'
+       AND pr.session_id = '$session_id'
+WHERE s.school_id = '$school_id' AND pr.status=1";
+}else {
     $query_activated = "SELECT COUNT(*) AS activated FROM payment_record WHERE school_id = '$school_id' AND session_id = '$session_id' AND term_id = '$term_id' AND status = 1";
+}
     $result_activated = mysqli_query($conn, $query_activated);
     $activated = ($row = mysqli_fetch_assoc($result_activated)) ? (int)$row['activated'] : 0;
 

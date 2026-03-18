@@ -37,7 +37,7 @@ $assessment = $conn->query($assessment_query)->fetch_assoc();
 
 
 // Students who haven't attempted in any of the selected classes
-echo $not_attempted_query = "SELECT s.id, s.firstname, s.lastname, c.classname 
+$not_attempted_query = "SELECT s.id, s.firstname, s.lastname, c.classname 
                        FROM students s 
                        LEFT JOIN class c ON s.class_id = c.id
                        LEFT JOIN assessment_results ar ON s.id = ar.student_id AND ar.assessment_id = $assessment_id
@@ -460,7 +460,7 @@ $avg_score = $conn->query($avg_query)->fetch_assoc()['avg_score'];
                     <!-- Not Attempted List -->
                     <div class="card mt-4">
                         <div class="card-header">
-                            <h4>Students Yet to Attempt</h4>
+                            <p class="font-weight-bold">Students Yet to Attempt</p>
                         </div>
                         <div class="card-body">
                             <div class="row">

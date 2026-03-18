@@ -295,13 +295,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <div class="col-sm-12">
                             <div class="py-2 px-15 bg-white" style="border-radius: 10px;">
                                 <div class="">
-                                    <h2 class="mx-0 mt-0 mb-sm-1 mb-2" style="font-size: 23px;">Manage Classes</h2>
+                                    <h2 class="mx-0 mt-0 mb-sm-1 mb-2" style="font-size: 23px;">Manage Graduates Classes</h2>
                                     <ol class="breadcrumb p-0 bg-white mb-0">
                                         <li class="breadcrumb-item font-14">
                                             <a href="dashboard" class="d-flex align-items-center accent" style="margin-left: -2px;">
                                                 <i class="material-symbols-outlined mr-1" style="font-size: 19px;">dashboard</i>Dashboard</a>
                                         </li>
-                                        <li class="breadcrumb-item active font-14">Manage classes</li>
+                                         <li class="breadcrumb-item font-14">
+                                            <a href="class" class="d-flex align-items-center accent" style="margin-left: -2px;">
+                                                <i class="material-symbols-outlined mr-1" style="font-size: 19px;">app_registration</i>Classes</a>
+                                        </li>
+                                        <li class="breadcrumb-item active font-14">Manage graduates classes</li>
                                     </ol>
                                 </div>
                             </div>

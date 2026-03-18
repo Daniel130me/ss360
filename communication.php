@@ -473,6 +473,8 @@ $school_id = $_SESSION['school_id'];
                             <!-- <button class="btn select_btn mr-2" id="" data-toggle="modal" data-target="#select_staff_message_modal">Staff</button> -->
                         </div>
                     </div>
+                    
+                    <?php if($_SESSION['school_id'] != 0) { ?>
                     <div class="mt-4 py-4 px-15 bg-white" style="border-radius: 10px;">
                         <h5>Internal Messages</h5>
                         <div class="d-flex mb-4">
@@ -484,6 +486,7 @@ $school_id = $_SESSION['school_id'];
                             <ul class="pagination" id="internal_pagination"></ul>
                         </nav>
                     </div>
+                   <?php } ?>
                 </div>
 
             </div>
@@ -514,7 +517,7 @@ $school_id = $_SESSION['school_id'];
     <script src="../plugins/toastr/toastr.min.js"></script>
     <!-- Summernote JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-bs4.min.js"></script>
-    <script src="../dist/js/skul.js"></script>
+    <script src="../dist/js/skul.js?v=23e"></script>
     <Script>
         $(function() {
             // Initialize Summernote on the message body textarea
@@ -609,7 +612,7 @@ $school_id = $_SESSION['school_id'];
                     `<div><div class="card comm-card">
                         <div class="card-body d-flex flex-column">
                             <div class="mb-2 text-muted small">To: ${escapeHtml(to)} <span class="float-right">${escapeHtml(created)}</span></div>
-                            <div class="message-preview collapsed mb-2">${html}</div>
+                            <div class="message-preview message-content collapsed mb-2">${html}</div>
                             <div class="text-right"><a href="#" class="read-more" data-id="${id}" style="display:none">Read more</a></div>
                             <div class="d-flex justify-content-end mt-2">
                                 <button data-id="${id}" class="btn btn-sm btn-outline-primary edit-int-msg">Edit</button>
@@ -656,7 +659,7 @@ $school_id = $_SESSION['school_id'];
         function fetchSentInternalMessages(page = 1, search = '') {
             internal_current_page = page;
             $.ajax({
-                url: 'controller.php',
+                url: '../controller.php',
                 method: 'POST',
                 dataType: 'json',
                 data: {
@@ -713,10 +716,10 @@ $school_id = $_SESSION['school_id'];
             _delete_target_id = $(this).data('id');
             $('#confirmDeleteModal').modal('show');
         });
-        $(document).on('click', '#confirm_delete_btn', function() {
+            $(document).on('click', '#confirm_delete_btn', function() {
             if (!_delete_target_id) return;
             $("#confirm_delete_btn").html("Processing").attr("disabled", true)
-            $.post('controller.php', {
+            $.post('../controller.php', {
                 action: 'delete_int_msg',
                 id: _delete_target_id
             }, function(resp) {
@@ -741,6 +744,7 @@ $school_id = $_SESSION['school_id'];
             const card = $(this).closest('.card');
             const content = card.find('.message-content').html();
             $('#edit_msg_id').val(id);
+            console.log(id,content)
             // set content to modal summernote
             $('#editMessageModal').modal('show');
             // wait for modal to show, then set content
@@ -777,7 +781,7 @@ $school_id = $_SESSION['school_id'];
                 return;
             }
             $.ajax({
-                url: 'controller.php',
+                url: '../controller.php',
                 method: 'POST',
                 dataType: 'json',
                 data: {

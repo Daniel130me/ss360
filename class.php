@@ -67,19 +67,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
-
-        <!-- Navbar -->
-        <nav class="main-header navbar border-bottom-0 navbar-expand justify-content-between bg1">
+       <!-- Navbar -->
+    <nav class="main-header navbar border-bottom-0 navbar-expand justify-content-between bg1">
             <!-- <div class=""> -->
-            <!-- <div> -->
 
             <!-- Left navbar links -->
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i
+                            class="muted-text fas fa-bars"></i></a>
                 </li>
-            </ul>
 
+            </ul>
             <!-- Right navbar links -->
             <ul class="navbar-nav align-items-center">
                 <li class="nav-item dropdown">
@@ -120,14 +119,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </li>
             </ul>
             <!-- </div> -->
-            <!-- </div> -->
-
         </nav>
-        <!-- /.navbar -->
+    <!-- /.navbar -->
 
-        <!-- Main Sidebar Container -->
-        <!-- Main Sidebar Container -->
-        <aside class="main-sidebar sidebar-light-primary elevation-4">
+    <!-- Main Sidebar Container -->
+    <!-- Main Sidebar Container -->
+           <aside class="main-sidebar sidebar-light-primary elevation-4">
             <!-- Brand Logo -->
             <a href="" class="brand-link">
                 <img src="../uploads/<?= $_SESSION['logo'] ?>" alt="<?= $_SESSION['school_name'] ?>" class="brand-image" style="opacity: .8">
@@ -136,7 +133,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
            
             
             <!-- <div href="" class="px-15 pt-15 border-bottom" style="padding-bottom: 30px;">
-                <img src="../../uploads/<= $_SESSION['logo'] ?>" style="height: 200px; object-fit:cover;" alt="Logo"
+                <img src="../uploads/<= $_SESSION['logo'] ?>" style="height: 200px; object-fit:cover;" alt="Logo"
                     class="brand-image img-circle elevation-5 w-100">
             </div> -->
             <div href="" class="py-2 px-15">
@@ -145,10 +142,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
             <!-- Sidebar -->
             <div class="sidebar">
-
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                    <ul class="nav nav-pills nav-sidebar flex-column pb-5" data-widget="treeview" role="menu"
                         data-accordion="false">
 
                         <li class="nav-item">
@@ -239,7 +235,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </p>
                             </a>
                         </li>
-                         <li class="nav-item">
+                        <?php if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4 || $_SESSION['staff_type'] == 5) { ?>
+                        <li class="nav-item">
+                            <a href="staff_attendance" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">add_chart</i>
+                                   Staff Attendance
+                                </p>
+                            </a>
+                        </li>
+                        <?php } ?>
+                        <?php if($_SESSION['school_id'] == 27 || $_SESSION['school_id']==13){  ?>
+                        <li class="nav-item">
                             <a href="lesson_note" class="nav-link">
                                 <p class="d-flex">
                                     <i class="material-symbols-outlined pr-2">list</i>
@@ -247,6 +254,27 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </p>
                             </a>
                         </li>
+                        <?php } ?>
+                        <li class="nav-item">
+                            <a href="assessment" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">app_registration</i>
+                                    Assessments
+                                </p>
+                            </a>
+                        </li>
+                        <?php
+                         if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4 || $_SESSION['staff_type'] == 7) {
+                             ?>
+                        <li class="nav-item">
+                            <a href="payments" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">payments</i>
+                                    Payments
+                                </p>
+                            </a>
+                        </li>
+                        <?php } ?>
                         <li class="nav-item">
                             <a href="time_table" class="nav-link">
                                 <p class="d-flex">
@@ -316,10 +344,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             <button type="button" class="btn btn-primary d-flex mb-4" data-toggle="modal" data-target="#add_class_modal"><span class="material-symbols-outlined">add</span>Add New Class</button>
                             <!-- <button type="button" class="btn text-primary" data-toggle="modal" data-target="#add_class_modal">Transfer classs</button>
                         <button type="button" class="btn text-danger" data-toggle="modal" data-target="#add_class_modal">Delete</button> -->
+                        
                         <?php } ?>
                         <table id="class_table" class="nowrap" style="width:100%;">
 
                         </table>
+                        <div style="background: #ffebe9;padding: 15px;margin-top: 10px;">
+                         <p class="">Suggested Links:</p> 
+                         <a href="graduates" class="d-flex"><span class="material-symbols-outlined mr-2" style="color: #ff8174;">app_registration</span>Manage Graduate Class</a>
+                        </div>
                     </div>
                 </div>
             </div>

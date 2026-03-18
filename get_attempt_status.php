@@ -21,23 +21,30 @@ mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
 if ($attempt = mysqli_fetch_assoc($result)) {
+    // var_dump($attempt);
     // Check if attempt has expired due to inactivity (30 minutes)
-    $last_activity = strtotime($attempt['last_activity']);
+   $last_activity = strtotime($attempt['last_activity']);
+//   echo '<br>';
+    // echo $rdate = $last_activity+(7*60*60);
   
-    $rdate = $last_activity+(7*60*60);
-  
-    if ($rdate >= 0) {
-        
-        if (time() -  $rdate > 1800) {
+    if ($last_activity > 0) {
+        // echo time();
+        // echo '<br>';
+        // echo $last_activity;
+        // echo '<br>';
+        // echo time() -  $last_activity;
+        if (time() -  $last_activity > 1800) {
+            echo 'last'.$last_activity; 
+            echo 'time'.time();
             // echo (time() - $rdate);
-            mysqli_query($conn, "UPDATE assessment_attempts 
-                          SET status = 'expired' 
-                          WHERE id = {$attempt['id']}");
-            echo json_encode([
-                'success' => false,
-                'message' => 'Attempt expired due to inactivity'
-            ]);
-            exit;
+            // mysqli_query($conn, "UPDATE assessment_attempts 
+            //               SET status = 'expired' 
+            //               WHERE id = {$attempt['id']}");
+            // echo json_encode([
+            //     'success' => false,
+            //     'message' => 'Attempt expired due to inactivity'
+            // ]);
+            // exit;
         }
     }
 
