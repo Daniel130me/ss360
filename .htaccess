@@ -10,3 +10,11 @@
    php_value date.timezone "Africa/Lagos"
 </IfModule>
 # END cPanel-generated php ini directives, do not edit
+
+Options +FollowSymLinks
+RewriteEngine On
+
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+ 
+RewriteRule ^.*$ ./index.php

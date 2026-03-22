@@ -1,0 +1,35 @@
+name: Deploy Schoolsuite360
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Setup SSH key
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+
+      # Step 3: Deploy files to the server
+      - name: Deploy to Server
+        run: |
+          echo "Deploying Schoolsuite360..."
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_SERVER_IP }} "
+            mkdir -p /var/www/schoolsuite360;
+          "
+          rsync -avz --delete ./ root@${{ secrets.DEPLOY_SERVER_IP }}:/var/www/schoolsuite360/
+
+      # Step 4: Restart Apache after deployment
+      - name: Restart Apache
+        run: |
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_SERVER_IP }} "systemctl restart apache2"
