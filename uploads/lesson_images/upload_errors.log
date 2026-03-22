@@ -1,0 +1,498 @@
+-- image-deletion-run: 2025-08-27T04:02:32-06:00
+oldImgs: []
+newImgs: ["\/\/uploads\/lesson_images\/ln_68aed78776cc84.28955296.png"]
+newBasenames: ["ln_68aed78776cc84.28955296.png"]
+-- image-deletion-run: 2025-08-27T04:05:07-06:00
+oldImgs: ["\/\/uploads\/lesson_images\/ln_68aed78776cc84.28955296.png"]
+newImgs: []
+newBasenames: []
+deleted: /home2/ekmapxmy/public_html/website_7da3cd58/uploads/lesson_images/ln_68aed78776cc84.28955296.png
+-- image-deletion-run: 2025-08-27T04:34:40-06:00
+oldImgs: []
+newImgs: ["\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newBasenames: ["ln_68aedf06010111.07715266.png"]
+-- image-deletion-run: 2025-08-27T04:35:50-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aedf535af8e6.21512336.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newBasenames: ["ln_68aedf535af8e6.21512336.png","ln_68aedf06010111.07715266.png"]
+keep (still referenced): ln_68aedf06010111.07715266.png
+-- image-deletion-run: 2025-08-27T04:36:15-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aedf535af8e6.21512336.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aedf535af8e6.21512336.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newBasenames: ["ln_68aedf535af8e6.21512336.png","ln_68aedf06010111.07715266.png"]
+keep (still referenced): ln_68aedf535af8e6.21512336.png
+keep (still referenced): ln_68aedf06010111.07715266.png
+-- image-deletion-run: 2025-08-27T04:37:24-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aedf535af8e6.21512336.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aedf535af8e6.21512336.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newBasenames: ["ln_68aedf535af8e6.21512336.png","ln_68aedf06010111.07715266.png"]
+keep (still referenced): ln_68aedf535af8e6.21512336.png
+keep (still referenced): ln_68aedf06010111.07715266.png
+-- image-deletion-run: 2025-08-27T04:38:31-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aedf535af8e6.21512336.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aedf535af8e6.21512336.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newBasenames: ["ln_68aedf535af8e6.21512336.png","ln_68aedf06010111.07715266.png"]
+keep (still referenced): ln_68aedf535af8e6.21512336.png
+keep (still referenced): ln_68aedf06010111.07715266.png
+-- image-deletion-run: 2025-08-27T04:39:00-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aedf535af8e6.21512336.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newBasenames: ["ln_68aedf06010111.07715266.png"]
+deleted: /home2/ekmapxmy/public_html/website_7da3cd58/uploads/lesson_images/ln_68aedf535af8e6.21512336.png
+keep (still referenced): ln_68aedf06010111.07715266.png
+-- image-deletion-run: 2025-08-27T05:18:49-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-08-27T05:21:57-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-08-27T05:23:44-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-08-27T05:26:24-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-08-27T05:51:49-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-08-27T05:53:54-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newBasenames: ["ln_68aef1ca22e127.74205120.png","ln_68aedf06010111.07715266.png"]
+keep (still referenced): ln_68aedf06010111.07715266.png
+-- image-deletion-run: 2025-08-27T05:54:26-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newBasenames: ["ln_68aef1ea132be3.98936220.png","ln_68aef1ca22e127.74205120.png","ln_68aedf06010111.07715266.png"]
+keep (still referenced): ln_68aef1ca22e127.74205120.png
+keep (still referenced): ln_68aedf06010111.07715266.png
+-- image-deletion-run: 2025-08-27T05:55:31-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aef219708584.41297707.png","\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newBasenames: ["ln_68aef219708584.41297707.png","ln_68aef1ca22e127.74205120.png","ln_68aef1ea132be3.98936220.png","ln_68aedf06010111.07715266.png"]
+keep (still referenced): ln_68aef1ea132be3.98936220.png
+keep (still referenced): ln_68aef1ca22e127.74205120.png
+keep (still referenced): ln_68aedf06010111.07715266.png
+-- image-deletion-run: 2025-08-27T06:51:51-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-09-02T13:32:24-06:00
+oldImgs: []
+newImgs: ["\/uploads\/lesson_images\/ln_68b742c366fd52.52080427.png"]
+newBasenames: ["ln_68b742c366fd52.52080427.png"]
+-- image-deletion-run: 2025-09-02T13:36:28-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68b742c366fd52.52080427.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68b742c366fd52.52080427.png"]
+newBasenames: ["ln_68b742c366fd52.52080427.png"]
+keep (still referenced): ln_68b742c366fd52.52080427.png
+-- image-deletion-run: 2025-09-02T13:37:33-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68b742c366fd52.52080427.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68b742c366fd52.52080427.png"]
+newBasenames: ["ln_68b742c366fd52.52080427.png"]
+keep (still referenced): ln_68b742c366fd52.52080427.png
+-- image-deletion-run: 2025-09-02T13:40:09-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-09-02T17:30:05-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68b742c366fd52.52080427.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68b742c366fd52.52080427.png"]
+newBasenames: ["ln_68b742c366fd52.52080427.png"]
+keep (still referenced): ln_68b742c366fd52.52080427.png
+-- image-deletion-run: 2025-09-02T17:34:21-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68b742c366fd52.52080427.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68b742c366fd52.52080427.png"]
+newBasenames: ["ln_68b742c366fd52.52080427.png"]
+keep (still referenced): ln_68b742c366fd52.52080427.png
+-- image-deletion-run: 2025-09-02T17:40:45-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68b742c366fd52.52080427.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68b742c366fd52.52080427.png"]
+newBasenames: ["ln_68b742c366fd52.52080427.png"]
+keep (still referenced): ln_68b742c366fd52.52080427.png
+-- image-deletion-run: 2025-09-02T17:41:15-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68b742c366fd52.52080427.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68b742c366fd52.52080427.png"]
+newBasenames: ["ln_68b742c366fd52.52080427.png"]
+keep (still referenced): ln_68b742c366fd52.52080427.png
+-- image-deletion-run: 2025-09-02T17:41:39-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68b742c366fd52.52080427.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68b742c366fd52.52080427.png"]
+newBasenames: ["ln_68b742c366fd52.52080427.png"]
+keep (still referenced): ln_68b742c366fd52.52080427.png
+-- image-deletion-run: 2025-09-02T17:42:32-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68b742c366fd52.52080427.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68b742c366fd52.52080427.png"]
+newBasenames: ["ln_68b742c366fd52.52080427.png"]
+keep (still referenced): ln_68b742c366fd52.52080427.png
+-- image-deletion-run: 2025-09-22T13:27:23-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aef219708584.41297707.png","\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aef219708584.41297707.png","\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newBasenames: ["ln_68aef219708584.41297707.png","ln_68aef1ca22e127.74205120.png","ln_68aef1ea132be3.98936220.png","ln_68aedf06010111.07715266.png"]
+keep (still referenced): ln_68aef219708584.41297707.png
+keep (still referenced): ln_68aef1ca22e127.74205120.png
+keep (still referenced): ln_68aef1ea132be3.98936220.png
+keep (still referenced): ln_68aedf06010111.07715266.png
+-- image-deletion-run: 2025-09-22T13:27:44-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aef219708584.41297707.png","\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aef219708584.41297707.png","\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newBasenames: ["ln_68aef219708584.41297707.png","ln_68aef1ca22e127.74205120.png","ln_68aef1ea132be3.98936220.png","ln_68aedf06010111.07715266.png"]
+keep (still referenced): ln_68aef219708584.41297707.png
+keep (still referenced): ln_68aef1ca22e127.74205120.png
+keep (still referenced): ln_68aef1ea132be3.98936220.png
+keep (still referenced): ln_68aedf06010111.07715266.png
+-- image-deletion-run: 2025-09-22T13:28:06-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aef219708584.41297707.png","\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aef219708584.41297707.png","\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newBasenames: ["ln_68aef219708584.41297707.png","ln_68aef1ca22e127.74205120.png","ln_68aef1ea132be3.98936220.png","ln_68aedf06010111.07715266.png"]
+keep (still referenced): ln_68aef219708584.41297707.png
+keep (still referenced): ln_68aef1ca22e127.74205120.png
+keep (still referenced): ln_68aef1ea132be3.98936220.png
+keep (still referenced): ln_68aedf06010111.07715266.png
+-- image-deletion-run: 2025-09-22T13:31:44-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aef219708584.41297707.png","\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aef219708584.41297707.png","\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newBasenames: ["ln_68aef219708584.41297707.png","ln_68aef1ca22e127.74205120.png","ln_68aef1ea132be3.98936220.png","ln_68aedf06010111.07715266.png"]
+keep (still referenced): ln_68aef219708584.41297707.png
+keep (still referenced): ln_68aef1ca22e127.74205120.png
+keep (still referenced): ln_68aef1ea132be3.98936220.png
+keep (still referenced): ln_68aedf06010111.07715266.png
+-- image-deletion-run: 2025-09-25T01:46:31-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aef219708584.41297707.png","\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newBasenames: ["ln_68aef1ca22e127.74205120.png","ln_68aef1ea132be3.98936220.png","ln_68aedf06010111.07715266.png"]
+deleted: /home2/ekmapxmy/public_html/website_7da3cd58/uploads/lesson_images/ln_68aef219708584.41297707.png
+keep (still referenced): ln_68aef1ca22e127.74205120.png
+keep (still referenced): ln_68aef1ea132be3.98936220.png
+keep (still referenced): ln_68aedf06010111.07715266.png
+-- image-deletion-run: 2025-09-25T01:59:41-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68aedf06010111.07715266.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png"]
+newBasenames: ["ln_68aef1ca22e127.74205120.png","ln_68aef1ea132be3.98936220.png"]
+keep (still referenced): ln_68aef1ca22e127.74205120.png
+keep (still referenced): ln_68aef1ea132be3.98936220.png
+deleted: /home2/ekmapxmy/public_html/website_7da3cd58/uploads/lesson_images/ln_68aedf06010111.07715266.png
+-- image-deletion-run: 2025-09-25T02:01:23-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68d4f686686ef9.10667891.png"]
+newBasenames: ["ln_68aef1ca22e127.74205120.png","ln_68aef1ea132be3.98936220.png","ln_68d4f686686ef9.10667891.png"]
+keep (still referenced): ln_68aef1ca22e127.74205120.png
+keep (still referenced): ln_68aef1ea132be3.98936220.png
+-- image-deletion-run: 2025-09-25T02:02:00-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68d4f686686ef9.10667891.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68d4f686686ef9.10667891.png"]
+newBasenames: ["ln_68aef1ca22e127.74205120.png","ln_68aef1ea132be3.98936220.png","ln_68d4f686686ef9.10667891.png"]
+keep (still referenced): ln_68aef1ca22e127.74205120.png
+keep (still referenced): ln_68aef1ea132be3.98936220.png
+keep (still referenced): ln_68d4f686686ef9.10667891.png
+-- image-deletion-run: 2025-09-25T02:02:17-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68d4f686686ef9.10667891.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68d4f686686ef9.10667891.png"]
+newBasenames: ["ln_68aef1ca22e127.74205120.png","ln_68aef1ea132be3.98936220.png","ln_68d4f686686ef9.10667891.png"]
+keep (still referenced): ln_68aef1ca22e127.74205120.png
+keep (still referenced): ln_68aef1ea132be3.98936220.png
+keep (still referenced): ln_68d4f686686ef9.10667891.png
+-- image-deletion-run: 2025-09-25T02:02:27-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68d4f686686ef9.10667891.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68d4f686686ef9.10667891.png"]
+newBasenames: ["ln_68aef1ca22e127.74205120.png","ln_68aef1ea132be3.98936220.png","ln_68d4f686686ef9.10667891.png"]
+keep (still referenced): ln_68aef1ca22e127.74205120.png
+keep (still referenced): ln_68aef1ea132be3.98936220.png
+keep (still referenced): ln_68d4f686686ef9.10667891.png
+-- image-deletion-run: 2025-09-25T02:05:00-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68d4f686686ef9.10667891.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png"]
+newBasenames: ["ln_68aef1ca22e127.74205120.png","ln_68aef1ea132be3.98936220.png"]
+keep (still referenced): ln_68aef1ca22e127.74205120.png
+keep (still referenced): ln_68aef1ea132be3.98936220.png
+deleted: /home2/ekmapxmy/public_html/website_7da3cd58/uploads/lesson_images/ln_68d4f686686ef9.10667891.png
+-- image-deletion-run: 2025-09-25T02:05:48-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aef1ca22e127.74205120.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68d4f7ca46f7b6.09412439.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png"]
+newBasenames: ["ln_68d4f7ca46f7b6.09412439.png","ln_68aef1ea132be3.98936220.png"]
+deleted: /home2/ekmapxmy/public_html/website_7da3cd58/uploads/lesson_images/ln_68aef1ca22e127.74205120.png
+keep (still referenced): ln_68aef1ea132be3.98936220.png
+-- image-deletion-run: 2025-09-25T02:06:03-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68d4f7ca46f7b6.09412439.png","\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png"]
+newBasenames: ["ln_68aef1ea132be3.98936220.png"]
+deleted: /home2/ekmapxmy/public_html/website_7da3cd58/uploads/lesson_images/ln_68d4f7ca46f7b6.09412439.png
+keep (still referenced): ln_68aef1ea132be3.98936220.png
+-- image-deletion-run: 2025-09-25T08:43:22-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68d554ded50396.34970447.png"]
+newBasenames: ["ln_68aef1ea132be3.98936220.png","ln_68d554ded50396.34970447.png"]
+keep (still referenced): ln_68aef1ea132be3.98936220.png
+-- image-deletion-run: 2025-09-25T08:43:43-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68d554ded50396.34970447.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68d554ded50396.34970447.png"]
+newBasenames: ["ln_68aef1ea132be3.98936220.png","ln_68d554ded50396.34970447.png"]
+keep (still referenced): ln_68aef1ea132be3.98936220.png
+keep (still referenced): ln_68d554ded50396.34970447.png
+-- image-deletion-run: 2025-09-27T14:25:57-06:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68d554ded50396.34970447.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68d554ded50396.34970447.png","\/uploads\/lesson_images\/ln_68d848297b0fc8.76810968.jpg"]
+newBasenames: ["ln_68aef1ea132be3.98936220.png","ln_68d554ded50396.34970447.png","ln_68d848297b0fc8.76810968.jpg"]
+keep (still referenced): ln_68aef1ea132be3.98936220.png
+keep (still referenced): ln_68d554ded50396.34970447.png
+-- image-deletion-run: 2025-09-29T14:28:34-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-09-29T14:52:11-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-09-30T11:18:05-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-09-30T11:19:07-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-01T09:19:25-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-01T10:52:25-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-02T10:38:51-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-03T08:44:59-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-10T09:19:40-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-10T09:41:45-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-10T09:44:44-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-10T09:45:17-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-10T10:05:43-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-10T10:24:46-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-10T10:25:04-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-10T10:26:06-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-10T10:28:00-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-10T12:26:44-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-10T12:36:28-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-10T12:37:02-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-11T14:02:09-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-17T04:37:06-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-17T04:42:35-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-17T11:25:57-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-17T11:32:11-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-22T12:12:46-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-22T12:14:49-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-22T12:16:37-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-22T12:19:10-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-22T12:22:18-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-22T12:26:12-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-22T12:28:03-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-22T12:28:54-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-27T05:30:02-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-27T05:53:07-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-27T05:53:41-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-27T06:03:06-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-27T06:14:32-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-27T06:18:53-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-27T06:28:28-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-31T08:43:53-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-10-31T08:45:45-06:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-11-03T13:37:03-07:00
+oldImgs: []
+newImgs: ["file:\/\/\/C:\\Users\\HP\\AppData\\Local\\Temp\\msohtmlclip1\\01\\clip_image001.png"]
+newBasenames: ["C:\\Users\\HP\\AppData\\Local\\Temp\\msohtmlclip1\\01\\clip_image001.png"]
+-- image-deletion-run: 2025-11-03T13:39:34-07:00
+oldImgs: ["file:\/\/\/C:\\Users\\HP\\AppData\\Local\\Temp\\msohtmlclip1\\01\\clip_image001.png"]
+newImgs: ["file:\/\/\/C:\\Users\\HP\\AppData\\Local\\Temp\\msohtmlclip1\\01\\clip_image001.png"]
+newBasenames: ["C:\\Users\\HP\\AppData\\Local\\Temp\\msohtmlclip1\\01\\clip_image001.png"]
+keep (still referenced): C:\Users\HP\AppData\Local\Temp\msohtmlclip1\01\clip_image001.png
+-- image-deletion-run: 2025-11-04T10:18:24-07:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68d554ded50396.34970447.png","\/uploads\/lesson_images\/ln_68d848297b0fc8.76810968.jpg"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68d554ded50396.34970447.png","\/uploads\/lesson_images\/ln_68d848297b0fc8.76810968.jpg","\/uploads\/lesson_images\/ln_690a355a429b52.98346096.png"]
+newBasenames: ["ln_68aef1ea132be3.98936220.png","ln_68d554ded50396.34970447.png","ln_68d848297b0fc8.76810968.jpg","ln_690a355a429b52.98346096.png"]
+keep (still referenced): ln_68aef1ea132be3.98936220.png
+keep (still referenced): ln_68d554ded50396.34970447.png
+keep (still referenced): ln_68d848297b0fc8.76810968.jpg
+-- image-deletion-run: 2025-11-04T10:18:46-07:00
+oldImgs: ["\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68d554ded50396.34970447.png","\/uploads\/lesson_images\/ln_68d848297b0fc8.76810968.jpg","\/uploads\/lesson_images\/ln_690a355a429b52.98346096.png"]
+newImgs: ["\/uploads\/lesson_images\/ln_68aef1ea132be3.98936220.png","\/uploads\/lesson_images\/ln_68d554ded50396.34970447.png","\/uploads\/lesson_images\/ln_68d848297b0fc8.76810968.jpg"]
+newBasenames: ["ln_68aef1ea132be3.98936220.png","ln_68d554ded50396.34970447.png","ln_68d848297b0fc8.76810968.jpg"]
+keep (still referenced): ln_68aef1ea132be3.98936220.png
+keep (still referenced): ln_68d554ded50396.34970447.png
+keep (still referenced): ln_68d848297b0fc8.76810968.jpg
+deleted: /home2/ekmapxmy/public_html/website_7da3cd58/uploads/lesson_images/ln_690a355a429b52.98346096.png
+-- image-deletion-run: 2025-11-05T00:16:39-07:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-11-05T00:32:03-07:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-11-05T00:33:40-07:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-11-05T07:20:27-07:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-11-05T08:39:43-07:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-11-05T09:02:24-07:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-11-07T03:07:51-07:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-11-07T03:16:54-07:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-11-07T04:11:34-07:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-11-07T05:15:52-07:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-11-07T05:19:55-07:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-11-10T01:55:28-07:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-11-10T02:15:48-07:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-11-10T02:34:47-07:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-11-10T02:46:00-07:00
+oldImgs: []
+newImgs: []
+newBasenames: []
+-- image-deletion-run: 2025-11-10T04:05:30-07:00
+oldImgs: []
+newImgs: []
+newBasenames: []
