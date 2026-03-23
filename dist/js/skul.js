@@ -242,8 +242,8 @@ var student_score_data = [];
 function toggle_term_setting(event) {
     $(".select_btn.term_setting").removeClass("active")
     $(event).addClass("active")
-    
-    if($("#settings_page").val() == "view_Settings"){
+
+    if ($("#settings_page").val() == "view_Settings") {
         $.ajax({
             url: "../controller.php",
             type: "post",
@@ -328,7 +328,7 @@ function get_notices(userid, usertype) {
         data: { action: 'get_msg', usertype, userid, },
         success: (resp) => {
             console.log(resp)
-            resp = JSON.parse(resp)
+            // resp = JSON.parse(resp)
             if (resp.status == '1') {
                 data = resp.data
                 console.log(data)
@@ -500,13 +500,13 @@ function remove_msg(id, userid, usertype) {
 
 function calculateGrade1(percentage, gradingSystem) {
     for (const grade in gradingSystem) {
-        if(percentage == 100){
+        if (percentage == 100) {
             return 'A';
         }
         else if (percentage >= gradingSystem[grade]) {
             return grade; // Return the matching key, no matter its name
         }
-        
+
     }
     return Object.keys(gradingSystem).pop();
 }
@@ -1001,17 +1001,17 @@ function get_score_data() {
             $(".data_overlay").show()
         },
         success: (data) => {
-    console.log(data)
+            console.log(data)
             // console.log('l', )
             // alert(data.length)
             // if(data.length == 0){
-                // }
-                student_score_data = JSON.parse(data)
-                if (student_score_data.length <= 1) {
-                    $(".data_overlay").html(`
+            // }
+            student_score_data = JSON.parse(data)
+            if (student_score_data.length <= 1) {
+                $(".data_overlay").html(`
                         <p class="font-weight-bold">No score record for this student</p>
                         `)
-                        // $(".thecontentbox").show()
+                // $(".thecontentbox").show()
                 return
             }
             $(".thecontentbox").show()
@@ -1728,7 +1728,7 @@ $(document).ready(function () {
     //     templateResult: formatSubjectResult, // Function to format the dropdown display
     //     templateSelection: formatSubjectSelection // Function to format the selected item display
     // });
-     $('#select_subject_field').select2({
+    $('#select_subject_field').select2({
         //  alert( $("#select_class_field").val())
         placeholder: "Search by subject name",
         minimumInputLength: 2, // Minimum characters to start searching
@@ -3011,240 +3011,229 @@ function handleSelect(clickedButton) {
 //     get_approval_btn(class_id, term_id, session_id)
 // }
 function by_class_view_content() {
-  const term_id = $(".select_btn.termclass.active").attr("data-name");
-  const class_id = $("#select_class_field").val();
-  const session_id = $("#select_session_field").val();
+    const term_id = $(".select_btn.termclass.active").attr("data-name");
+    const class_id = $("#select_class_field").val();
+    const session_id = $("#select_session_field").val();
 
-  if (!class_id) {
-    $(".data_overlay").html(`
+    if (!class_id) {
+        $(".data_overlay").html(`
             <p class="font-weight-bold">Fill the forms appropiately</p>
         `);
-    $(".data_overlay").show();
-    $(".thecontentbox, .by_class_filter").hide();
-    return;
-  }
+        $(".data_overlay").show();
+        $(".thecontentbox, .by_class_filter").hide();
+        return;
+    }
 
-  $.ajax({
-    url: "../controller.php",
-    type: "post",
-    data: {
-      action: "get_score_data_by_class_term",
-      term_id,
-      class_id,
-      session_id,
-    },
-    beforeSend: () => {
-      $(".data_overlay").html(`
+    $.ajax({
+        url: "../controller.php",
+        type: "post",
+        data: {
+            action: "get_score_data_by_class_term",
+            term_id,
+            class_id,
+            session_id,
+        },
+        beforeSend: () => {
+            $(".data_overlay").html(`
             <p class="font-weight-bold">Loading...</p>
             `);
-      $(".thecontentbox, .by_class_filter").hide();
-      // $(".thecontentbox").hide()
-      $(".data_overlay").show();
-    },
-    success: (data) => {
-      data = JSON.parse(data);
-      let grader = format_grade(skul_settings["grading"]);
-      if (data.length <= 1) {
-        $(".data_overlay").html(`
+            $(".thecontentbox, .by_class_filter").hide();
+            // $(".thecontentbox").hide()
+            $(".data_overlay").show();
+        },
+        success: (data) => {
+            data = JSON.parse(data);
+            let grader = format_grade(skul_settings["grading"]);
+            if (data.length <= 1) {
+                $(".data_overlay").html(`
                 <p class="font-weight-bold">No record for the class selected</p>
             `);
-        return;
-      }
-      $(".by_class_filter").show();
-      $(".data_overlay").hide();
-      $(".data_overlay").html(`
+                return;
+            }
+            $(".by_class_filter").show();
+            $(".data_overlay").hide();
+            $(".data_overlay").html(`
             <p class="font-weight-bold">Fill the forms appropiately</p>
         `);
-      // compute component count safely (avoid NaN if settingsData entries are missing)
-      const ca1Flag = Number(settingsData.ca1) || 0;
-      const ca2Flag = Number(settingsData.ca2) || 0;
-      const ca3Flag = Number(settingsData.ca3) || 0;
-      const praFlag = Number(settingsData.pra) || 0;
-      const exaFlag = Number(settingsData.exa) || 0;
-      const colspan_lenght = ca1Flag + ca2Flag + ca3Flag + praFlag + exaFlag;
+            // compute component count safely (avoid NaN if settingsData entries are missing)
+            const ca1Flag = Number(settingsData.ca1) || 0;
+            const ca2Flag = Number(settingsData.ca2) || 0;
+            const ca3Flag = Number(settingsData.ca3) || 0;
+            const praFlag = Number(settingsData.pra) || 0;
+            const exaFlag = Number(settingsData.exa) || 0;
+            const colspan_lenght = ca1Flag + ca2Flag + ca3Flag + praFlag + exaFlag;
 
-      const subjects = {};
+            const subjects = {};
 
-      // Group data by subject
-      data.forEach((record) => {
-        if (!subjects[record.subject]) subjects[record.subject] = [];
-        subjects[record.subject].push(record);
-      });
+            // Group data by subject
+            data.forEach((record) => {
+                if (!subjects[record.subject]) subjects[record.subject] = [];
+                subjects[record.subject].push(record);
+            });
 
-      // Table header construction
-      let str = `
+            // Table header construction
+            let str = `
             <table id="class_score_table" class="display nowrap" style="width:100%;">
                 <thead>
                     <tr>
                         <th></th>`;
 
-      // Loop through subjects to create subject-specific headers
-      Object.keys(subjects).forEach((subject) => {
-        str += `<th colspan="${colspan_lenght + 3}">${subject}</th>`;
-      });
+            // Loop through subjects to create subject-specific headers
+            Object.keys(subjects).forEach((subject) => {
+                str += `<th colspan="${colspan_lenght + 3}">${subject}</th>`;
+            });
 
-      str += `
+            str += `
                     <th colspan="3">Summary</th></tr>
                     <tr>
                         <th>Students</th>`;
 
-      // Add score components for each subject
-      Object.keys(subjects).forEach(() => {
-        str += `
-                    <th class="score_head ${
-                      settingsData.ca1 == 0 ? "d-none" : ""
+            // Add score components for each subject
+            Object.keys(subjects).forEach(() => {
+                str += `
+                    <th class="score_head ${settingsData.ca1 == 0 ? "d-none" : ""
                     }">CA1</th>
-                    <th class="score_head ${
-                      settingsData.ca2 == 0 ? "d-none" : ""
+                    <th class="score_head ${settingsData.ca2 == 0 ? "d-none" : ""
                     }">CA2</th>
-                    <th class="score_head ${
-                      settingsData.ca3 == 0 ? "d-none" : ""
+                    <th class="score_head ${settingsData.ca3 == 0 ? "d-none" : ""
                     }">CA3</th>
-                    <th class="score_head ${
-                      settingsData.pra == 0 ? "d-none" : ""
+                    <th class="score_head ${settingsData.pra == 0 ? "d-none" : ""
                     }">Practical</th>
-                    <th class="${
-                      settingsData.exa == 0 ? "d-none" : ""
+                    <th class="${settingsData.exa == 0 ? "d-none" : ""
                     }">Exam</th>
                     <th>Total</th>
                     <th>Total(%)</th>
                     <th>Grade</th>`;
-      });
-      str += `
+            });
+            str += `
                     <th>Overall Total</th>
                     <th>Overall Percentage</th>
                     <th>Approval</th></tr>
                 </thead>
                 <tbody>`;
 
-      // Construct table rows for each student
-      const students = {};
-      data.forEach((record) => {
-        if (!students[record.student_id]) students[record.student_id] = {};
-        students[record.student_id][record.subject] = record;
-      });
+            // Construct table rows for each student
+            const students = {};
+            data.forEach((record) => {
+                if (!students[record.student_id]) students[record.student_id] = {};
+                students[record.student_id][record.subject] = record;
+            });
 
-      // Fill each student row with data for each subject
-      Object.keys(students).forEach((studentId) => {
-        const studentSubjects = students[studentId];
-        const studentName =
-          studentSubjects[Object.keys(studentSubjects)[0]].student_name;
+            // Fill each student row with data for each subject
+            Object.keys(students).forEach((studentId) => {
+                const studentSubjects = students[studentId];
+                const studentName =
+                    studentSubjects[Object.keys(studentSubjects)[0]].student_name;
 
-        str += `<tr><td><a href="students?id=${studentId}">${studentName}</a></td>`;
+                str += `<tr><td><a href="students?id=${studentId}">${studentName}</a></td>`;
 
-        let overallTotal = 0;
-        let subjectsWithScoreCount = 0;
+                let overallTotal = 0;
+                let subjectsWithScoreCount = 0;
 
-        Object.keys(subjects).forEach((subject) => {
-          const record = studentSubjects[subject];
+                Object.keys(subjects).forEach((subject) => {
+                    const record = studentSubjects[subject];
 
-          if (record) {
-            // console.log("record",record)
-            const total =
-              safeParseFloat(record.CA1) +
-              safeParseFloat(record.CA2) +
-              safeParseFloat(record.CA3) +
-              safeParseFloat(record.Practical) +
-              safeParseFloat(record.Exam);
+                    if (record) {
+                        // console.log("record",record)
+                        const total =
+                            safeParseFloat(record.CA1) +
+                            safeParseFloat(record.CA2) +
+                            safeParseFloat(record.CA3) +
+                            safeParseFloat(record.Practical) +
+                            safeParseFloat(record.Exam);
 
-            // Use Total from DB if available, otherwise use calculated total
-            const dbTotal =
-              record.Total !== undefined ? safeParseFloat(record.Total) : total;
+                        // Use Total from DB if available, otherwise use calculated total
+                        const dbTotal =
+                            record.Total !== undefined ? safeParseFloat(record.Total) : total;
 
-            const totalMax =
-              safeParseFloat(record.ca1Total) +
-              safeParseFloat(record.ca2Total) +
-              safeParseFloat(record.ca3Total) +
-              safeParseFloat(record.praTotal) +
-              safeParseFloat(record.exaTotal);
-            const percentage =
-              totalMax > 0 ? ((dbTotal / totalMax) * 100).toFixed(0) : 0;
-            const grade = calculateGrade1(percentage, grader);
+                        const totalMax =
+                            safeParseFloat(record.ca1Total) +
+                            safeParseFloat(record.ca2Total) +
+                            safeParseFloat(record.ca3Total) +
+                            safeParseFloat(record.praTotal) +
+                            safeParseFloat(record.exaTotal);
+                        const percentage =
+                            totalMax > 0 ? ((dbTotal / totalMax) * 100).toFixed(0) : 0;
+                        const grade = calculateGrade1(percentage, grader);
 
-            if (totalMax > 0) {
-              overallTotal += dbTotal;
-              if (dbTotal > 0) {
-                subjectsWithScoreCount++;
-              }
-            }
+                        if (totalMax > 0) {
+                            overallTotal += dbTotal;
+                            if (dbTotal > 0) {
+                                subjectsWithScoreCount++;
+                            }
+                        }
 
-            str += `
-                            <td class="${
-                              settingsData.ca1 == 0 ? "d-none" : ""
+                        str += `
+                            <td class="${settingsData.ca1 == 0 ? "d-none" : ""
                             }">${safeParseFloat(record.CA1)}</td>
-                            <td class="${
-                              settingsData.ca2 == 0 ? "d-none" : ""
+                            <td class="${settingsData.ca2 == 0 ? "d-none" : ""
                             }">${safeParseFloat(record.CA2)}</td>
-                            <td class="${
-                              settingsData.ca3 == 0 ? "d-none" : ""
+                            <td class="${settingsData.ca3 == 0 ? "d-none" : ""
                             }">${safeParseFloat(record.CA3)}</td>
-                            <td class="${
-                              settingsData.pra == 0 ? "d-none" : ""
+                            <td class="${settingsData.pra == 0 ? "d-none" : ""
                             }">${safeParseFloat(record.Practical)}</td>
-                            <td class="${
-                              settingsData.exa == 0 ? "d-none" : ""
+                            <td class="${settingsData.exa == 0 ? "d-none" : ""
                             }">${safeParseFloat(record.Exam)}</td>
                             <td>${dbTotal}</td>
                             <td>${percentage}</td>
                             <td>${grade}</td>`;
-          } else {
-            // When a student has no record for this subject, emit the same number of <td>
-            // cells as the header (one per component + Total + Total(%)). Using a single
-            // colspan in the body can break DataTables; emitting individual cells keeps
-            // the column count stable.
-            // CA1
-            str += `<td class="${ca1Flag == 0 ? "d-none" : ""}">0</td>`;
-            // CA2
-            str += `<td class="${ca2Flag == 0 ? "d-none" : ""}">0</td>`;
-            // CA3
-            str += `<td class="${ca3Flag == 0 ? "d-none" : ""}">0</td>`;
-            // Practical
-            str += `<td class="${praFlag == 0 ? "d-none" : ""}">0</td>`;
-            // Exam
-            str += `<td class="${exaFlag == 0 ? "d-none" : ""}">0</td>`;
-            // Total
-            str += `<td>0</td>`;
-            // Total(%)
-            str += `<td>0</td>`;
-            // Grade
-            str += `<td>-</td>`;
-          }
-        });
+                    } else {
+                        // When a student has no record for this subject, emit the same number of <td>
+                        // cells as the header (one per component + Total + Total(%)). Using a single
+                        // colspan in the body can break DataTables; emitting individual cells keeps
+                        // the column count stable.
+                        // CA1
+                        str += `<td class="${ca1Flag == 0 ? "d-none" : ""}">0</td>`;
+                        // CA2
+                        str += `<td class="${ca2Flag == 0 ? "d-none" : ""}">0</td>`;
+                        // CA3
+                        str += `<td class="${ca3Flag == 0 ? "d-none" : ""}">0</td>`;
+                        // Practical
+                        str += `<td class="${praFlag == 0 ? "d-none" : ""}">0</td>`;
+                        // Exam
+                        str += `<td class="${exaFlag == 0 ? "d-none" : ""}">0</td>`;
+                        // Total
+                        str += `<td>0</td>`;
+                        // Total(%)
+                        str += `<td>0</td>`;
+                        // Grade
+                        str += `<td>-</td>`;
+                    }
+                });
 
-        // Calculate overall percentage
-        const overallObtainable = subjectsWithScoreCount * 100;
-        const overallPercentage =
-          overallObtainable > 0
-            ? ((overallTotal / overallObtainable) * 100).toFixed(1)
-            : 0;
-        str += `<td>${overallTotal}</td><td>${overallPercentage}%</td>`;
+                // Calculate overall percentage
+                const overallObtainable = subjectsWithScoreCount * 100;
+                const overallPercentage =
+                    overallObtainable > 0
+                        ? ((overallTotal / overallObtainable) * 100).toFixed(1)
+                        : 0;
+                str += `<td>${overallTotal}</td><td>${overallPercentage}%</td>`;
 
-        // Get the first record for this student to check status
-        const firstRecord = studentSubjects[Object.keys(studentSubjects)[0]];
-        str += `<td>
-    <button type="button" class="btn btn-sm btn-${
-      firstRecord.status == 1 ? "success" : "warning"
-    }" onclick="toggleApproval(${studentId}, ${term_id}, ${session_id},${class_id}, this)">
+                // Get the first record for this student to check status
+                const firstRecord = studentSubjects[Object.keys(studentSubjects)[0]];
+                str += `<td>
+    <button type="button" class="btn btn-sm btn-${firstRecord.status == 1 ? "success" : "warning"
+                    }" onclick="toggleApproval(${studentId}, ${term_id}, ${session_id},${class_id}, this)">
         ${firstRecord.status == 1 ? "Approved" : "Approve"}
     </button>
 </td></tr>`;
-      });
+            });
 
-      str += `</tbody></table>`;
+            str += `</tbody></table>`;
 
-      $("#class_table_data").html(str);
-      $("#class_score_table").DataTable({
-        scrollX: true,
-        paging: false,
-        ordering: true,
-        fixedColumns: {
-          left: 1,
-          right: 0,
+            $("#class_table_data").html(str);
+            $("#class_score_table").DataTable({
+                scrollX: true,
+                paging: false,
+                ordering: true,
+                fixedColumns: {
+                    left: 1,
+                    right: 0,
+                },
+            });
         },
-      });
-    },
-  });
-  get_approval_btn(class_id, term_id, session_id);
+    });
+    get_approval_btn(class_id, term_id, session_id);
 }
 // function by_class_view_content() {
 //     const term_id = $(".select_btn.termclass.active").attr("data-name");
@@ -3556,7 +3545,7 @@ function by_class_view_content() {
 //     get_approval_btn(class_id, term_id, session_id)
 // }
 
-function toggleApproval(studentId, termId, sessionId,classId, button) {
+function toggleApproval(studentId, termId, sessionId, classId, button) {
     const currentStatus = $(button).hasClass('btn-success') ? 0 : 1;
     $.ajax({
         url: '../controller.php',
@@ -3569,9 +3558,9 @@ function toggleApproval(studentId, termId, sessionId,classId, button) {
             classId: classId,
             status: currentStatus
         },
-        success: function(response) {
-            if(response.trim() === 'success') {
-                if(currentStatus === 1) {
+        success: function (response) {
+            if (response.trim() === 'success') {
+                if (currentStatus === 1) {
                     $(button).removeClass('btn-warning').addClass('btn-success').text('Approved');
                 } else {
                     $(button).removeClass('btn-success').addClass('btn-warning').text('Approve');
@@ -3826,7 +3815,7 @@ function preview_image(event) {
 //                                         <p class="font-weight-bold small muted-text">Address</p>
 //                                         <p class="">${add}</p>
 //                                     </div>
-                                    
+
 //                                     </div>
 //                                 </div>
 //                             </div>
@@ -4101,17 +4090,17 @@ function edit_staff_info(id, staff_type) {
     });
 }
 function edit_parent_info(id, student_id = null) {
-  $.ajax({
-    url: "../controller.php",
-    type: "POST",
-    data: {
-      action: "get_parent_data_for_update",
-      id: id,
-      student_id: student_id,
-    },
-    beforeSend: () => {
-        $("#edit_parent_modal").modal("show");
-      $("#edit_parent_modal_body").html(`
+    $.ajax({
+        url: "../controller.php",
+        type: "POST",
+        data: {
+            action: "get_parent_data_for_update",
+            id: id,
+            student_id: student_id,
+        },
+        beforeSend: () => {
+            $("#edit_parent_modal").modal("show");
+            $("#edit_parent_modal_body").html(`
                 <div id="skeleton-loader" class="skeleton-loader">
                     <div class="skeleton-line skeleton-photo"></div>
                     <div class="skeleton-line skeleton-input"></div>
@@ -4121,12 +4110,12 @@ function edit_parent_info(id, student_id = null) {
                     <div class="skeleton-line skeleton-button"></div>
                 </div>
             `);
-    },
-    success: (data) => {
-      data = data.trim();
-      $("#edit_parent_modal_body").html(data);
-    },
-  });
+        },
+        success: (data) => {
+            data = data.trim();
+            $("#edit_parent_modal_body").html(data);
+        },
+    });
 }
 
 function edit_student_info(id) {
@@ -4186,11 +4175,11 @@ function delete_staff_modal(event) {
 function assign_staff_subjects_by_classes() {
     // Find all class cards
     var assignments = [];
-    $(".card").each(function() {
+    $(".card").each(function () {
         var classid = $(this).find(".all-none-toggle").data("classid");
         // Get all checked subject ids for this class
         var subjectIds = [];
-        $(this).find(".subject-toggle:checked").each(function() {
+        $(this).find(".subject-toggle:checked").each(function () {
             var id = $(this).attr("id");
             // id format: subject_{subject_id}_{classid}
             var parts = id.split("_");
@@ -4214,7 +4203,7 @@ function assign_staff_subjects_by_classes() {
             assignments: result,
             staff_id: staff_id
         },
-        success: function(data) {
+        success: function (data) {
             // Optionally handle response
             try {
                 var resp = JSON.parse(data);
@@ -4227,7 +4216,7 @@ function assign_staff_subjects_by_classes() {
                 console.log('Unexpected response: ' + data);
             }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
             console.log('Error: ' + error);
         }
     });
@@ -4246,7 +4235,7 @@ function get_subjects_and_classes(id) {
             // data is array of {class_id, classname, class_subjects: [{id, name, assigned_to_staff}]}
             $("#staff_id").val(id);
             let cardsHtml = '';
-            data.forEach(function(cls) {
+            data.forEach(function (cls) {
                 // Determine if all subjects are assigned to staff
                 let allAssigned = cls.class_subjects.length > 0 && cls.class_subjects.every(subj => subj.assigned_to_staff);
                 cardsHtml += `
@@ -4273,12 +4262,12 @@ function get_subjects_and_classes(id) {
             $("#staff_subjectsbyclasses_modal").modal("show");
 
             // Add event handler for all-none toggle
-            $(".all-none-toggle").off("change").on("change", function() {
+            $(".all-none-toggle").off("change").on("change", function () {
                 var classid = $(this).data("classid");
                 var checked = $(this).prop("checked");
                 // Toggle all subject checkboxes for this class
                 var subjectCheckboxes = $(".subject-toggle[data-classid='" + classid + "']");
-                subjectCheckboxes.each(function() {
+                subjectCheckboxes.each(function () {
                     $(this).prop("checked", checked);
                     if (checked) {
                         $(this).closest("label").addClass("active");
@@ -4295,7 +4284,7 @@ function get_subjects_and_classes(id) {
                 }
             });
             // Sync all-none toggle if user manually checks/unchecks all subjects
-            $(".subject-toggle").off("change").on("change", function() {
+            $(".subject-toggle").off("change").on("change", function () {
                 var classid = $(this).data("classid");
                 var allSubjects = $(".subject-toggle[data-classid='" + classid + "']");
                 var allChecked = allSubjects.length === allSubjects.filter(":checked").length;
@@ -4356,71 +4345,71 @@ function get_classes(id) {
 }
 
 
-function sendEmail () {
-  let recipients = $('#reciepient_email_list').val()
-  let subject = $('#message_subject').val()
-  // get plain text from summernote (strip HTML)
-  let bodyHtml = $('#message_body').summernote('code')
-  let bodyText = $('<div>').html(bodyHtml).text()
+function sendEmail() {
+    let recipients = $('#reciepient_email_list').val()
+    let subject = $('#message_subject').val()
+    // get plain text from summernote (strip HTML)
+    let bodyHtml = $('#message_body').summernote('code')
+    let bodyText = $('<div>').html(bodyHtml).text()
 
-  let mailtoLink = `mailto:${recipients}?subject=${encodeURIComponent(
-    subject
-  )}&body=${encodeURIComponent(bodyText)}`
-  window.location.href = mailtoLink
+    let mailtoLink = `mailto:${recipients}?subject=${encodeURIComponent(
+        subject
+    )}&body=${encodeURIComponent(bodyText)}`
+    window.location.href = mailtoLink
 }
 
-function send_message () {
-  let recipients = $('#reciepient_email_list').val()
-  let bodyHtml = $('#message_body').summernote('code')
-  let bodyText = $('<div>').html(bodyHtml).text()
+function send_message() {
+    let recipients = $('#reciepient_email_list').val()
+    let bodyHtml = $('#message_body').summernote('code')
+    let bodyText = $('<div>').html(bodyHtml).text()
 
-  let smsLink = `sms:${recipients}?body=${encodeURIComponent(bodyText)}`
-  window.location.href = smsLink
+    let smsLink = `sms:${recipients}?body=${encodeURIComponent(bodyText)}`
+    window.location.href = smsLink
 }
 
-function send_internal () {
-  let recievers = $('#reciepient_email_list').val()
-  // For internal messages we send the HTML content so formatting is preserved
-  let message = $('#message_body').summernote('code')
-  let usertype =
-    $('#reciepient_type').val() == 'parent_specific' ||
-    $('#reciepient_type').val() == 'all_parent'
-      ? '0'
-      : '1'
-$("#int_message_comm_btn").html("Processing").attr("disabled", true)
-$.ajax({
-  url: '../controller.php',
-    type: 'post',
-    dataType: 'json',
-    data: {
-      action: 'send_internal',
-      recievers,
-      message,
-      usertype
-    },
-    success: data => {
-      console.log(data)
-      if (data && data.status == '1') {
-        toastr.success('Sent successfully')
-        $("#int_message_comm_btn").html("Send Message").attr("disabled", false)
-        try {
-          if (typeof fetchSentInternalMessages === 'function') {
-            // refresh using current search and go to first page
-            const search = (typeof $('#internal_search').val === 'function') ? $('#internal_search').val().trim() : '';
-            fetchSentInternalMessages(1, search);
-          }
-        } catch (e) {
-          console.error('refresh messages failed', e)
+function send_internal() {
+    let recievers = $('#reciepient_email_list').val()
+    // For internal messages we send the HTML content so formatting is preserved
+    let message = $('#message_body').summernote('code')
+    let usertype =
+        $('#reciepient_type').val() == 'parent_specific' ||
+            $('#reciepient_type').val() == 'all_parent'
+            ? '0'
+            : '1'
+    $("#int_message_comm_btn").html("Processing").attr("disabled", true)
+    $.ajax({
+        url: '../controller.php',
+        type: 'post',
+        dataType: 'json',
+        data: {
+            action: 'send_internal',
+            recievers,
+            message,
+            usertype
+        },
+        success: data => {
+            console.log(data)
+            if (data && data.status == '1') {
+                toastr.success('Sent successfully')
+                $("#int_message_comm_btn").html("Send Message").attr("disabled", false)
+                try {
+                    if (typeof fetchSentInternalMessages === 'function') {
+                        // refresh using current search and go to first page
+                        const search = (typeof $('#internal_search').val === 'function') ? $('#internal_search').val().trim() : '';
+                        fetchSentInternalMessages(1, search);
+                    }
+                } catch (e) {
+                    console.error('refresh messages failed', e)
+                }
+            } else {
+                toastr.error(data && data.err ? data.err : 'Failed to send')
+            }
+        },
+        error: function (xhr, status, err) {
+            console.error(xhr.responseText)
+            toastr.error('Failed to send (network)')
         }
-      } else {
-        toastr.error(data && data.err ? data.err : 'Failed to send')
-      }
-    },
-    error: function (xhr, status, err) {
-      console.error(xhr.responseText)
-      toastr.error('Failed to send (network)')
-    }
-  })
+    })
 }
 
 function get_staff_table(id) {
@@ -4553,13 +4542,13 @@ function att_toggle(event, type) {
 }
 
 
-function toggle_att_type(event){
+function toggle_att_type(event) {
     $(".att_type_select").removeClass("active")
     console.log($(event).html())
     $(event).addClass("active")
     get_stud_byClass_attendance();
     console.log("no")
-    
+
 }
 
 
@@ -4633,7 +4622,7 @@ function toggle_att_type(event){
 //     $(event).addClass("active")
 //     get_stud_byClass_attendance();
 //     console.log("no")
-    
+
 // }
 
 function get_stud_byClass_attendance() {
@@ -4650,7 +4639,7 @@ function get_stud_byClass_attendance() {
     $.ajax({
         url: "../controller.php",
         type: "POST",
-        data: { 'action': 'get_stud_byClass_attendance', 'class_id': $(".filter_Select").val(), att_date: $("#att_date").val(),att_type:$(".att_type_select.active").attr("data-att_type") },
+        data: { 'action': 'get_stud_byClass_attendance', 'class_id': $(".filter_Select").val(), att_date: $("#att_date").val(), att_type: $(".att_type_select.active").attr("data-att_type") },
         success: (data) => {
             data = data.trim()
             if (data.includes("nothinnow")) {
@@ -4673,7 +4662,7 @@ function get_stud_byClass_attendance() {
                 // $("#student_table_attendance").show()
                 $("#tbl_container").html(str)
                 $("#save_attendance_btn").show()
-               
+
                 $("#att_type_btn").show()
                 // if ($.fn.DataTable.isDataTable('#student_table_attendance')) {
                 //     $('#student_table_attendance').DataTable().destroy();
@@ -4756,7 +4745,7 @@ function save_comment() {
             }
         },
         error: function () {
-            alert('Error saving comments.'+error);
+            alert('Error saving comments.' + error);
         }
     });
 }
@@ -4860,11 +4849,11 @@ function delete_class_modal(event) {
         beforeSend: function () {
             $("#delete_class_modal").modal("show")
         },
-        
+
         success: (data) => {
             data = JSON.parse(data)
             if (data.status == '1') {
-                $("#class_table").load(`../display_class_table.php${ $("#class_page").val() == 'display_g_class' ? '?is_g_table=1':'' }`)
+                $("#class_table").load(`../display_class_table.php${$("#class_page").val() == 'display_g_class' ? '?is_g_table=1' : ''}`)
                 setTimeout($("#delete_class_modal").modal("hide"), 200)
                 toastr.success("Updated Successfully")
             }
@@ -4936,7 +4925,7 @@ const init = () => {
     if ($("#class_page").val() === 'display_g_class') {
         $("#class_table").load('../display_class_table.php?is_g_table=1')
     }
-    
+
     if ($("#settings_page").val() === 'view_Settings') {
         $("#school_info_placeholder_form").load('../display_school_info_form.php')
         $("#school_setting_placeholder_form").load('../display_school_setting_form.php')
@@ -5018,7 +5007,7 @@ function toggletermfilterClass(element) {
     //     } else if ($("#by_stud_btn").hasClass("active")) {
     //         // alert("stude") 
     check_result_toggle()
-    if($(element).attr('data-name') != 'summary'){
+    if ($(element).attr('data-name') != 'summary') {
         get_billing_data();
     }
     //     }
@@ -6573,20 +6562,20 @@ function check_checkbox() {
 console.log("lkjk")
 function get_all_checked_checkbox(selection_type, id, modal) {
     console.log("lind")
-            $("#" + modal).modal("show");
-            if (selection_type == 'multiple') {
-                var box = []
-                var checkedbox = $('.table_checkbox:checked');
-                for (var i = 0; i < checkedbox.length; i++) {
-                    box.push(checkedbox[i].value);
-                }
-                var joinedcheckbox = box.join(",")
-                $(".bulk_transfer_ids").val(joinedcheckbox)
-            } else {
-            console.log("sentidin",id)
-                
-                $(".bulk_transfer_ids").val(id)
-            }
+    $("#" + modal).modal("show");
+    if (selection_type == 'multiple') {
+        var box = []
+        var checkedbox = $('.table_checkbox:checked');
+        for (var i = 0; i < checkedbox.length; i++) {
+            box.push(checkedbox[i].value);
+        }
+        var joinedcheckbox = box.join(",")
+        $(".bulk_transfer_ids").val(joinedcheckbox)
+    } else {
+        console.log("sentidin", id)
+
+        $(".bulk_transfer_ids").val(id)
+    }
     // $.ajax({
     //     url: "../controller.php",
     //     type: "POST",
@@ -6608,7 +6597,7 @@ function get_all_checked_checkbox_for_report(selection_type, id, modal, ids_clas
         var joinedcheckbox = box.join(",")
         $("." + ids_class).val(joinedcheckbox)
     }
-    else if(selection_type == 'single'){
+    else if (selection_type == 'single') {
         $("." + ids_class).val(id)
     }
 }
@@ -6786,13 +6775,13 @@ function save_attendance(type) {
                 register2[checkbox2.value] = 0
             }
         })
-        post_data = { action: 'set_attendance', att_date: $("#att_date").val(), class_id: $("#select_class_field").val(), register, register2,type, };
-    }else {
+        post_data = { action: 'set_attendance', att_date: $("#att_date").val(), class_id: $("#select_class_field").val(), register, register2, type, };
+    } else {
         // alert("0")
         // --- Collect data for 'once' type attendance ---
         const attendanceData = {}; // Use an object to map student_id to attendance count
 
-        $('input[name="one_time_att"]').each(function() {
+        $('input[name="one_time_att"]').each(function () {
             const studentId = $(this).data('student_id'); // Get student ID from data attribute
             const attendanceValue = $(this).val();       // Get attendance count from input value
 
@@ -6832,8 +6821,8 @@ function save_attendance(type) {
         }
     }) 
     */
-   // Example AJAX call using the collected post_data:
-   $.ajax({
+    // Example AJAX call using the collected post_data:
+    $.ajax({
         url: "../controller.php",
         type: "post",
         data: post_data, // Send the structured data
@@ -7193,8 +7182,8 @@ function fetchSelectedDates_att(startDate, endDate) {
         },
         error: function (xhr, status, error) { // Added xhr for more details
             console.error("Error fetching data:", status, error, xhr.responseText);
-             $(".data_overlay").show().html(`<p class="font-weight-bold">Error fetching attendance data. Please check console.</p>`);
-             $("#tbl_container").html('');
+            $(".data_overlay").show().html(`<p class="font-weight-bold">Error fetching attendance data. Please check console.</p>`);
+            $("#tbl_container").html('');
         },
     });
 }
@@ -7326,104 +7315,104 @@ function download_att_report() {
 
 
 function generatePDF(thestudent_name) {
-  const previewContent = document.getElementById("preview-content");
-  const singleReport = document.querySelector(".report-card");
-  const element =
-    previewContent && previewContent.innerHTML.trim() !== ""
-      ? previewContent
-      : singleReport;
+    const previewContent = document.getElementById("preview-content");
+    const singleReport = document.querySelector(".report-card");
+    const element =
+        previewContent && previewContent.innerHTML.trim() !== ""
+            ? previewContent
+            : singleReport;
 
-  if (!element) return;
+    if (!element) return;
 
-  const htmlString = `
+    const htmlString = `
     <div style="width: 1000px; background-color: #ffffff; padding: 20px; font-family: sans-serif;">
       ${element.innerHTML}
     </div>
   `;
 
-  const opt = {
-    margin: [10, 5, 10, 5],
-    filename: (thestudent_name || "Report").trim() + ".pdf",
-    image: { type: "jpeg", quality: 0.98 },
-    html2canvas: {
-      scale: 2,
-      useCORS: true,
-      letterRendering: true,
-      width: 1000,
-    },
-    jsPDF: {
-      unit: "mm",
-      format: "a4",
-      orientation: "portrait",
-      compress: true,
-    },
-  };
+    const opt = {
+        margin: [10, 5, 10, 5],
+        filename: (thestudent_name || "Report").trim() + ".pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            letterRendering: true,
+            width: 1000,
+        },
+        jsPDF: {
+            unit: "mm",
+            format: "a4",
+            orientation: "portrait",
+            compress: true,
+        },
+    };
 
-  html2pdf()
-    .from(htmlString)
-    .set(opt)
-    .save()
-    .catch((err) => {
-      console.error("PDF Generation Error:", err);
-    });
+    html2pdf()
+        .from(htmlString)
+        .set(opt)
+        .save()
+        .catch((err) => {
+            console.error("PDF Generation Error:", err);
+        });
 }
 async function downloadAllReports() {
     console.log("weeeeeeeeeeeeeeeeeeeeeeeeeeee")
-  const reports = document.querySelectorAll("#preview-content .single-report");
-  const downloadButton = $("#download-pdf-button");
+    const reports = document.querySelectorAll("#preview-content .single-report");
+    const downloadButton = $("#download-pdf-button");
 
-  if (reports.length === 0) return;
+    if (reports.length === 0) return;
 
-  downloadButton
-    .prop("disabled", true)
-    .html('<i class="fas fa-spinner fa-spin mr-1"></i> Downloading...');
+    downloadButton
+        .prop("disabled", true)
+        .html('<i class="fas fa-spinner fa-spin mr-1"></i> Downloading...');
 
-  for (let i = 0; i < reports.length; i++) {
-    const report = reports[i];
-    const nameEl = report.querySelector(".student-name-header");
-    const studentName = nameEl
-      ? nameEl.getAttribute("data-student-name")
-      : `Student_${i + 1}`;
+    for (let i = 0; i < reports.length; i++) {
+        const report = reports[i];
+        const nameEl = report.querySelector(".student-name-header");
+        const studentName = nameEl
+            ? nameEl.getAttribute("data-student-name")
+            : `Student_${i + 1}`;
 
-    // Create a temporary container for each report to ensure clean capture
-    const htmlString = `
+        // Create a temporary container for each report to ensure clean capture
+        const htmlString = `
       <div style="width: 1000px; background-color: #ffffff; padding: 20px; font-family: sans-serif;">
         ${report.innerHTML}
       </div>
     `;
 
-    const opt = {
-      margin: [10, 5, 10, 5],
-      filename: (studentName || "Report").trim() + ".pdf",
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        letterRendering: true,
-        width: 1000,
-      },
-      jsPDF: {
-        unit: "mm",
-        format: "a4",
-        orientation: "portrait",
-        compress: true,
-      },
-    };
+        const opt = {
+            margin: [10, 5, 10, 5],
+            filename: (studentName || "Report").trim() + ".pdf",
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                letterRendering: true,
+                width: 1000,
+            },
+            jsPDF: {
+                unit: "mm",
+                format: "a4",
+                orientation: "portrait",
+                compress: true,
+            },
+        };
 
-    try {
-      await html2pdf().from(htmlString).set(opt).save();
-      // Small delay to prevent browser download blocking
-      if (i < reports.length - 1) {
-        await new Promise((resolve) => setTimeout(resolve, 800));
-      }
-    } catch (err) {
-      console.error(`Error downloading report for ${studentName}:`, err);
+        try {
+            await html2pdf().from(htmlString).set(opt).save();
+            // Small delay to prevent browser download blocking
+            if (i < reports.length - 1) {
+                await new Promise((resolve) => setTimeout(resolve, 800));
+            }
+        } catch (err) {
+            console.error(`Error downloading report for ${studentName}:`, err);
+        }
     }
-  }
 
-  downloadButton
-    .prop("disabled", false)
-    .html('<i class="fas fa-download mr-1"></i> Download PDF');
+    downloadButton
+        .prop("disabled", false)
+        .html('<i class="fas fa-download mr-1"></i> Download PDF');
 }
 
 // function generatePDF(data) {
@@ -7642,239 +7631,239 @@ async function downloadAllReports() {
 //         }
 //     });
 // }
-   console.log('kilometer')
+console.log('kilometer')
 function set_behaviour_comment(term, session, student_id, class_id, pagetype) {
-  console.log(window.schoolHiddenSkills);
-  if ($("#report_page").val() === "report_scores") {
-    pagetype = "report";
-  }
-  $.ajax({
-    url: "../controller.php",
-    type: "POST",
-    data: {
-      action: "getbehaviour_comment",
-      term,
-      session,
-      student_id,
-      class_id,
-      pagetype,
-    },
-    success: (data) => {
-      data = data.trim();
-      data = JSON.parse(data);
-      // alert(data.staff_classId)
-      // let staff_classId_json = JSON.parse(data.staff_classId)
-      // alert((data.staff_classId).includes(class_id))
-      thebehavedata = data.comment;
-      console.log("thebehavedata",thebehavedata)
-      console.log("thebehavedata2",data)
-      if ($("#comment_student_page").val() == "comment") {
-        // console.log("comm",data.comment)
-        if (
-          data.staff_classId.includes(class_id) == false &&
-          pagetype == "post"
-        ) {
-          // console.log("kkk")
-          document.querySelectorAll(".btn.togglebtn").forEach((button) => {
-            button.disabled = true;
-            // button.addEventListener("click", function(event){
-            //     event.preventDefault()
-            //     event.stopPropagation()
-            // })
-          });
-        }
-        if (data.comment == "") {
-          console.log("success but empty");
-          $("#post_teacher_comment_gb_container").show();
-          let behave =
-            typeof window.schoolSkills !== "undefined" &&
-            Array.isArray(window.schoolSkills) &&
-            window.schoolSkills.length > 0
-              ? window.schoolSkills
-              : [
-                  "punctuality",
-                  "classattendance",
-                  "resptoass",
-                  "Politeness",
-                  "Honesty",
-                  "selfcontrol",
-                  "relationship",
-                  "responsibility",
-                  "organizationability",
-                  "Neatness",
-                  "Obedience",
-                  "Creativity",
-                  "Writing",
-                  "Fluency",
-                  "Sport",
-                  "Games",
-                  "DrawingPainting",
-                  "Music",
-                  "HandlingTools",
-                  "Crafts",
-                ];
-          if (
-            typeof window.schoolHiddenSkills !== "undefined" &&
-            Array.isArray(window.schoolHiddenSkills)
-          ) {
-            behave = behave.filter(
-              (skill) => !window.schoolHiddenSkills.includes(skill)
-            );
-          }
-          console.log("theskills", behave);
-          behave.map((each) => {
-            let theclasses = Array.from(document.querySelectorAll(`.${each}`));
-            theclasses.map((item) => {
-              item.classList.remove("active");
-            });
-          });
-        } else {
-          console.log("access garnted with ful data1");
-          parsedata = JSON.parse(thebehavedata);
-          console.log("comm", parsedata);
-          $("#post_teacher_comment_gb_container").show();
-          Object.entries(parsedata).forEach(([key, thevalue]) => {
-            let punct = Array.from(document.querySelectorAll(`.${key}`));
-            punct.map((each) => {
-              each.classList.remove("active");
-              each.value == thevalue && each.classList.add("active");
-            });
-          });
-        }
-      }
+    console.log(window.schoolHiddenSkills);
+    if ($("#report_page").val() === "report_scores") {
+        pagetype = "report";
+    }
+    $.ajax({
+        url: "../controller.php",
+        type: "POST",
+        data: {
+            action: "getbehaviour_comment",
+            term,
+            session,
+            student_id,
+            class_id,
+            pagetype,
+        },
+        success: (data) => {
+            data = data.trim();
+            data = JSON.parse(data);
+            // alert(data.staff_classId)
+            // let staff_classId_json = JSON.parse(data.staff_classId)
+            // alert((data.staff_classId).includes(class_id))
+            thebehavedata = data.comment;
+            console.log("thebehavedata", thebehavedata)
+            console.log("thebehavedata2", data)
+            if ($("#comment_student_page").val() == "comment") {
+                // console.log("comm",data.comment)
+                if (
+                    data.staff_classId.includes(class_id) == false &&
+                    pagetype == "post"
+                ) {
+                    // console.log("kkk")
+                    document.querySelectorAll(".btn.togglebtn").forEach((button) => {
+                        button.disabled = true;
+                        // button.addEventListener("click", function(event){
+                        //     event.preventDefault()
+                        //     event.stopPropagation()
+                        // })
+                    });
+                }
+                if (data.comment == "") {
+                    console.log("success but empty");
+                    $("#post_teacher_comment_gb_container").show();
+                    let behave =
+                        typeof window.schoolSkills !== "undefined" &&
+                            Array.isArray(window.schoolSkills) &&
+                            window.schoolSkills.length > 0
+                            ? window.schoolSkills
+                            : [
+                                "punctuality",
+                                "classattendance",
+                                "resptoass",
+                                "Politeness",
+                                "Honesty",
+                                "selfcontrol",
+                                "relationship",
+                                "responsibility",
+                                "organizationability",
+                                "Neatness",
+                                "Obedience",
+                                "Creativity",
+                                "Writing",
+                                "Fluency",
+                                "Sport",
+                                "Games",
+                                "DrawingPainting",
+                                "Music",
+                                "HandlingTools",
+                                "Crafts",
+                            ];
+                    if (
+                        typeof window.schoolHiddenSkills !== "undefined" &&
+                        Array.isArray(window.schoolHiddenSkills)
+                    ) {
+                        behave = behave.filter(
+                            (skill) => !window.schoolHiddenSkills.includes(skill)
+                        );
+                    }
+                    console.log("theskills", behave);
+                    behave.map((each) => {
+                        let theclasses = Array.from(document.querySelectorAll(`.${each}`));
+                        theclasses.map((item) => {
+                            item.classList.remove("active");
+                        });
+                    });
+                } else {
+                    console.log("access garnted with ful data1");
+                    parsedata = JSON.parse(thebehavedata);
+                    console.log("comm", parsedata);
+                    $("#post_teacher_comment_gb_container").show();
+                    Object.entries(parsedata).forEach(([key, thevalue]) => {
+                        let punct = Array.from(document.querySelectorAll(`.${key}`));
+                        punct.map((each) => {
+                            each.classList.remove("active");
+                            each.value == thevalue && each.classList.add("active");
+                        });
+                    });
+                }
+            }
 
-      if (data.staff_classId.includes(class_id) && pagetype == "post") {
-        if (data.comment == "") {
-          console.log("success but empty");
-          $("#post_teacher_comment_gb_container").show();
-          let behave =
-            typeof window.schoolSkills !== "undefined" &&
-            Array.isArray(window.schoolSkills) &&
-            window.schoolSkills.length > 0
-              ? window.schoolSkills
-              : [
-                  "punctuality",
-                  "classattendance",
-                  "resptoass",
-                  "Politeness",
-                  "Honesty",
-                  "selfcontrol",
-                  "relationship",
-                  "responsibility",
-                  "organizationability",
-                  "Neatness",
-                  "Obedience",
-                  "Creativity",
-                  "Writing",
-                  "Fluency",
-                  "Sport",
-                  "Games",
-                  "DrawingPainting",
-                  "Music",
-                  "HandlingTools",
-                  "Crafts",
-                ];
-          if (
-            typeof window.schoolHiddenSkills !== "undefined" &&
-            Array.isArray(window.schoolHiddenSkills)
-          ) {
-            behave = behave.filter(
-              (skill) => !window.schoolHiddenSkills.includes(skill)
-            );
-          }
-          console.log("theskills", behave);
-          behave.map((each) => {
-            let theclasses = Array.from(document.querySelectorAll(`.${each}`));
-            theclasses.map((item) => {
-              item.classList.remove("active");
-            });
-          });
-        } else {
-          console.log("access garnted with ful data2");
-          parsedata = JSON.parse(thebehavedata);
-          console.log("comm", parsedata);
-          $("#post_teacher_comment_gb_container").show();
-          Object.entries(parsedata).forEach(([key, thevalue]) => {
-            let punct = Array.from(document.querySelectorAll(`.${key}`));
-            punct.map((each) => {
-              each.classList.remove("active");
-              each.value == thevalue && each.classList.add("active");
-            });
-          });
-        }
-      } else if (pagetype == "view" || pagetype == "report") {
-        console.log('llama now')
-        function getPercentage(score) {
-          switch (score) {
-            case "5":
-              return "100%";
-            case "4":
-              return "80%";
-            case "3":
-              return "60%";
-            case "2":
-              return "40%";
-            case "1":
-              return "20%";
-            default:
-              return "Not rated";
-          }
-        }
-        if (thebehavedata == "") {
-            console.log("behace")
-          let behave =
-            typeof window.schoolSkills !== "undefined" &&
-            Array.isArray(window.schoolSkills) &&
-            window.schoolSkills.length > 0
-              ? window.schoolSkills
-              : [
-                  "punctuality",
-                  "classattendance",
-                  "resptoass",
-                  "Politeness",
-                  "Honesty",
-                  "selfcontrol",
-                  "relationship",
-                  "responsibility",
-                  "organizationability",
-                  "Neatness",
-                  "Obedience",
-                  "Creativity",
-                  "Writing",
-                  "Fluency",
-                  "Sport",
-                  "Games",
-                  "DrawingPainting",
-                  "Music",
-                  "HandlingTools",
-                  "Crafts",
-                ];
-          if (
-            typeof window.schoolHiddenSkills !== "undefined" &&
-            Array.isArray(window.schoolHiddenSkills)
-          ) {
-            behave = behave.filter(
-              (skill) => !window.schoolHiddenSkills.includes(skill)
-            );
-          }
-          console.log("theskills", behave);
-          behave.map((key) => {
-            console.log(key);
-            $("." + key).html(getPercentage(0));
-          });
-        } else {
-            console.log("king and queens")
-          par = JSON.parse(thebehavedata);
-          Object.entries(par).forEach(([key, value]) => {
-            $("." + key).html(getPercentage(value));
-          });
-        }
-      } else {
-        $("#view_teacher_comment_gb_container").hide();
-        $("#post_teacher_comment_gb_container").hide();
-      }
-    },
-  });
+            if (data.staff_classId.includes(class_id) && pagetype == "post") {
+                if (data.comment == "") {
+                    console.log("success but empty");
+                    $("#post_teacher_comment_gb_container").show();
+                    let behave =
+                        typeof window.schoolSkills !== "undefined" &&
+                            Array.isArray(window.schoolSkills) &&
+                            window.schoolSkills.length > 0
+                            ? window.schoolSkills
+                            : [
+                                "punctuality",
+                                "classattendance",
+                                "resptoass",
+                                "Politeness",
+                                "Honesty",
+                                "selfcontrol",
+                                "relationship",
+                                "responsibility",
+                                "organizationability",
+                                "Neatness",
+                                "Obedience",
+                                "Creativity",
+                                "Writing",
+                                "Fluency",
+                                "Sport",
+                                "Games",
+                                "DrawingPainting",
+                                "Music",
+                                "HandlingTools",
+                                "Crafts",
+                            ];
+                    if (
+                        typeof window.schoolHiddenSkills !== "undefined" &&
+                        Array.isArray(window.schoolHiddenSkills)
+                    ) {
+                        behave = behave.filter(
+                            (skill) => !window.schoolHiddenSkills.includes(skill)
+                        );
+                    }
+                    console.log("theskills", behave);
+                    behave.map((each) => {
+                        let theclasses = Array.from(document.querySelectorAll(`.${each}`));
+                        theclasses.map((item) => {
+                            item.classList.remove("active");
+                        });
+                    });
+                } else {
+                    console.log("access garnted with ful data2");
+                    parsedata = JSON.parse(thebehavedata);
+                    console.log("comm", parsedata);
+                    $("#post_teacher_comment_gb_container").show();
+                    Object.entries(parsedata).forEach(([key, thevalue]) => {
+                        let punct = Array.from(document.querySelectorAll(`.${key}`));
+                        punct.map((each) => {
+                            each.classList.remove("active");
+                            each.value == thevalue && each.classList.add("active");
+                        });
+                    });
+                }
+            } else if (pagetype == "view" || pagetype == "report") {
+                console.log('llama now')
+                function getPercentage(score) {
+                    switch (score) {
+                        case "5":
+                            return "100%";
+                        case "4":
+                            return "80%";
+                        case "3":
+                            return "60%";
+                        case "2":
+                            return "40%";
+                        case "1":
+                            return "20%";
+                        default:
+                            return "Not rated";
+                    }
+                }
+                if (thebehavedata == "") {
+                    console.log("behace")
+                    let behave =
+                        typeof window.schoolSkills !== "undefined" &&
+                            Array.isArray(window.schoolSkills) &&
+                            window.schoolSkills.length > 0
+                            ? window.schoolSkills
+                            : [
+                                "punctuality",
+                                "classattendance",
+                                "resptoass",
+                                "Politeness",
+                                "Honesty",
+                                "selfcontrol",
+                                "relationship",
+                                "responsibility",
+                                "organizationability",
+                                "Neatness",
+                                "Obedience",
+                                "Creativity",
+                                "Writing",
+                                "Fluency",
+                                "Sport",
+                                "Games",
+                                "DrawingPainting",
+                                "Music",
+                                "HandlingTools",
+                                "Crafts",
+                            ];
+                    if (
+                        typeof window.schoolHiddenSkills !== "undefined" &&
+                        Array.isArray(window.schoolHiddenSkills)
+                    ) {
+                        behave = behave.filter(
+                            (skill) => !window.schoolHiddenSkills.includes(skill)
+                        );
+                    }
+                    console.log("theskills", behave);
+                    behave.map((key) => {
+                        console.log(key);
+                        $("." + key).html(getPercentage(0));
+                    });
+                } else {
+                    console.log("king and queens")
+                    par = JSON.parse(thebehavedata);
+                    Object.entries(par).forEach(([key, value]) => {
+                        $("." + key).html(getPercentage(value));
+                    });
+                }
+            } else {
+                $("#view_teacher_comment_gb_container").hide();
+                $("#post_teacher_comment_gb_container").hide();
+            }
+        },
+    });
 }
 function get_teacher_comment(term, session, student_id, class_id, pagetype) {
     // alert(class_id)
@@ -8190,7 +8179,7 @@ function loadApproval() {
 
 //                     return `<tr>
 //                             <td class="font-xs-16 assess_subject" data-id=${arrayValue.id}>${nameToMatch}</td>
-                            
+
 //                             ${settingsData.ca1 == 1 ? `<td><input class="w-xs-60 assess_input ca1Total" type="number" ${approval_data.ca1 == '1' ? 'disabled' : ''} value="${score.ca1 || ''}"></td>` : ''}
 //                             ${settingsData.ca1 == 1 ? `<td class="d-non ${hideshowtotals}"><input class="w-xs-60 assess_input ca1total" type="number" ${approval_data.ca1 == '1' ? 'disabled' : ''} value="${score.ca1Total || ''}"></td>` : ''}
 //                             ${settingsData.ca2 == 1 ? `<td><input class="w-xs-60 assess_input" type="number" ${approval_data.ca2 == '1' ? 'disabled' : ''} value="${score.ca2 || ''}"></td>` : ''}
@@ -8512,15 +8501,15 @@ async function post_table_data(filtertype, viewOrPostPage) {
                     let nameToMatch;
                     let thestudentnameorsubj;
                     // let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue.name;
-                        if(filtertype === 'student'){
-                            console.log('student')
-                            nameToMatch = arrayValue.subject;
-                            thestudentnameorsubj = nameToMatch;
-                        }else {
-                            console.log('subject now')
-                            nameToMatch = arrayValue.name;
-                            thestudentnameorsubj = `<a href="students?id=${arrayValue.id}">${nameToMatch}</a>`;
-                        }
+                    if (filtertype === 'student') {
+                        console.log('student')
+                        nameToMatch = arrayValue.subject;
+                        thestudentnameorsubj = nameToMatch;
+                    } else {
+                        console.log('subject now')
+                        nameToMatch = arrayValue.name;
+                        thestudentnameorsubj = `<a href="students?id=${arrayValue.id}">${nameToMatch}</a>`;
+                    }
 
                     let score = scores.find(s => s.subjectsOrNames.trim() === nameToMatch.trim()) || {};
                     console.log("Matching score for:", nameToMatch, score);
@@ -8560,15 +8549,15 @@ async function post_table_data(filtertype, viewOrPostPage) {
                     let nameToMatch;
                     let thestudentnameorsubj;
                     // let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue;
-                    if(filtertype === 'student'){
-                            console.log('student')
-                            nameToMatch = arrayValue.subject;
-                            thestudentnameorsubj = nameToMatch;
-                        }else {
-                            console.log('subject now')
-                            nameToMatch = arrayValue.name;
-                            thestudentnameorsubj = `<a href="students?id=${arrayValue.id}">${nameToMatch}</a>`;
-                        }
+                    if (filtertype === 'student') {
+                        console.log('student')
+                        nameToMatch = arrayValue.subject;
+                        thestudentnameorsubj = nameToMatch;
+                    } else {
+                        console.log('subject now')
+                        nameToMatch = arrayValue.name;
+                        thestudentnameorsubj = `<a href="students?id=${arrayValue.id}">${nameToMatch}</a>`;
+                    }
                     let score = scores.find(s => s.subjectsOrNames.trim() === nameToMatch.trim()) || {};
                     console.log("Matching score for:", nameToMatch, score);
                     return `<tr>
@@ -8599,15 +8588,15 @@ async function post_table_data(filtertype, viewOrPostPage) {
                     let nameToMatch;
                     let thestudentnameorsubj;
                     // let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue;
-                    if(filtertype === 'student'){
-                            console.log('student')
-                            nameToMatch = arrayValue.subject;
-                            thestudentnameorsubj = nameToMatch;
-                        }else {
-                            console.log('subject now')
-                            nameToMatch = arrayValue.name;
-                            thestudentnameorsubj = `<a href="students?id=${arrayValue.id}">${nameToMatch}</a>`;
-                        }
+                    if (filtertype === 'student') {
+                        console.log('student')
+                        nameToMatch = arrayValue.subject;
+                        thestudentnameorsubj = nameToMatch;
+                    } else {
+                        console.log('subject now')
+                        nameToMatch = arrayValue.name;
+                        thestudentnameorsubj = `<a href="students?id=${arrayValue.id}">${nameToMatch}</a>`;
+                    }
                     let score = scores.find(s => s.subjectsOrNames.trim() === nameToMatch.trim()) || {};
                     console.log("Matching score for:", nameToMatch, score);
                     return `<tr>
@@ -8638,15 +8627,15 @@ async function post_table_data(filtertype, viewOrPostPage) {
                     let nameToMatch;
                     let thestudentnameorsubj;
                     // let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue;
-                    if(filtertype === 'student'){
-                            console.log('student')
-                            nameToMatch = arrayValue.subject;
-                            thestudentnameorsubj = nameToMatch;
-                        }else {
-                            console.log('subject now')
-                            nameToMatch = arrayValue.name;
-                            thestudentnameorsubj = `<a href="students?id=${arrayValue.id}">${nameToMatch}</a>`;
-                        }
+                    if (filtertype === 'student') {
+                        console.log('student')
+                        nameToMatch = arrayValue.subject;
+                        thestudentnameorsubj = nameToMatch;
+                    } else {
+                        console.log('subject now')
+                        nameToMatch = arrayValue.name;
+                        thestudentnameorsubj = `<a href="students?id=${arrayValue.id}">${nameToMatch}</a>`;
+                    }
                     let score = scores.find(s => s.subjectsOrNames.trim() === nameToMatch.trim()) || {};
                     console.log("Matching score for:", nameToMatch, score);
                     return `<tr>
@@ -8677,15 +8666,15 @@ async function post_table_data(filtertype, viewOrPostPage) {
                     let nameToMatch;
                     let thestudentnameorsubj;
                     // let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue;
-                    if(filtertype === 'student'){
-                            console.log('student')
-                            nameToMatch = arrayValue.subject;
-                            thestudentnameorsubj = nameToMatch;
-                        }else {
-                            console.log('subject now')
-                            nameToMatch = arrayValue.name;
-                            thestudentnameorsubj = `<a href="students?id=${arrayValue.id}">${nameToMatch}</a>`;
-                        }
+                    if (filtertype === 'student') {
+                        console.log('student')
+                        nameToMatch = arrayValue.subject;
+                        thestudentnameorsubj = nameToMatch;
+                    } else {
+                        console.log('subject now')
+                        nameToMatch = arrayValue.name;
+                        thestudentnameorsubj = `<a href="students?id=${arrayValue.id}">${nameToMatch}</a>`;
+                    }
                     let score = scores.find(s => s.subjectsOrNames.trim() === nameToMatch.trim()) || {};
                     console.log("Matching score for:", nameToMatch, score);
                     return `<tr>
@@ -8716,15 +8705,15 @@ async function post_table_data(filtertype, viewOrPostPage) {
                     let nameToMatch;
                     let thestudentnameorsubj;
                     // let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue;
-                    if(filtertype === 'student'){
-                            console.log('student')
-                            nameToMatch = arrayValue.subject;
-                            thestudentnameorsubj = nameToMatch;
-                        }else {
-                            console.log('subject now')
-                            nameToMatch = arrayValue.name;
-                            thestudentnameorsubj = `<a href="students?id=${arrayValue.id}">${nameToMatch}</a>`;
-                        }
+                    if (filtertype === 'student') {
+                        console.log('student')
+                        nameToMatch = arrayValue.subject;
+                        thestudentnameorsubj = nameToMatch;
+                    } else {
+                        console.log('subject now')
+                        nameToMatch = arrayValue.name;
+                        thestudentnameorsubj = `<a href="students?id=${arrayValue.id}">${nameToMatch}</a>`;
+                    }
                     let score = scores.find(s => s.subjectsOrNames.trim() === nameToMatch.trim()) || {};
                     console.log("Matching score for:", nameToMatch, score);
                     return `<tr>
@@ -10541,7 +10530,7 @@ function update_class_data(event) {
         success: (data) => {
             data = JSON.parse(data)
             if (data.status == '1') {
-                 $("#class_table").load(`../display_class_table.php${data.is_graduate ? '?is_g_table=1':''}`)
+                $("#class_table").load(`../display_class_table.php${data.is_graduate ? '?is_g_table=1' : ''}`)
                 setTimeout($("#edit_class_modal").modal("hide"), 200)
                 // toastr.success("Updated Successfully")
             }
@@ -10567,7 +10556,7 @@ function update_parent_data(event) {
         },
         success: (data) => {
             data = JSON.parse(data)
-            
+
             if (data.status == '1') {
                 // $("#staff_tables").load('display_staff_table.php')
                 setTimeout($("#edit_parent_modal").modal("hide"), 200)
@@ -10575,7 +10564,7 @@ function update_parent_data(event) {
                 if ($("#profile_page").val() === 'display_parent_profile') {
                     $("#profile_placeholder").load("../display_parent_profile.php")
                 }
-            }else {
+            } else {
                 $("#add_parent_data_warning").show().html(data.err)
             }
         },
@@ -10708,7 +10697,7 @@ $(".settingsform").submit(function (event) {
         contentType: false,
         processData: false,
         success: (data) => {
-            data = JSON.parse(data);
+            // data = JSON.parse(data);
             if (data.status == '1') {
                 toastr.success(data.msg);
             } else {
@@ -10737,10 +10726,10 @@ function transfer_student_modal(event, tableId, page) {
                 filter_stud_Class()
                 // $("#student_table")
                 // $("#" + tableId).load(page, function () {
-                    $(".action_btn").hide()
-                    $("#select_all").prop('checked', false)
-                    // $('.select2').val(null).trigger('change')
-                    toastr.success(data.msg);
+                $(".action_btn").hide()
+                $("#select_all").prop('checked', false)
+                // $('.select2').val(null).trigger('change')
+                toastr.success(data.msg);
                 // });
             } else {
                 $(event.target).find('.warning').show().html(data.err);
@@ -10774,15 +10763,15 @@ $(".form").submit(function (event) {
 });
 // alert('kk')
 const savepath = () => {
-  const thepath = location.pathname.split('/')
-  if(thepath[thepath.length-1] != 'login' && thepath[thepath.length-1]) {
-      localStorage.setItem('myurl', window.location.href)
-  }else {
-      if (localStorage.getItem('myurl')) {
-        localStorage.removeItem('myurl');
+    const thepath = location.pathname.split('/')
+    if (thepath[thepath.length - 1] != 'login' && thepath[thepath.length - 1]) {
+        localStorage.setItem('myurl', window.location.href)
+    } else {
+        if (localStorage.getItem('myurl')) {
+            localStorage.removeItem('myurl');
         }
-  }
-  
+    }
+
 }
 savepath()
 $(".loginform").submit(function (event) {
@@ -10809,7 +10798,7 @@ $(".loginform").submit(function (event) {
             if (data.status == '1') {
                 // alert(data.location)
                 // alert(localStorage.getItem("myurl"))
-                
+
                 window.location = `./${data.location}`
 
                 // window.location = `./${data.location}`
@@ -10822,7 +10811,7 @@ $(".loginform").submit(function (event) {
 });
 
 
-function get_note_week_create(element=true) {
+function get_note_week_create(element = true) {
     $("#week_btns_container").html(
         `
         <label for="" class="mb-2 text-dark">Select Week</label>
@@ -10848,13 +10837,13 @@ function get_note_week_create(element=true) {
         `
     )
     setTimeout(get_notes_week_view, 100)
-    setTimeout(()=>get_lesson_note(element), 100)
+    setTimeout(() => get_lesson_note(element), 100)
     setTimeout(() => {
-    // ensure a lesson term is selected (default to first) before loading weeks
-    if ($('.lesson_term.select_btn').length && !$('.lesson_term.select_btn.active').length) {
-      $('.lesson_term.select_btn').first().addClass('active');
-    }
-  }, 10);
+        // ensure a lesson term is selected (default to first) before loading weeks
+        if ($('.lesson_term.select_btn').length && !$('.lesson_term.select_btn.active').length) {
+            $('.lesson_term.select_btn').first().addClass('active');
+        }
+    }, 10);
 }
 
 
@@ -10868,7 +10857,7 @@ function get_notes_week_view() {
         data: {
             "class_id": $("#select_class_field").val(),
             "subject_id": $("#select_subject_field").val(),
-                  "term_id": $('.lesson_term.select_btn.active').attr('data-name') || $('.term.select_btn.active').attr('data-name') || '',
+            "term_id": $('.lesson_term.select_btn.active').attr('data-name') || $('.term.select_btn.active').attr('data-name') || '',
 
             'action': 'get_note_weeks'
         },
@@ -10889,23 +10878,23 @@ function get_notes_week_view() {
     })
 }
 
-function get_lesson_note(element=true) {
+function get_lesson_note(element = true) {
     setTimeout(element ? get_lesson_note_topic : get_class_note_topic, 100)
     setTimeout(element ? get_lesson_note_body : get_class_note_body, 100)
 }
-function toggle_week_btn(event, staff=true) {
+function toggle_week_btn(event, staff = true) {
     $(".week_btn.select_btn").removeClass("active")
     $(event).addClass("active")
     get_lesson_note(staff)
 }
 function toggle_lesson_term(event) {
-  $(".lesson_term.select_btn").removeClass("active");
-  $(event).addClass("active");
-  // reload weeks and lesson content for the selected term
-  get_note_week_create();
-  get_lesson_note(true);
+    $(".lesson_term.select_btn").removeClass("active");
+    $(event).addClass("active");
+    // reload weeks and lesson content for the selected term
+    get_note_week_create();
+    get_lesson_note(true);
 }
-function toggle_subject_btn(event, staff=true) {
+function toggle_subject_btn(event, staff = true) {
     $(".subject_btn.select_btn").removeClass("active")
     $(event).addClass("active")
     get_lesson_note(staff)
@@ -10939,7 +10928,7 @@ function get_class_note_topic() {
             "class_id": $("#select_class_student").val(),
             "subject_id": $(".subject_btn.select_btn.active").attr("data-id"),
             "week_id": $(".week_btn.active").attr("data-id"),
-                  term_id: $('.lesson_term.select_btn.active').attr('data-name') || $('.term.select_btn.active').attr('data-name') || '',
+            term_id: $('.lesson_term.select_btn.active').attr('data-name') || $('.term.select_btn.active').attr('data-name') || '',
 
             "type": 'topic',
             "action": "get_lesson_note"
@@ -11100,10 +11089,10 @@ function get_class_note_body() {
 //     }
 
 //     $("#note_container_body").html(`
-        
+
 //                     <div class="mt-4">
 //                         <div class="py-3 px-15 bg-white" style="border-radius: 10px;">
-                            
+
 //                             <div class="form-group mb-0 w-100" id="lesson_note_body_editor" style="display:none;">
 //                                 <label class="">Content</label>
 //                                 <textarea id="lesson_body" name=""></textarea>
@@ -11121,7 +11110,7 @@ function get_class_note_body() {
 //                             </div>
 //                         </div>
 //                     </div>
-        
+
 //     `);
 
 //     ClassicEditor.create(document.querySelector("#lesson_body"), {
@@ -11466,41 +11455,41 @@ function get_class_note_body() {
 // }
 
 function populate_multi_class_select(targetId = "#lesson_note_multi_class") {
-  const $target = $(targetId);
-  const currentClass = $("#select_class_field").val();
-  $.ajax({
-    url: "../controller.php",
-    type: "POST",
-    data: {
-      action: "get_classes_for_lesson_note",
-    },
-    success: function (response) {
-      if (!response) return;
-      try {
-        console.log(response);
-        const json = JSON.parse(response);
-        if (json.status == "1" && json.data) {
-          $target.empty();
-          json.data.forEach(function (cls) {
-            $target.append(new Option(cls.classname, cls.id));
-          });
-          if ($target.hasClass("select2-hidden-accessible")) {
-            $target.select2("destroy");
-          }
-          $target.select2();
-          // Pre-select the current class if it exists in the new list
-          if (currentClass) {
-            $target.val([currentClass]).trigger("change");
-          }
-        }
-      } catch (e) {
-        console.error("Error parsing classes:", e);
-      }
-    },
-    error: function (err) {
-      console.error("Error fetching classes:", err);
-    },
-  });
+    const $target = $(targetId);
+    const currentClass = $("#select_class_field").val();
+    $.ajax({
+        url: "../controller.php",
+        type: "POST",
+        data: {
+            action: "get_classes_for_lesson_note",
+        },
+        success: function (response) {
+            if (!response) return;
+            try {
+                console.log(response);
+                const json = JSON.parse(response);
+                if (json.status == "1" && json.data) {
+                    $target.empty();
+                    json.data.forEach(function (cls) {
+                        $target.append(new Option(cls.classname, cls.id));
+                    });
+                    if ($target.hasClass("select2-hidden-accessible")) {
+                        $target.select2("destroy");
+                    }
+                    $target.select2();
+                    // Pre-select the current class if it exists in the new list
+                    if (currentClass) {
+                        $target.val([currentClass]).trigger("change");
+                    }
+                }
+            } catch (e) {
+                console.error("Error parsing classes:", e);
+            }
+        },
+        error: function (err) {
+            console.error("Error fetching classes:", err);
+        },
+    });
 }
 
 
@@ -11512,10 +11501,10 @@ function populate_multi_class_select(targetId = "#lesson_note_multi_class") {
 //     // calls will reuse the same editor instance and only update the view content.
 //     if ($("#note_container_body").children().length === 0) {
 //         $("#note_container_body").html(`
-        
+
 //                     <div class="mt-4">
 //                         <div class="py-3 px-15 bg-white" style="border-radius: 10px;">
-                            
+
 //                             <div class="form-group mb-0 w-100" id="lesson_note_body_editor" style="display:none;">
 //                                 <label class="">Content</label>
 //                                 <textarea id="lesson_body" name=""></textarea>
@@ -11533,7 +11522,7 @@ function populate_multi_class_select(targetId = "#lesson_note_multi_class") {
 //                             </div>
 //                         </div>
 //                     </div>
-        
+
 //     `);
 
 //     ClassicEditor.create(document.querySelector("#lesson_body"), {
@@ -12177,17 +12166,17 @@ function populate_multi_class_select(targetId = "#lesson_note_multi_class") {
 //     });
 // }
 function get_lesson_note_body() {
-  if (
-    !$("#select_class_field").val() ||
-    !$("#select_subject_field").val() ||
-    !$(".week_btn.active").attr("data-id")
-  ) {
-    return false;
-  }
-  // Only inject the editor/view markup and initialize CKEditor once. Subsequent
-  // calls will reuse the same editor instance and only update the view content.
-  if ($("#note_container_body").children().length === 0) {
-    $("#note_container_body").html(`
+    if (
+        !$("#select_class_field").val() ||
+        !$("#select_subject_field").val() ||
+        !$(".week_btn.active").attr("data-id")
+    ) {
+        return false;
+    }
+    // Only inject the editor/view markup and initialize CKEditor once. Subsequent
+    // calls will reuse the same editor instance and only update the view content.
+    if ($("#note_container_body").children().length === 0) {
+        $("#note_container_body").html(`
         
                     <div class="mt-4">
                         <div class="py-3 px-15 bg-white" style="border-radius: 10px;">
@@ -12216,107 +12205,107 @@ function get_lesson_note_body() {
         
     `);
 
-    ClassicEditor.create(document.querySelector("#lesson_body"), {
-      toolbar: {
-        shouldNotGroupWhenFull: true,
-        items: [
-          "heading",
-          "bold",
-          "italic",
-          "underline",
-          "strikethrough",
-          "|",
-          "bulletedList",
-          "numberedList",
-          "alignment",
-          "|",
-          "blockQuote",
-          "link",
-          "undo",
-          "redo",
-          "|",
-          "fontSize",
-          "fontColor",
-          "fontBackgroundColor",
-          "insertTable",
-          "imageUpload",
-        ],
-      },
-      // Enable image upload via SimpleUpload adapter. Remove heavy/unused plugins but keep image upload support.
-      removePlugins: ["MediaEmbed", "EasyImage", "CKFinder"],
-      simpleUpload: {
-        // Upload URL: controller will handle uploads when action=upload_lesson_image
-        uploadUrl: "../controller.php?action=upload_lesson_image",
-        // Optional headers (e.g., CSRF) can be added here if needed:
-        // headers: { 'X-CSRF-TOKEN': 'CSRF-Token' }
-      },
-      heading: {
-        options: [
-          {
-            model: "paragraph",
-            title: "Paragraph",
-            class: "ck-heading_paragraph",
-          },
-          {
-            model: "heading1",
-            view: "h1",
-            title: "Heading 1",
-            class: "ck-heading_heading1",
-          },
-          {
-            model: "heading2",
-            view: "h2",
-            title: "Heading 2",
-            class: "ck-heading_heading2",
-          },
-          {
-            model: "heading3",
-            view: "h3",
-            title: "Heading 3",
-            class: "ck-heading_heading3",
-          },
-        ],
-      },
-    })
-      .then((editor) => {
-        editorInstance = editor;
-        editorInstance.setData(""); // Set initial data
+        ClassicEditor.create(document.querySelector("#lesson_body"), {
+            toolbar: {
+                shouldNotGroupWhenFull: true,
+                items: [
+                    "heading",
+                    "bold",
+                    "italic",
+                    "underline",
+                    "strikethrough",
+                    "|",
+                    "bulletedList",
+                    "numberedList",
+                    "alignment",
+                    "|",
+                    "blockQuote",
+                    "link",
+                    "undo",
+                    "redo",
+                    "|",
+                    "fontSize",
+                    "fontColor",
+                    "fontBackgroundColor",
+                    "insertTable",
+                    "imageUpload",
+                ],
+            },
+            // Enable image upload via SimpleUpload adapter. Remove heavy/unused plugins but keep image upload support.
+            removePlugins: ["MediaEmbed", "EasyImage", "CKFinder"],
+            simpleUpload: {
+                // Upload URL: controller will handle uploads when action=upload_lesson_image
+                uploadUrl: "../controller.php?action=upload_lesson_image",
+                // Optional headers (e.g., CSRF) can be added here if needed:
+                // headers: { 'X-CSRF-TOKEN': 'CSRF-Token' }
+            },
+            heading: {
+                options: [
+                    {
+                        model: "paragraph",
+                        title: "Paragraph",
+                        class: "ck-heading_paragraph",
+                    },
+                    {
+                        model: "heading1",
+                        view: "h1",
+                        title: "Heading 1",
+                        class: "ck-heading_heading1",
+                    },
+                    {
+                        model: "heading2",
+                        view: "h2",
+                        title: "Heading 2",
+                        class: "ck-heading_heading2",
+                    },
+                    {
+                        model: "heading3",
+                        view: "h3",
+                        title: "Heading 3",
+                        class: "ck-heading_heading3",
+                    },
+                ],
+            },
+        })
+            .then((editor) => {
+                editorInstance = editor;
+                editorInstance.setData(""); // Set initial data
 
-        // Populate multi-class select
-        populate_multi_class_select();
+                // Populate multi-class select
+                populate_multi_class_select();
 
-        // Start editor in read-only mode (view mode). Editing is toggled via
-        // show_lesson_note_body_editor() which sets isReadOnly = false.
-        try {
-          editorInstance.isReadOnly = true;
-        } catch (e) {}
-        // If a pending body was stored (user clicked Edit before editor ready), restore it
-        try {
-          if (
-            window.__pendingLessonBody &&
-            typeof editorInstance.setData === "function"
-          ) {
-            editorInstance.setData(window.__pendingLessonBody);
-            window.__pendingLessonBody = null;
-          }
-        } catch (e) {
-          console.warn("Could not apply pending lesson body to editor:", e);
-        }
-        console.log("Editor initialized successfully!");
-        // Provide a fallback image upload control when the CKEditor upload adapter/plugin
-        // is not available (filerepository-no-upload-adapter). This allows users to upload
-        // an image via a simple file input and insert it into the editor content.
-        try {
-          const viewEl = document.querySelector("#lesson_note_body_view");
-          if (viewEl) {
-            let uploadGroup = document.getElementById(
-              "lesson_image_upload_group"
-            );
-            if (!uploadGroup) {
-              uploadGroup = document.createElement("div");
-              uploadGroup.id = "lesson_image_upload_group";
-              uploadGroup.style.marginTop = "8px";
-              uploadGroup.innerHTML = `
+                // Start editor in read-only mode (view mode). Editing is toggled via
+                // show_lesson_note_body_editor() which sets isReadOnly = false.
+                try {
+                    editorInstance.isReadOnly = true;
+                } catch (e) { }
+                // If a pending body was stored (user clicked Edit before editor ready), restore it
+                try {
+                    if (
+                        window.__pendingLessonBody &&
+                        typeof editorInstance.setData === "function"
+                    ) {
+                        editorInstance.setData(window.__pendingLessonBody);
+                        window.__pendingLessonBody = null;
+                    }
+                } catch (e) {
+                    console.warn("Could not apply pending lesson body to editor:", e);
+                }
+                console.log("Editor initialized successfully!");
+                // Provide a fallback image upload control when the CKEditor upload adapter/plugin
+                // is not available (filerepository-no-upload-adapter). This allows users to upload
+                // an image via a simple file input and insert it into the editor content.
+                try {
+                    const viewEl = document.querySelector("#lesson_note_body_view");
+                    if (viewEl) {
+                        let uploadGroup = document.getElementById(
+                            "lesson_image_upload_group"
+                        );
+                        if (!uploadGroup) {
+                            uploadGroup = document.createElement("div");
+                            uploadGroup.id = "lesson_image_upload_group";
+                            uploadGroup.style.marginTop = "8px";
+                            uploadGroup.innerHTML = `
                             <input type="file" id="lesson_image_input" accept="image/*" style="display:none;">
                             <button type="button" id="lesson_image_btn" class="btn btn-sm btn-secondary">Upload Image</button>
                             <span id="lesson_image_status" style="margin-left:10px"></span>
@@ -12330,475 +12319,475 @@ function get_lesson_note_body() {
                                 </div>
                             </div>
                         `;
-              // Insert upload controls after the view element
-              viewEl.parentNode.insertBefore(uploadGroup, viewEl.nextSibling);
+                            // Insert upload controls after the view element
+                            viewEl.parentNode.insertBefore(uploadGroup, viewEl.nextSibling);
 
-              const fileInput = document.getElementById("lesson_image_input");
-              const uploadBtn = document.getElementById("lesson_image_btn");
-              const statusEl = document.getElementById("lesson_image_status");
+                            const fileInput = document.getElementById("lesson_image_input");
+                            const uploadBtn = document.getElementById("lesson_image_btn");
+                            const statusEl = document.getElementById("lesson_image_status");
 
-              uploadBtn.addEventListener("click", function () {
-                fileInput.click();
-              });
-
-              // initialize global tracking state if not present
-              if (!window.lessonImageUploadState) {
-                // files: array of { name: string, url?: string, size: number }
-                window.lessonImageUploadState = {
-                  maxTotal: 2 * 1024 * 1024, // 2 MB
-                  inProgress: false,
-                  // store uploaded file metadata
-                  files: [],
-                };
-              }
-
-              // Helper: compute used bytes from known files
-              function computeUsedFromFiles() {
-                try {
-                  const files = window.lessonImageUploadState.files || [];
-                  return files.reduce((s, f) => s + (Number(f.size) || 0), 0);
-                } catch (e) {
-                  return 0;
-                }
-              }
-
-              // Replace earlier used tracking by computing on-demand
-              function updateProgressUI() {
-                const used = computeUsedFromFiles();
-                const state = window.lessonImageUploadState;
-                const max = state.maxTotal;
-                const pct = Math.min(100, Math.round((used / max) * 100));
-                progressBar.style.width = pct + "%";
-                progressText.textContent =
-                  bytesToHuman(used) + " of " + bytesToHuman(max) + " used";
-                if (used >= max) {
-                  uploadBtn.disabled = true;
-                  uploadBtn.classList.add("disabled");
-                } else {
-                  uploadBtn.disabled = false;
-                  uploadBtn.classList.remove("disabled");
-                }
-                progressWrap.style.display = used > 0 ? "block" : "none";
-              }
-
-              const progressWrap = document.getElementById(
-                "lesson_image_progress_wrap"
-              );
-              const progressBar = document.getElementById(
-                "lesson_image_progress"
-              );
-              const progressText = document.getElementById(
-                "lesson_image_progress_text"
-              );
-              const resetBtn = document.getElementById("lesson_image_reset");
-
-              // (updateProgressUI replaced above to compute used from files)
-
-              resetBtn.addEventListener("click", function () {
-                // clear tracked files (only client-side for this session)
-                window.lessonImageUploadState.files = [];
-                updateProgressUI();
-              });
-
-              function bytesToHuman(n) {
-                if (n < 1024) return n + " B";
-                if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
-                return (n / (1024 * 1024)).toFixed(2) + " MB";
-              }
-
-              fileInput.addEventListener("change", function (e) {
-                const file = this.files && this.files[0];
-                if (!file) return;
-
-                const state = window.lessonImageUploadState;
-                const usedNow = computeUsedFromFiles();
-                const remaining = state.maxTotal - usedNow;
-                if (file.size > remaining) {
-                  statusEl.textContent = "File too large for remaining quota";
-                  return;
-                }
-
-                statusEl.textContent = "Uploading...";
-                progressWrap.style.display = "block";
-
-                const xhr = new XMLHttpRequest();
-                const form = new FormData();
-                form.append("image", file);
-
-                xhr.open("POST", "../upload_image.php");
-
-                // progress for this upload (visual per-file)
-                xhr.upload.addEventListener("progress", function (ev) {
-                  if (ev.lengthComputable) {
-                    const percent = Math.round((ev.loaded / ev.total) * 100);
-                    progressBar.style.width = percent + "%";
-                    progressText.textContent =
-                      bytesToHuman(usedNow + ev.loaded) +
-                      " of " +
-                      bytesToHuman(state.maxTotal) +
-                      " used";
-                  }
-                });
-
-                xhr.addEventListener("load", function () {
-                  try {
-                    const resp = JSON.parse(xhr.responseText);
-                    if (
-                      xhr.status >= 200 &&
-                      xhr.status < 300 &&
-                      resp &&
-                      resp.url
-                    ) {
-                      // commit usage: store object with name/url/size
-                      const parts =
-                        (resp.name
-                          ? resp.name
-                          : resp.url.split("/").pop().split("?")[0]) || "";
-                      state.files.push({
-                        name: parts,
-                        url: resp.url,
-                        size: file.size,
-                      });
-                      updateProgressUI();
-
-                      const insertImageByUrl = (url) => {
-                        try {
-                          if (
-                            editorInstance &&
-                            editorInstance.model &&
-                            editorInstance.model.schema &&
-                            editorInstance.model.schema.checkChild
-                          ) {
-                            editorInstance.model.change((writer) => {
-                              const imageElement = writer.createElement(
-                                "imageBlock",
-                                { src: url }
-                              );
-                              editorInstance.model.insertContent(
-                                imageElement,
-                                editorInstance.model.document.selection
-                              );
+                            uploadBtn.addEventListener("click", function () {
+                                fileInput.click();
                             });
-                          } else if (
-                            editorInstance &&
-                            typeof editorInstance.execute === "function"
-                          ) {
-                            try {
-                              editorInstance.execute("imageInsert", {
-                                source: url,
-                              });
-                            } catch (e) {
-                              const current = editorInstance.getData();
-                              editorInstance.setData(
-                                current + `<p><img src="${url}"/></p>`
-                              );
+
+                            // initialize global tracking state if not present
+                            if (!window.lessonImageUploadState) {
+                                // files: array of { name: string, url?: string, size: number }
+                                window.lessonImageUploadState = {
+                                    maxTotal: 2 * 1024 * 1024, // 2 MB
+                                    inProgress: false,
+                                    // store uploaded file metadata
+                                    files: [],
+                                };
                             }
-                          } else {
-                            const current = editorInstance.getData
-                              ? editorInstance.getData()
-                              : "";
-                            if (typeof editorInstance.setData === "function") {
-                              editorInstance.setData(
-                                current + `<p><img src="${url}"/></p>`
-                              );
+
+                            // Helper: compute used bytes from known files
+                            function computeUsedFromFiles() {
+                                try {
+                                    const files = window.lessonImageUploadState.files || [];
+                                    return files.reduce((s, f) => s + (Number(f.size) || 0), 0);
+                                } catch (e) {
+                                    return 0;
+                                }
                             }
-                          }
-                          statusEl.textContent = "Uploaded";
-                        } catch (err) {
-                          try {
-                            const current = editorInstance.getData();
-                            editorInstance.setData(
-                              current + `<p><img src="${url}"/></p>`
+
+                            // Replace earlier used tracking by computing on-demand
+                            function updateProgressUI() {
+                                const used = computeUsedFromFiles();
+                                const state = window.lessonImageUploadState;
+                                const max = state.maxTotal;
+                                const pct = Math.min(100, Math.round((used / max) * 100));
+                                progressBar.style.width = pct + "%";
+                                progressText.textContent =
+                                    bytesToHuman(used) + " of " + bytesToHuman(max) + " used";
+                                if (used >= max) {
+                                    uploadBtn.disabled = true;
+                                    uploadBtn.classList.add("disabled");
+                                } else {
+                                    uploadBtn.disabled = false;
+                                    uploadBtn.classList.remove("disabled");
+                                }
+                                progressWrap.style.display = used > 0 ? "block" : "none";
+                            }
+
+                            const progressWrap = document.getElementById(
+                                "lesson_image_progress_wrap"
                             );
-                            statusEl.textContent = "Uploaded (fallback)";
-                          } catch (err2) {
-                            console.error("Insert image error", err2);
-                            statusEl.textContent = "Uploaded but insert failed";
-                          }
-                        }
-                      };
+                            const progressBar = document.getElementById(
+                                "lesson_image_progress"
+                            );
+                            const progressText = document.getElementById(
+                                "lesson_image_progress_text"
+                            );
+                            const resetBtn = document.getElementById("lesson_image_reset");
 
-                      insertImageByUrl(resp.url);
-                    } else {
-                      statusEl.textContent =
-                        resp && resp.error
-                          ? resp.error.message || resp.error
-                          : "Upload failed";
-                    }
-                  } catch (err) {
-                    console.error("Upload parse error", err, xhr.responseText);
-                    statusEl.textContent = "Upload error";
-                  }
-                });
+                            // (updateProgressUI replaced above to compute used from files)
 
-                xhr.addEventListener("error", function (ev) {
-                  console.error("XHR upload error", ev);
-                  statusEl.textContent = "Upload error";
-                });
+                            resetBtn.addEventListener("click", function () {
+                                // clear tracked files (only client-side for this session)
+                                window.lessonImageUploadState.files = [];
+                                updateProgressUI();
+                            });
 
-                xhr.send(form);
-              });
-
-              // Scan existing images in the view and try to include their sizes
-              (function includeExistingImagesSizes() {
-                try {
-                  const imgs = viewEl.querySelectorAll("img");
-                  if (!imgs || imgs.length === 0) return;
-                  const state = window.lessonImageUploadState;
-                  // For each image, if URL looks same-origin or points to uploads folder, try a HEAD request
-                  Array.from(imgs).forEach((img) => {
-                    try {
-                      const src = img.getAttribute("src") || img.src || "";
-                      if (!src) return;
-                      // avoid data: URIs
-                      if (src.indexOf("data:") === 0) return;
-                      // Only attempt for http(s) URLs or relative paths
-                      const isHttp =
-                        src.indexOf("http") === 0 ||
-                        src.indexOf("//") === 0 ||
-                        src.indexOf("/") === 0;
-                      if (!isHttp) return;
-
-                      // Try to build an absolute URL
-                      let url = src;
-                      try {
-                        url = new URL(src, window.location.href).href;
-                      } catch (e) {}
-
-                      // Skip obvious external hosts (basic check)
-                      try {
-                        const urlObj = new URL(url);
-                        if (urlObj.hostname !== window.location.hostname)
-                          return;
-                      } catch (e) {}
-
-                      // If we already tracked this file by name/url, skip
-                      const base = url.split("/").pop().split("?")[0];
-                      if (
-                        (state.files || []).some(
-                          (f) => f.name === base || f.url === url
-                        )
-                      )
-                        return;
-
-                      // HEAD request to fetch Content-Length
-                      const xhr = new XMLHttpRequest();
-                      xhr.open("HEAD", url);
-                      xhr.onreadystatechange = function () {
-                        if (xhr.readyState === 4) {
-                          try {
-                            if (xhr.status >= 200 && xhr.status < 400) {
-                              const len =
-                                xhr.getResponseHeader("Content-Length");
-                              const size = len ? parseInt(len, 10) : 0;
-                              state.files.push({
-                                name: base,
-                                url: url,
-                                size: size,
-                              });
-                              updateProgressUI();
+                            function bytesToHuman(n) {
+                                if (n < 1024) return n + " B";
+                                if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
+                                return (n / (1024 * 1024)).toFixed(2) + " MB";
                             }
-                          } catch (e) {
-                            /* ignore */
-                          }
-                        }
-                      };
-                      // Add a small timeout so this doesn't block other init
-                      setTimeout(() => {
-                        try {
-                          xhr.send();
-                        } catch (e) {}
-                      }, 10);
-                    } catch (e) {
-                      /* ignore per-image errors */
-                    }
-                  });
-                } catch (e) {
-                  console.warn("includeExistingImagesSizes error", e);
-                }
-              })();
 
-              // Ensure the UI shows the current usage immediately (may be 0)
-              try {
-                updateProgressUI();
-              } catch (e) {
-                /* ignore */
-              }
+                            fileInput.addEventListener("change", function (e) {
+                                const file = this.files && this.files[0];
+                                if (!file) return;
 
-              // Reconcile tracked files with the current images in the lesson view.
-              // This will remove entries for images that were deleted and add sizes for
-              // newly-added, same-origin images.
-              function reconcileTrackedFilesWithView() {
-                try {
-                  const state = window.lessonImageUploadState;
-                  if (!state) return;
-                  // collect images from both the readonly view and the editor editable DOM (if present)
-                  let imgs = [];
-                  try {
-                    imgs = imgs.concat(
-                      Array.from(viewEl.querySelectorAll("img"))
-                    );
-                  } catch (e) {}
-                  try {
-                    const editableEl =
-                      editorInstance &&
-                      editorInstance.ui &&
-                      editorInstance.ui.view &&
-                      editorInstance.ui.view.editable &&
-                      editorInstance.ui.view.editable.element;
-                    if (editableEl)
-                      imgs = imgs.concat(
-                        Array.from(editableEl.querySelectorAll("img"))
-                      );
-                  } catch (e) {}
-                  // dedupe
-                  imgs = imgs.filter((v, i, a) => a.indexOf(v) === i);
+                                const state = window.lessonImageUploadState;
+                                const usedNow = computeUsedFromFiles();
+                                const remaining = state.maxTotal - usedNow;
+                                if (file.size > remaining) {
+                                    statusEl.textContent = "File too large for remaining quota";
+                                    return;
+                                }
 
-                  const currentBases = new Set();
-                  imgs.forEach((img) => {
-                    try {
-                      const src = img.getAttribute("src") || img.src || "";
-                      if (!src) return;
-                      const base = (
-                        new URL(src, window.location.href).pathname
-                          .split("/")
-                          .pop() || ""
-                      ).split("?")[0];
-                      if (base) currentBases.add(base);
-                    } catch (e) {
-                      const src = img.getAttribute("src") || "";
-                      const base = src.split("/").pop().split("?")[0];
-                      if (base) currentBases.add(base);
-                    }
-                  });
+                                statusEl.textContent = "Uploading...";
+                                progressWrap.style.display = "block";
 
-                  // remove tracked files not present anymore
-                  state.files = (state.files || []).filter((f) => {
-                    const fname =
-                      f.name ||
-                      (f.url || "").split("/").pop().split("?")[0] ||
-                      "";
-                    return currentBases.has(fname);
-                  });
+                                const xhr = new XMLHttpRequest();
+                                const form = new FormData();
+                                form.append("image", file);
 
-                  // add any current images not tracked yet (attempt HEAD for same-origin)
-                  imgs.forEach((img) => {
-                    try {
-                      const src = img.getAttribute("src") || img.src || "";
-                      if (!src) return;
-                      if (src.indexOf("data:") === 0) return;
-                      let url = src;
-                      try {
-                        url = new URL(src, window.location.href).href;
-                      } catch (e) {}
-                      // basic same-host check
-                      try {
-                        const urlObj = new URL(url);
-                        if (urlObj.hostname !== window.location.hostname)
-                          return;
-                      } catch (e) {}
-                      const base = url.split("/").pop().split("?")[0];
-                      if (!base) return;
-                      if (
-                        (state.files || []).some(
-                          (f) => f.name === base || f.url === url
-                        )
-                      )
-                        return;
+                                xhr.open("POST", "../upload_image.php");
 
-                      // HEAD request to try to get Content-Length
-                      const xhr = new XMLHttpRequest();
-                      xhr.open("HEAD", url);
-                      xhr.onreadystatechange = function () {
-                        if (xhr.readyState === 4) {
-                          try {
-                            if (xhr.status >= 200 && xhr.status < 400) {
-                              const len =
-                                xhr.getResponseHeader("Content-Length");
-                              const size = len ? parseInt(len, 10) : 0;
-                              state.files.push({
-                                name: base,
-                                url: url,
-                                size: size,
-                              });
-                              updateProgressUI();
+                                // progress for this upload (visual per-file)
+                                xhr.upload.addEventListener("progress", function (ev) {
+                                    if (ev.lengthComputable) {
+                                        const percent = Math.round((ev.loaded / ev.total) * 100);
+                                        progressBar.style.width = percent + "%";
+                                        progressText.textContent =
+                                            bytesToHuman(usedNow + ev.loaded) +
+                                            " of " +
+                                            bytesToHuman(state.maxTotal) +
+                                            " used";
+                                    }
+                                });
+
+                                xhr.addEventListener("load", function () {
+                                    try {
+                                        const resp = JSON.parse(xhr.responseText);
+                                        if (
+                                            xhr.status >= 200 &&
+                                            xhr.status < 300 &&
+                                            resp &&
+                                            resp.url
+                                        ) {
+                                            // commit usage: store object with name/url/size
+                                            const parts =
+                                                (resp.name
+                                                    ? resp.name
+                                                    : resp.url.split("/").pop().split("?")[0]) || "";
+                                            state.files.push({
+                                                name: parts,
+                                                url: resp.url,
+                                                size: file.size,
+                                            });
+                                            updateProgressUI();
+
+                                            const insertImageByUrl = (url) => {
+                                                try {
+                                                    if (
+                                                        editorInstance &&
+                                                        editorInstance.model &&
+                                                        editorInstance.model.schema &&
+                                                        editorInstance.model.schema.checkChild
+                                                    ) {
+                                                        editorInstance.model.change((writer) => {
+                                                            const imageElement = writer.createElement(
+                                                                "imageBlock",
+                                                                { src: url }
+                                                            );
+                                                            editorInstance.model.insertContent(
+                                                                imageElement,
+                                                                editorInstance.model.document.selection
+                                                            );
+                                                        });
+                                                    } else if (
+                                                        editorInstance &&
+                                                        typeof editorInstance.execute === "function"
+                                                    ) {
+                                                        try {
+                                                            editorInstance.execute("imageInsert", {
+                                                                source: url,
+                                                            });
+                                                        } catch (e) {
+                                                            const current = editorInstance.getData();
+                                                            editorInstance.setData(
+                                                                current + `<p><img src="${url}"/></p>`
+                                                            );
+                                                        }
+                                                    } else {
+                                                        const current = editorInstance.getData
+                                                            ? editorInstance.getData()
+                                                            : "";
+                                                        if (typeof editorInstance.setData === "function") {
+                                                            editorInstance.setData(
+                                                                current + `<p><img src="${url}"/></p>`
+                                                            );
+                                                        }
+                                                    }
+                                                    statusEl.textContent = "Uploaded";
+                                                } catch (err) {
+                                                    try {
+                                                        const current = editorInstance.getData();
+                                                        editorInstance.setData(
+                                                            current + `<p><img src="${url}"/></p>`
+                                                        );
+                                                        statusEl.textContent = "Uploaded (fallback)";
+                                                    } catch (err2) {
+                                                        console.error("Insert image error", err2);
+                                                        statusEl.textContent = "Uploaded but insert failed";
+                                                    }
+                                                }
+                                            };
+
+                                            insertImageByUrl(resp.url);
+                                        } else {
+                                            statusEl.textContent =
+                                                resp && resp.error
+                                                    ? resp.error.message || resp.error
+                                                    : "Upload failed";
+                                        }
+                                    } catch (err) {
+                                        console.error("Upload parse error", err, xhr.responseText);
+                                        statusEl.textContent = "Upload error";
+                                    }
+                                });
+
+                                xhr.addEventListener("error", function (ev) {
+                                    console.error("XHR upload error", ev);
+                                    statusEl.textContent = "Upload error";
+                                });
+
+                                xhr.send(form);
+                            });
+
+                            // Scan existing images in the view and try to include their sizes
+                            (function includeExistingImagesSizes() {
+                                try {
+                                    const imgs = viewEl.querySelectorAll("img");
+                                    if (!imgs || imgs.length === 0) return;
+                                    const state = window.lessonImageUploadState;
+                                    // For each image, if URL looks same-origin or points to uploads folder, try a HEAD request
+                                    Array.from(imgs).forEach((img) => {
+                                        try {
+                                            const src = img.getAttribute("src") || img.src || "";
+                                            if (!src) return;
+                                            // avoid data: URIs
+                                            if (src.indexOf("data:") === 0) return;
+                                            // Only attempt for http(s) URLs or relative paths
+                                            const isHttp =
+                                                src.indexOf("http") === 0 ||
+                                                src.indexOf("//") === 0 ||
+                                                src.indexOf("/") === 0;
+                                            if (!isHttp) return;
+
+                                            // Try to build an absolute URL
+                                            let url = src;
+                                            try {
+                                                url = new URL(src, window.location.href).href;
+                                            } catch (e) { }
+
+                                            // Skip obvious external hosts (basic check)
+                                            try {
+                                                const urlObj = new URL(url);
+                                                if (urlObj.hostname !== window.location.hostname)
+                                                    return;
+                                            } catch (e) { }
+
+                                            // If we already tracked this file by name/url, skip
+                                            const base = url.split("/").pop().split("?")[0];
+                                            if (
+                                                (state.files || []).some(
+                                                    (f) => f.name === base || f.url === url
+                                                )
+                                            )
+                                                return;
+
+                                            // HEAD request to fetch Content-Length
+                                            const xhr = new XMLHttpRequest();
+                                            xhr.open("HEAD", url);
+                                            xhr.onreadystatechange = function () {
+                                                if (xhr.readyState === 4) {
+                                                    try {
+                                                        if (xhr.status >= 200 && xhr.status < 400) {
+                                                            const len =
+                                                                xhr.getResponseHeader("Content-Length");
+                                                            const size = len ? parseInt(len, 10) : 0;
+                                                            state.files.push({
+                                                                name: base,
+                                                                url: url,
+                                                                size: size,
+                                                            });
+                                                            updateProgressUI();
+                                                        }
+                                                    } catch (e) {
+                                                        /* ignore */
+                                                    }
+                                                }
+                                            };
+                                            // Add a small timeout so this doesn't block other init
+                                            setTimeout(() => {
+                                                try {
+                                                    xhr.send();
+                                                } catch (e) { }
+                                            }, 10);
+                                        } catch (e) {
+                                            /* ignore per-image errors */
+                                        }
+                                    });
+                                } catch (e) {
+                                    console.warn("includeExistingImagesSizes error", e);
+                                }
+                            })();
+
+                            // Ensure the UI shows the current usage immediately (may be 0)
+                            try {
+                                updateProgressUI();
+                            } catch (e) {
+                                /* ignore */
                             }
-                          } catch (e) {
-                            /* ignore */
-                          }
+
+                            // Reconcile tracked files with the current images in the lesson view.
+                            // This will remove entries for images that were deleted and add sizes for
+                            // newly-added, same-origin images.
+                            function reconcileTrackedFilesWithView() {
+                                try {
+                                    const state = window.lessonImageUploadState;
+                                    if (!state) return;
+                                    // collect images from both the readonly view and the editor editable DOM (if present)
+                                    let imgs = [];
+                                    try {
+                                        imgs = imgs.concat(
+                                            Array.from(viewEl.querySelectorAll("img"))
+                                        );
+                                    } catch (e) { }
+                                    try {
+                                        const editableEl =
+                                            editorInstance &&
+                                            editorInstance.ui &&
+                                            editorInstance.ui.view &&
+                                            editorInstance.ui.view.editable &&
+                                            editorInstance.ui.view.editable.element;
+                                        if (editableEl)
+                                            imgs = imgs.concat(
+                                                Array.from(editableEl.querySelectorAll("img"))
+                                            );
+                                    } catch (e) { }
+                                    // dedupe
+                                    imgs = imgs.filter((v, i, a) => a.indexOf(v) === i);
+
+                                    const currentBases = new Set();
+                                    imgs.forEach((img) => {
+                                        try {
+                                            const src = img.getAttribute("src") || img.src || "";
+                                            if (!src) return;
+                                            const base = (
+                                                new URL(src, window.location.href).pathname
+                                                    .split("/")
+                                                    .pop() || ""
+                                            ).split("?")[0];
+                                            if (base) currentBases.add(base);
+                                        } catch (e) {
+                                            const src = img.getAttribute("src") || "";
+                                            const base = src.split("/").pop().split("?")[0];
+                                            if (base) currentBases.add(base);
+                                        }
+                                    });
+
+                                    // remove tracked files not present anymore
+                                    state.files = (state.files || []).filter((f) => {
+                                        const fname =
+                                            f.name ||
+                                            (f.url || "").split("/").pop().split("?")[0] ||
+                                            "";
+                                        return currentBases.has(fname);
+                                    });
+
+                                    // add any current images not tracked yet (attempt HEAD for same-origin)
+                                    imgs.forEach((img) => {
+                                        try {
+                                            const src = img.getAttribute("src") || img.src || "";
+                                            if (!src) return;
+                                            if (src.indexOf("data:") === 0) return;
+                                            let url = src;
+                                            try {
+                                                url = new URL(src, window.location.href).href;
+                                            } catch (e) { }
+                                            // basic same-host check
+                                            try {
+                                                const urlObj = new URL(url);
+                                                if (urlObj.hostname !== window.location.hostname)
+                                                    return;
+                                            } catch (e) { }
+                                            const base = url.split("/").pop().split("?")[0];
+                                            if (!base) return;
+                                            if (
+                                                (state.files || []).some(
+                                                    (f) => f.name === base || f.url === url
+                                                )
+                                            )
+                                                return;
+
+                                            // HEAD request to try to get Content-Length
+                                            const xhr = new XMLHttpRequest();
+                                            xhr.open("HEAD", url);
+                                            xhr.onreadystatechange = function () {
+                                                if (xhr.readyState === 4) {
+                                                    try {
+                                                        if (xhr.status >= 200 && xhr.status < 400) {
+                                                            const len =
+                                                                xhr.getResponseHeader("Content-Length");
+                                                            const size = len ? parseInt(len, 10) : 0;
+                                                            state.files.push({
+                                                                name: base,
+                                                                url: url,
+                                                                size: size,
+                                                            });
+                                                            updateProgressUI();
+                                                        }
+                                                    } catch (e) {
+                                                        /* ignore */
+                                                    }
+                                                }
+                                            };
+                                            setTimeout(() => {
+                                                try {
+                                                    xhr.send();
+                                                } catch (e) { }
+                                            }, 10);
+                                        } catch (e) {
+                                            /* per-image ignore */
+                                        }
+                                    });
+
+                                    updateProgressUI();
+                                } catch (e) {
+                                    console.warn("reconcileTrackedFilesWithView error", e);
+                                }
+                            }
+
+                            // Observe the lesson view and the editor editable DOM for image add/remove changes so we can update the quota
+                            try {
+                                const observer = new MutationObserver(function (mutations) {
+                                    // simple throttle: run reconcile once per mutation batch
+                                    reconcileTrackedFilesWithView();
+                                });
+                                observer.observe(viewEl, {
+                                    childList: true,
+                                    subtree: true,
+                                    attributes: true,
+                                    attributeFilter: ["src"],
+                                });
+                                try {
+                                    const editableEl =
+                                        editorInstance &&
+                                        editorInstance.ui &&
+                                        editorInstance.ui.view &&
+                                        editorInstance.ui.view.editable &&
+                                        editorInstance.ui.view.editable.element;
+                                    if (editableEl) {
+                                        observer.observe(editableEl, {
+                                            childList: true,
+                                            subtree: true,
+                                            attributes: true,
+                                            attributeFilter: ["src"],
+                                        });
+                                    }
+                                } catch (e) {
+                                    /* ignore */
+                                }
+                            } catch (e) {
+                                console.warn("MutationObserver not available", e);
+                            }
                         }
-                      };
-                      setTimeout(() => {
-                        try {
-                          xhr.send();
-                        } catch (e) {}
-                      }, 10);
-                    } catch (e) {
-                      /* per-image ignore */
                     }
-                  });
-
-                  updateProgressUI();
                 } catch (e) {
-                  console.warn("reconcileTrackedFilesWithView error", e);
+                    console.error("Fallback upload init error", e);
                 }
-              }
 
-              // Observe the lesson view and the editor editable DOM for image add/remove changes so we can update the quota
-              try {
-                const observer = new MutationObserver(function (mutations) {
-                  // simple throttle: run reconcile once per mutation batch
-                  reconcileTrackedFilesWithView();
-                });
-                observer.observe(viewEl, {
-                  childList: true,
-                  subtree: true,
-                  attributes: true,
-                  attributeFilter: ["src"],
-                });
+                // --- Image resize toolbar ---
                 try {
-                  const editableEl =
-                    editorInstance &&
-                    editorInstance.ui &&
-                    editorInstance.ui.view &&
-                    editorInstance.ui.view.editable &&
-                    editorInstance.ui.view.editable.element;
-                  if (editableEl) {
-                    observer.observe(editableEl, {
-                      childList: true,
-                      subtree: true,
-                      attributes: true,
-                      attributeFilter: ["src"],
-                    });
-                  }
-                } catch (e) {
-                  /* ignore */
-                }
-              } catch (e) {
-                console.warn("MutationObserver not available", e);
-              }
-            }
-          }
-        } catch (e) {
-          console.error("Fallback upload init error", e);
-        }
-
-        // --- Image resize toolbar ---
-        try {
-          // Create floating toolbar element
-          let imgToolbar = document.getElementById("ck_img_resize_toolbar");
-          if (!imgToolbar) {
-            imgToolbar = document.createElement("div");
-            imgToolbar.id = "ck_img_resize_toolbar";
-            imgToolbar.style.position = "absolute";
-            imgToolbar.style.display = "none";
-            imgToolbar.style.zIndex = 9999;
-            imgToolbar.style.background = "#fff";
-            imgToolbar.style.border = "1px solid #ddd";
-            imgToolbar.style.padding = "6px";
-            imgToolbar.style.borderRadius = "4px";
-            imgToolbar.style.boxShadow = "0 2px 6px rgba(0,0,0,0.15)";
-            imgToolbar.innerHTML = `
+                    // Create floating toolbar element
+                    let imgToolbar = document.getElementById("ck_img_resize_toolbar");
+                    if (!imgToolbar) {
+                        imgToolbar = document.createElement("div");
+                        imgToolbar.id = "ck_img_resize_toolbar";
+                        imgToolbar.style.position = "absolute";
+                        imgToolbar.style.display = "none";
+                        imgToolbar.style.zIndex = 9999;
+                        imgToolbar.style.background = "#fff";
+                        imgToolbar.style.border = "1px solid #ddd";
+                        imgToolbar.style.padding = "6px";
+                        imgToolbar.style.borderRadius = "4px";
+                        imgToolbar.style.boxShadow = "0 2px 6px rgba(0,0,0,0.15)";
+                        imgToolbar.innerHTML = `
                         <button class="btn btn-sm btn-light ck-img-size-btn" data-size="25">25%</button>
                         <button class="btn btn-sm btn-light ck-img-size-btn" data-size="50">50%</button>
                         <button class="btn btn-sm btn-light ck-img-size-btn" data-size="75">75%</button>
@@ -12807,301 +12796,301 @@ function get_lesson_note_body() {
                         <button class="btn btn-sm btn-primary" id="ck_img_apply_px" style="margin-left:6px;">Apply</button>
                         <button class="btn btn-sm btn-outline-secondary" id="ck_img_remove_style" style="margin-left:6px;">Reset</button>
                     `;
-            document.body.appendChild(imgToolbar);
-          }
+                        document.body.appendChild(imgToolbar);
+                    }
 
-          let currentImage = null;
+                    let currentImage = null;
 
-          // Helper to position toolbar near an element
-          function positionToolbarForElement(el) {
-            const rect = el.getBoundingClientRect();
-            const toolbarRect = imgToolbar.getBoundingClientRect();
-            // place above the image if possible
-            let top = window.scrollY + rect.top - toolbarRect.height - 8;
-            if (top < window.scrollY + 5)
-              top = window.scrollY + rect.bottom + 8; // below if not enough space
-            let left = window.scrollX + rect.left;
-            imgToolbar.style.top = top + "px";
-            imgToolbar.style.left = left + "px";
-            imgToolbar.style.display = "block";
-          }
+                    // Helper to position toolbar near an element
+                    function positionToolbarForElement(el) {
+                        const rect = el.getBoundingClientRect();
+                        const toolbarRect = imgToolbar.getBoundingClientRect();
+                        // place above the image if possible
+                        let top = window.scrollY + rect.top - toolbarRect.height - 8;
+                        if (top < window.scrollY + 5)
+                            top = window.scrollY + rect.bottom + 8; // below if not enough space
+                        let left = window.scrollX + rect.left;
+                        imgToolbar.style.top = top + "px";
+                        imgToolbar.style.left = left + "px";
+                        imgToolbar.style.display = "block";
+                    }
 
-          // Helper to apply a visual width that overrides common layout constraints
-          function applyVisualWidth(el, widthVal) {
-            try {
-              if (!el || !widthVal) return;
-              // ensure width is explicit and important so parent CSS (min-width, flex) doesn't override
-              el.style.setProperty("width", widthVal, "important");
-              el.style.setProperty("height", "auto", "important");
-              // reset constraints that can block percentage sizing
-              el.style.setProperty("min-width", "0", "important");
-              el.style.setProperty("max-width", "none", "important");
-              el.style.setProperty("flex", "0 0 auto", "important");
-              el.style.setProperty("flex-grow", "0", "important");
-              // make image block level so percentage widths behave predictably
-              el.style.setProperty("display", "block", "important");
-              // ensure object-fit doesn't crop unexpectedly
-              el.style.setProperty("object-fit", "contain", "important");
-            } catch (e) {
-              try {
-                el.style.width = widthVal;
-              } catch (err) {}
-            }
-          }
+                    // Helper to apply a visual width that overrides common layout constraints
+                    function applyVisualWidth(el, widthVal) {
+                        try {
+                            if (!el || !widthVal) return;
+                            // ensure width is explicit and important so parent CSS (min-width, flex) doesn't override
+                            el.style.setProperty("width", widthVal, "important");
+                            el.style.setProperty("height", "auto", "important");
+                            // reset constraints that can block percentage sizing
+                            el.style.setProperty("min-width", "0", "important");
+                            el.style.setProperty("max-width", "none", "important");
+                            el.style.setProperty("flex", "0 0 auto", "important");
+                            el.style.setProperty("flex-grow", "0", "important");
+                            // make image block level so percentage widths behave predictably
+                            el.style.setProperty("display", "block", "important");
+                            // ensure object-fit doesn't crop unexpectedly
+                            el.style.setProperty("object-fit", "contain", "important");
+                        } catch (e) {
+                            try {
+                                el.style.width = widthVal;
+                            } catch (err) { }
+                        }
+                    }
 
-          function clearVisualWidth(el) {
-            try {
-              if (!el) return;
-              el.style.removeProperty("width");
-              el.style.removeProperty("height");
-              el.style.removeProperty("min-width");
-              el.style.removeProperty("max-width");
-              el.style.removeProperty("flex");
-              el.style.removeProperty("flex-grow");
-              el.style.removeProperty("display");
-              el.style.removeProperty("object-fit");
-            } catch (e) {
-              /* ignore */
-            }
-          }
+                    function clearVisualWidth(el) {
+                        try {
+                            if (!el) return;
+                            el.style.removeProperty("width");
+                            el.style.removeProperty("height");
+                            el.style.removeProperty("min-width");
+                            el.style.removeProperty("max-width");
+                            el.style.removeProperty("flex");
+                            el.style.removeProperty("flex-grow");
+                            el.style.removeProperty("display");
+                            el.style.removeProperty("object-fit");
+                        } catch (e) {
+                            /* ignore */
+                        }
+                    }
 
-          // Click handler inside the editor to detect images
-          const editable = editor.ui
-            ? editor.ui.view.editable.element
-            : document.querySelector(".ck-editor__editable");
-          if (editable) {
-            // Listen for clicks and use closest to find images even if nested (e.g., inside figure)
-            editable.addEventListener("click", function (ev) {
-              const targetImg =
-                ev.target && ev.target.closest
-                  ? ev.target.closest("img")
-                  : null;
-              if (targetImg) {
-                currentImage = targetImg;
-                positionToolbarForElement(targetImg);
-                // Pre-fill custom px with current width (if set as px)
-                const width =
-                  targetImg.style.width ||
-                  targetImg.getAttribute("width") ||
-                  "";
-                const px =
-                  width && width.indexOf("%") === -1
-                    ? parseInt(width, 10) || ""
-                    : "";
-                const cust = document.getElementById("ck_img_custom_px");
-                if (cust) cust.value = px;
-              } else {
-                currentImage = null;
-                imgToolbar.style.display = "none";
-              }
-            });
+                    // Click handler inside the editor to detect images
+                    const editable = editor.ui
+                        ? editor.ui.view.editable.element
+                        : document.querySelector(".ck-editor__editable");
+                    if (editable) {
+                        // Listen for clicks and use closest to find images even if nested (e.g., inside figure)
+                        editable.addEventListener("click", function (ev) {
+                            const targetImg =
+                                ev.target && ev.target.closest
+                                    ? ev.target.closest("img")
+                                    : null;
+                            if (targetImg) {
+                                currentImage = targetImg;
+                                positionToolbarForElement(targetImg);
+                                // Pre-fill custom px with current width (if set as px)
+                                const width =
+                                    targetImg.style.width ||
+                                    targetImg.getAttribute("width") ||
+                                    "";
+                                const px =
+                                    width && width.indexOf("%") === -1
+                                        ? parseInt(width, 10) || ""
+                                        : "";
+                                const cust = document.getElementById("ck_img_custom_px");
+                                if (cust) cust.value = px;
+                            } else {
+                                currentImage = null;
+                                imgToolbar.style.display = "none";
+                            }
+                        });
 
-            // Hide toolbar when clicking elsewhere
-            document.addEventListener("click", function (ev) {
-              if (
-                !imgToolbar.contains(ev.target) &&
-                !editable.contains(ev.target)
-              ) {
-                imgToolbar.style.display = "none";
-                currentImage = null;
-              }
-            });
+                        // Hide toolbar when clicking elsewhere
+                        document.addEventListener("click", function (ev) {
+                            if (
+                                !imgToolbar.contains(ev.target) &&
+                                !editable.contains(ev.target)
+                            ) {
+                                imgToolbar.style.display = "none";
+                                currentImage = null;
+                            }
+                        });
 
-            // Toolbar button handlers
-            imgToolbar.addEventListener("click", function (ev) {
-              const btn = ev.target.closest(".ck-img-size-btn");
-              if (btn && currentImage) {
-                const size = btn.getAttribute("data-size");
-                applyVisualWidth(currentImage, size + "%");
-                try {
-                  currentImage.removeAttribute("height");
-                } catch (e) {}
-              }
-              if (
-                ev.target &&
-                ev.target.id === "ck_img_apply_px" &&
-                currentImage
-              ) {
-                const val = parseInt(
-                  document.getElementById("ck_img_custom_px").value,
-                  10
-                );
-                if (!isNaN(val) && val > 0) {
-                  applyVisualWidth(currentImage, val + "px");
+                        // Toolbar button handlers
+                        imgToolbar.addEventListener("click", function (ev) {
+                            const btn = ev.target.closest(".ck-img-size-btn");
+                            if (btn && currentImage) {
+                                const size = btn.getAttribute("data-size");
+                                applyVisualWidth(currentImage, size + "%");
+                                try {
+                                    currentImage.removeAttribute("height");
+                                } catch (e) { }
+                            }
+                            if (
+                                ev.target &&
+                                ev.target.id === "ck_img_apply_px" &&
+                                currentImage
+                            ) {
+                                const val = parseInt(
+                                    document.getElementById("ck_img_custom_px").value,
+                                    10
+                                );
+                                if (!isNaN(val) && val > 0) {
+                                    applyVisualWidth(currentImage, val + "px");
+                                }
+                            }
+                            if (
+                                ev.target &&
+                                ev.target.id === "ck_img_remove_style" &&
+                                currentImage
+                            ) {
+                                clearVisualWidth(currentImage);
+                                currentImage.removeAttribute("width");
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error("Image toolbar init error", e);
                 }
-              }
-              if (
-                ev.target &&
-                ev.target.id === "ck_img_remove_style" &&
-                currentImage
-              ) {
-                clearVisualWidth(currentImage);
-                currentImage.removeAttribute("width");
-              }
-            });
-          }
-        } catch (e) {
-          console.error("Image toolbar init error", e);
-        }
 
-        // Helper: ensure the resized image style is persisted into the editor data
-        function syncImageToEditor(imgEl) {
-          try {
-            if (!editorInstance) return;
+                // Helper: ensure the resized image style is persisted into the editor data
+                function syncImageToEditor(imgEl) {
+                    try {
+                        if (!editorInstance) return;
 
-            // If editor has a model and we can map DOM to model, try to update via model.change
-            if (
-              editorInstance.model &&
-              editorInstance.editing &&
-              typeof editorInstance.editing.view._renderer === "object"
-            ) {
-              // Best-effort: update by finding image element in editor data by src and replace its style/width
-              const src = imgEl.getAttribute("src") || imgEl.src || "";
-              if (!src) return;
+                        // If editor has a model and we can map DOM to model, try to update via model.change
+                        if (
+                            editorInstance.model &&
+                            editorInstance.editing &&
+                            typeof editorInstance.editing.view._renderer === "object"
+                        ) {
+                            // Best-effort: update by finding image element in editor data by src and replace its style/width
+                            const src = imgEl.getAttribute("src") || imgEl.src || "";
+                            if (!src) return;
 
-              // Retrieve current editor HTML
-              let html = editorInstance.getData();
+                            // Retrieve current editor HTML
+                            let html = editorInstance.getData();
 
-              // Create a DOM parser to modify the image tag corresponding to this src
-              const parser = new DOMParser();
-              const doc = parser.parseFromString(
-                "<div>" + html + "</div>",
-                "text/html"
-              );
-              // Find images with matching src (use endsWith compare to allow absolute/relative differences)
-              const imgs = Array.from(doc.querySelectorAll("img"));
-              let matched = false;
-              for (let i = 0; i < imgs.length; i++) {
-                const iSrc = imgs[i].getAttribute("src") || imgs[i].src || "";
-                if (!iSrc) continue;
-                // Compare by filename at end to tolerate query strings
-                const baseA = iSrc.split("/").pop().split("?")[0];
-                const baseB = src.split("/").pop().split("?")[0];
-                if (baseA === baseB || iSrc === src) {
-                  // copy inline width/style attributes from imgEl
-                  const widthStyle = imgEl.style.width || "";
-                  if (widthStyle) {
-                    imgs[i].setAttribute(
-                      "style",
-                      (imgs[i].getAttribute("style") || "") +
-                        " width: " +
-                        widthStyle +
-                        ";"
-                    );
-                    imgs[i].setAttribute("width", ""); // keep style-driven width
-                  } else {
-                    // remove width/style if cleared
-                    let st = imgs[i].getAttribute("style") || "";
-                    st = st.replace(/\bwidth\s*:\s*[^;]+;?/gi, "");
-                    if (st.trim()) imgs[i].setAttribute("style", st);
-                    else imgs[i].removeAttribute("style");
-                    imgs[i].removeAttribute("width");
-                  }
-                  matched = true;
-                  // Do not break — update all matching images
+                            // Create a DOM parser to modify the image tag corresponding to this src
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(
+                                "<div>" + html + "</div>",
+                                "text/html"
+                            );
+                            // Find images with matching src (use endsWith compare to allow absolute/relative differences)
+                            const imgs = Array.from(doc.querySelectorAll("img"));
+                            let matched = false;
+                            for (let i = 0; i < imgs.length; i++) {
+                                const iSrc = imgs[i].getAttribute("src") || imgs[i].src || "";
+                                if (!iSrc) continue;
+                                // Compare by filename at end to tolerate query strings
+                                const baseA = iSrc.split("/").pop().split("?")[0];
+                                const baseB = src.split("/").pop().split("?")[0];
+                                if (baseA === baseB || iSrc === src) {
+                                    // copy inline width/style attributes from imgEl
+                                    const widthStyle = imgEl.style.width || "";
+                                    if (widthStyle) {
+                                        imgs[i].setAttribute(
+                                            "style",
+                                            (imgs[i].getAttribute("style") || "") +
+                                            " width: " +
+                                            widthStyle +
+                                            ";"
+                                        );
+                                        imgs[i].setAttribute("width", ""); // keep style-driven width
+                                    } else {
+                                        // remove width/style if cleared
+                                        let st = imgs[i].getAttribute("style") || "";
+                                        st = st.replace(/\bwidth\s*:\s*[^;]+;?/gi, "");
+                                        if (st.trim()) imgs[i].setAttribute("style", st);
+                                        else imgs[i].removeAttribute("style");
+                                        imgs[i].removeAttribute("width");
+                                    }
+                                    matched = true;
+                                    // Do not break — update all matching images
+                                }
+                            }
+
+                            if (matched) {
+                                // Serialize back to HTML and set data
+                                const newHtml = doc.body.firstChild.innerHTML;
+                                editorInstance.setData(newHtml);
+                            }
+                            return;
+                        }
+
+                        // Fallback: direct replace in editor HTML string by src
+                        const src = imgEl.getAttribute("src") || imgEl.src || "";
+                        if (!src) return;
+                        let data = editorInstance.getData();
+                        // build regex to find the img tag with this src (escape special chars)
+                        const esc = src.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+                        const re = new RegExp(
+                            "(<img[^>]*src=[\"']?" + esc + "[\"']?[^>]*>)",
+                            "gi"
+                        );
+                        const match = data.match(re);
+                        if (match && match.length > 0) {
+                            // pick first occurrence and update style attribute
+                            const originalTag = match[0];
+                            // create a DOM element to manipulate
+                            const tmp = document.createElement("div");
+                            tmp.innerHTML = originalTag;
+                            const img = tmp.querySelector("img");
+                            if (!img) return;
+                            // copy computed style width
+                            const widthStyle = imgEl.style.width || "";
+                            if (widthStyle) {
+                                img.setAttribute(
+                                    "style",
+                                    (img.getAttribute("style") || "") +
+                                    " width: " +
+                                    widthStyle +
+                                    ";"
+                                );
+                                img.setAttribute("width", "");
+                            } else {
+                                let st = img.getAttribute("style") || "";
+                                st = st.replace(/\bwidth\s*:\s*[^;]+;?/gi, "");
+                                if (st.trim()) img.setAttribute("style", st);
+                                else img.removeAttribute("style");
+                                img.removeAttribute("width");
+                            }
+                            const newTag = tmp.innerHTML;
+                            data = data.replace(re, newTag);
+                            editorInstance.setData(data);
+                        }
+                    } catch (err) {
+                        console.error("syncImageToEditor error", err);
+                    }
                 }
-              }
+            })
+            .catch((error) => {
+                console.error("Error initializing editor:", error);
+            });
+    } // end init-once
 
-              if (matched) {
-                // Serialize back to HTML and set data
-                const newHtml = doc.body.firstChild.innerHTML;
-                editorInstance.setData(newHtml);
-              }
-              return;
-            }
+    $.ajax({
+        url: "../controller.php",
+        type: "post",
+        data: {
+            class_id: $("#select_class_field").val(),
+            subject_id: $("#select_subject_field").val(),
+            week_id: $(".week_btn.active").attr("data-id"),
+            term_id: $('.lesson_term.select_btn.active').attr('data-name') || $('.term.select_btn.active').attr('data-name') || '',
 
-            // Fallback: direct replace in editor HTML string by src
-            const src = imgEl.getAttribute("src") || imgEl.src || "";
-            if (!src) return;
-            let data = editorInstance.getData();
-            // build regex to find the img tag with this src (escape special chars)
-            const esc = src.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-            const re = new RegExp(
-              "(<img[^>]*src=[\"']?" + esc + "[\"']?[^>]*>)",
-              "gi"
-            );
-            const match = data.match(re);
-            if (match && match.length > 0) {
-              // pick first occurrence and update style attribute
-              const originalTag = match[0];
-              // create a DOM element to manipulate
-              const tmp = document.createElement("div");
-              tmp.innerHTML = originalTag;
-              const img = tmp.querySelector("img");
-              if (!img) return;
-              // copy computed style width
-              const widthStyle = imgEl.style.width || "";
-              if (widthStyle) {
-                img.setAttribute(
-                  "style",
-                  (img.getAttribute("style") || "") +
-                    " width: " +
-                    widthStyle +
-                    ";"
+            type: "body",
+            action: "get_lesson_note",
+        },
+        beforeSend: () => {
+            $("#lesson_body_view").html("Loading...");
+        },
+        success: (response) => {
+            //   const data = !response ? "" : response;
+            const data = !response ? "" : JSON.parse(response);
+            const contentHtml = data.content || "<i>No content here yet</i>";
+            // Update the view HTML
+            $("#lesson_body_view").html(contentHtml);
+            // If editor exists and is initialized, update its data too but keep it readOnly
+            try {
+                if (editorInstance && typeof editorInstance.setData === "function") {
+                    // Only update the editor data so that toggling to edit will reflect latest content
+                    editorInstance.setData(contentHtml);
+                    try {
+                        editorInstance.isReadOnly = true;
+                    } catch (e) { }
+                }
+            } catch (e) {
+                console.warn(
+                    "Could not set editor data on get_lesson_note_body success:",
+                    e
                 );
-                img.setAttribute("width", "");
-              } else {
-                let st = img.getAttribute("style") || "";
-                st = st.replace(/\bwidth\s*:\s*[^;]+;?/gi, "");
-                if (st.trim()) img.setAttribute("style", st);
-                else img.removeAttribute("style");
-                img.removeAttribute("width");
-              }
-              const newTag = tmp.innerHTML;
-              data = data.replace(re, newTag);
-              editorInstance.setData(data);
             }
-          } catch (err) {
-            console.error("syncImageToEditor error", err);
-          }
-        }
-      })
-      .catch((error) => {
-        console.error("Error initializing editor:", error);
-      });
-  } // end init-once
-
-  $.ajax({
-    url: "../controller.php",
-    type: "post",
-    data: {
-      class_id: $("#select_class_field").val(),
-      subject_id: $("#select_subject_field").val(),
-      week_id: $(".week_btn.active").attr("data-id"),
-        term_id: $('.lesson_term.select_btn.active').attr('data-name') || $('.term.select_btn.active').attr('data-name') || '',
-
-      type: "body",
-      action: "get_lesson_note",
-    },
-    beforeSend: () => {
-      $("#lesson_body_view").html("Loading...");
-    },
-    success: (response) => {
-    //   const data = !response ? "" : response;
-       const data = !response ? "" : JSON.parse(response);
-      const contentHtml = data.content || "<i>No content here yet</i>";
-      // Update the view HTML
-      $("#lesson_body_view").html(contentHtml);
-      // If editor exists and is initialized, update its data too but keep it readOnly
-      try {
-        if (editorInstance && typeof editorInstance.setData === "function") {
-          // Only update the editor data so that toggling to edit will reflect latest content
-          editorInstance.setData(contentHtml);
-          try {
-            editorInstance.isReadOnly = true;
-          } catch (e) {}
-        }
-      } catch (e) {
-        console.warn(
-          "Could not set editor data on get_lesson_note_body success:",
-          e
-        );
-      }
-    },
-    error: (error) => {
-      console.error("Error fetching lesson note:", error);
-    },
-  });
+        },
+        error: (error) => {
+            console.error("Error fetching lesson note:", error);
+        },
+    });
 }
 function show_lesson_note_body_editor() {
     // Copy current view HTML into the editor but convert inline img style widths
@@ -13147,7 +13136,7 @@ function show_lesson_note_body_editor() {
             // Ensure editor container is visible so the editable element exists and toolbar
             // handlers can attach to it. Show editor container first (it will be hidden
             // visually by caller if needed).
-            try { $("#lesson_note_body_editor").show(); } catch (e) {}
+            try { $("#lesson_note_body_editor").show(); } catch (e) { }
 
             // When applying preparedHtml, keep both width attribute and style width for
             // maximum compatibility. Many CKEditor instances preserve width attribute.
@@ -13178,13 +13167,13 @@ function show_lesson_note_body_editor() {
                     try {
                         const ed = editorInstance.ui && editorInstance.ui.getEditableElement && editorInstance.ui.getEditableElement();
                         if (ed) {
-                                ed.querySelectorAll('img').forEach(im => {
+                            ed.querySelectorAll('img').forEach(im => {
                                 try {
                                     const src = im.getAttribute('src') || '';
                                     const base = src.split('/').pop().split('?')[0];
                                     const widthToApply = (src && imgWidthMap[src]) || (base && imgWidthMap[base]) || im.getAttribute('data-width') || im.getAttribute('width') || '';
                                     if (widthToApply) {
-                                        try { applyVisualWidth(im, widthToApply); } catch (e) { try { im.style.width = widthToApply; } catch(_) {} }
+                                        try { applyVisualWidth(im, widthToApply); } catch (e) { try { im.style.width = widthToApply; } catch (_) { } }
                                         // clear layout constraints on parent elements which often override percent widths
                                         try {
                                             let p = im.parentElement;
@@ -13196,23 +13185,23 @@ function show_lesson_note_body_editor() {
                                                     p.style.setProperty('flex', '0 0 auto', 'important');
                                                     p.style.setProperty('flex-grow', '0', 'important');
                                                     p.style.setProperty('display', 'block', 'important');
-                                                } catch (err) {}
+                                                } catch (err) { }
                                                 p = p.parentElement;
                                                 depth++;
                                             }
-                                        } catch (err) {}
+                                        } catch (err) { }
                                     } else {
                                         // if no widthToApply, clear any visual overrides
-                                        try { clearVisualWidth(im); } catch (e) {}
+                                        try { clearVisualWidth(im); } catch (e) { }
                                     }
-                                } catch (e) {}
+                                } catch (e) { }
                             });
                         }
                     } catch (e) {
                         console.warn('Could not reapply image widths in editable DOM:', e);
                     }
                 }, 80);
-            } catch (e) {}
+            } catch (e) { }
         } else {
             window.__pendingLessonBody = preparedHtml;
         }
@@ -13322,116 +13311,116 @@ function show_lesson_note_topic_view() {
 //     });
 // }
 function create_lesson_note_body() {
-  show_lesson_note_body();
+    show_lesson_note_body();
 
-  // Prefer the visible editable DOM contents so inline styles applied by the
-  // floating toolbar (e.g., img.style.width) are preserved. Fallback to
-  // editorInstance.getData() when the editable element is not available.
-  let bodyContent = "";
-  try {
-    // CKEditor5 editable area element
-    const editableEl =
-      document.querySelector(".ck-editor__editable") ||
-      (editorInstance &&
-        editorInstance.ui &&
-        editorInstance.ui.getEditableElement &&
-        editorInstance.ui.getEditableElement());
-    if (
-      editableEl &&
-      editableEl.innerHTML &&
-      editableEl.innerHTML.trim().length > 0
-    ) {
-      bodyContent = editableEl.innerHTML;
+    // Prefer the visible editable DOM contents so inline styles applied by the
+    // floating toolbar (e.g., img.style.width) are preserved. Fallback to
+    // editorInstance.getData() when the editable element is not available.
+    let bodyContent = "";
+    try {
+        // CKEditor5 editable area element
+        const editableEl =
+            document.querySelector(".ck-editor__editable") ||
+            (editorInstance &&
+                editorInstance.ui &&
+                editorInstance.ui.getEditableElement &&
+                editorInstance.ui.getEditableElement());
+        if (
+            editableEl &&
+            editableEl.innerHTML &&
+            editableEl.innerHTML.trim().length > 0
+        ) {
+            bodyContent = editableEl.innerHTML;
+        }
+    } catch (e) {
+        console.warn("Could not read editable DOM innerHTML:", e);
     }
-  } catch (e) {
-    console.warn("Could not read editable DOM innerHTML:", e);
-  }
 
-  if (
-    !bodyContent &&
-    editorInstance &&
-    typeof editorInstance.getData === "function"
-  ) {
-    bodyContent = editorInstance.getData();
-  }
+    if (
+        !bodyContent &&
+        editorInstance &&
+        typeof editorInstance.getData === "function"
+    ) {
+        bodyContent = editorInstance.getData();
+    }
 
-  // Normalize images in the bodyContent: add data-width attribute so we can
-  // re-apply the width when the editor renders (CKEditor may strip style).
-  try {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(
-      "<div>" + bodyContent + "</div>",
-      "text/html"
-    );
-    const imgs = doc.querySelectorAll("img");
-    imgs.forEach((img) => {
-      let w = img.style && img.style.width ? img.style.width.trim() : "";
-      if (!w) w = img.getAttribute("width") || "";
-      if (w) img.setAttribute("data-width", w);
+    // Normalize images in the bodyContent: add data-width attribute so we can
+    // re-apply the width when the editor renders (CKEditor may strip style).
+    try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(
+            "<div>" + bodyContent + "</div>",
+            "text/html"
+        );
+        const imgs = doc.querySelectorAll("img");
+        imgs.forEach((img) => {
+            let w = img.style && img.style.width ? img.style.width.trim() : "";
+            if (!w) w = img.getAttribute("width") || "";
+            if (w) img.setAttribute("data-width", w);
+        });
+        bodyContent = doc.body.firstChild.innerHTML;
+    } catch (e) {
+        console.warn("Could not normalize image widths before save:", e);
+    }
+
+    // Determine class_id(s) to save to. Use the multi-select from the body editor if available/populated,
+    // otherwise fallback to the main class selector.
+    let selectedClasses = $("#lesson_note_multi_class").val();
+    if (!selectedClasses || selectedClasses.length === 0) {
+        selectedClasses = $("#select_class_field").val();
+    }
+
+    $.ajax({
+        url: "../controller.php",
+        type: "POST",
+        data: {
+            class_id: selectedClasses,
+            subject_id: $("#select_subject_field").val(),
+            week_id: $(".week_btn.active").attr("data-id"),
+            // "topic": $("#lesson_topic").val(),
+            body: bodyContent,
+            action: "create_lesson_note_body",
+        },
+        success: (response) => {
+            console.log("Lesson note saved:", response);
+            get_lesson_note_body();
+            setTimeout(get_notes_week_view, 100);
+        },
+        error: (error) => {
+            console.error("Error saving lesson note:", error);
+        },
     });
-    bodyContent = doc.body.firstChild.innerHTML;
-  } catch (e) {
-    console.warn("Could not normalize image widths before save:", e);
-  }
-
-  // Determine class_id(s) to save to. Use the multi-select from the body editor if available/populated,
-  // otherwise fallback to the main class selector.
-  let selectedClasses = $("#lesson_note_multi_class").val();
-  if (!selectedClasses || selectedClasses.length === 0) {
-    selectedClasses = $("#select_class_field").val();
-  }
-
-  $.ajax({
-    url: "../controller.php",
-    type: "POST",
-    data: {
-      class_id: selectedClasses,
-      subject_id: $("#select_subject_field").val(),
-      week_id: $(".week_btn.active").attr("data-id"),
-      // "topic": $("#lesson_topic").val(),
-      body: bodyContent,
-      action: "create_lesson_note_body",
-    },
-    success: (response) => {
-      console.log("Lesson note saved:", response);
-      get_lesson_note_body();
-      setTimeout(get_notes_week_view, 100);
-    },
-    error: (error) => {
-      console.error("Error saving lesson note:", error);
-    },
-  });
 }
 function create_lesson_note_topic() {
-  show_lesson_note_topic_view();
+    show_lesson_note_topic_view();
 
-  // Determine class_id(s) to save to. Use the multi-select from the body editor if available/populated,
-  // otherwise fallback to the main class selector.
-  let selectedClasses = $("#lesson_note_multi_class").val();
-  if (!selectedClasses || selectedClasses.length === 0) {
-    selectedClasses = $("#select_class_field").val();
-  }
+    // Determine class_id(s) to save to. Use the multi-select from the body editor if available/populated,
+    // otherwise fallback to the main class selector.
+    let selectedClasses = $("#lesson_note_multi_class").val();
+    if (!selectedClasses || selectedClasses.length === 0) {
+        selectedClasses = $("#select_class_field").val();
+    }
 
-  $.ajax({
-    url: "../controller.php",
-    type: "POST",
-    data: {
-      class_id: selectedClasses,
-      subject_id: $("#select_subject_field").val(),
-      week_id: $(".week_btn.active").attr("data-id"),
-      topic: $("#lesson_topic").val(),
-      // "body": editorInstance.getData(),
-      action: "create_lesson_note_topic",
-    },
-    success: (response) => {
-      console.log("Lesson note saved:", response);
-      get_lesson_note_topic();
-      setTimeout(get_notes_week_view, 100);
-    },
-    error: (error) => {
-      console.error("Error saving lesson note:", error);
-    },
-  });
+    $.ajax({
+        url: "../controller.php",
+        type: "POST",
+        data: {
+            class_id: selectedClasses,
+            subject_id: $("#select_subject_field").val(),
+            week_id: $(".week_btn.active").attr("data-id"),
+            topic: $("#lesson_topic").val(),
+            // "body": editorInstance.getData(),
+            action: "create_lesson_note_topic",
+        },
+        success: (response) => {
+            console.log("Lesson note saved:", response);
+            get_lesson_note_topic();
+            setTimeout(get_notes_week_view, 100);
+        },
+        error: (error) => {
+            console.error("Error saving lesson note:", error);
+        },
+    });
 }
 var draggableInstance;
 var extraEventsDraggableInstance;
@@ -14398,166 +14387,166 @@ function updateCustomReportSummary(container, customAssessments, gradingParam) {
 // }
 async function preview_report_card_multiple(page_type, sessionOrTerm) {
     console.log("we neeeeeeeeeeeeeeeeeeeee")
-  console.log("sessionOrTerm", sessionOrTerm);
-  const previewModal = $("#report_preview_modal");
-  const previewContent = $("#preview-content");
-  const loadingDiv = $("#preview-loading");
-  const printButton = $("#print-button");
-  const downloadButton = $("#download-pdf-button");
-  const loadingStatus = $(".loading-status");
+    console.log("sessionOrTerm", sessionOrTerm);
+    const previewModal = $("#report_preview_modal");
+    const previewContent = $("#preview-content");
+    const loadingDiv = $("#preview-loading");
+    const printButton = $("#print-button");
+    const downloadButton = $("#download-pdf-button");
+    const loadingStatus = $(".loading-status");
 
-  // Reset state
-  loadedReports = 0;
-  previewContent.empty();
-  printButton.prop("disabled", true);
-  downloadButton.prop("disabled", true);
-  // resetReportZoom(); // Reset scale when opening modal
+    // Reset state
+    loadedReports = 0;
+    previewContent.empty();
+    printButton.prop("disabled", true);
+    downloadButton.prop("disabled", true);
+    // resetReportZoom(); // Reset scale when opening modal
 
-  // Show modal and loading indicator
-  previewModal.modal("show");
-  loadingDiv.show();
+    // Show modal and loading indicator
+    previewModal.modal("show");
+    loadingDiv.show();
 
-  // Get parameters
-  let student_ids, term_id, class_id;
-  if (page_type == "report_page") {
-    student_ids = $(".bulk_report_ids").val().split(",");
-    term_id = $("#select_term_field").val();
-    if (term_id == "cum") {
-      sessionOrTerm = "session";
-      term_id = 3;
-    }
-    class_id = $("#select_class_field_report").val();
-  } else if (page_type == "student_page") {
-    student_ids = $("#select_student_field").val().split(",");
-    term_id = $(".select_btn.term.active").attr("data-name");
-    class_id = $("#select_class_field").val();
-  }
-  // const student_ids = $('.bulk_report_ids').val().split(',') || $("#select_student_field").val().split(",");
-  // alert(student_ids)
-  // // const student_ids = $('.bulk_report_ids').val().split(',') || $("#select_student_field").val().split(",");
-  // const term_id = $('#select_term_field').val() || $(".select_btn.term.active").attr("data-name");
-  const session_id = $("#select_session_field").val();
-  // const class_id = $('#select_class_field_report').val() || $("#select_class_field").val();
-
-  totalReports = student_ids.length;
-  loadingStatus.text(`Loading report 0 of ${totalReports}...`);
-
-  // Load reports one by one
-  for (const student_id of student_ids) {
-    try {
-      // First get the grading data
-      const gradingData = await $.ajax({
-        url: "../controller.php",
-        type: "post",
-        data: {
-          action: "get_grading_score_data",
-          session_id,
-          student_id,
-          class_id,
-          term_id,
-        },
-      });
-
-      data = JSON.parse(gradingData);
-      settingsData = data.settingsData[0];
-      student_score_data = data.score_data;
-
-      // Then get the report card HTML
-      let myschl = null;
-      const reportCard = await $.ajax({
-        url:
-          myschl == 13
-            ? "../single_report_card-homat.php"
-            : "../single_report_card.php",
-        type: "POST",
-        data: { student_id, class_id, session_id, term_id, sessionOrTerm },
-      });
-
-      // Create a container for this specific report
-      const reportDiv = $("<div>").addClass("single-report").html(reportCard);
-      previewContent.append(reportDiv);
-
-      const tableContainer = reportDiv.find("#table_visuals_display_report");
-      const commentContainer = reportDiv.find(".student_behaviour_skills");
-      await set_behaviour_comment_report(
-        term_id,
-        session_id,
-        student_id,
-        class_id,
-        "view",
-        commentContainer
-      );
-      // alert(myschl)
-      if (myschl == 13) {
-        if (sessionOrTerm == "session") {
-          await format_student_cummulative_table_report(
-            student_score_data,
-            student_id,
-            session_id,
-            class_id,
-            settingsData.grade,
-            tableContainer
-          );
-        } else if (term_id == "2") {
-          await format_2nd_term_student_cummulative_table_report(
-            student_score_data,
-            student_id,
-            session_id,
-            class_id,
-            settingsData.grade,
-            tableContainer
-          );
-        } else {
-          await format_student_table_report(
-            student_score_data,
-            term_id,
-            session_id,
-            class_id,
-            settingsData.grade,
-            tableContainer
-          );
+    // Get parameters
+    let student_ids, term_id, class_id;
+    if (page_type == "report_page") {
+        student_ids = $(".bulk_report_ids").val().split(",");
+        term_id = $("#select_term_field").val();
+        if (term_id == "cum") {
+            sessionOrTerm = "session";
+            term_id = 3;
         }
-      } else {
-        if (sessionOrTerm == "session") {
-          await format_student_cummulative_table_report(
-            student_score_data,
-            student_id,
-            session_id,
-            class_id,
-            settingsData.grade,
-            tableContainer
-          );
-        } else {
-          await format_student_table_report(
-            student_score_data,
-            term_id,
-            session_id,
-            class_id,
-            settingsData.grade,
-            tableContainer
-          );
-        }
-      }
-
-      loadedReports++;
-      loadingStatus.text(
-        `Loading report ${loadedReports} of ${totalReports}...`
-      );
-
-      // Enable buttons when all reports are loaded
-      if (loadedReports === totalReports) {
-        loadingDiv.hide();
-        printButton.prop("disabled", false);
-        downloadButton.prop("disabled", false);
-      }
-    } catch (error) {
-      console.error("Error loading report:", error);
-      // Update status to show error
-      loadingStatus.text(
-        `Error loading report for student ${student_id}: ${error.message}`
-      );
+        class_id = $("#select_class_field_report").val();
+    } else if (page_type == "student_page") {
+        student_ids = $("#select_student_field").val().split(",");
+        term_id = $(".select_btn.term.active").attr("data-name");
+        class_id = $("#select_class_field").val();
     }
-  }
+    // const student_ids = $('.bulk_report_ids').val().split(',') || $("#select_student_field").val().split(",");
+    // alert(student_ids)
+    // // const student_ids = $('.bulk_report_ids').val().split(',') || $("#select_student_field").val().split(",");
+    // const term_id = $('#select_term_field').val() || $(".select_btn.term.active").attr("data-name");
+    const session_id = $("#select_session_field").val();
+    // const class_id = $('#select_class_field_report').val() || $("#select_class_field").val();
+
+    totalReports = student_ids.length;
+    loadingStatus.text(`Loading report 0 of ${totalReports}...`);
+
+    // Load reports one by one
+    for (const student_id of student_ids) {
+        try {
+            // First get the grading data
+            const gradingData = await $.ajax({
+                url: "../controller.php",
+                type: "post",
+                data: {
+                    action: "get_grading_score_data",
+                    session_id,
+                    student_id,
+                    class_id,
+                    term_id,
+                },
+            });
+
+            data = JSON.parse(gradingData);
+            settingsData = data.settingsData[0];
+            student_score_data = data.score_data;
+
+            // Then get the report card HTML
+            let myschl = null;
+            const reportCard = await $.ajax({
+                url:
+                    myschl == 13
+                        ? "../single_report_card-homat.php"
+                        : "../single_report_card.php",
+                type: "POST",
+                data: { student_id, class_id, session_id, term_id, sessionOrTerm },
+            });
+
+            // Create a container for this specific report
+            const reportDiv = $("<div>").addClass("single-report").html(reportCard);
+            previewContent.append(reportDiv);
+
+            const tableContainer = reportDiv.find("#table_visuals_display_report");
+            const commentContainer = reportDiv.find(".student_behaviour_skills");
+            await set_behaviour_comment_report(
+                term_id,
+                session_id,
+                student_id,
+                class_id,
+                "view",
+                commentContainer
+            );
+            // alert(myschl)
+            if (myschl == 13) {
+                if (sessionOrTerm == "session") {
+                    await format_student_cummulative_table_report(
+                        student_score_data,
+                        student_id,
+                        session_id,
+                        class_id,
+                        settingsData.grade,
+                        tableContainer
+                    );
+                } else if (term_id == "2") {
+                    await format_2nd_term_student_cummulative_table_report(
+                        student_score_data,
+                        student_id,
+                        session_id,
+                        class_id,
+                        settingsData.grade,
+                        tableContainer
+                    );
+                } else {
+                    await format_student_table_report(
+                        student_score_data,
+                        term_id,
+                        session_id,
+                        class_id,
+                        settingsData.grade,
+                        tableContainer
+                    );
+                }
+            } else {
+                if (sessionOrTerm == "session") {
+                    await format_student_cummulative_table_report(
+                        student_score_data,
+                        student_id,
+                        session_id,
+                        class_id,
+                        settingsData.grade,
+                        tableContainer
+                    );
+                } else {
+                    await format_student_table_report(
+                        student_score_data,
+                        term_id,
+                        session_id,
+                        class_id,
+                        settingsData.grade,
+                        tableContainer
+                    );
+                }
+            }
+
+            loadedReports++;
+            loadingStatus.text(
+                `Loading report ${loadedReports} of ${totalReports}...`
+            );
+
+            // Enable buttons when all reports are loaded
+            if (loadedReports === totalReports) {
+                loadingDiv.hide();
+                printButton.prop("disabled", false);
+                downloadButton.prop("disabled", false);
+            }
+        } catch (error) {
+            console.error("Error loading report:", error);
+            // Update status to show error
+            loadingStatus.text(
+                `Error loading report for student ${student_id}: ${error.message}`
+            );
+        }
+    }
 }
 async function format_student_table_report(student_score_data, term, session_id, class_id, grading, container, customAssessments = null) {
     return new Promise((resolve) => {
@@ -14703,10 +14692,10 @@ async function format_student_cummulative_table_report(student_score_data, stude
             if (!termRecord) return 0;
             // Assumes student_score_data items have ca1Total, ca2Total, ca3Total, praTotal, exaTotal
             return (parseFloat(termRecord.ca1Total) || 0) +
-                   (parseFloat(termRecord.ca2Total) || 0) +
-                   (parseFloat(termRecord.ca3Total) || 0) +
-                   (parseFloat(termRecord.praTotal) || 0) +
-                   (parseFloat(termRecord.exaTotal) || 0);
+                (parseFloat(termRecord.ca2Total) || 0) +
+                (parseFloat(termRecord.ca3Total) || 0) +
+                (parseFloat(termRecord.praTotal) || 0) +
+                (parseFloat(termRecord.exaTotal) || 0);
         }
 
         // Get a unique list of subjects from the filtered data
@@ -14727,7 +14716,7 @@ async function format_student_cummulative_table_report(student_score_data, stude
         if (settingsData.ca3 != 0) thirdTermColspan++;
         if (settingsData.pra != 0) thirdTermColspan++;
         if (settingsData.exa != 0) thirdTermColspan++;
-        
+
         // Ensure colspan is at least 1 if no assessments are active, to prevent invalid HTML
         // Or, you might want to hide the "3rd Term" header entirely if thirdTermColspan is 0.
         // For now, let's assume it should be at least 1 or hide if 0.
@@ -14774,7 +14763,7 @@ async function format_student_cummulative_table_report(student_score_data, stude
 
             const cumulativeScore = term1TotalScore + term2TotalScore + term3TotalScore;
             const cumulativeMaxObtainable = term1MaxObtainable + term2MaxObtainable + term3MaxObtainable;
-            console.log("cumulativeMaxObtainable",cumulativeMaxObtainable)
+            console.log("cumulativeMaxObtainable", cumulativeMaxObtainable)
 
             let termsWithScoresCount = 0;
             if (term1MaxObtainable > 0) termsWithScoresCount++;
@@ -14830,7 +14819,7 @@ async function format_student_cummulative_table_report(student_score_data, stude
         //         left: 1
         //     }
         // });
-        
+
         setTimeout(resolve, 100); // Resolve after a short delay for DOM updates
     });
 }
@@ -15012,121 +15001,121 @@ async function format_2nd_term_student_cummulative_table_report(student_score_da
 //     });
 // }
 async function set_behaviour_comment_report(
-  term,
-  session,
-  student_id,
-  class_id,
-  pagetype,
-  container
+    term,
+    session,
+    student_id,
+    class_id,
+    pagetype,
+    container
 ) {
-  // alert('kkk')
-  if ($("#report_page").val() === "report_scores") {
-    pagetype = "report";
-  }
+    // alert('kkk')
+    if ($("#report_page").val() === "report_scores") {
+        pagetype = "report";
+    }
 
-  return new Promise((resolve) => {
-    $.ajax({
-      url: "../controller.php",
-      type: "post",
-      data: {
-        action: "getbehaviour_comment",
-        term,
-        session,
-        student_id,
-        class_id,
-        pagetype,
-      },
-      success: (data) => {
-        data = data.trim();
-        data = JSON.parse(data);
-        // alert(data.staff_classId)
-        // let staff_classId_json = JSON.parse(data.staff_classId)
-        // alert((data.staff_classId).includes(class_id))
-        thebehavedata = data.comment;
-        // alert('ll')
-        function getPercentage(score) {
-          switch (score) {
-            case "5":
-              return "5";
-            case "4":
-              return "4";
-            case "3":
-              return "3";
-            case "2":
-              return "2";
-            case "1":
-              return "1";
-            default:
-              return "Not rated";
-          }
-        }
-        if (thebehavedata == "") {
-          let behave =
-            typeof window.schoolSkills !== "undefined" &&
-            Array.isArray(window.schoolSkills) &&
-            window.schoolSkills.length > 0
-              ? window.schoolSkills
-              : [
-                  "punctuality",
-                  "classattendance",
-                  "resptoass",
-                  "Politeness",
-                  "Honesty",
-                  "selfcontrol",
-                  "relationship",
-                  "responsibility",
-                  "organizationability",
-                  "Neatness",
-                  "Obedience",
-                  "Creativity",
-                  "Writing",
-                  "Fluency",
-                  "Sport",
-                  "Games",
-                  "DrawingPainting",
-                  "Music",
-                  "HandlingTools",
-                  "Crafts",
-                ];
-          if (
-            typeof window.schoolHiddenSkills !== "undefined" &&
-            Array.isArray(window.schoolHiddenSkills)
-          ) {
-            behave = behave.filter(
-              (skill) => !window.schoolHiddenSkills.includes(skill)
-            );
-          }
-            console.log("new skills", behave)
-          behave.map((key) => {
-            container.find(`.${key}`).html(getPercentage(0));
-          });
-        } else {
-          par = JSON.parse(thebehavedata);
-          Object.entries(par).forEach(([key, value]) => {
-            container.find(`.${key}`).html(getPercentage(value));
-          });
-        }
-        resolve();
-      },
+    return new Promise((resolve) => {
+        $.ajax({
+            url: "../controller.php",
+            type: "post",
+            data: {
+                action: "getbehaviour_comment",
+                term,
+                session,
+                student_id,
+                class_id,
+                pagetype,
+            },
+            success: (data) => {
+                data = data.trim();
+                data = JSON.parse(data);
+                // alert(data.staff_classId)
+                // let staff_classId_json = JSON.parse(data.staff_classId)
+                // alert((data.staff_classId).includes(class_id))
+                thebehavedata = data.comment;
+                // alert('ll')
+                function getPercentage(score) {
+                    switch (score) {
+                        case "5":
+                            return "5";
+                        case "4":
+                            return "4";
+                        case "3":
+                            return "3";
+                        case "2":
+                            return "2";
+                        case "1":
+                            return "1";
+                        default:
+                            return "Not rated";
+                    }
+                }
+                if (thebehavedata == "") {
+                    let behave =
+                        typeof window.schoolSkills !== "undefined" &&
+                            Array.isArray(window.schoolSkills) &&
+                            window.schoolSkills.length > 0
+                            ? window.schoolSkills
+                            : [
+                                "punctuality",
+                                "classattendance",
+                                "resptoass",
+                                "Politeness",
+                                "Honesty",
+                                "selfcontrol",
+                                "relationship",
+                                "responsibility",
+                                "organizationability",
+                                "Neatness",
+                                "Obedience",
+                                "Creativity",
+                                "Writing",
+                                "Fluency",
+                                "Sport",
+                                "Games",
+                                "DrawingPainting",
+                                "Music",
+                                "HandlingTools",
+                                "Crafts",
+                            ];
+                    if (
+                        typeof window.schoolHiddenSkills !== "undefined" &&
+                        Array.isArray(window.schoolHiddenSkills)
+                    ) {
+                        behave = behave.filter(
+                            (skill) => !window.schoolHiddenSkills.includes(skill)
+                        );
+                    }
+                    console.log("new skills", behave)
+                    behave.map((key) => {
+                        container.find(`.${key}`).html(getPercentage(0));
+                    });
+                } else {
+                    par = JSON.parse(thebehavedata);
+                    Object.entries(par).forEach(([key, value]) => {
+                        container.find(`.${key}`).html(getPercentage(value));
+                    });
+                }
+                resolve();
+            },
+        });
     });
-  });
 }
- function printReports() {
-            // Get the content to print
-            const content = document.getElementById('preview-content');
-            // $('#preview-content .report-card').css('width', '100%');
-            // alert('print')
-            // $('#preview-content .report-card').css('transform', 'scale(' + currentReportScale + ')');
+function printReports() {
+    // Get the content to print
+    const content = document.getElementById('preview-content');
+    // $('#preview-content .report-card').css('width', '100%');
+    // alert('print')
+    // $('#preview-content .report-card').css('transform', 'scale(' + currentReportScale + ')');
 
 
-            // Create a new window for printing
-            const printWindow = window.open('', '', 'height=600,width=1200');
-            
-            // Add the content and necessary styles to the new window
-            printWindow.document.write('<html><head><title>Report Card</title>');
-            printWindow.document.write('<link rel="stylesheet" href="../dist/css/adminlte.css">');
-            printWindow.document.write('<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">');
-            printWindow.document.write(`<style>
+    // Create a new window for printing
+    const printWindow = window.open('', '', 'height=600,width=1200');
+
+    // Add the content and necessary styles to the new window
+    printWindow.document.write('<html><head><title>Report Card</title>');
+    printWindow.document.write('<link rel="stylesheet" href="../dist/css/adminlte.css">');
+    printWindow.document.write('<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">');
+    printWindow.document.write(`<style>
             @media print { 
             body { padding: 0; margin: 0; }
                         .report-card {
@@ -15139,29 +15128,29 @@ async function set_behaviour_comment_report(
                         } 
             }
             </style>`);
-            printWindow.document.write('</head><body>');
-            printWindow.document.write(content.innerHTML);
-            printWindow.document.write('</body></html>');
-            
-            printWindow.document.close();
-            
-            // Wait for the styles to load
-            printWindow.onload = function() {
-                printWindow.focus();
-                printWindow.print();
-                printWindow.close();
-            };
-        }
+    printWindow.document.write('</head><body>');
+    printWindow.document.write(content.innerHTML);
+    printWindow.document.write('</body></html>');
 
-        // Function to enable print button when all reports are loaded
-        function updatePrintButton() {
-            const printButton = document.getElementById('print-button');
-            if (loadedReports === totalReports && totalReports > 0) {
-                printButton.disabled = false;
-            } else {
-                printButton.disabled = true;
-            }
-        }
+    printWindow.document.close();
+
+    // Wait for the styles to load
+    printWindow.onload = function () {
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+    };
+}
+
+// Function to enable print button when all reports are loaded
+function updatePrintButton() {
+    const printButton = document.getElementById('print-button');
+    if (loadedReports === totalReports && totalReports > 0) {
+        printButton.disabled = false;
+    } else {
+        printButton.disabled = true;
+    }
+}
 
 function check_score_changes() {
     $("#score_change_check_modal").modal('show');
@@ -15175,11 +15164,11 @@ function getChangeLogs(actionType = null) {
             action: 'get_change_logs',
             action_type: actionType
         },
-        success: function(response) {
+        success: function (response) {
             const logs = JSON.parse(response);
             displayChangeLogs(logs);
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
             toastr.error("Error fetching change logs");
         }
     });
@@ -15229,7 +15218,7 @@ function displayChangeLogs(logs) {
             if (log.action_type === 'score_update') {
                 timelineIcon = 'fas fa-edit';
                 timelineColor = 'bg-blue';
-                
+
                 changesHtml = `
                  <table class="changes_table display nowrap" style="width:100%">
                         <thead>
@@ -15244,7 +15233,7 @@ function displayChangeLogs(logs) {
                             </tr>
                         </thead>
                         <tbody>`;
-                
+
                 Object.entries(changes.changes || {}).forEach(([studentId, studentChanges]) => {
                     studentChanges.forEach(change => {
                         changesHtml += `
@@ -15259,7 +15248,7 @@ function displayChangeLogs(logs) {
                         </tr>`;
                     });
                 });
-                
+
                 changesHtml += `
                     </tbody>
                 </table>`;
@@ -15267,7 +15256,7 @@ function displayChangeLogs(logs) {
             } else if (log.action_type === 'staff_update') {
                 timelineIcon = 'fas fa-user-edit';
                 timelineColor = 'bg-green';
-                
+
                 changesHtml = `
                 <table class="table table-bordered table-sm">
                     <thead>
@@ -15278,7 +15267,7 @@ function displayChangeLogs(logs) {
                         </tr>
                     </thead>
                     <tbody>`;
-                
+
                 Object.entries(changes.changes || {}).forEach(([field, change]) => {
                     changesHtml += `
                     <tr>
@@ -15287,7 +15276,7 @@ function displayChangeLogs(logs) {
                         <td>${change.new}</td>
                     </tr>`;
                 });
-                
+
                 changesHtml += `
                     </tbody>
                 </table>`;
@@ -15323,8 +15312,8 @@ function displayChangeLogs(logs) {
     </div>`;
 
     $('#change_timeline').html(html);
-     // Initialize DataTable with fixed first column
-     if ($.fn.DataTable.isDataTable('#changes_table')) {
+    // Initialize DataTable with fixed first column
+    if ($.fn.DataTable.isDataTable('#changes_table')) {
         $('.changes_table').DataTable().destroy();
     }
 
