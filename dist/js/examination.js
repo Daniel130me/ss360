@@ -19,7 +19,7 @@ function setupSecurityFeatures() {
             e.preventDefault();
         }
     });
-    
+
 
 
     // Request fullscreen
@@ -39,8 +39,9 @@ function get_all_classes_for_assessment(assess_id) {
             action: 'get_all_classes_for_assessment',
             assessment_id: assess_id
         },
-        success: function(response) {
-            let data = JSON.parse(response);
+        success: function (response) {
+            let data = response;
+            // let data = JSON.parse(response);
             let classes = data.data;
             let str = '';
 
@@ -58,7 +59,7 @@ function get_all_classes_for_assessment(assess_id) {
             // Update checkboxes based on displayed buttons
             updateModalCheckboxes();
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
             toastr.error("Error fetching classes");
         }
     });
@@ -72,7 +73,7 @@ function loadExistingAssessment(assessment_id) {
             action: 'load_assessment',
             assessment_id: assessment_id
         },
-        success: function(response) {
+        success: function (response) {
             // Populate form with existing data
             $('#assessment_instruction').val(response.settings.instruction);
             $('#assessment_duration').val(response.settings.duration);
@@ -88,7 +89,7 @@ function loadExistingAssessment(assessment_id) {
             // Split the comma-separated class IDs string
             const classIds = response.settings.class_ids.split(',');
             const classNames = response.settings.class_names.split(',');
-            
+
             // For each class, create a button with real name but keep ID as data attribute
             classIds.forEach((classId, index) => {
                 let classButton = `
@@ -109,67 +110,67 @@ function loadExistingAssessment(assessment_id) {
 
             toastr.info('Loaded existing assessment for editing');
         },
-        error: function() {
+        error: function () {
             toastr.error('Error loading assessment data');
         }
     });
 }
 function checkExistingAssessment() {
-//   alert('fh')
-  const subject_id = $("#select_subject_field").val();
-  const assessment_type = $(".assessment_btn.select_btn.active").data("id");
-  const term = $(".term_btn.select_btn.active").data("id");
-  const class_ids = Array.from($(".classes_container button"))
-    .map((btn) => $(btn).data("class-id"))
-    .join(",");
+    //   alert('fh')
+    const subject_id = $("#select_subject_field").val();
+    const assessment_type = $(".assessment_btn.select_btn.active").data("id");
+    const term = $(".term_btn.select_btn.active").data("id");
+    const class_ids = Array.from($(".classes_container button"))
+        .map((btn) => $(btn).data("class-id"))
+        .join(",");
 
-  if (!subject_id || !assessment_type || !term || !class_ids) {
-    return; // Don't check if any required field is missing
-  }
+    if (!subject_id || !assessment_type || !term || !class_ids) {
+        return; // Don't check if any required field is missing
+    }
 
-  $.ajax({
-    url: "../controller_new.php",
-    type: "POST",
-    data: {
-      action: "check_existing_assessment",
-      subject_id: subject_id,
-      assessment_type: assessment_type,
-      term: term,
-      class_ids: class_ids,
-    },
-    success: function (response) {
-      if (response.exists) {
-        // Store assessment ID for later use
-        existingAssessmentId = response.assessment_id;
-        // Show confirmation modal
-        $("#existingAssessmentModal").modal("show");
-      } else {
-        existingAssessmentId = null;
-        // Show empty form with single question
-        showNewAssessmentForm();
-        $(".assessment-settings-section, .questions-section").show();
-      }
-    },
-    error: function () {
-      toastr.error("Error checking for existing assessment");
-    },
-  });
+    $.ajax({
+        url: "../controller_new.php",
+        type: "POST",
+        data: {
+            action: "check_existing_assessment",
+            subject_id: subject_id,
+            assessment_type: assessment_type,
+            term: term,
+            class_ids: class_ids,
+        },
+        success: function (response) {
+            if (response.exists) {
+                // Store assessment ID for later use
+                existingAssessmentId = response.assessment_id;
+                // Show confirmation modal
+                $("#existingAssessmentModal").modal("show");
+            } else {
+                existingAssessmentId = null;
+                // Show empty form with single question
+                showNewAssessmentForm();
+                $(".assessment-settings-section, .questions-section").show();
+            }
+        },
+        error: function () {
+            toastr.error("Error checking for existing assessment");
+        },
+    });
 }
 
 function handleExistingAssessmentResponse(continueWithExisting) {
-  $("#existingAssessmentModal").modal("hide");
+    $("#existingAssessmentModal").modal("hide");
 
-  if (continueWithExisting) {
-    // Load existing assessment
-    loadExistingAssessment(existingAssessmentId);
-    $(".assessment-settings-section, .questions-section").show();
-  } else {
-    // Clear only the assigned classes
-    $(".classes_container").empty();
-    // Hide assessment sections until new classes are selected
-    $(".assessment-settings-section, .questions-section").hide();
-    toastr.info("Please select different classes for the new assessment");
-  }
+    if (continueWithExisting) {
+        // Load existing assessment
+        loadExistingAssessment(existingAssessmentId);
+        $(".assessment-settings-section, .questions-section").show();
+    } else {
+        // Clear only the assigned classes
+        $(".classes_container").empty();
+        // Hide assessment sections until new classes are selected
+        $(".assessment-settings-section, .questions-section").hide();
+        toastr.info("Please select different classes for the new assessment");
+    }
 }
 
 function showNewAssessmentForm() {
@@ -216,7 +217,7 @@ function loadMathQuillResources(callback) {
     // Add script
     var script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathquill/0.10.1/mathquill.min.js';
-    script.onload = function() {
+    script.onload = function () {
         try {
             _mathquill_loader.MQ = MathQuill.getInterface(2);
         } catch (e) {
@@ -225,7 +226,7 @@ function loadMathQuillResources(callback) {
         _mathquill_loader.loaded = true;
         if (callback) callback();
     };
-    script.onerror = function() {
+    script.onerror = function () {
         console.warn('Failed to load MathQuill script');
         if (callback) callback();
     };
@@ -237,7 +238,7 @@ function renderEquationsIn($editable) {
     // Only proceed if MathQuill is available
     if (!_mathquill_loader.loaded || !_mathquill_loader.MQ) return;
 
-    $editable.find('span.math-editor-rendered').each(function() {
+    $editable.find('span.math-editor-rendered').each(function () {
         var $span = $(this);
         var latex = $span.attr('data-latex') || '';
         if (!latex) return; // nothing to render
@@ -245,7 +246,7 @@ function renderEquationsIn($editable) {
         // Always re-render from data-latex to normalize display (clear any saved MathQuill DOM)
         try {
             // Ensure the span is visible and treated as a block for MathQuill
-            try { $span.css({display: 'inline-block', margin: '0 4px', 'line-height': '1.2', 'vertical-align': 'middle'}); } catch (e) {}
+            try { $span.css({ display: 'inline-block', margin: '0 4px', 'line-height': '1.2', 'vertical-align': 'middle' }); } catch (e) { }
             // Clear existing nested MathQuill DOM if present
             $span.empty();
             var mq = _mathquill_loader.MQ.StaticMath($span[0]);
@@ -432,19 +433,19 @@ function handleEditEquation($target) {
 function ensureMathQuillPluginRegistered() {
     if (_mathquill_loader.initialized) return;
 
-    var registerPlugin = function() {
+    var registerPlugin = function () {
         if (typeof window.jQuery === 'undefined') return false;
         var $ = window.jQuery;
         if (!$.summernote || !$.summernote.plugins) return false;
 
         // Register the plugin
         $.extend($.summernote.plugins, {
-            'mathquill': function(context) {
+            'mathquill': function (context) {
                 var ui = $.summernote.ui;
                 var self = this;
                 var mathFieldInstance = null;
 
-                self.createModal = function() {
+                self.createModal = function () {
                     var modalId = 'mathQuillModal';
                     if ($('#' + modalId).length === 0) {
                         var modalHtml = '\n                        <div class="modal fade" id="' + modalId + '" tabindex="-1" role="dialog" aria-hidden="true">\n                            <div class="modal-dialog modal-lg" role="document">\n                                <div class="modal-content">\n                                    <div class="modal-header bg-primary text-white">\n                                        <h5 class="modal-title">Insert/Edit Equation</h5>\n                                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">\n                                            <span aria-hidden="true">&times;</span>\n                                        </button>\n                                    </div>\n                                    <div class="modal-body">\n                                        <p class="text-muted small">Type your LaTeX equation below:</p>\n                                        <div id="math-input-field" class="mathquill-editable" style="min-height:50px;font-size:18px;padding:6px;border:1px solid #e5e7eb;border-radius:4px;background:#fff"></div>\n                                        <div class="mt-3">\n                                            <small class="text-muted">Live LaTeX:</small> <code id="latex-output" style="display:block;white-space:pre-wrap;margin-top:6px"></code>\n                                        </div>\n                                    </div>\n                                    <div class="modal-footer">\n                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>\n                                        <button type="button" id="insert-equation-btn" class="btn btn-primary">Insert/Update</button>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                    ';
@@ -452,15 +453,15 @@ function ensureMathQuillPluginRegistered() {
                     }
                 };
 
-                self.initialize = function() {
+                self.initialize = function () {
                     self.createModal();
 
-                    $('#mathQuillModal').on('shown.bs.modal', function() {
+                    $('#mathQuillModal').on('shown.bs.modal', function () {
                         // Ensure MathQuill resources are loaded
-                        loadMathQuillResources(function() {
+                        loadMathQuillResources(function () {
                             var $inputField = $('#math-input-field');
                             if (mathFieldInstance) {
-                                try { mathFieldInstance.revert(); } catch (e) {}
+                                try { mathFieldInstance.revert(); } catch (e) { }
                                 mathFieldInstance = null;
                             }
                             $inputField.empty();
@@ -468,41 +469,41 @@ function ensureMathQuillPluginRegistered() {
                                 mathFieldInstance = _mathquill_loader.MQ.MathField($inputField[0], {
                                     spaceBehavesLikeTab: true,
                                     handlers: {
-                                        edit: function() {
-                                            try { $('#latex-output').text(mathFieldInstance.latex()); } catch (e) {}
+                                        edit: function () {
+                                            try { $('#latex-output').text(mathFieldInstance.latex()); } catch (e) { }
                                         }
                                     }
                                 });
 
                                 // expose the current field globally for the insert handler
-                                try { window.__summernoteMathCurrentField = mathFieldInstance; } catch (e) {}
+                                try { window.__summernoteMathCurrentField = mathFieldInstance; } catch (e) { }
 
                                 // If there is a target being edited, load its latex
                                 var $target = window.__summernoteMathEditTarget || null;
                                 if ($target && $target.length) {
                                     var latex = $target.attr('data-latex') || '';
-                                    try { mathFieldInstance.latex(latex); } catch (e) {}
+                                    try { mathFieldInstance.latex(latex); } catch (e) { }
                                 } else {
-                                    try { mathFieldInstance.latex(''); } catch (e) {}
+                                    try { mathFieldInstance.latex(''); } catch (e) { }
                                 }
 
-                                try { $('#latex-output').text(mathFieldInstance.latex()); } catch (e) {}
+                                try { $('#latex-output').text(mathFieldInstance.latex()); } catch (e) { }
                                 mathFieldInstance.focus();
                             }
                         });
                     });
 
-                    $('#mathQuillModal').on('hidden.bs.modal', function() {
+                    $('#mathQuillModal').on('hidden.bs.modal', function () {
                         // Clear edit target
                         window.__summernoteMathEditTarget = null;
                         // Clear current math field reference
-                        try { window.__summernoteMathCurrentField = null; } catch (e) {}
+                        try { window.__summernoteMathCurrentField = null; } catch (e) { }
                     });
 
                     // Insert/update button: register once globally to avoid multiple handlers and ensure target editor
                     if (!window.__summernoteMathInsertHandlerRegistered) {
                         window.__summernoteMathInsertHandlerRegistered = true;
-                        $(document).on('click', '#insert-equation-btn', function() {
+                        $(document).on('click', '#insert-equation-btn', function () {
                             // The mathFieldInstance used inside shown.bs.modal is stored on window for cross-scope access
                             var mathField = window.__summernoteMathCurrentField || mathFieldInstance || null;
                             if (!mathField) { $('#mathQuillModal').modal('hide'); return; }
@@ -520,7 +521,7 @@ function ensureMathQuillPluginRegistered() {
                                 renderEquationsIn($editable);
                             } else if (editableElem) {
                                 try {
-                                    var nodeHtml = '<span contenteditable="false" class="math-editor-rendered" data-latex="' + latex.replace(/"/g,'&quot;') + '"></span>';
+                                    var nodeHtml = '<span contenteditable="false" class="math-editor-rendered" data-latex="' + latex.replace(/"/g, '&quot;') + '"></span>';
                                     // insert directly into the editable DOM
                                     $(editableElem).append(nodeHtml);
                                     renderEquationsIn($(editableElem));
@@ -535,27 +536,27 @@ function ensureMathQuillPluginRegistered() {
                                 var inserted = false;
                                 try {
                                     if (window.__summernoteMathEditorContext && typeof window.__summernoteMathEditorContext.invoke === 'function') {
-                                        var nodeHtml = '<span contenteditable="false" class="math-editor-rendered" data-latex="' + latex.replace(/"/g,'&quot;') + '"></span>';
+                                        var nodeHtml = '<span contenteditable="false" class="math-editor-rendered" data-latex="' + latex.replace(/"/g, '&quot;') + '"></span>';
                                         window.__summernoteMathEditorContext.invoke('editor.insertNode', $(nodeHtml)[0]);
                                         try {
                                             var $editable = $(window.__summernoteMathEditorContext.layoutInfo.editable);
                                             renderEquationsIn($editable);
-                                        } catch (e) {}
+                                        } catch (e) { }
                                         inserted = true;
                                     }
-                                } catch (e) {}
+                                } catch (e) { }
 
                                 // Fallback: try to use stored textarea element's summernote instance
                                 if (!inserted && window.__summernoteMathEditorElement) {
                                     try {
-                                        var nodeHtml = '<span contenteditable="false" class="math-editor-rendered" data-latex="' + latex.replace(/"/g,'&quot;') + '"></span>';
+                                        var nodeHtml = '<span contenteditable="false" class="math-editor-rendered" data-latex="' + latex.replace(/"/g, '&quot;') + '"></span>';
                                         window.__summernoteMathEditorElement.summernote('insertNode', $(nodeHtml)[0]);
                                         try {
                                             var $editable = window.__summernoteMathEditorElement.closest('.note-editor').find('.note-editable');
                                             renderEquationsIn($editable);
-                                        } catch (e) {}
+                                        } catch (e) { }
                                         inserted = true;
-                                    } catch (e) {}
+                                    } catch (e) { }
                                 }
                             }
 
@@ -570,11 +571,11 @@ function ensureMathQuillPluginRegistered() {
                 };
 
                 // Define the toolbar button
-                context.memo('button.mathquill', function() {
+                context.memo('button.mathquill', function () {
                     var button = ui.button({
                         contents: '<i class="fas fa-square-root-alt"></i>',
                         tooltip: 'Insert Equation',
-                        click: function() {
+                        click: function () {
                             // clear previous inline edit target
                             window.__summernoteMathEditTarget = null;
                             // store this summernote context so the modal insert targets this editor
@@ -608,7 +609,7 @@ function ensureMathQuillPluginRegistered() {
         window.addEventListener('load', registerPlugin);
         // Small retry loop in case Summernote is inserted dynamically
         var attempts = 0;
-        var retry = function() { attempts++; if (!registerPlugin() && attempts < 20) setTimeout(retry, 200); };
+        var retry = function () { attempts++; if (!registerPlugin() && attempts < 20) setTimeout(retry, 200); };
         setTimeout(retry, 200);
     }
 }
@@ -621,7 +622,7 @@ function initializeSummernote() {
     // Load MathQuill resources in background (non-blocking)
     loadMathQuillResources();
 
-    $('.question-textarea').each(function() {
+    $('.question-textarea').each(function () {
         var $el = $(this);
         if ($el.data('summernote-initialized')) return;
         $el.summernote({
@@ -637,24 +638,24 @@ function initializeSummernote() {
                 mathquill: 'mathquill'
             },
             callbacks: {
-                onInit: function() {
+                onInit: function () {
                     var $editable = $(this).data('summernote').layoutInfo.editable;
                     // render any existing equations
                     renderEquationsIn($editable);
                     // double-click to edit
                     $($editable).off('dblclick', '.math-editor-rendered');
-                    $($editable).on('dblclick', '.math-editor-rendered', function(e) {
+                    $($editable).on('dblclick', '.math-editor-rendered', function (e) {
                         e.preventDefault(); e.stopPropagation();
                         // set edit target and store originating editable element
                         window.__summernoteMathEditorEditable = $editable[0];
                         handleEditEquation($(this));
                     });
                 },
-                onChange: function() {
+                onChange: function () {
                     var $editable = $(this).data('summernote').layoutInfo.editable;
                     renderEquationsIn($editable);
                 },
-                onKeyup: function() {
+                onKeyup: function () {
                     var $editable = $(this).data('summernote').layoutInfo.editable;
                     renderEquationsIn($editable);
                 }
@@ -663,7 +664,7 @@ function initializeSummernote() {
         $el.data('summernote-initialized', true);
     });
 
-    $('.option-textarea').each(function() {
+    $('.option-textarea').each(function () {
         var $el = $(this);
         if ($el.data('summernote-initialized')) return;
         $el.summernote({
@@ -679,22 +680,22 @@ function initializeSummernote() {
                 mathquill: 'mathquill'
             },
             callbacks: {
-                onInit: function() {
+                onInit: function () {
                     var $editable = $(this).data('summernote').layoutInfo.editable;
                     renderEquationsIn($editable);
                     $($editable).off('dblclick', '.math-editor-rendered');
-                    $($editable).on('dblclick', '.math-editor-rendered', function(e) {
+                    $($editable).on('dblclick', '.math-editor-rendered', function (e) {
                         e.preventDefault(); e.stopPropagation();
                         // store originating editable element for correct insertion
                         window.__summernoteMathEditorEditable = $editable[0];
                         handleEditEquation($(this));
                     });
                 },
-                onChange: function() {
+                onChange: function () {
                     var $editable = $(this).data('summernote').layoutInfo.editable;
                     renderEquationsIn($editable);
                 },
-                onKeyup: function() {
+                onKeyup: function () {
                     var $editable = $(this).data('summernote').layoutInfo.editable;
                     renderEquationsIn($editable);
                 }
@@ -707,19 +708,19 @@ function initializeSummernote() {
 function updateModalCheckboxes() {
     // Get all currently displayed class IDs from the buttons
     let displayedClassIds = [];
-    $('.classes_container button').each(function() {
+    $('.classes_container button').each(function () {
         displayedClassIds.push($(this).data('class-id').toString());
     });
 
     // Update checkboxes in modal
-    $('.class-checkbox').each(function() {
+    $('.class-checkbox').each(function () {
         $(this).prop('checked', displayedClassIds.includes($(this).val()));
     });
 }
 function saveSelectedClasses() {
     // Get all checked checkboxes
     let selectedClasses = [];
-    $('.class-checkbox:checked').each(function() {
+    $('.class-checkbox:checked').each(function () {
         selectedClasses.push({
             id: $(this).val(),
             name: $(this).next('label').text().trim()
@@ -735,7 +736,7 @@ function saveSelectedClasses() {
     $('.classes_container').empty();
 
     // Add new class buttons
-    selectedClasses.forEach(function(classItem) {
+    selectedClasses.forEach(function (classItem) {
         let classButton = `
     <button class="btn btn-sm btn-primary d-flex" onclick="remove_this_class(this)" 
             data-class-id="${classItem.id}">
@@ -785,7 +786,7 @@ function saveSelectedClasses() {
 function addNewQuestion() {
     // Determine next question number by scanning existing labels like "Question 6"
     let maxNum = 0;
-    $('#questions-container .question-block').each(function() {
+    $('#questions-container .question-block').each(function () {
         const labelText = $(this).find('.form-group > label').first().text().trim();
         const m = labelText.match(/Question\s*(\d+)/i);
         if (m && m[1]) {
@@ -890,7 +891,7 @@ function deleteQuestion(questionId) {
         $.post('../controller_new.php', {
             action: 'delete_question',
             question_id: questionId
-        }, function(response) {
+        }, function (response) {
             if (response.success) {
                 $(`[data-question-id="${questionId}"]`).remove();
                 toastr.success('Question deleted successfully');
@@ -949,316 +950,316 @@ function setupSecurityFeatures() {
     });
 }
 function saveEntireAssessment_for_create_assessment() {
-  // Validate required fields
-  console.log("lll");
-  if (!$("#select_subject_field").val()) {
-    toastr.error("Please select a subject");
-    return;
-  }
-
-  if (!$(".assessment_btn.select_btn.active").length) {
-    toastr.error("Please select an assessment type");
-    return;
-  }
-
-  if (!$(".term_btn.select_btn.active").length) {
-    toastr.error("Please select a term");
-    return;
-  }
-
-  if ($(".classes_container button").length === 0) {
-    toastr.error("Please assign at least one class");
-    return;
-  }
-
-  if ($(".question-block").length === 0) {
-    toastr.error("Please add at least one question");
-    return;
-  }
-
-  let hasError = false;
-  $(".question-block").each(function (index) {
-    const questionText = $(this).find(".question-textarea").summernote("code");
-    const hasCheckedAnswer =
-      $(this).find('input[type="radio"]:checked').length > 0;
-
-    if (!questionText.trim()) {
-      toastr.error(`Question ${index + 1} cannot be empty`);
-      hasError = true;
-      return false;
+    // Validate required fields
+    console.log("lll");
+    if (!$("#select_subject_field").val()) {
+        toastr.error("Please select a subject");
+        return;
     }
 
-    if (!hasCheckedAnswer) {
-      toastr.error(`Please select correct answer for Question ${index + 1}`);
-      hasError = true;
-      return false;
+    if (!$(".assessment_btn.select_btn.active").length) {
+        toastr.error("Please select an assessment type");
+        return;
     }
 
-    // Validate all options have content
-    $(this)
-      .find(".option-textarea")
-      .each(function (optIndex) {
-        if (!$(this).summernote("code").trim()) {
-          toastr.error(
-            `Option ${optIndex + 1} in Question ${index + 1} cannot be empty`,
-          );
-          hasError = true;
-          return false;
+    if (!$(".term_btn.select_btn.active").length) {
+        toastr.error("Please select a term");
+        return;
+    }
+
+    if ($(".classes_container button").length === 0) {
+        toastr.error("Please assign at least one class");
+        return;
+    }
+
+    if ($(".question-block").length === 0) {
+        toastr.error("Please add at least one question");
+        return;
+    }
+
+    let hasError = false;
+    $(".question-block").each(function (index) {
+        const questionText = $(this).find(".question-textarea").summernote("code");
+        const hasCheckedAnswer =
+            $(this).find('input[type="radio"]:checked').length > 0;
+
+        if (!questionText.trim()) {
+            toastr.error(`Question ${index + 1} cannot be empty`);
+            hasError = true;
+            return false;
         }
-      });
-  });
 
-  if (hasError) return;
+        if (!hasCheckedAnswer) {
+            toastr.error(`Please select correct answer for Question ${index + 1}`);
+            hasError = true;
+            return false;
+        }
 
-  // Collect settings data
-  const settingsData = {
-    assessment_id: existingAssessmentId,
-    subject_id: $("#select_subject_field").val(),
-    instruction: $("#assessment_instruction").val(),
-    duration_set: $("#set_duration_checkbox").is(":checked") ? 1 : 0,
-    duration: $("#assessment_duration").val() || 0,
-    deadline_set: $("#set_deadline_checkbox").is(":checked") ? 1 : 0,
-    deadline_date: $("#deadline_date").val() || "",
-    deadline_time: $("#deadline_time").val() || "",
-    desired_score: $("#desired_score").val() || 0,
-    round_off_decimal: $("#round_off_dec").is(":checked") ? 1 : 0,
-    ca_type: $('[name="ca"]:checked').val() || 0,
-    class_ids: Array.from($(".classes_container button"))
-      .map((btn) => $(btn).data("class-id"))
-      .join(","),
-    assessment_type: $(".assessment_btn.select_btn.active").data("id"),
-    term: $(".term_btn.select_btn.active").data("id"),
-  };
+        // Validate all options have content
+        $(this)
+            .find(".option-textarea")
+            .each(function (optIndex) {
+                if (!$(this).summernote("code").trim()) {
+                    toastr.error(
+                        `Option ${optIndex + 1} in Question ${index + 1} cannot be empty`,
+                    );
+                    hasError = true;
+                    return false;
+                }
+            });
+    });
 
-  // Collect questions data
-  const questions = [];
-  $(".question-block").each(function () {
-    const questionData = {
-      id: $(this).data("question-id") || null,
-      question: $(this).find(".question-textarea").summernote("code"),
-      options: [],
+    if (hasError) return;
+
+    // Collect settings data
+    const settingsData = {
+        assessment_id: existingAssessmentId,
+        subject_id: $("#select_subject_field").val(),
+        instruction: $("#assessment_instruction").val(),
+        duration_set: $("#set_duration_checkbox").is(":checked") ? 1 : 0,
+        duration: $("#assessment_duration").val() || 0,
+        deadline_set: $("#set_deadline_checkbox").is(":checked") ? 1 : 0,
+        deadline_date: $("#deadline_date").val() || "",
+        deadline_time: $("#deadline_time").val() || "",
+        desired_score: $("#desired_score").val() || 0,
+        round_off_decimal: $("#round_off_dec").is(":checked") ? 1 : 0,
+        ca_type: $('[name="ca"]:checked').val() || 0,
+        class_ids: Array.from($(".classes_container button"))
+            .map((btn) => $(btn).data("class-id"))
+            .join(","),
+        assessment_type: $(".assessment_btn.select_btn.active").data("id"),
+        term: $(".term_btn.select_btn.active").data("id"),
     };
 
-    $(this)
-      .find(".option-group")
-      .each(function () {
-        questionData.options.push({
-          id: $(this).find(".option-textarea").data("option-id") || null,
-          text: $(this).find(".option-textarea").summernote("code"),
-          isAnswer: $(this).find('input[type="radio"]').is(":checked"),
-        });
-      });
+    // Collect questions data
+    const questions = [];
+    $(".question-block").each(function () {
+        const questionData = {
+            id: $(this).data("question-id") || null,
+            question: $(this).find(".question-textarea").summernote("code"),
+            options: [],
+        };
 
-    questions.push(questionData);
-  });
+        $(this)
+            .find(".option-group")
+            .each(function () {
+                questionData.options.push({
+                    id: $(this).find(".option-textarea").data("option-id") || null,
+                    text: $(this).find(".option-textarea").summernote("code"),
+                    isAnswer: $(this).find('input[type="radio"]').is(":checked"),
+                });
+            });
 
-  // Show loading state
-  const saveBtn = $('.btn-primary:contains("Save Assessment")');
-  const originalText = saveBtn.text();
-  saveBtn.prop("disabled", true).text("Saving...");
+        questions.push(questionData);
+    });
 
-  // Send to server
-  $.ajax({
-    url: "../controller_new.php",
-    type: "POST",
-    data: {
-      action: "save_update_entire_assessment_create",
-      settings: JSON.stringify(settingsData),
-      questions: JSON.stringify(questions),
-    },
-    success: function (response) {
-      // console.log(response);
-      if (response.success) {
-        toastr.success(response.message);
-        if (response.assessment_id) {
-          existingAssessmentId = response.assessment_id;
-        }
-        // If server returned mapping of created/updated IDs, sync them into the DOM
-        if (response.mapping && Array.isArray(response.mapping)) {
-          $(".question-block").each(function (qIndex) {
-            const map = response.mapping[qIndex];
-            if (!map) return;
-            // set question id attribute
-            $(this)
-              .attr("data-question-id", map.question_id)
-              .data("question-id", map.question_id);
+    // Show loading state
+    const saveBtn = $('.btn-primary:contains("Save Assessment")');
+    const originalText = saveBtn.text();
+    saveBtn.prop("disabled", true).text("Saving...");
 
-            // set option ids in order (positionally)
-            $(this)
-              .find(".option-group")
-              .each(function (optIndex) {
-                const optId =
-                  map.options && map.options[optIndex]
-                    ? map.options[optIndex]
-                    : null;
-                if (optId) {
-                  $(this)
-                    .find(".option-textarea")
-                    .attr("data-option-id", optId)
-                    .data("option-id", optId);
-                } else {
-                  $(this)
-                    .find(".option-textarea")
-                    .removeAttr("data-option-id")
-                    .data("option-id", null);
+    // Send to server
+    $.ajax({
+        url: "../controller_new.php",
+        type: "POST",
+        data: {
+            action: "save_update_entire_assessment_create",
+            settings: JSON.stringify(settingsData),
+            questions: JSON.stringify(questions),
+        },
+        success: function (response) {
+            // console.log(response);
+            if (response.success) {
+                toastr.success(response.message);
+                if (response.assessment_id) {
+                    existingAssessmentId = response.assessment_id;
                 }
-              });
-          });
-        }
-        // setTimeout(() => {
-        //     window.location.href = 'assessment';
-        // }, 1500);
-      } else {
-        toastr.error(response.message || "Error saving assessment");
-      }
-    },
-    error: function () {
-      toastr.error("Network error occurred");
-    },
-    complete: function () {
-      saveBtn.prop("disabled", false).text(originalText);
-    },
-  });
+                // If server returned mapping of created/updated IDs, sync them into the DOM
+                if (response.mapping && Array.isArray(response.mapping)) {
+                    $(".question-block").each(function (qIndex) {
+                        const map = response.mapping[qIndex];
+                        if (!map) return;
+                        // set question id attribute
+                        $(this)
+                            .attr("data-question-id", map.question_id)
+                            .data("question-id", map.question_id);
+
+                        // set option ids in order (positionally)
+                        $(this)
+                            .find(".option-group")
+                            .each(function (optIndex) {
+                                const optId =
+                                    map.options && map.options[optIndex]
+                                        ? map.options[optIndex]
+                                        : null;
+                                if (optId) {
+                                    $(this)
+                                        .find(".option-textarea")
+                                        .attr("data-option-id", optId)
+                                        .data("option-id", optId);
+                                } else {
+                                    $(this)
+                                        .find(".option-textarea")
+                                        .removeAttr("data-option-id")
+                                        .data("option-id", null);
+                                }
+                            });
+                    });
+                }
+                // setTimeout(() => {
+                //     window.location.href = 'assessment';
+                // }, 1500);
+            } else {
+                toastr.error(response.message || "Error saving assessment");
+            }
+        },
+        error: function () {
+            toastr.error("Network error occurred");
+        },
+        complete: function () {
+            saveBtn.prop("disabled", false).text(originalText);
+        },
+    });
 }
 function saveEntireAssessment() {
-  // Validate required fields
+    // Validate required fields
 
-  if (!$("#select_subject_field").val()) {
-    toastr.error("Please select a subject");
-    return;
-  }
-
-  if (!$(".assessment_btn.select_btn.active").length) {
-    toastr.error("Please select an assessment type");
-    return;
-  }
-
-  if (!$(".term_btn.select_btn.active").length) {
-    toastr.error("Please select a term");
-    return;
-  }
-
-  if ($(".classes_container button").length === 0) {
-    toastr.error("Please assign at least one class");
-    return;
-  }
-
-  if ($(".question-block").length === 0) {
-    toastr.error("Please add at least one question");
-    return;
-  }
-
-  let hasError = false;
-  $(".question-block").each(function (index) {
-    const questionText = $(this).find(".question-textarea").summernote("code");
-    const hasCheckedAnswer =
-      $(this).find('input[type="radio"]:checked').length > 0;
-
-    if (!questionText.trim()) {
-      toastr.error(`Question ${index + 1} cannot be empty`);
-      hasError = true;
-      return false;
+    if (!$("#select_subject_field").val()) {
+        toastr.error("Please select a subject");
+        return;
     }
 
-    if (!hasCheckedAnswer) {
-      toastr.error(`Please select correct answer for Question ${index + 1}`);
-      hasError = true;
-      return false;
+    if (!$(".assessment_btn.select_btn.active").length) {
+        toastr.error("Please select an assessment type");
+        return;
     }
 
-    // Validate all options have content
-    $(this)
-      .find(".option-textarea")
-      .each(function (optIndex) {
-        if (!$(this).summernote("code").trim()) {
-          toastr.error(
-            `Option ${optIndex + 1} in Question ${index + 1} cannot be empty`,
-          );
-          hasError = true;
-          return false;
+    if (!$(".term_btn.select_btn.active").length) {
+        toastr.error("Please select a term");
+        return;
+    }
+
+    if ($(".classes_container button").length === 0) {
+        toastr.error("Please assign at least one class");
+        return;
+    }
+
+    if ($(".question-block").length === 0) {
+        toastr.error("Please add at least one question");
+        return;
+    }
+
+    let hasError = false;
+    $(".question-block").each(function (index) {
+        const questionText = $(this).find(".question-textarea").summernote("code");
+        const hasCheckedAnswer =
+            $(this).find('input[type="radio"]:checked').length > 0;
+
+        if (!questionText.trim()) {
+            toastr.error(`Question ${index + 1} cannot be empty`);
+            hasError = true;
+            return false;
         }
-      });
-  });
 
-  if (hasError) return;
+        if (!hasCheckedAnswer) {
+            toastr.error(`Please select correct answer for Question ${index + 1}`);
+            hasError = true;
+            return false;
+        }
 
-  // Collect settings data
-  const settingsData = {
-    assessment_id: existingAssessmentId,
-    subject_id: $("#select_subject_field").val(),
-    instruction: $("#assessment_instruction").val(),
-    duration_set: $("#set_duration_checkbox").is(":checked") ? 1 : 0,
-    duration: $("#assessment_duration").val() || 0,
-    deadline_set: $("#set_deadline_checkbox").is(":checked") ? 1 : 0,
-    deadline_date: $("#deadline_date").val() || "",
-    deadline_time: $("#deadline_time").val() || "",
-    desired_score: $("#desired_score").val() || 0,
-    round_off_decimal: $("#round_off_dec").is(":checked") ? 1 : 0,
-    ca_type: $('[name="ca"]:checked').val() || 0,
-    class_ids: Array.from($(".classes_container button"))
-      .map((btn) => $(btn).data("class-id"))
-      .join(","),
-    assessment_type: $(".assessment_btn.select_btn.active").data("id"),
-    term: $(".term_btn.select_btn.active").data("id"),
-  };
+        // Validate all options have content
+        $(this)
+            .find(".option-textarea")
+            .each(function (optIndex) {
+                if (!$(this).summernote("code").trim()) {
+                    toastr.error(
+                        `Option ${optIndex + 1} in Question ${index + 1} cannot be empty`,
+                    );
+                    hasError = true;
+                    return false;
+                }
+            });
+    });
 
-  // Collect questions data
-  const questions = [];
-  $(".question-block").each(function () {
-    const questionData = {
-      id: $(this).data("question-id") || null,
-      question: $(this).find(".question-textarea").summernote("code"),
-      options: [],
+    if (hasError) return;
+
+    // Collect settings data
+    const settingsData = {
+        assessment_id: existingAssessmentId,
+        subject_id: $("#select_subject_field").val(),
+        instruction: $("#assessment_instruction").val(),
+        duration_set: $("#set_duration_checkbox").is(":checked") ? 1 : 0,
+        duration: $("#assessment_duration").val() || 0,
+        deadline_set: $("#set_deadline_checkbox").is(":checked") ? 1 : 0,
+        deadline_date: $("#deadline_date").val() || "",
+        deadline_time: $("#deadline_time").val() || "",
+        desired_score: $("#desired_score").val() || 0,
+        round_off_decimal: $("#round_off_dec").is(":checked") ? 1 : 0,
+        ca_type: $('[name="ca"]:checked').val() || 0,
+        class_ids: Array.from($(".classes_container button"))
+            .map((btn) => $(btn).data("class-id"))
+            .join(","),
+        assessment_type: $(".assessment_btn.select_btn.active").data("id"),
+        term: $(".term_btn.select_btn.active").data("id"),
     };
 
-    $(this)
-      .find(".option-group")
-      .each(function () {
-        questionData.options.push({
-          id: $(this).find(".option-textarea").data("option-id") || null,
-          text: $(this).find(".option-textarea").summernote("code"),
-          isAnswer: $(this).find('input[type="radio"]').is(":checked"),
-        });
-      });
+    // Collect questions data
+    const questions = [];
+    $(".question-block").each(function () {
+        const questionData = {
+            id: $(this).data("question-id") || null,
+            question: $(this).find(".question-textarea").summernote("code"),
+            options: [],
+        };
 
-    questions.push(questionData);
-  });
+        $(this)
+            .find(".option-group")
+            .each(function () {
+                questionData.options.push({
+                    id: $(this).find(".option-textarea").data("option-id") || null,
+                    text: $(this).find(".option-textarea").summernote("code"),
+                    isAnswer: $(this).find('input[type="radio"]').is(":checked"),
+                });
+            });
 
-  // Show loading state
-  const saveBtn = $('.btn-primary:contains("Save Assessment")');
-  const originalText = saveBtn.text();
-  saveBtn.prop("disabled", true).text("Saving...");
+        questions.push(questionData);
+    });
 
-  // Send to server
-  $.ajax({
-    url: "../controller_new.php",
-    type: "POST",
-    data: {
-      action: "save_update_entire_assessment",
-      settings: JSON.stringify(settingsData),
-      questions: JSON.stringify(questions),
-    },
-    success: function (response) {
-      // console.log(response);
-      if (response.success) {
-        toastr.success(response.message);
-        if (response.assessment_id) {
-          existingAssessmentId = response.assessment_id;
-        }
-        // setTimeout(() => {
-        //     window.location.href = 'assessment';
-        // }, 1500);
-      } else {
-        toastr.error(response.message || "Error saving assessment");
-      }
-    },
-    error: function () {
-      toastr.error("Network error occurred");
-    },
-    complete: function () {
-      saveBtn.prop("disabled", false).text(originalText);
-    },
-  });
+    // Show loading state
+    const saveBtn = $('.btn-primary:contains("Save Assessment")');
+    const originalText = saveBtn.text();
+    saveBtn.prop("disabled", true).text("Saving...");
+
+    // Send to server
+    $.ajax({
+        url: "../controller_new.php",
+        type: "POST",
+        data: {
+            action: "save_update_entire_assessment",
+            settings: JSON.stringify(settingsData),
+            questions: JSON.stringify(questions),
+        },
+        success: function (response) {
+            // console.log(response);
+            if (response.success) {
+                toastr.success(response.message);
+                if (response.assessment_id) {
+                    existingAssessmentId = response.assessment_id;
+                }
+                // setTimeout(() => {
+                //     window.location.href = 'assessment';
+                // }, 1500);
+            } else {
+                toastr.error(response.message || "Error saving assessment");
+            }
+        },
+        error: function () {
+            toastr.error("Network error occurred");
+        },
+        complete: function () {
+            saveBtn.prop("disabled", false).text(originalText);
+        },
+    });
 }
 function saveExamProgress() {
     $.ajax({
@@ -1460,7 +1461,7 @@ function displayQuestion(questionData) {
     }
 
     // Ensure MathQuill resources are loaded and then render math in the container
-    loadMathQuillResources(function() {
+    loadMathQuillResources(function () {
         try {
             renderEquationsIn($(container));
         } catch (e) {
@@ -1471,14 +1472,14 @@ function displayQuestion(questionData) {
     // Post-render: some stored option HTML may have an empty <p><br></p> before the math span,
     // which can collapse the visible area. Make sure option wrappers are visible if they contain math spans.
     try {
-        $(container).find('.options .icheck-gray-dark, .option-group').each(function() {
+        $(container).find('.options .icheck-gray-dark, .option-group').each(function () {
             var $this = $(this);
             var text = $this.text().trim();
             var hasMath = $this.find('span.math-editor-rendered').length > 0;
             if (hasMath && text.length === 0) {
                 // Make sure the math span (and container) is visible
-                $this.find('span.math-editor-rendered').css({display: 'inline-block'});
-                $this.css({minHeight: '30px'});
+                $this.find('span.math-editor-rendered').css({ display: 'inline-block' });
+                $this.css({ minHeight: '30px' });
             }
         });
     } catch (e) {
@@ -1493,7 +1494,7 @@ function convertDollarLatexToSpans(containerElement) {
     // Operate on innerHTML string
     var html = containerElement.innerHTML;
     // Replace all $$...$$ blocks (non-greedy)
-    var replaced = html.replace(/\$\$([\s\S]*?)\$\$/g, function(match, latex) {
+    var replaced = html.replace(/\$\$([\s\S]*?)\$\$/g, function (match, latex) {
         // Trim, remove zero-width and non-breaking spaces, and escape double quotes
         var clean = latex.replace(/\u200B/g, '').replace(/&nbsp;/g, ' ').trim().replace(/"/g, '&quot;');
         return '<span contenteditable="false" class="math-editor-rendered" data-latex="' + clean + '"></span>';
@@ -1530,9 +1531,9 @@ function setupNavigation() {
 }
 
 function toggle_term_btn(btn) {
-  $(".term_btn").removeClass("active");
-  $(btn).addClass("active");
-  checkExistingAssessment();
+    $(".term_btn").removeClass("active");
+    $(btn).addClass("active");
+    checkExistingAssessment();
 }
 
 function toggle_assessment_btn(event) {
@@ -1694,41 +1695,41 @@ function showNotification(message) {
 
 
 
-        function launch_modal_reset_assessment(assessment_id, student_id) {
-            $('#assessment_id').val(assessment_id);
-            $('#student_id').val(student_id);
-            $('#reset_assessment_modal').modal('show');
-        }
+function launch_modal_reset_assessment(assessment_id, student_id) {
+    $('#assessment_id').val(assessment_id);
+    $('#student_id').val(student_id);
+    $('#reset_assessment_modal').modal('show');
+}
 
-        function reset_assessment() {
-            var assessment_id = $('#assessment_id').val();
-            var student_id = $('#student_id').val();
-            $.ajax({
-                url: '../controller_new.php',
-                type: 'POST',
-                data: {
-                    action: 'reset_assessment',
-                    assessment_id: assessment_id,
-                    student_id: student_id
-                },
-                beforeSend: () => {
-                    $("#reset_assessment_modal_btn").html('Processing...').attr('disabled', true)
-                },
-                success: function(response) {
-                    console.log(response)
-                    // var res = JSON.parse(response);
-                    if (response.success) {
-                        toastr.success('Assessment has been reset successfully.');
-                        $('#reset_assessment_modal').modal('hide');   
-                        // reload the page
-                        location.reload();
-                    }
-                },
-                complete: () => {
-                    $("#reset_assessment_modal_btn").html('Reset Assessment').attr('disabled', false)
-                },
-                error: function() {
-                    toastr.error('An error occurred while processing your request.');
-                }
-            });
+function reset_assessment() {
+    var assessment_id = $('#assessment_id').val();
+    var student_id = $('#student_id').val();
+    $.ajax({
+        url: '../controller_new.php',
+        type: 'POST',
+        data: {
+            action: 'reset_assessment',
+            assessment_id: assessment_id,
+            student_id: student_id
+        },
+        beforeSend: () => {
+            $("#reset_assessment_modal_btn").html('Processing...').attr('disabled', true)
+        },
+        success: function (response) {
+            console.log(response)
+            // var res = JSON.parse(response);
+            if (response.success) {
+                toastr.success('Assessment has been reset successfully.');
+                $('#reset_assessment_modal').modal('hide');
+                // reload the page
+                location.reload();
+            }
+        },
+        complete: () => {
+            $("#reset_assessment_modal_btn").html('Reset Assessment').attr('disabled', false)
+        },
+        error: function () {
+            toastr.error('An error occurred while processing your request.');
         }
+    });
+}

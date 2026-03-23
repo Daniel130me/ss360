@@ -278,7 +278,7 @@ $(".url_upadter").submit(function (event) {
         success: (data) => {
             $($btn).attr("disabled", false)
             $($btn).html($btntext)
-            data = JSON.parse(data)
+            // data = JSON.parse(data)
             if (data.status == '1') {
                 // alert(data)
                 toastr.success("Updated succesfully")
@@ -1006,7 +1006,8 @@ function get_score_data() {
             // alert(data.length)
             // if(data.length == 0){
             // }
-            student_score_data = JSON.parse(data)
+            student_score_data = data
+            // student_score_data = JSON.parse(data)
             if (student_score_data.length <= 1) {
                 $(".data_overlay").html(`
                         <p class="font-weight-bold">No score record for this student</p>
