@@ -19,7 +19,8 @@ if ($host == "localhost") {
 }
 
 
-
+echo "<h1>We are sorry, the app is under maintenance!</h1>";
+exit;
 $url = $_SERVER["REQUEST_URI"];
 $parameter = explode("/", $url);
 
