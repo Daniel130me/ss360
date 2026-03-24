@@ -866,6 +866,7 @@ $date = date("Y:m:d H:i:s");
             ];
         }
         echo json_encode($data);
+        exit;
     }
        if ($action == 'toggle_approval') {
         $school_id = $_SESSION['school_id'];

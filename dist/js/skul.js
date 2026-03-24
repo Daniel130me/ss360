@@ -3043,19 +3043,34 @@ function by_class_view_content() {
             $(".data_overlay").show();
         },
         success: (data) => {
-            data = JSON.parse(data);
+            if (typeof data === "string") {
+                try {
+                    data = JSON.parse(data);
+                } catch (e) {
+                    console.error("Failed to parse data as JSON:", data);
+                    $(".data_overlay").html(`<p class="text-danger">Error: Invalid data format from server.</p>`);
+                    return;
+                }
+            }
+
+            if (!Array.isArray(data)) {
+                console.error("Expected array but received:", typeof data, data);
+                $(".data_overlay").html(`<p class="text-danger">Error: Unexpected data format.</p>`);
+                return;
+            }
+
             let grader = format_grade(skul_settings["grading"]);
-            if (data.length <= 1) {
+            if (data.length === 0) {
                 $(".data_overlay").html(`
-                <p class="font-weight-bold">No record for the class selected</p>
+                    <p class="font-weight-bold">No record for the class selected</p>
             `);
                 return;
             }
             $(".by_class_filter").show();
             $(".data_overlay").hide();
             $(".data_overlay").html(`
-            <p class="font-weight-bold">Fill the forms appropiately</p>
-        `);
+                <p class="font-weight-bold">Fill the forms appropiately</p>
+                `);
             // compute component count safely (avoid NaN if settingsData entries are missing)
             const ca1Flag = Number(settingsData.ca1) || 0;
             const ca2Flag = Number(settingsData.ca2) || 0;
@@ -3579,7 +3594,8 @@ function get_approval_btn(class_id, term_id, session_id) {
         type: "post",
         data: { 'action': 'get_approval', class_id, term_id, session_id, },
         success: (data) => {
-            data = JSON.parse(data) //{ca1:1,ca2:0}
+
+            // data = JSON.parse(data) //{ca1:1,ca2:0}
             console.log(data)
             // Object.entries(data[0]).forEach(([key,value]) => {
             str += settingsData.ca1 == 1 ? `<button type="button" class="btn btn-sm mr-2 select_btn approve_disaprove ${data[0].ca1 == '1' ? 'active' : ''} mt-3" data-name='ca1' onclick="approve_disaprove_comment(this)">Approve CA1</button>` : ''
@@ -3616,8 +3632,8 @@ const loadSettings = () => {
             'session_id': session_id
         },
         success: (data) => {
-            settingsData = JSON.parse(data);
-            // settingsData = data;
+            // settingsData = JSON.parse(data);
+            settingsData = data;
             // if ($("#report_page").val() === 'report_scores') {
             //     callback('student');
             //     // alert('lsc')
@@ -5080,7 +5096,8 @@ function getsubjects(classid, callback) {
                     $("#select_subject_field").empty()
                     return reject()
                 }
-                subjects = JSON.parse(data)
+                subjects = data
+                // subjects = JSON.parse(data)
                 if (callback == 'callback') {
                     if ($("#by_subj_btn").hasClass('active')) {
                         $("#select_subject_warning").hide()
@@ -5118,7 +5135,8 @@ function getstudents(classValue) {
         success: (data) => {
 
             let str;
-            let parsedData = JSON.parse(data);
+            let parsedData = data;
+            // let parsedData = JSON.parse(data);
             students = parsedData
             if ($("#by_subj_btn").hasClass('active')) {
                 students = parsedData;
@@ -8018,7 +8036,7 @@ function loadApproval() {
         data: { 'action': 'get_approval', class_id, term_id, session_id, },
         cache: true,
         success: (data) => {
-            data = JSON.parse(data)
+            // data = JSON.parse(data)
             approval_data = data[0];
         }
     })
@@ -8460,8 +8478,9 @@ async function post_table_data(filtertype, viewOrPostPage) {
             $(".data_overlay").html(`
                 <p class="font-weight-bold">Fill the forms appropiately</p>
             `)
-            data = data.trim();
-            let response = JSON.parse(data);
+            // data = data.trim();
+            let response = data;
+            // let response = JSON.parse(data);
             let scores = response.scores;
             console.log("scores", scores);
             console.log("aproval", approval_data);

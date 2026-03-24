@@ -548,7 +548,7 @@ switch ($action) {
     //         }
     //     }
     //     break;
-        case 'save_update_entire_assessment_create':
+    case 'save_update_entire_assessment_create':
         // the aim is to insert new questions and update existing questions
         // if assessment_id is null, create new assessment
         // if assessment_id is not null, verify, then update existing assessment
@@ -561,7 +561,7 @@ switch ($action) {
             $instruction = mysqli_real_escape_string($conn, $settings['instruction']);
             $duration_set = empty($settings['duration']) ? 0 : 1;
             $duration = mysqli_real_escape_string($conn, $settings['duration']);
-            $deadline_set =empty($settings['deadline_date']) ? 0 : 1;
+            $deadline_set = empty($settings['deadline_date']) ? 0 : 1;
             $deadline_date = !empty($settings['deadline_date']) ? "'" . mysqli_real_escape_string($conn, $settings['deadline_date']) . "'" : "NULL";
             $deadline_time = mysqli_real_escape_string($conn, $settings['deadline_time']);
             $class_ids = mysqli_real_escape_string($conn, $settings['class_ids']);
@@ -594,7 +594,7 @@ switch ($action) {
                             updatedby = '{$_SESSION['userid']}',
                             dateupdated = NOW()
                             WHERE id = '$assessment_id' AND school_id = '{$_SESSION['school_id']}'";
-                            // exit;
+                    // exit;
                     mysqli_query($conn, $sql);
                     // Save questions
                     $question_ids = [];
@@ -610,7 +610,9 @@ switch ($action) {
                             // Get existing options for positional matching
                             $existingOpts = [];
                             $optRes = mysqli_query($conn, "SELECT id, options FROM options WHERE question_id = '$question_id' ORDER BY id ASC");
-                            while ($r = mysqli_fetch_assoc($optRes)) { $existingOpts[] = $r; }
+                            while ($r = mysqli_fetch_assoc($optRes)) {
+                                $existingOpts[] = $r;
+                            }
                             $existingCount = count($existingOpts);
                             $incomingOptions = $q['options'];
                             $incomingCount = count($incomingOptions);
@@ -659,7 +661,9 @@ switch ($action) {
                                 // Fetch existing options for the reused question to match by position
                                 $existingOpts2 = [];
                                 $optRes2 = mysqli_query($conn, "SELECT id, options FROM options WHERE question_id = '$existing_qid' ORDER BY id ASC");
-                                while ($r2 = mysqli_fetch_assoc($optRes2)) { $existingOpts2[] = $r2; }
+                                while ($r2 = mysqli_fetch_assoc($optRes2)) {
+                                    $existingOpts2[] = $r2;
+                                }
                                 $existingCount2 = count($existingOpts2);
                                 $incomingOptions2 = $q['options'];
                                 $incomingCount2 = count($incomingOptions2);
@@ -712,15 +716,15 @@ switch ($action) {
                             }
                         }
                     }
-                     $response = [
-                    'success' => true,
-                    'message' => 'Assessment updated successfully',
-                    'assessment_id' => $assessment_id,
-                    'mapping' => $mapping
-                ];
+                    $response = [
+                        'success' => true,
+                        'message' => 'Assessment updated successfully',
+                        'assessment_id' => $assessment_id,
+                        'mapping' => $mapping
+                    ];
                 } else {
                     // insert new assessment
-                   $sql = "INSERT INTO assessment (subject_id, school_id, instruction, duration_set, duration, deadline_set, deadline_date, deadline_time, class_ids, assessment_type, term, desired_score, round_off_decimal, score_destination, created_by, datecreated) 
+                    $sql = "INSERT INTO assessment (subject_id, school_id, instruction, duration_set, duration, deadline_set, deadline_date, deadline_time, class_ids, assessment_type, term, desired_score, round_off_decimal, score_destination, created_by, datecreated) 
                             VALUES ('$subject_id', '{$_SESSION['school_id']}', '$instruction', '$duration_set', '$duration', '$deadline_set', " . ($deadline_date === "'NULL'" ? "NULL" : $deadline_date) . ", '$deadline_time', '$class_ids', '$assessment_type', '$term', '$desired_score', '$round_off_decimal', '$ca_type', '{$_SESSION['userid']}', NOW())";
                     mysqli_query($conn, $sql);
                     $assessment_id = mysqli_insert_id($conn);
@@ -741,12 +745,12 @@ switch ($action) {
                         }
                         $mapping_new[] = ['question_id' => $new_question_id, 'options' => $opt_ids_new2];
                     }
-                $response = [
+                    $response = [
                         'success' => true,
                         'assessment_id' => $assessment_id,
                         'message' => 'Assessment saved successfully',
                         'mapping' => $mapping_new
-                ];
+                    ];
                 }
                 mysqli_commit($conn);
             } catch (Exception $e) {
@@ -771,7 +775,7 @@ switch ($action) {
             $instruction = mysqli_real_escape_string($conn, $settings['instruction']);
             $duration_set = empty($settings['duration']) ? 0 : 1;
             $duration = mysqli_real_escape_string($conn, $settings['duration']);
-            $deadline_set =empty($settings['deadline_date']) ? 0 : 1;
+            $deadline_set = empty($settings['deadline_date']) ? 0 : 1;
             $deadline_date = !empty($settings['deadline_date']) ? "'" . mysqli_real_escape_string($conn, $settings['deadline_date']) . "'" : "NULL";
             $deadline_time = mysqli_real_escape_string($conn, $settings['deadline_time']);
             $class_ids = mysqli_real_escape_string($conn, $settings['class_ids']);
@@ -802,7 +806,7 @@ switch ($action) {
                             updatedby = '{$_SESSION['userid']}',
                             dateupdated = NOW()
                             WHERE id = '$assessment_id' AND school_id = '{$_SESSION['school_id']}'";
-                            // exit;
+                    // exit;
                     mysqli_query($conn, $sql);
                     // Save questions
                     $question_ids = [];
@@ -840,13 +844,13 @@ switch ($action) {
                             }
                         }
                     }
-                     $response = [
-                    'success' => true,
-                    'message' => 'Assessment updated successfully'
-                ];
+                    $response = [
+                        'success' => true,
+                        'message' => 'Assessment updated successfully'
+                    ];
                 } else {
                     // insert new assessment
-                   $sql = "INSERT INTO assessment (subject_id, school_id, instruction, duration_set, duration, deadline_set, deadline_date, deadline_time, class_ids, assessment_type, desired_score, round_off_decimal, score_destination, created_by, datecreated) 
+                    $sql = "INSERT INTO assessment (subject_id, school_id, instruction, duration_set, duration, deadline_set, deadline_date, deadline_time, class_ids, assessment_type, desired_score, round_off_decimal, score_destination, created_by, datecreated) 
                             VALUES ('$subject_id', '{$_SESSION['school_id']}', '$instruction', '$duration_set', '$duration', '$deadline_set', " . ($deadline_date === "'NULL'" ? "NULL" : $deadline_date) . ", '$deadline_time', '$class_ids', '$assessment_type', '$desired_score', '$round_off_decimal', '$ca_type', '{$_SESSION['userid']}', NOW())";
                     mysqli_query($conn, $sql);
                     $assessment_id = mysqli_insert_id($conn);
@@ -864,11 +868,11 @@ switch ($action) {
                                                VALUES ('$option_text', '$new_question_id', '$is_answer')");
                         }
                     }
-                $response = [
+                    $response = [
                         'success' => true,
                         'assessment_id' => $assessment_id,
                         'message' => 'Assessment saved successfully'
-                ];
+                    ];
                 }
                 mysqli_commit($conn);
             } catch (Exception $e) {
@@ -880,30 +884,30 @@ switch ($action) {
             }
         }
         break;
-       case 'get_assessments':
+    case 'get_assessments':
         // echo $_SESSION['userid'];
-       $type_filter = isset($_POST['assessment_type']) && $_POST['assessment_type'] != 'all'
+        $type_filter = isset($_POST['assessment_type']) && $_POST['assessment_type'] != 'all'
             ? "AND assessment_type = '" . mysqli_real_escape_string($conn, $_POST['assessment_type']) . "'"
             : "";
-        
-       $term_filter = isset($_POST['term']) && $_POST['term'] != 'all'
+
+        $term_filter = isset($_POST['term']) && $_POST['term'] != 'all'
             ? "AND a.term = '" . mysqli_real_escape_string($conn, $_POST['term']) . "'"
             : "";
-                // Bypass created_by filter for privileged user types (1,2,3,4)
+        // Bypass created_by filter for privileged user types (1,2,3,4)
         // $session_user_type = isset($_SESSION['staff_type']) ? (int) $_SESSION['staff_type'] : 0;
-        
+
         // if (in_array($session_user_type, [1,2,3,4,9], true)) {
         //     $created_by_filter = "";
         // } else {
         //     $created_by_filter = "AND a.created_by = '{$_SESSION['userid']}'";
         // }
-          // Handle visibility logic based on school and user
+        // Handle visibility logic based on school and user
         $school_id = (int) $_SESSION['school_id'];
         $user_id = (int) $_SESSION['userid'];
-        
+
         if ($school_id === 29) {
             // Special school 29: only userid=142 can see all assessments, others see their own
-            if ($user_id === 142 OR $user_id === 129) {
+            if ($user_id === 142 or $user_id === 129) {
                 $created_by_filter = "";
             } else {
                 $created_by_filter = "AND a.created_by = '{$_SESSION['userid']}'";
@@ -932,9 +936,9 @@ switch ($action) {
                     GROUP BY ass_id
                 ) q ON a.id = q.ass_id
                 WHERE a.school_id = '{$_SESSION['school_id']}' " .
-                $created_by_filter . " " .
-                $type_filter . " " .
-                $term_filter;
+            $created_by_filter . " " .
+            $type_filter . " " .
+            $term_filter;
         // $sql = "SELECT a.*, 
         //         s.subject as subject,
         //         COALESCE(q.question_count, 0) as question_count,
@@ -995,6 +999,8 @@ switch ($action) {
         $phone = test_input($_POST['phone']);
         $password = test_input($_POST['password']);
         $remember = isset($_POST['remember']) ? true : false;
+        // echo "ll" . $_SESSION['url'];
+        // exit;
         $school_id = get_school_id_by_url($_SESSION['url']);
 
         // Try staff login first
@@ -1041,7 +1047,7 @@ switch ($action) {
                     // $select_hidden = mysqli_query($conn, "SELECT hidden_skills FROM school WHERE id='{$_SESSION['school_id']}'");
                     $_SESSION['hidden_row'] = $school_data['hidden_skills'];
                     $_SESSION['whocomment'] = $school_data['commentby'] == '' ? "Head Teacher" : $school_data['commentby'];
-                    
+
 
                     // Get school settings
                     $settings_query = "SELECT * FROM skul_settings WHERE school_id={$_SESSION['school_id']}";
@@ -1106,7 +1112,7 @@ switch ($action) {
                     // $_SESSION['hidden_row'] = mysqli_fetch_array($select_hidden);
                     $_SESSION['hidden_row'] = $row_sch['hidden_skills'];
                     $_SESSION['whocomment'] = $row_sch['commentby'] == '' ? "Head Teacher" : $row_sch['commentby'];
-                    
+
                     echo json_encode(array('status' => '1', 'location' => isset($_SESSION['location']) ? $_SESSION['location'] : 'parent_portal'));
                     $select_Setting_query = "SELECT * FROM skul_settings WHERE school_id={$_SESSION['school_id']}";
                     $setting_result = mysqli_query($conn, $select_Setting_query);
@@ -1182,7 +1188,7 @@ switch ($action) {
                 // $select_hidden = mysqli_query($conn, "SELECT hidden_skills FROM school WHERE id='{$_SESSION['school_id']}'");
                 //     $_SESSION['hidden_row'] = mysqli_fetch_array($select_hidden);
                 $_SESSION['hidden_row'] = $row_sch['hidden_skills'];
-               $_SESSION['whocomment'] = $row_sch['commentby'] == '' ? "Head Teacher" : $row_sch['commentby'];
+                $_SESSION['whocomment'] = $row_sch['commentby'] == '' ? "Head Teacher" : $row_sch['commentby'];
                 // print_r($_SESSION['hidden_row']);
                 // print_r($_SESSION['whocomment']);
 
@@ -1212,7 +1218,7 @@ switch ($action) {
             exit;
         }
         break;
-     case 'get_student_assignments':
+    case 'get_student_assignments':
         if (isset($_POST['class_id']) && isset($_POST['student_id'])) {
             $class_id = mysqli_real_escape_string($conn, $_POST['class_id']);
             $student_id = mysqli_real_escape_string($conn, $_POST['student_id']);
@@ -1289,7 +1295,7 @@ switch ($action) {
         }
         break;
 
-       case 'check_existing_assessment':
+    case 'check_existing_assessment':
         if (isset($_POST['subject_id']) && isset($_POST['assessment_type']) && isset($_POST['class_ids']) && isset($_POST['term'])) {
             $subject_id = (int)$_POST['subject_id'];
             $assessment_type = (int)$_POST['assessment_type'];
@@ -1328,7 +1334,7 @@ switch ($action) {
         }
         exit;
         //responsible for loading paginated questions
-        case 'load_questions_page':
+    case 'load_questions_page':
         // expects: assessment_id, page, per_page
         $assessment_id = isset($_POST['assessment_id']) ? (int)$_POST['assessment_id'] : 0;
         $page = isset($_POST['page']) ? max(1, (int)$_POST['page']) : 1;
@@ -1441,49 +1447,49 @@ switch ($action) {
             'questions' => $questions
         ]);
         exit;
-    // case 'load_assessment':
-    //     $assessment_id = $_POST['assessment_id'];
+        // case 'load_assessment':
+        //     $assessment_id = $_POST['assessment_id'];
 
-    //     // Load assessment settings
-    //     $query = "SELECT a.*, GROUP_CONCAT(c.classname SEPARATOR ', ') as class_names
-    //          FROM assessment a
-    //          LEFT JOIN (
-    //              SELECT DISTINCT c.id, c.classname 
-    //              FROM class c
-    //          ) c ON FIND_IN_SET(c.id, a.class_ids)
-    //          WHERE a.id = ?
-    //          GROUP BY a.id";
-    //     $stmt = $conn->prepare($query);
-    //     $stmt->bind_param("i", $assessment_id);
-    //     $stmt->execute();
-    //     $settings = $stmt->get_result()->fetch_assoc();
+        //     // Load assessment settings
+        //     $query = "SELECT a.*, GROUP_CONCAT(c.classname SEPARATOR ', ') as class_names
+        //          FROM assessment a
+        //          LEFT JOIN (
+        //              SELECT DISTINCT c.id, c.classname 
+        //              FROM class c
+        //          ) c ON FIND_IN_SET(c.id, a.class_ids)
+        //          WHERE a.id = ?
+        //          GROUP BY a.id";
+        //     $stmt = $conn->prepare($query);
+        //     $stmt->bind_param("i", $assessment_id);
+        //     $stmt->execute();
+        //     $settings = $stmt->get_result()->fetch_assoc();
 
-    //     // Load questions and options
-    //     $questions = [];
-    //     $query = "SELECT * FROM questions WHERE ass_id = ?";
-    //     $stmt = $conn->prepare($query);
-    //     $stmt->bind_param("i", $assessment_id);
-    //     $stmt->execute();
-    //     $questionsResult = $stmt->get_result();
+        //     // Load questions and options
+        //     $questions = [];
+        //     $query = "SELECT * FROM questions WHERE ass_id = ?";
+        //     $stmt = $conn->prepare($query);
+        //     $stmt->bind_param("i", $assessment_id);
+        //     $stmt->execute();
+        //     $questionsResult = $stmt->get_result();
 
-    //     while ($question = $questionsResult->fetch_assoc()) {
-    //         $optionsQuery = "SELECT * FROM options WHERE question_id = ?";
-    //         $optStmt = $conn->prepare($optionsQuery);
-    //         $optStmt->bind_param("i", $question['id']);
-    //         $optStmt->execute();
-    //         $options = $optStmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        //     while ($question = $questionsResult->fetch_assoc()) {
+        //         $optionsQuery = "SELECT * FROM options WHERE question_id = ?";
+        //         $optStmt = $conn->prepare($optionsQuery);
+        //         $optStmt->bind_param("i", $question['id']);
+        //         $optStmt->execute();
+        //         $options = $optStmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
-    //         $questions[] = [
-    //             'question' => $question,
-    //             'options' => $options
-    //         ];
-    //     }
+        //         $questions[] = [
+        //             'question' => $question,
+        //             'options' => $options
+        //         ];
+        //     }
 
-    //     echo json_encode([
-    //         'settings' => $settings,
-    //         'questions' => $questions
-    //     ]);
-    //     exit;
+        //     echo json_encode([
+        //         'settings' => $settings,
+        //         'questions' => $questions
+        //     ]);
+        //     exit;
     case 'mark_instructions_viewed':
         $assessment_id = isset($_POST['assessment_id']) ? (int)$_POST['assessment_id'] : 0;
         if ($assessment_id > 0) {
@@ -1529,7 +1535,7 @@ switch ($action) {
             $response = ['success' => false, 'message' => 'Assessment ID not provided'];
         }
         break;
-      case 'reset_assessment':
+    case 'reset_assessment':
         if (isset($_POST['assessment_id']) && isset($_POST['student_id'])) {
             $assessment_id = (int)$_POST['assessment_id'];
             $student_id = (int)$_POST['student_id'];
@@ -1579,31 +1585,31 @@ switch ($action) {
             $assessment_id = (int) ($_POST['assessment_id'] ?? 0);
             $student_id = (string) ($_POST['student_id'] ?? '0'); // Keep as string for array search
             $status = (int) ($_POST['status'] ?? 0); // 0 for allow, 1 for disallow
- 
+
             if ($school_id <= 0 || $assessment_id <= 0 || $student_id <= 0) {
                 throw new Exception("Invalid input provided.");
             }
- 
+
             // Use prepared statements to prevent SQL injection
             $stmt = $conn->prepare("SELECT blacklist_students FROM assessment WHERE school_id = ? AND id = ?");
             $stmt->bind_param("ii", $school_id, $assessment_id);
             $stmt->execute();
             $result = $stmt->get_result();
- 
+
             if ($row = $result->fetch_assoc()) {
                 $blacklist = !empty($row['blacklist_students']) ? explode(',', $row['blacklist_students']) : [];
                 $is_blacklisted = in_array($student_id, $blacklist);
- 
+
                 if ($status === 1 && !$is_blacklisted) { // Disallow: Add to list
                     $blacklist[] = $student_id;
-                    $response = ['success' => true, 'status'=>$status, 'message' => 'Student has been disallowed.'];
+                    $response = ['success' => true, 'status' => $status, 'message' => 'Student has been disallowed.'];
                 } elseif ($status === 0 && $is_blacklisted) { // Allow: Remove from list
                     $blacklist = array_diff($blacklist, [$student_id]);
-                    $response = ['success' => true, 'status'=>$status, 'message' => 'Student has been allowed.'];
+                    $response = ['success' => true, 'status' => $status, 'message' => 'Student has been allowed.'];
                 } else {
                     // No change needed, but return success
                     $message = $status === 1 ? 'Student is already disallowed.' : 'Student is already allowed.';
-                    $response = ['success' => true, 'status'=> $status, 'message' => $message];
+                    $response = ['success' => true, 'status' => $status, 'message' => $message];
                 }
                 $new_blacklist_str = implode(',', $blacklist);
                 $update_stmt = $conn->prepare("UPDATE assessment SET blacklist_students = ? WHERE school_id = ? AND id = ?");

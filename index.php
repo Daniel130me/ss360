@@ -19,8 +19,8 @@ if ($host == "localhost") {
 }
 
 
-echo "<h1>We are sorry, the app is under maintenance!</h1>";
-exit;
+// echo "<h1>We are sorry, the app is under maintenance!</h1>";
+// exit;
 $url = $_SERVER["REQUEST_URI"];
 $parameter = explode("/", $url);
 
@@ -35,7 +35,7 @@ include_once("model/connect.php");
 // }
 // $_SESSION['']
 $school_short = $parameter[1 + $par];
-
+// $_SESSION['url'] = null;
 if ($school_short != $_SESSION['url'] or !isset($_SESSION['url'])) {
     $check = mysqli_query($conn, "SELECT url,session_id, phone1 FROM school WHERE url='$school_short'");
     // echo "takn page";
@@ -47,9 +47,10 @@ if ($school_short != $_SESSION['url'] or !isset($_SESSION['url'])) {
         exit;
     }
 }
-// $_SESSION['session_id'] = $school_short;
 $_SESSION['url'] = $school_short;
-// exit;z
+// $_SESSION['session_id'] = $school_short;
+
+// exit;
 if (isset($_GET['id'])) {
     $new_url = explode("?", $parameter[2 + $par]);
     if ($new_url[0] == 'view_student_result') {
