@@ -527,6 +527,114 @@ switch ($action) {
         }
         echo json_encode(['success' => true, 'data' => $timeline]);
         break;
+    case 'delete_last_payment_record':
+        $payment_id = isset($_POST['payment_id']) ? intval($_POST['payment_id']) : 0;
+        $bill_id = isset($_POST['bill_id']) ? intval($_POST['bill_id']) : 0;
+        $student_id = isset($_POST['student_id']) ? intval($_POST['student_id']) : 0;
+
+        if (!$payment_id || !$bill_id || !$student_id) {
+            echo json_encode(['success' => false, 'message' => 'Missing required identifiers.']);
+            break;
+        }
+
+        mysqli_begin_transaction($conn);
+
+        try {
+            $stmt = $conn->prepare("SELECT id, amount_due FROM bill_record WHERE id = ? AND student_id = ? AND school_id = ? LIMIT 1");
+            if (!$stmt) {
+                throw new Exception('Prepare failed: ' . $conn->error);
+            }
+            $stmt->bind_param("iii", $bill_id, $student_id, $school_id);
+            $stmt->execute();
+            $bill = $stmt->get_result()->fetch_assoc();
+            $stmt->close();
+
+            if (!$bill) {
+                throw new Exception('Bill record not found.');
+            }
+
+            $stmt = $conn->prepare("SELECT * FROM payment_log WHERE id = ? AND bill_id = ? AND student_id = ? AND school_id = ? LIMIT 1");
+            if (!$stmt) {
+                throw new Exception('Prepare failed: ' . $conn->error);
+            }
+            $stmt->bind_param("iiii", $payment_id, $bill_id, $student_id, $school_id);
+            $stmt->execute();
+            $payment = $stmt->get_result()->fetch_assoc();
+            $stmt->close();
+
+            if (!$payment) {
+                throw new Exception('Payment record not found.');
+            }
+
+            $stmt = $conn->prepare("SELECT id FROM payment_log WHERE bill_id = ? AND student_id = ? AND school_id = ? ORDER BY date_paid DESC, id DESC LIMIT 1");
+            if (!$stmt) {
+                throw new Exception('Prepare failed: ' . $conn->error);
+            }
+            $stmt->bind_param("iii", $bill_id, $student_id, $school_id);
+            $stmt->execute();
+            $latest_payment = $stmt->get_result()->fetch_assoc();
+            $stmt->close();
+
+            if (!$latest_payment || intval($latest_payment['id']) !== $payment_id) {
+                throw new Exception('Only the most recent payment record can be deleted.');
+            }
+
+            $stmt = $conn->prepare("DELETE FROM payment_log WHERE id = ? AND bill_id = ? AND student_id = ? AND school_id = ? LIMIT 1");
+            if (!$stmt) {
+                throw new Exception('Prepare failed: ' . $conn->error);
+            }
+            $stmt->bind_param("iiii", $payment_id, $bill_id, $student_id, $school_id);
+            $stmt->execute();
+            if ($stmt->affected_rows <= 0) {
+                $stmt->close();
+                throw new Exception('Unable to delete payment record.');
+            }
+            $stmt->close();
+
+            $stmt = $conn->prepare("SELECT id, amount_newly_paid FROM payment_log WHERE bill_id = ? AND student_id = ? AND school_id = ? ORDER BY date_paid ASC, id ASC");
+            if (!$stmt) {
+                throw new Exception('Prepare failed: ' . $conn->error);
+            }
+            $stmt->bind_param("iii", $bill_id, $student_id, $school_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $remaining_logs = [];
+            while ($row = $result->fetch_assoc()) {
+                $remaining_logs[] = $row;
+            }
+            $stmt->close();
+
+            if (!empty($remaining_logs)) {
+                $running_total = 0;
+                $update_stmt = $conn->prepare("UPDATE payment_log SET total_amount_paid = ?, balance = ? WHERE id = ? AND school_id = ?");
+                if (!$update_stmt) {
+                    throw new Exception('Prepare failed: ' . $conn->error);
+                }
+
+                foreach ($remaining_logs as $row) {
+                    $running_total += floatval($row['amount_newly_paid']);
+                    $balance = floatval($bill['amount_due']) - $running_total;
+                    if ($balance < 0) {
+                        $balance = 0;
+                    }
+
+                    $log_id = intval($row['id']);
+                    $update_stmt->bind_param("ddii", $running_total, $balance, $log_id, $school_id);
+                    if (!$update_stmt->execute()) {
+                        throw new Exception('Failed to recalculate payment record balances.');
+                    }
+                }
+                $update_stmt->close();
+            }
+
+            mysqli_commit($conn);
+            echo json_encode(['success' => true, 'message' => 'Last payment record deleted successfully.']);
+        } catch (Exception $e) {
+            mysqli_rollback($conn);
+            error_log('delete_last_payment_record error: ' . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+        break;
     case 'get_bill_type':
         // Fetch a single bill type by ID
         try {

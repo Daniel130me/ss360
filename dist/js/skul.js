@@ -1001,7 +1001,7 @@ function get_score_data() {
             $(".data_overlay").show()
         },
         success: (data) => {
-            console.log(data)
+            console.log("llope", data)
             // console.log('l', )
             // alert(data.length)
             // if(data.length == 0){
@@ -1241,7 +1241,8 @@ function format_student_table(student_score_data, term, session_id, class_id) {
     let formattedString = skul_settings['grading'].replace(/([A-Z]):/g, '"$1":').replace(/:/g, ': ');
     grader = JSON.parse(formattedString)
     console.log(grader)
-    // return
+    // 
+    console.log("some student", student_score_data)
 
     if ($(".term.select_btn.active").attr("data-name") == "summary") {
         generateSessionSummary(student_score_data, session_id, $("#select_student_field").val(), class_id)
@@ -1572,6 +1573,7 @@ function select_receipient() {
 
 
 function calculate_Percentages_and_totals(data) {
+    console.log("fff", data)
     // Initialize variables for storing totals and maximum scores for each term and session
     let term1Total = 0,
         term1Max = 0;
@@ -1581,7 +1583,8 @@ function calculate_Percentages_and_totals(data) {
         term3Max = 0;
 
     // Iterate through the data array to sum up totals and max values for each term
-    data.forEach(item => {
+
+    Array.from(data).forEach(item => {
         // Parse item values as numbers to avoid type issues
         const total = parseFloat(item.Total) || 0;
         const ca1Total = parseFloat(item.ca1Total) || 0;
@@ -8455,7 +8458,7 @@ async function post_table_data(filtertype, viewOrPostPage) {
         $("#post_teacher_comment_gb_container").hide()
     }
 
-    console.log("arrayValues", arrayValues);
+    console.log("arrayValue1s", JSON.parse(arrayValues));
     console.log("postdata", postdata);
     // alert("viewOrPostPage")
     let tableHtml = '';
@@ -8481,6 +8484,7 @@ async function post_table_data(filtertype, viewOrPostPage) {
             // data = data.trim();
             let response = data;
             // let response = JSON.parse(data);
+            console.log("respponse", response)
             let scores = response.scores;
             console.log("scores", scores);
             console.log("aproval", approval_data);
@@ -8517,7 +8521,7 @@ async function post_table_data(filtertype, viewOrPostPage) {
                         ${settingsData.exa == 1 ? `<td><input type="number"  class="w-xs-60 assess_input exatotal" onchange="updatehiddentotals(this,'exatotal')" ${approval_data.exam == '1' ? 'disabled' : ''} value="${scores.length > 0 ? scores[0].examTotal || '' : ''}" /></td>` : ''}
                         ${settingsData.exa == 1 ? `<td class="d-non ${hideshowtotals}"><input type="number"  class="w-xs-60 assess_input exatotal" onchange="updatehiddentotals(this,'exatotal')" ${approval_data.exam == '1' ? 'disabled' : ''} value="${scores.length > 0 ? scores[0].examTotal || '' : ''}" /></td>` : ''}
                     </tr>
-                    ${arrayValues.map((arrayValue) => {
+                    ${Array.from(arrayValues).map((arrayValue) => {
                     let nameToMatch;
                     let thestudentnameorsubj;
                     // let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue.name;
@@ -14467,7 +14471,9 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
                 },
             });
 
+            data = gradingData;
             data = JSON.parse(gradingData);
+            console.log("ddd", data.settingsData)
             settingsData = data.settingsData[0];
             student_score_data = data.score_data;
 

@@ -405,6 +405,8 @@ $(document).ready(function () {
         }
     });
 
+    let lastPaymentToDelete = null;
+
     // --- Payment Record Timeline Modal Logic ---
     window.showPaymentRecordModal = function (billId, studentId) {
         $('#paymentRecordModal').modal('show');
@@ -439,12 +441,19 @@ $(document).ready(function () {
                     let icon = 'fa-money-bill-wave', bg = 'bg-success', statusText = 'Paid', statusColor = 'text-success';
                     if (item.status == 0) { statusText = 'Pending'; bg = 'bg-warning'; icon = 'fa-hourglass-half'; statusColor = 'text-warning'; }
                     if (item.balance > 0 && item.amount_newly_paid == 0) { statusText = 'Outstanding'; bg = 'bg-danger'; icon = 'fa-exclamation-circle'; statusColor = 'text-danger'; }
+                    const canDeleteLastPayment = item.id > 0 && idx === res.data.length - 1;
+                    const deleteButton = canDeleteLastPayment
+                        ? `<button type="button" class="btn btn-xs btn-danger ml-2 delete-last-payment-record" data-payment_id="${item.id}" data-bill_id="${item.bill_id}" data-student_id="${studentId}"><i class="fas fa-trash"></i> Delete Last Record</button>`
+                        : '';
                     // Timeline item
                     timeline += `
                       <div>
                         <i class="fas ${icon} ${bg}"></i>
                         <div class="timeline-item">
-                        <a href="#paymentReceiptPreviewModal" class="float-right" data-toggle="modal" aria-expanded="false" data-bill_id="${item.bill_id}" data-paymentid="${item.id}" aria-controls="paymentReceiptPreviewModal">Preview Payment Receipt</a>
+                        <div class="float-right d-flex align-items-center">
+                          <a href="#paymentReceiptPreviewModal" data-toggle="modal" aria-expanded="false" data-bill_id="${item.bill_id}" data-paymentid="${item.id}" aria-controls="paymentReceiptPreviewModal">Preview Payment Receipt</a>
+                          ${deleteButton}
+                        </div>
                           <h3 class="timeline-header ${statusColor}">
                             <b>${statusText}</b> - ₦${Number(item.amount_newly_paid).toLocaleString()} paid
                           </h3>
@@ -466,6 +475,56 @@ $(document).ready(function () {
             }
         });
     };
+
+    $(document).on('click', '.delete-last-payment-record', function () {
+        lastPaymentToDelete = {
+            payment_id: $(this).data('payment_id'),
+            bill_id: $(this).data('bill_id'),
+            student_id: $(this).data('student_id')
+        };
+        $('#confirmDeletePaymentAlert').html('');
+        $('#confirmDeletePaymentModal').modal('show');
+    });
+
+    $('#confirmDeletePaymentButton').on('click', function () {
+        if (!lastPaymentToDelete) return;
+        const $btn = $(this).prop('disabled', true).text('Deleting...');
+        $.ajax({
+            url: '../billing_controller.php',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'delete_last_payment_record',
+                payment_id: lastPaymentToDelete.payment_id,
+                bill_id: lastPaymentToDelete.bill_id,
+                student_id: lastPaymentToDelete.student_id
+            },
+            success: function (res) {
+                if (res && res.success) {
+                    toastr.success(res.message || 'Last payment deleted successfully.');
+                    $('#confirmDeletePaymentModal').modal('hide');
+                    showPaymentRecordModal(lastPaymentToDelete.bill_id, lastPaymentToDelete.student_id);
+                    if ($.fn.DataTable.isDataTable('#student_payment_recordTable')) {
+                        $('#student_payment_recordTable').DataTable().ajax.reload();
+                    } else {
+                        data_student();
+                    }
+                    if (typeof fetchAndDisplayEstimatedIncome === 'function') {
+                        fetchAndDisplayEstimatedIncome();
+                    }
+                } else {
+                    const msg = (res && res.message) ? res.message : 'Unable to delete the last payment record.';
+                    $('#confirmDeletePaymentAlert').html('<div class="alert alert-warning">' + msg + '</div>');
+                }
+            },
+            error: function () {
+                $('#confirmDeletePaymentAlert').html('<div class="alert alert-danger">Server error while deleting the payment record.</div>');
+            },
+            complete: function () {
+                $btn.prop('disabled', false).text('Delete');
+            }
+        });
+    });
     // Unified handler for both preview and last receipt
     $(document).on('click', 'a[data-toggle="modal"][data-bill_id][data-paymentid][aria-controls="paymentReceiptPreviewModal"]', function (e) {
         e.preventDefault();
