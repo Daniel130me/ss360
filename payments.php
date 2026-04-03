@@ -83,6 +83,658 @@ session_start();
                 transform: translate(-50%, -50%) !important;
             }
         }
+
+        #paymentRecordModal .modal-dialog {
+            max-width: 960px;
+        }
+
+        .payment-record-modal-content {
+            border: 0;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+        }
+
+        .payment-record-modal-header {
+            border-bottom: 0;
+            padding: 1.25rem 1.5rem 1rem;
+            background: linear-gradient(135deg, #0f4c81 0%, #1d72b8 52%, #5aa9e6 100%);
+        }
+
+        .payment-record-modal-header .close {
+            opacity: 1;
+            text-shadow: none;
+        }
+
+        .payment-record-modal-title {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .payment-record-modal-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.18);
+            font-size: 1.1rem;
+        }
+
+        .payment-record-modal-kicker {
+            display: block;
+            margin-bottom: 0.2rem;
+            font-size: 0.75rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.72);
+        }
+
+        .payment-record-modal-title h5,
+        .payment-record-modal-title p {
+            margin: 0;
+        }
+
+        .payment-record-modal-subtitle {
+            margin-top: 0.4rem;
+            color: rgba(255, 255, 255, 0.82);
+            font-size: 0.92rem;
+        }
+
+        .payment-record-modal-body {
+            padding: 1.5rem;
+            background:
+                radial-gradient(circle at top right, rgba(90, 169, 230, 0.12), transparent 28%),
+                linear-gradient(180deg, #f8fbff 0%, #f3f6fb 100%);
+        }
+
+        .payment-record-shell {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .payment-record-summary {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .payment-record-stat {
+            background: #fff;
+            border: 1px solid rgba(15, 76, 129, 0.08);
+            border-radius: 18px;
+            padding: 1rem 1.1rem;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+        }
+
+        .payment-record-stat-label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #6c7a89;
+            margin-bottom: 0.35rem;
+        }
+
+        .payment-record-stat-value {
+            font-size: 1.35rem;
+            line-height: 1.2;
+            font-weight: 700;
+            color: #12263f;
+        }
+
+        .payment-record-stat-note {
+            font-size: 0.85rem;
+            color: #667085;
+            margin-top: 0.2rem;
+        }
+
+        .payment-record-list {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding-left: 1rem;
+        }
+
+        .payment-record-list::before {
+            content: "";
+            position: absolute;
+            top: 0.4rem;
+            bottom: 0.4rem;
+            left: 0.45rem;
+            width: 2px;
+            background: linear-gradient(180deg, #8cc7f1 0%, #d3e8f8 100%);
+        }
+
+        .payment-record-day {
+            margin-left: 1.4rem;
+            display: inline-flex;
+            align-items: center;
+            align-self: flex-start;
+            padding: 0.45rem 0.8rem;
+            border-radius: 999px;
+            background: #dff0ff;
+            color: #0f4c81;
+            font-weight: 700;
+            font-size: 0.84rem;
+            box-shadow: inset 0 0 0 1px rgba(15, 76, 129, 0.08);
+        }
+
+        .payment-record-entry {
+            position: relative;
+            margin-left: 1.4rem;
+            background: #fff;
+            border: 1px solid rgba(15, 76, 129, 0.08);
+            border-radius: 22px;
+            padding: 1.15rem 1.2rem;
+            box-shadow: 0 18px 38px rgba(15, 23, 42, 0.06);
+        }
+
+        .payment-record-entry::before {
+            content: "";
+            position: absolute;
+            left: -1.55rem;
+            top: 1.35rem;
+            width: 14px;
+            height: 14px;
+            border-radius: 999px;
+            border: 3px solid #fff;
+            box-shadow: 0 0 0 4px rgba(140, 199, 241, 0.35);
+            background: var(--entry-accent, #1fa971);
+        }
+
+        .payment-record-entry-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .payment-record-entry-main {
+            min-width: 0;
+        }
+
+        .payment-record-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.38rem 0.72rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: var(--status-bg, #ebf8f2);
+            color: var(--status-color, #15803d);
+            margin-bottom: 0.7rem;
+        }
+
+        .payment-record-amount {
+            font-size: 1.6rem;
+            line-height: 1.1;
+            font-weight: 700;
+            color: #12263f;
+            margin-bottom: 0.35rem;
+        }
+
+        .payment-record-entry-meta {
+            color: #667085;
+            font-size: 0.92rem;
+        }
+
+        .payment-record-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 0.55rem;
+        }
+
+        .payment-record-btn {
+            border-radius: 999px;
+            padding: 0.5rem 0.9rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            text-decoration: none !important;
+        }
+
+        .payment-record-btn.btn-outline-primary {
+            border-width: 1px;
+        }
+
+        .payment-record-list .time-label {
+            margin-left: 1.4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .payment-record-list .time-label span {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.45rem 0.8rem;
+            border-radius: 999px;
+            background: #dff0ff !important;
+            color: #0f4c81 !important;
+            font-weight: 700;
+            font-size: 0.84rem;
+            box-shadow: inset 0 0 0 1px rgba(15, 76, 129, 0.08);
+        }
+
+        .payment-record-list>.timeline-item,
+        .payment-record-list>div>.timeline-item {
+            position: relative;
+            margin: 0 0 0 1.4rem !important;
+            background: #fff;
+            border: 1px solid rgba(15, 76, 129, 0.08);
+            border-radius: 22px;
+            padding: 1.15rem 1.2rem;
+            box-shadow: 0 18px 38px rgba(15, 23, 42, 0.06);
+        }
+
+        .payment-record-list>div {
+            position: relative;
+        }
+
+        .payment-record-list>div>i.fas {
+            position: absolute;
+            left: -0.1rem;
+            top: 1.2rem;
+            z-index: 2;
+            width: 14px;
+            height: 14px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0;
+            border: 3px solid #fff;
+            box-shadow: 0 0 0 4px rgba(140, 199, 241, 0.35);
+            background-image: none !important;
+        }
+
+        .payment-record-list>div>i.bg-success {
+            background-color: #1fa971 !important;
+        }
+
+        .payment-record-list>div>i.bg-warning {
+            background-color: #f4b740 !important;
+        }
+
+        .payment-record-list>div>i.bg-danger {
+            background-color: #f97066 !important;
+        }
+
+        .payment-record-list .timeline-header {
+            border-bottom: 0;
+            padding: 0;
+            margin: 0 0 0.8rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+            line-height: 1.2;
+            color: #12263f !important;
+        }
+
+        .payment-record-list .timeline-header b {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            margin-right: 0.55rem;
+            padding: 0.38rem 0.72rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: #ebf8f2;
+            color: #15803d;
+            vertical-align: middle;
+        }
+
+        .payment-record-list .timeline-header.text-warning b {
+            background: #fef3c7;
+            color: #a16207;
+        }
+
+        .payment-record-list .timeline-header.text-danger b {
+            background: #fee4e2;
+            color: #b42318;
+        }
+
+        .payment-record-list .timeline-body {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.8rem;
+            padding: 0;
+            color: #12263f;
+        }
+
+        .payment-record-list .timeline-body>div {
+            background: #f8fbff;
+            border: 1px solid rgba(15, 76, 129, 0.07);
+            border-radius: 16px;
+            padding: 0.85rem 0.95rem;
+            line-height: 1.45;
+        }
+
+        .payment-record-list .timeline-body>div b {
+            display: block;
+            margin-bottom: 0.35rem;
+            font-size: 0.78rem;
+            color: #6c7a89;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .payment-record-list .float-right.d-flex.align-items-center {
+            float: none !important;
+            display: flex !important;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+            margin-bottom: 0.9rem;
+        }
+
+        .payment-record-list .float-right.d-flex.align-items-center a,
+        .payment-record-list .float-right.d-flex.align-items-center button {
+            border-radius: 999px !important;
+            padding: 0.5rem 0.9rem !important;
+            font-size: 0.82rem !important;
+            font-weight: 600;
+            line-height: 1.2;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none !important;
+        }
+
+        .payment-record-list .float-right.d-flex.align-items-center a {
+            border: 1px solid #1d72b8;
+            color: #1d72b8;
+            background: #fff;
+        }
+
+        .payment-record-list .float-right.d-flex.align-items-center a:hover {
+            background: #eef7ff;
+        }
+
+        .payment-record-list .btn.btn-xs.btn-danger.ml-2 {
+            margin-left: 0 !important;
+        }
+
+        .payment-record-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.8rem;
+        }
+
+        .payment-record-card {
+            background: #f8fbff;
+            border: 1px solid rgba(15, 76, 129, 0.07);
+            border-radius: 16px;
+            padding: 0.85rem 0.95rem;
+        }
+
+        .payment-record-card-label {
+            font-size: 0.78rem;
+            color: #6c7a89;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.35rem;
+        }
+
+        .payment-record-card-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #12263f;
+            word-break: break-word;
+        }
+
+        .payment-record-empty,
+        .payment-record-loading,
+        .payment-record-error {
+            background: #fff;
+            border-radius: 20px;
+            padding: 2.4rem 1.2rem;
+            text-align: center;
+            border: 1px solid rgba(15, 76, 129, 0.08);
+            box-shadow: 0 16px 35px rgba(15, 23, 42, 0.06);
+        }
+
+        .payment-record-loading i,
+        .payment-record-empty i,
+        .payment-record-error i {
+            font-size: 2rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .payment-record-modal-footer {
+            border-top: 1px solid rgba(15, 76, 129, 0.08);
+            background: #fff;
+            padding: 1rem 1.5rem 1.25rem;
+        }
+
+        @media (max-width: 767.98px) {
+            .payment-record-modal-body {
+                padding: 1rem;
+            }
+
+            .payment-record-summary,
+            .payment-record-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .payment-record-entry-head {
+                flex-direction: column;
+            }
+
+            .payment-record-actions {
+                justify-content: flex-start;
+            }
+
+            .payment-record-amount {
+                font-size: 1.35rem;
+            }
+
+            .payment-record-list .timeline-body {
+                grid-template-columns: 1fr;
+            }
+
+            .payment-record-list .float-right.d-flex.align-items-center {
+                justify-content: flex-start;
+            }
+        }
+
+        /* Simple override for payment record modal */
+        #paymentRecordModal .modal-dialog {
+            max-width: 820px;
+        }
+
+        .payment-record-modal-content {
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .payment-record-modal-header {
+            background: #0d6efd;
+            padding: 1rem 1.25rem;
+        }
+
+        .payment-record-modal-title {
+            display: block;
+        }
+
+        .payment-record-modal-icon,
+        .payment-record-modal-kicker,
+        .payment-record-modal-subtitle {
+            display: none;
+        }
+
+        .payment-record-modal-body {
+            padding: 1rem 1.25rem;
+            background: #f8f9fa;
+        }
+
+        .payment-record-modal-footer {
+            padding: 0.85rem 1.25rem;
+            background: #fff;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .payment-record-summary {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .payment-record-summary-item {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 0.75rem;
+        }
+
+        .payment-record-summary-label {
+            display: block;
+            font-size: 0.78rem;
+            color: #6c757d;
+            margin-bottom: 0.25rem;
+        }
+
+        .payment-record-summary-item strong {
+            font-size: 1rem;
+            color: #212529;
+        }
+
+        .payment-record-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding-left: 0;
+        }
+
+        .payment-record-list::before,
+        .payment-record-day,
+        .payment-record-entry,
+        .payment-record-entry::before,
+        .payment-record-shell {
+            all: unset;
+        }
+
+        .payment-record-date {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #495057;
+            margin: 0.25rem 0 0.1rem;
+        }
+
+        .payment-record-card {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 0.9rem;
+        }
+
+        .payment-record-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .payment-record-amount {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 0.15rem;
+        }
+
+        .payment-record-meta {
+            font-size: 0.82rem;
+            color: #6c757d;
+        }
+
+        .payment-record-badge {
+            display: inline-block;
+            padding: 0.28rem 0.55rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .payment-record-badge-success {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .payment-record-badge-warning {
+            background: #fff3cd;
+            color: #664d03;
+        }
+
+        .payment-record-badge-danger {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .payment-record-details {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.65rem 1rem;
+        }
+
+        .payment-record-details span {
+            display: block;
+            font-size: 0.76rem;
+            color: #6c757d;
+            margin-bottom: 0.15rem;
+        }
+
+        .payment-record-details strong {
+            display: block;
+            font-size: 0.92rem;
+            color: #212529;
+            word-break: break-word;
+        }
+
+        .payment-record-actions {
+            display: flex;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.9rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid #f1f3f5;
+        }
+
+        .payment-record-state {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+        }
+
+        .payment-record-state i {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 767.98px) {
+            .payment-record-summary,
+            .payment-record-details {
+                grid-template-columns: 1fr;
+            }
+
+            .payment-record-card-top,
+            .payment-record-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
     </style>
 </head>
 
@@ -1320,20 +1972,31 @@ session_start();
     <div class="modal fade" id="paymentRecordModal" tabindex="-1" role="dialog"
         aria-labelledby="paymentRecordModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="paymentRecordModalLabel"><i class="fas fa-receipt"></i> Payment Record
-                        Timeline</h5>
+            <div class="modal-content payment-record-modal-content">
+                <div class="modal-header payment-record-modal-header text-white">
+                    <div class="payment-record-modal-title">
+                        <span class="payment-record-modal-icon">
+                            <i class="fas fa-receipt"></i>
+                        </span>
+                        <div>
+                            <span class="payment-record-modal-kicker">Billing Activity</span>
+                            <h5 class="modal-title" id="paymentRecordModalLabel">Payment Record Timeline</h5>
+                            <p class="payment-record-modal-subtitle">Review each payment entry, balance movement, and latest receipt actions.</p>
+                        </div>
+                    </div>
                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body payment-record-modal-body">
                     <div id="paymentTimelineContainer">
-                        <div class="text-center text-muted">Loading payment records...</div>
+                        <div class="payment-record-loading text-muted">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <div>Loading payment records...</div>
+                        </div>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer payment-record-modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <!--<button type="button" class="btn btn-info" id="generateLastReceiptButton"><i-->
                     <!--        class="fas fa-file-invoice"></i> Generate Last Receipt</button>-->

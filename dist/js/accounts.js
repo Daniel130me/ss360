@@ -411,7 +411,12 @@ $(document).ready(function () {
     window.showPaymentRecordModal = function (billId, studentId) {
         $('#paymentRecordModal').modal('show');
         const $container = $('#paymentTimelineContainer');
-        $container.html('<div class="text-center text-muted">Loading payment records...</div>');
+        $container.html(`
+            <div class="payment-record-loading text-muted">
+                <i class="fas fa-spinner fa-spin"></i>
+                <div>Loading payment records...</div>
+            </div>
+        `);
         $.ajax({
             url: '../billing_controller.php',
             method: 'POST',
@@ -423,37 +428,93 @@ $(document).ready(function () {
             },
             success: function (res) {
                 if (!res.success || !Array.isArray(res.data) || res.data.length === 0) {
-                    $container.html('<div class="alert alert-warning text-center">No payment records found for this bill.</div>');
+                    $container.html(`
+                        <div class="payment-record-empty text-muted">
+                            <i class="fas fa-folder-open"></i>
+                            <div class="font-weight-bold mb-1">No payment records found</div>
+                            <div>There are no recorded payment activities for this bill yet.</div>
+                        </div>
+                    `);
                     return;
                 }
-                // Group by date for timeline labels
-                let timeline = '<div class="timeline">';
+                const latestItem = res.data[res.data.length - 1];
+                const totalEntries = res.data.filter(item => Number(item.id) > 0).length;
+                let timeline = `
+                    <div class="payment-record-shell">
+                        <div class="payment-record-summary">
+                            <div class="payment-record-stat">
+                                <div class="payment-record-stat-label">Entries Recorded</div>
+                                <div class="payment-record-stat-value">${Number(totalEntries).toLocaleString()}</div>
+                                <div class="payment-record-stat-note">Payment updates attached to this bill</div>
+                            </div>
+                            <div class="payment-record-stat">
+                                <div class="payment-record-stat-label">Total Paid To Date</div>
+                                <div class="payment-record-stat-value">₦${Number(latestItem.total_amount_paid || 0).toLocaleString()}</div>
+                                <div class="payment-record-stat-note">Running total after the latest entry</div>
+                            </div>
+                            <div class="payment-record-stat">
+                                <div class="payment-record-stat-label">Outstanding Balance</div>
+                                <div class="payment-record-stat-value ${Number(latestItem.balance || 0) > 0 ? 'text-danger' : 'text-success'}">₦${Number(latestItem.balance || 0).toLocaleString()}</div>
+                                <div class="payment-record-stat-note">Remaining amount on this bill</div>
+                            </div>
+                        </div>
+                        <div class="payment-record-list">
+                `;
                 let lastDate = '';
                 res.data.forEach(function (item, idx) {
-                    // Format date for label (YYYY-MM-DD to e.g. 21 Jun. 2025)
                     let dateObj = item.date_paid ? new Date(item.date_paid) : (item.datecreated ? new Date(item.datecreated) : null);
                     let dateLabel = dateObj ? dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                    let timeLabel = dateObj ? dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : 'Time unavailable';
                     if (dateLabel && dateLabel !== lastDate) {
-                        timeline += `<div class="time-label"><span class="bg-info">${dateLabel}</span></div>`;
+                        timeline += `<div class="payment-record-day">${dateLabel}</div>`;
                         lastDate = dateLabel;
                     }
-                    // Icon and color
-                    let icon = 'fa-money-bill-wave', bg = 'bg-success', statusText = 'Paid', statusColor = 'text-success';
-                    if (item.status == 0) { statusText = 'Pending'; bg = 'bg-warning'; icon = 'fa-hourglass-half'; statusColor = 'text-warning'; }
-                    if (item.balance > 0 && item.amount_newly_paid == 0) { statusText = 'Outstanding'; bg = 'bg-danger'; icon = 'fa-exclamation-circle'; statusColor = 'text-danger'; }
+                    let icon = 'fa-money-bill-wave',
+                        statusText = 'Paid',
+                        statusColor = '#15803d',
+                        statusBg = '#ebf8f2',
+                        accentColor = '#1fa971';
+                    if (item.status == 0) {
+                        statusText = 'Pending';
+                        icon = 'fa-hourglass-half';
+                        statusColor = '#a16207';
+                        statusBg = '#fef3c7';
+                        accentColor = '#f4b740';
+                    }
+                    if (item.balance > 0 && item.amount_newly_paid == 0) {
+                        statusText = 'Outstanding';
+                        icon = 'fa-exclamation-circle';
+                        statusColor = '#b42318';
+                        statusBg = '#fee4e2';
+                        accentColor = '#f97066';
+                    }
                     const canDeleteLastPayment = item.id > 0 && idx === res.data.length - 1;
                     const deleteButton = canDeleteLastPayment
-                        ? `<button type="button" class="btn btn-xs btn-danger ml-2 delete-last-payment-record" data-payment_id="${item.id}" data-bill_id="${item.bill_id}" data-student_id="${studentId}"><i class="fas fa-trash"></i> Delete Last Record</button>`
+                        ? `<button type="button" class="btn btn-danger payment-record-btn delete-last-payment-record" data-payment_id="${item.id}" data-bill_id="${item.bill_id}" data-student_id="${studentId}"><i class="fas fa-trash"></i> Delete Last Record</button>`
                         : '';
-                    // Timeline item
+                    const description = item.description ? escapeHtml(item.description) : 'No description';
+                    const paymentMethod = item.payment_method ? escapeHtml(item.payment_method) : 'N/A';
+                    const runningTotal = Number(item.total_amount_paid || 0);
+                    const balance = Number(item.balance || 0);
+                    const paidAmount = Number(item.amount_newly_paid || 0);
                     timeline += `
-                      <div>
-                        <i class="fas ${icon} ${bg}"></i>
-                        <div class="timeline-item">
-                        <div class="float-right d-flex align-items-center">
-                          <a href="#paymentReceiptPreviewModal" data-toggle="modal" aria-expanded="false" data-bill_id="${item.bill_id}" data-paymentid="${item.id}" aria-controls="paymentReceiptPreviewModal">Preview Payment Receipt</a>
-                          ${deleteButton}
-                        </div>
+                        <div class="payment-record-entry" style="--entry-accent:${accentColor}; --status-bg:${statusBg}; --status-color:${statusColor};">
+                            <div class="payment-record-entry-head">
+                                <div class="payment-record-entry-main">
+                                    <div class="payment-record-status">
+                                        <i class="fas ${icon}"></i>
+                                        <span>${statusText}</span>
+                                    </div>
+                                    <div class="payment-record-amount">₦${paidAmount.toLocaleString()}</div>
+                                    <div class="payment-record-entry-meta">Recorded ${dateLabel || 'Unknown date'}${timeLabel ? ` at ${timeLabel}` : ''}</div>
+                                </div>
+                                <div class="payment-record-actions">
+                                    <a href="#paymentReceiptPreviewModal" class="btn btn-outline-primary payment-record-btn" data-toggle="modal" aria-expanded="false" data-bill_id="${item.bill_id}" data-paymentid="${item.id}" aria-controls="paymentReceiptPreviewModal">
+                                        <i class="fas fa-file-invoice"></i>
+                                        <span>Preview Receipt</span>
+                                    </a>
+                                    ${deleteButton}
+                                </div>
                           <h3 class="timeline-header ${statusColor}">
                             <b>${statusText}</b> - ₦${Number(item.amount_newly_paid).toLocaleString()} paid
                           </h3>
@@ -472,6 +533,124 @@ $(document).ready(function () {
             },
             error: function () {
                 $container.html('<div class="alert alert-danger text-center">Failed to load payment records.</div>');
+            }
+        });
+    };
+
+    // Simple renderer override for the payment record modal.
+    window.showPaymentRecordModal = function (billId, studentId) {
+        $('#paymentRecordModal').modal('show');
+        const $container = $('#paymentTimelineContainer');
+
+        $container.html(`
+            <div class="payment-record-state text-muted">
+                <i class="fas fa-spinner fa-spin"></i>
+                <div>Loading payment records...</div>
+            </div>
+        `);
+
+        $.ajax({
+            url: '../billing_controller.php',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'get_payment_timeline',
+                bill_id: billId,
+                student_id: studentId
+            },
+            success: function (res) {
+                if (!res.success || !Array.isArray(res.data) || res.data.length === 0) {
+                    $container.html(`
+                        <div class="payment-record-state text-muted">
+                            <i class="fas fa-folder-open"></i>
+                            <div>No payment records found for this bill.</div>
+                        </div>
+                    `);
+                    return;
+                }
+
+                const latestItem = res.data[res.data.length - 1];
+                const totalEntries = res.data.filter(item => Number(item.id) > 0).length;
+
+                let html = `
+                    <div class="payment-record-summary">
+                        <div class="payment-record-summary-item">
+                            <span class="payment-record-summary-label">Entries</span>
+                            <strong>${Number(totalEntries).toLocaleString()}</strong>
+                        </div>
+                        <div class="payment-record-summary-item">
+                            <span class="payment-record-summary-label">Total Paid</span>
+                            <strong>&#8358;${Number(latestItem.total_amount_paid || 0).toLocaleString()}</strong>
+                        </div>
+                        <div class="payment-record-summary-item">
+                            <span class="payment-record-summary-label">Balance</span>
+                            <strong class="${Number(latestItem.balance || 0) > 0 ? 'text-danger' : 'text-success'}">&#8358;${Number(latestItem.balance || 0).toLocaleString()}</strong>
+                        </div>
+                    </div>
+                    <div class="payment-record-list">
+                `;
+
+                let lastDate = '';
+                res.data.forEach(function (item, idx) {
+                    const dateObj = item.date_paid ? new Date(item.date_paid) : (item.datecreated ? new Date(item.datecreated) : null);
+                    const dateLabel = dateObj ? dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Unknown date';
+                    const timeLabel = dateObj ? dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : 'Time unavailable';
+                    const isLatest = item.id > 0 && idx === res.data.length - 1;
+                    const description = item.description ? escapeHtml(item.description) : 'No description';
+                    const paymentMethod = item.payment_method ? escapeHtml(item.payment_method) : 'N/A';
+                    const paidAmount = Number(item.amount_newly_paid || 0);
+                    const totalPaid = Number(item.total_amount_paid || 0);
+                    const balance = Number(item.balance || 0);
+
+                    let statusText = 'Paid';
+                    let statusClass = 'success';
+                    if (item.status == 0) {
+                        statusText = 'Pending';
+                        statusClass = 'warning';
+                    }
+                    if (balance > 0 && paidAmount == 0) {
+                        statusText = 'Outstanding';
+                        statusClass = 'danger';
+                    }
+
+                    if (dateLabel !== lastDate) {
+                        html += `<div class="payment-record-date">${dateLabel}</div>`;
+                        lastDate = dateLabel;
+                    }
+
+                    html += `
+                        <div class="payment-record-card">
+                            <div class="payment-record-card-top">
+                                <div>
+                                    <div class="payment-record-amount">&#8358;${paidAmount.toLocaleString()}</div>
+                                    <div class="payment-record-meta">${timeLabel}</div>
+                                </div>
+                                <span class="payment-record-badge payment-record-badge-${statusClass}">${statusText}</span>
+                            </div>
+                            <div class="payment-record-details">
+                                <div><span>Description</span><strong>${description}</strong></div>
+                                <div><span>Payment Method</span><strong>${paymentMethod}</strong></div>
+                                <div><span>Total Paid To Date</span><strong>&#8358;${totalPaid.toLocaleString()}</strong></div>
+                                <div><span>Balance</span><strong class="${balance > 0 ? 'text-danger' : 'text-success'}">&#8358;${balance.toLocaleString()}</strong></div>
+                            </div>
+                            <div class="payment-record-actions">
+                                <a href="#paymentReceiptPreviewModal" class="btn btn-sm btn-outline-primary" data-toggle="modal" aria-expanded="false" data-bill_id="${item.bill_id}" data-paymentid="${item.id}" aria-controls="paymentReceiptPreviewModal">Preview Receipt</a>
+                                ${isLatest ? `<button type="button" class="btn btn-sm btn-danger delete-last-payment-record" data-payment_id="${item.id}" data-bill_id="${item.bill_id}" data-student_id="${studentId}">Delete Last Record</button>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `</div>`;
+                $container.html(html);
+            },
+            error: function () {
+                $container.html(`
+                    <div class="payment-record-state text-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>Failed to load payment records.</div>
+                    </div>
+                `);
             }
         });
     };
