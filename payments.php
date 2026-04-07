@@ -1358,7 +1358,7 @@ session_start();
                     <div class="w-100 d-flex justify-content-end align-items-center">
                         <button type="button" class="btn btn-secondary mr-2" id="edit-wizard-back" style="display: none;">Back</button>
                         <button type="button" class="btn btn-primary mr-2" id="edit-wizard-next">Next</button>
-                        <button type="submit" form="editBillForm" class="btn btn-success" id="edit-save-changes" style="display: none;">Save Changes</button>
+                        <button type="button" class="btn btn-success" id="edit-save-changes" style="display: none;">Save Changes</button>
                         <button type="button" class="btn btn-secondary ml-2" data-dismiss="modal">Cancel</button>
                     </div>
                 </div>

@@ -3050,6 +3050,7 @@ $(document).ready(function () {
         const $next = $('#edit-wizard-next');
         const $back = $('#edit-wizard-back');
         const $save = $('#edit-save-changes');
+        const form = document.getElementById('editBillForm');
 
         function showEditStep(step) {
             $btn1.removeClass('btn-primary').addClass('btn-secondary');
@@ -3100,6 +3101,20 @@ $(document).ready(function () {
 
         $back.on('click', function () {
             if ($('#edit-preview-bill-tab').hasClass('active') || $('#edit-preview-bill-tab').hasClass('show')) showEditStep(1);
+        });
+
+        $save.off('click.editWizardSave').on('click.editWizardSave', function () {
+            if (!form) return;
+
+            // Required fields live on step 1, so bring the user back there before surfacing native validation.
+            if (!form.checkValidity()) {
+                showEditStep(1);
+                form.reportValidity();
+                toastr.warning('Please complete the required bill fields before saving.');
+                return;
+            }
+
+            $('#editBillForm').trigger('submit');
         });
     })();
 
