@@ -637,7 +637,7 @@ $hidden_skills = json_decode($_SESSION['hidden_row'], true) ?? [];
                                         <p class="font-weight-bold text-muted">Principal/Propietor's Comment</p>
                                         <p class="" id="theprincipal_comment"></p>
                                     </div>
-                                    <div class="mr-5">
+                                    <div class="mr-5 general_behaviour_section">
                                         <p class="font-weight-bold text-muted">General Behaviour</p>
                                         <table class="behaviour_report_table w-100">
                                             <thead>
@@ -705,7 +705,7 @@ $hidden_skills = json_decode($_SESSION['hidden_row'], true) ?? [];
                                         </table>
                                     </div>
 
-                                    <div>
+                                    <div class="psychomotive_skills_section">
                                         <p class="font-weight-bold text-muted">Psychomotive Skills</p>
                                         <table class="behaviour_report_table w-100">
                                             <thead>

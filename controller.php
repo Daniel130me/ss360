@@ -4904,6 +4904,76 @@ if ($action === 'get_stud_byClass_comment') {
         } else {
             $staff_type = $staff_classid = '';
         }
+        $show_comment_sections = true;
+        if (
+            isset($_SESSION['report']) &&
+            $_SESSION['report'] == true &&
+            ($pagetype == 'view' || $pagetype == 'report')
+        ) {
+            $show_comment_sections = false;
+            $approval_row = array(
+                'ca1' => '0',
+                'ca2' => '0',
+                'ca3' => '0',
+                'practical' => '0',
+                'exam' => '0'
+            );
+            $settings_row = array(
+                'ca1' => '0',
+                'ca2' => '0',
+                'ca3' => '0',
+                'practical' => '0',
+                'exam' => '0'
+            );
+
+            $select_approval = mysqli_query($conn, "SELECT ca1,ca2,ca3,practical,exam
+                FROM approval
+                WHERE school_id='$school_id' AND session_id='$session'
+                AND term_id='$term' AND class_id='$class_id'");
+            if ($approval_data = mysqli_fetch_array($select_approval)) {
+                $approval_row = $approval_data;
+            }
+
+            $select_settings = mysqli_query($conn, "SELECT ca1,ca2,ca3,practical,exam
+                FROM skul_settings
+                WHERE school_id='$school_id' AND session_id='$session' AND term_id='$term'");
+            if ($settings_data = mysqli_fetch_array($select_settings)) {
+                $settings_row = $settings_data;
+            }
+
+            $enabled_components = array(
+                'ca1' => $settings_row['ca1'],
+                'ca2' => $settings_row['ca2'],
+                'ca3' => $settings_row['ca3'],
+                'practical' => $settings_row['practical'],
+                'exam' => $settings_row['exam']
+            );
+
+            $all_enabled_components_approved = true;
+            $has_enabled_component = false;
+            foreach ($enabled_components as $component => $enabled) {
+                if ($enabled == '1' || $enabled == 1) {
+                    $has_enabled_component = true;
+                    if (!isset($approval_row[$component]) || $approval_row[$component] != '1') {
+                        $all_enabled_components_approved = false;
+                        break;
+                    }
+                }
+            }
+
+            $student_result_is_published = false;
+            $select_status = mysqli_query($conn, "SELECT id FROM skulscores
+                WHERE school_id='$school_id' AND session_id='$session' AND term_id='$term'
+                AND class_id='$class_id' AND student_id='$student' AND status='1'
+                LIMIT 1");
+            if ($select_status && mysqli_num_rows($select_status) > 0) {
+                $student_result_is_published = true;
+            }
+
+            $show_comment_sections = $has_enabled_component &&
+                $all_enabled_components_approved &&
+                $student_result_is_published;
+        }
         $select = mysqli_query($conn, "SELECT comment,role_type FROM comment WHERE term_id='$term' AND class_id='$class_id' AND session_id='$session' AND student_id='$student' AND school_id='$school_id'");
 
         $comments = array();
@@ -4913,7 +4983,8 @@ if ($action === 'get_stud_byClass_comment') {
                     "staff_type" => $staff_type,
                     "staff_classId" => explode(",", $staff_classid),
                     'role_type' => $row['role_type'],
-                    "comment" => $row['comment']
+                    "comment" => $row['comment'],
+                    "show_comment_sections" => $show_comment_sections
                 );
             }
         } else {
@@ -4921,7 +4992,8 @@ if ($action === 'get_stud_byClass_comment') {
                 "staff_type" => $staff_type,
                 "staff_classId" => explode(",", $staff_classid),
                 'role_type' => '',
-                "comment" => ''
+                "comment" => '',
+                "show_comment_sections" => $show_comment_sections
             );
         }
         // echo $row;
@@ -5022,12 +5094,82 @@ if ($action === 'get_stud_byClass_comment') {
         } else {
             $staff_type = $staff_classid = '';
         }
+        $show_behaviour_sections = true;
+        if (
+            isset($_SESSION['report']) &&
+            $_SESSION['report'] == true &&
+            ($pagetype == 'view' || $pagetype == 'report')
+        ) {
+            $show_behaviour_sections = false;
+            $approval_row = array(
+                'ca1' => '0',
+                'ca2' => '0',
+                'ca3' => '0',
+                'practical' => '0',
+                'exam' => '0'
+            );
+            $settings_row = array(
+                'ca1' => '0',
+                'ca2' => '0',
+                'ca3' => '0',
+                'practical' => '0',
+                'exam' => '0'
+            );
+
+            $select_approval = mysqli_query($conn, "SELECT ca1,ca2,ca3,practical,exam
+                FROM approval
+                WHERE school_id='$school_id' AND session_id='$session'
+                AND term_id='$term' AND class_id='$class_id'");
+            if ($approval_data = mysqli_fetch_array($select_approval)) {
+                $approval_row = $approval_data;
+            }
+
+            $select_settings = mysqli_query($conn, "SELECT ca1,ca2,ca3,practical,exam
+                FROM skul_settings
+                WHERE school_id='$school_id' AND session_id='$session' AND term_id='$term'");
+            if ($settings_data = mysqli_fetch_array($select_settings)) {
+                $settings_row = $settings_data;
+            }
+
+            $enabled_components = array(
+                'ca1' => $settings_row['ca1'],
+                'ca2' => $settings_row['ca2'],
+                'ca3' => $settings_row['ca3'],
+                'practical' => $settings_row['practical'],
+                'exam' => $settings_row['exam']
+            );
+
+            $all_enabled_components_approved = true;
+            $has_enabled_component = false;
+            foreach ($enabled_components as $component => $enabled) {
+                if ($enabled == '1' || $enabled == 1) {
+                    $has_enabled_component = true;
+                    if (!isset($approval_row[$component]) || $approval_row[$component] != '1') {
+                        $all_enabled_components_approved = false;
+                        break;
+                    }
+                }
+            }
+
+            $student_result_is_published = false;
+            $select_status = mysqli_query($conn, "SELECT id FROM skulscores
+                WHERE school_id='$school_id' AND session_id='$session' AND term_id='$term'
+                AND class_id='$class_id' AND student_id='$student' AND status='1'
+                LIMIT 1");
+            if ($select_status && mysqli_num_rows($select_status) > 0) {
+                $student_result_is_published = true;
+            }
+
+            $show_behaviour_sections = $has_enabled_component &&
+                $all_enabled_components_approved &&
+                $student_result_is_published;
+        }
         $select = mysqli_query($conn, "SELECT comment FROM other_comments WHERE term_id='$term' AND session_id='$session' AND student_id='$student' AND school_id='$school_id'");
         // if ($staff_type == '6' or $class_id == $_SESSION['class_id'] or $pagetype == 'report') {
         if ($row = mysqli_fetch_array($select)) {
-            echo json_encode(array("staff_type" => $staff_type, "staff_classId" => explode(",", $staff_classid), "comment" => $row['comment']));
+            echo json_encode(array("staff_type" => $staff_type, "staff_classId" => explode(",", $staff_classid), "comment" => $row['comment'], "show_behaviour_sections" => $show_behaviour_sections));
         } else {
-            echo json_encode(array("staff_type" => $staff_type, "staff_classId" => explode(",", $staff_classid), "comment" => ''));
+            echo json_encode(array("staff_type" => $staff_type, "staff_classId" => explode(",", $staff_classid), "comment" => '', "show_behaviour_sections" => $show_behaviour_sections));
         }
         // if (mysqli_num_rows($select) > 0) {
     }

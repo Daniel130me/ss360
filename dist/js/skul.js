@@ -7654,6 +7654,17 @@ async function downloadAllReports() {
 //     });
 // }
 console.log('kilometer')
+function toggleBehaviourSectionsVisibility(showSections, container = null) {
+    const shouldShow = showSections !== false;
+    if (container) {
+        container.find('.general_behaviour_section, .psychomotive_skills_section').toggle(shouldShow);
+        container.find('.report-card-behaviour-table').closest('table').toggle(shouldShow);
+        container.find('.report-card-psychomotive-table').closest('table').toggle(shouldShow);
+        return;
+    }
+    $('.general_behaviour_section, .psychomotive_skills_section').toggle(shouldShow);
+}
+
 function set_behaviour_comment(term, session, student_id, class_id, pagetype) {
     console.log(window.schoolHiddenSkills);
     if ($("#report_page").val() === "report_scores") {
@@ -7673,6 +7684,7 @@ function set_behaviour_comment(term, session, student_id, class_id, pagetype) {
         success: (data) => {
             data = data.trim();
             data = JSON.parse(data);
+            toggleBehaviourSectionsVisibility(data.show_behaviour_sections);
             // alert(data.staff_classId)
             // let staff_classId_json = JSON.parse(data.staff_classId)
             // alert((data.staff_classId).includes(class_id))
@@ -7901,6 +7913,9 @@ function get_teacher_comment(term, session, student_id, class_id, pagetype) {
             data = data.trim();
             data = JSON.parse(data)
             let datacount = data.length;
+            const shouldShowComments = !(data.length > 0 && data[0].show_comment_sections === false);
+            $("#view_teacher_comment_container, #view_principal_comment_container").toggle(shouldShowComments);
+            $("#report_teacher_comment_container").toggle(shouldShowComments);
             // alert(noofdata)
             data.map((item) => {
                 // if (item.comment != '') {
@@ -15054,6 +15069,7 @@ async function set_behaviour_comment_report(
             success: (data) => {
                 data = data.trim();
                 data = JSON.parse(data);
+                toggleBehaviourSectionsVisibility(data.show_behaviour_sections, container);
                 // alert(data.staff_classId)
                 // let staff_classId_json = JSON.parse(data.staff_classId)
                 // alert((data.staff_classId).includes(class_id))
