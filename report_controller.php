@@ -155,6 +155,29 @@ if ($action == 'save_report_template') {
     exit;
 }
 
+if ($action == 'set_report_template_status') {
+    $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+    $status = isset($_POST['status']) ? (int)$_POST['status'] : 0;
+    $user_id = $_SESSION['userid'] ?? 0;
+
+    if ($id <= 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Template not found']);
+        exit;
+    }
+
+    $status = $status === 1 ? 1 : 0;
+    $query = "UPDATE report_templates
+              SET status='$status', updatedby='$user_id', dateupdated=NOW()
+              WHERE id='$id' AND school_id='$school_id'";
+
+    if (mysqli_query($conn, $query)) {
+        echo json_encode(['status' => 'success']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => mysqli_error($conn)]);
+    }
+    exit;
+}
+
 if ($action == 'fetch_report_by_id') {
     $report_id = $_POST['report_id'];
     $school_id = $_SESSION['school_id'];

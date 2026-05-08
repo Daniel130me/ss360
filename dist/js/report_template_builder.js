@@ -86,6 +86,7 @@
     }, {});
 
     let draft = null;
+    let templateList = [];
 
     function columnApi() {
         return window.ReportCardColumns || {
@@ -113,6 +114,18 @@
     function setStatus(message, tone) {
         const className = tone === "error" ? "text-danger" : tone === "success" ? "text-success" : "text-muted";
         $("#reportTemplateStatusText").removeClass("text-danger text-success text-muted").addClass(className).text(message || "");
+    }
+
+    function getTermLabel(termId) {
+        const labels = {
+            default: "School Default",
+            "1": "1st Term",
+            "2": "2nd Term",
+            "3": "3rd Term",
+            cumulative: "Cumulative",
+        };
+
+        return labels[String(termId || "default")] || "School Default";
     }
 
     function isExactTemplateMatch(templateRow, sessionId, termId) {
@@ -332,6 +345,91 @@
         renderPreview();
     }
 
+    function applyTemplateRowToEditor(templateRow, asCopy) {
+        const sessionId = $("#singleSessionValue").val();
+        const termId = templateRow.term_id || "default";
+        const exactMatch = isExactTemplateMatch(templateRow, sessionId, termId);
+
+        $("#reportTemplateTerm").val(termId);
+        draft = normalizeTemplate(templateRow.template_json);
+        draft.template_name = templateRow.template_name || draft.template_name;
+        $("#reportTemplateId").val(!asCopy && exactMatch ? templateRow.id || "" : "");
+        $("#reportTemplateStatus").val(String(templateRow.status == null ? 1 : templateRow.status));
+        $("#reportTemplateDefault").prop("checked", !asCopy && exactMatch && String(templateRow.is_default || "0") === "1");
+
+        if (asCopy) {
+            draft.template_name = `${draft.template_name} Copy`;
+            $("#reportTemplateStatus").val("1");
+            $("#reportTemplateDefault").prop("checked", false);
+        }
+
+        renderAll();
+        setStatus(asCopy || !exactMatch ? "Loaded as a copy for the selected context." : "Loaded saved format.", "success");
+    }
+
+    function renderTemplateList() {
+        const sessionId = $("#singleSessionValue").val();
+        const html = templateList
+            .map((templateRow) => {
+                const exactMatch = isExactTemplateMatch(templateRow, sessionId, templateRow.term_id);
+                const statusText = String(templateRow.status || "0") === "1" ? "Active" : "Inactive";
+                const statusClass = String(templateRow.status || "0") === "1" ? "" : "is-off";
+                const scopeText = exactMatch ? "Exact" : "Inherited";
+                const defaultBadge = String(templateRow.is_default || "0") === "1" ? '<span class="report-template-list-badge">Default</span>' : "";
+                const archiveLabel = String(templateRow.status || "0") === "1" ? "Archive" : "Restore";
+                const nextStatus = String(templateRow.status || "0") === "1" ? 0 : 1;
+
+                return `
+                    <div class="report-template-list-item" data-id="${escapeHtml(templateRow.id)}">
+                        <div>
+                            <div class="report-template-list-title">${escapeHtml(templateRow.template_name || "Report Card")}</div>
+                            <div class="report-template-list-meta">
+                                <span class="report-template-list-badge">${escapeHtml(getTermLabel(templateRow.term_id))}</span>
+                                <span class="report-template-list-badge">${scopeText}</span>
+                                <span class="report-template-list-badge ${statusClass}">${statusText}</span>
+                                ${defaultBadge}
+                            </div>
+                        </div>
+                        <div class="report-template-list-actions">
+                            <button type="button" class="btn btn-sm btn-outline-primary edit-report-template" data-id="${escapeHtml(templateRow.id)}">Edit</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary copy-report-template" data-id="${escapeHtml(templateRow.id)}">Copy</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger toggle-report-template-status" data-id="${escapeHtml(templateRow.id)}" data-status="${nextStatus}">${archiveLabel}</button>
+                        </div>
+                    </div>
+                `;
+            })
+            .join("");
+
+        $("#reportTemplateList").html(html || '<span class="text-muted small">No saved formats yet.</span>');
+    }
+
+    function fetchTemplateList() {
+        const sessionId = $("#singleSessionValue").val();
+        if (!sessionId) {
+            templateList = [];
+            renderTemplateList();
+            return;
+        }
+
+        $.ajax({
+            url: "../report_controller.php",
+            type: "POST",
+            dataType: "json",
+            data: {
+                action: "fetch_report_templates",
+                session_id: sessionId,
+            },
+            success: function (response) {
+                templateList = response.status === "success" && Array.isArray(response.data) ? response.data : [];
+                renderTemplateList();
+            },
+            error: function () {
+                templateList = [];
+                renderTemplateList();
+            },
+        });
+    }
+
     function collectDraftFromForm() {
         const sections = [];
         $(".report-section-toggle").each(function (index) {
@@ -427,6 +525,7 @@
                 if (response.status === "success") {
                     $("#reportTemplateId").val(response.id || "");
                     setStatus("Format saved.", "success");
+                    fetchTemplateList();
                 } else {
                     setStatus(response.message || "Format could not be saved.", "error");
                 }
@@ -473,8 +572,12 @@
     function bindEvents() {
         $("#reportTemplateTerm").on("change", loadTemplate);
         $("#loadReportTemplate").on("click", loadTemplate);
+        $("#refreshReportTemplates").on("click", fetchTemplateList);
 
-        $("#singleSessionValue").on("change", loadTemplate);
+        $("#singleSessionValue").on("change", function () {
+            loadTemplate();
+            fetchTemplateList();
+        });
         $(document).on("click", ".term_setting", function () {
             const termId = $(this).data("name");
             setTimeout(function () {
@@ -530,6 +633,44 @@
         $(document).on("click", ".move-report-column", function () {
             moveColumn($(this).data("column"), $(this).data("direction"));
         });
+
+        $(document).on("click", ".edit-report-template, .copy-report-template", function () {
+            const templateId = String($(this).data("id"));
+            const templateRow = templateList.find((item) => String(item.id) === templateId);
+            if (!templateRow) {
+                setStatus("Could not find that saved format.", "error");
+                return;
+            }
+
+            applyTemplateRowToEditor(templateRow, $(this).hasClass("copy-report-template"));
+        });
+
+        $(document).on("click", ".toggle-report-template-status", function () {
+            const templateId = $(this).data("id");
+            const status = $(this).data("status");
+
+            $.ajax({
+                url: "../report_controller.php",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    action: "set_report_template_status",
+                    id: templateId,
+                    status,
+                },
+                success: function (response) {
+                    if (response.status === "success") {
+                        setStatus(status == 1 ? "Format restored." : "Format archived.", "success");
+                        fetchTemplateList();
+                    } else {
+                        setStatus(response.message || "Could not update format.", "error");
+                    }
+                },
+                error: function () {
+                    setStatus("Could not update format.", "error");
+                },
+            });
+        });
     }
 
     function init() {
@@ -546,6 +687,7 @@
         renderAll();
         bindEvents();
         loadTemplate();
+        fetchTemplateList();
     }
 
     $(init);

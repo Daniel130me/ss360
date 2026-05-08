@@ -131,3 +131,55 @@
 .report-template-status {
     min-height: 22px;
 }
+
+.report-template-list {
+    display: grid;
+    gap: 8px;
+}
+
+.report-template-list-item {
+    align-items: center;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: space-between;
+    padding: 10px 12px;
+}
+
+.report-template-list-title {
+    color: #1e293b;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.report-template-list-meta {
+    color: #64748b;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 0.78rem;
+    gap: 6px;
+}
+
+.report-template-list-badge {
+    background: #f1f5f9;
+    border-radius: 999px;
+    color: #475569;
+    display: inline-block;
+    font-weight: 700;
+    padding: 2px 8px;
+}
+
+.report-template-list-badge.is-off {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.report-template-list-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}

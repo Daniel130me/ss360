@@ -359,6 +359,14 @@ $row = mysqli_fetch_array($select);
             </div>
         </div>
 
+        <div class="report-template-panel mb-3">
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+                <div class="report-template-panel-title mb-0">Saved Formats</div>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="refreshReportTemplates">Refresh</button>
+            </div>
+            <div id="reportTemplateList" class="report-template-list"></div>
+        </div>
+
         <div class="report-template-grid">
             <div class="report-template-panel">
                 <div class="report-template-panel-title">Preset</div>
