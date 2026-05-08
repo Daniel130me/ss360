@@ -1255,10 +1255,12 @@ $date = date("Y:m:d H:i:s");
                 'grade' => $row['grading'],
             );
         }
+        header('Content-Type: application/json');
         echo json_encode(array(
             'settingsData' => $settingsData,
             'score_data' => $score_data
         ));
+        exit;
     }
     // if ($action === 'getsinglesessionreport_view') {
     //     $school_id = $_SESSION['school_id'];
