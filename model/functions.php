@@ -571,6 +571,277 @@ $query = "SELECT COUNT(*) as subject_count
     $row = mysqli_fetch_array($select);
     return $row['subject_count'] * 100; // Each subject has a maximum score of 100
 }
+function get_default_report_template_config()
+{
+    return [
+        'version' => 1,
+        'template_name' => 'Default Report Card',
+        'page' => [
+            'size' => 'A4',
+            'orientation' => 'portrait',
+            'show_watermark' => true,
+        ],
+        'sections' => [
+            ['key' => 'school_header', 'enabled' => true, 'order' => 1],
+            ['key' => 'student_details', 'enabled' => true, 'order' => 2],
+            ['key' => 'performance_summary', 'enabled' => true, 'order' => 3],
+            ['key' => 'score_table', 'enabled' => true, 'order' => 4],
+            ['key' => 'behaviour_skills', 'enabled' => true, 'order' => 5],
+            ['key' => 'psychomotor_skills', 'enabled' => true, 'order' => 6],
+            ['key' => 'grade_scale', 'enabled' => true, 'order' => 7],
+            ['key' => 'skill_rating_indices', 'enabled' => true, 'order' => 8],
+            ['key' => 'comments', 'enabled' => true, 'order' => 9],
+            ['key' => 'signature_stamp', 'enabled' => true, 'order' => 10],
+        ],
+        'fields' => [
+            'school_logo' => true,
+            'school_name' => true,
+            'school_address' => true,
+            'school_phone' => true,
+            'school_email' => true,
+            'student_photo' => true,
+            'student_name' => true,
+            'admission_no' => true,
+            'class' => true,
+            'no_in_class' => true,
+            'school_open' => true,
+            'times_present' => true,
+            'times_absent' => true,
+            'next_term_begins' => true,
+            'teacher_comment' => true,
+            'head_teacher_comment' => true,
+        ],
+        'score_columns' => [
+            'subject',
+            'ca1',
+            'ca2',
+            'ca3',
+            'practical',
+            'exam',
+            'total',
+            'percentage',
+            'grade',
+        ],
+        'available_cumulative_columns' => [
+            'first_term_total',
+            'second_term_total',
+            'third_term_total',
+            'grand_total',
+            'average',
+            'class_average',
+            'position',
+        ],
+        'labels' => [
+            'total' => 'Total',
+            'percentage' => 'Total(%)',
+            'grade' => 'Grade',
+            'first_term_total' => '1st Term Total',
+            'second_term_total' => '2nd Term Total',
+            'third_term_total' => '3rd Term Total',
+            'grand_total' => 'Grand Total',
+            'average' => 'Average',
+            'class_average' => 'Class Average',
+            'position' => 'Position',
+        ],
+    ];
+}
+
+function get_report_template_allowed_sections()
+{
+    return [
+        'school_header',
+        'student_details',
+        'performance_summary',
+        'score_table',
+        'behaviour_skills',
+        'psychomotor_skills',
+        'grade_scale',
+        'skill_rating_indices',
+        'comments',
+        'signature_stamp',
+    ];
+}
+
+function get_report_template_allowed_score_columns()
+{
+    return [
+        'subject',
+        'ca1',
+        'ca2',
+        'ca3',
+        'practical',
+        'exam',
+        'total',
+        'percentage',
+        'grade',
+        'first_term_total',
+        'second_term_total',
+        'third_term_total',
+        'grand_total',
+        'average',
+        'class_average',
+        'position',
+    ];
+}
+
+function normalize_report_template_term_id($term_id)
+{
+    $term_id = trim((string)$term_id);
+    $allowed_terms = ['default', '1', '2', '3', 'cumulative'];
+    return in_array($term_id, $allowed_terms, true) ? $term_id : 'default';
+}
+
+function normalize_report_template_config($template)
+{
+    if (is_string($template)) {
+        $template = json_decode($template, true);
+    }
+
+    $default_template = get_default_report_template_config();
+    if (!is_array($template)) {
+        return $default_template;
+    }
+
+    $allowed_sections = get_report_template_allowed_sections();
+    $allowed_columns = get_report_template_allowed_score_columns();
+
+    $normalized = $default_template;
+    if (isset($template['version'])) {
+        $normalized['version'] = (int)$template['version'];
+    }
+    if (!empty($template['template_name'])) {
+        $normalized['template_name'] = trim((string)$template['template_name']);
+    }
+    if (isset($template['page']) && is_array($template['page'])) {
+        $normalized['page'] = array_merge($default_template['page'], $template['page']);
+    }
+    if (isset($template['fields']) && is_array($template['fields'])) {
+        $normalized['fields'] = array_merge($default_template['fields'], $template['fields']);
+    }
+    if (isset($template['labels']) && is_array($template['labels'])) {
+        $normalized['labels'] = array_merge($default_template['labels'], $template['labels']);
+    }
+
+    $normalized_sections = [];
+
+    if (!empty($template['sections']) && is_array($template['sections'])) {
+        foreach ($template['sections'] as $section) {
+            if (!is_array($section) || empty($section['key']) || !in_array($section['key'], $allowed_sections, true)) {
+                continue;
+            }
+
+            $normalized_sections[] = [
+                'key' => $section['key'],
+                'enabled' => !isset($section['enabled']) || (bool)$section['enabled'],
+                'order' => isset($section['order']) ? (int)$section['order'] : count($normalized_sections) + 1,
+            ];
+        }
+    }
+
+    $normalized['sections'] = !empty($normalized_sections) ? $normalized_sections : $default_template['sections'];
+
+    $score_columns = [];
+    if (!empty($template['score_columns']) && is_array($template['score_columns'])) {
+        foreach ($template['score_columns'] as $column) {
+            $column = trim((string)$column);
+            if (in_array($column, $allowed_columns, true) && !in_array($column, $score_columns, true)) {
+                $score_columns[] = $column;
+            }
+        }
+    }
+
+    if (empty($score_columns)) {
+        $score_columns = $default_template['score_columns'];
+    } else {
+        $score_columns = array_values(array_filter($score_columns, function ($column) {
+            return $column !== 'subject';
+        }));
+        array_unshift($score_columns, 'subject');
+    }
+    $normalized['score_columns'] = $score_columns;
+
+    return $normalized;
+}
+
+function get_report_template_by_context($school_id, $session_id, $term_id)
+{
+    global $conn;
+
+    $school_id = (int)$school_id;
+    $session_id = $session_id === null || $session_id === '' ? null : (int)$session_id;
+    $term_id = normalize_report_template_term_id($term_id);
+    $default_template = get_default_report_template_config();
+
+    if (!$conn) {
+        return $default_template;
+    }
+
+    $queries = [];
+    if ($session_id !== null) {
+        $queries[] = "school_id='$school_id' AND session_id='$session_id' AND term_id='$term_id' AND status='1'";
+    }
+    $queries[] = "school_id='$school_id' AND session_id IS NULL AND term_id='$term_id' AND status='1'";
+    $queries[] = "school_id='$school_id' AND term_id='default' AND is_default='1' AND status='1'";
+    $queries[] = "school_id='0' AND term_id='default' AND is_default='1' AND status='1'";
+
+    foreach ($queries as $where_clause) {
+        $select_template = mysqli_query($conn, "SELECT * FROM report_templates WHERE $where_clause ORDER BY id DESC LIMIT 1");
+        if ($select_template && $row = mysqli_fetch_assoc($select_template)) {
+            $row['template_json'] = normalize_report_template_config($row['template_json']);
+            return $row;
+        }
+    }
+
+    return [
+        'id' => null,
+        'school_id' => 0,
+        'session_id' => null,
+        'term_id' => 'default',
+        'template_name' => $default_template['template_name'],
+        'template_json' => $default_template,
+        'is_default' => 1,
+        'status' => 1,
+    ];
+}
+
+function legacy_report_settings_to_template($report_settings)
+{
+    $template = get_default_report_template_config();
+    if (!is_array($report_settings)) {
+        return $template;
+    }
+
+    if (!empty($report_settings['report_name'])) {
+        $template['template_name'] = $report_settings['report_name'];
+    }
+
+    $assessment_types = $report_settings['assessment_type'] ?? [];
+    if (is_string($assessment_types)) {
+        $assessment_types = json_decode($assessment_types, true);
+    }
+
+    $assessment_map = [
+        'ca1' => 'ca1',
+        'ca2' => 'ca2',
+        'ca3' => 'ca3',
+        'practical' => 'practical',
+        'exam' => 'exam',
+    ];
+
+    $columns = ['subject'];
+    if (is_array($assessment_types)) {
+        foreach ($assessment_types as $assessment_type) {
+            $key = strtolower(trim((string)$assessment_type));
+            if (isset($assessment_map[$key])) {
+                $columns[] = $assessment_map[$key];
+            }
+        }
+    }
+
+    $template['score_columns'] = array_merge(array_values(array_unique($columns)), ['total', 'percentage', 'grade']);
+    return normalize_report_template_config($template);
+}
+
 // function get_total_obtainables($studentid, $term_id, $session_id, $class_id) {
 //     global $conn;
 //     $select = mysqli_query($conn, "SELECT COUNT(*) as subject_count FROM skulscores 
