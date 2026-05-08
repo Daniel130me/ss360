@@ -278,7 +278,7 @@ $(".url_upadter").submit(function (event) {
         success: (data) => {
             $($btn).attr("disabled", false)
             $($btn).html($btntext)
-            // data = JSON.parse(data)
+            data = JSON.parse(data)
             if (data.status == '1') {
                 // alert(data)
                 toastr.success("Updated succesfully")
@@ -328,7 +328,7 @@ function get_notices(userid, usertype) {
         data: { action: 'get_msg', usertype, userid, },
         success: (resp) => {
             console.log(resp)
-            // resp = JSON.parse(resp)
+            resp = JSON.parse(resp)
             if (resp.status == '1') {
                 data = resp.data
                 console.log(data)
@@ -1001,13 +1001,12 @@ function get_score_data() {
             $(".data_overlay").show()
         },
         success: (data) => {
-            console.log("llope", data)
+            console.log(data)
             // console.log('l', )
             // alert(data.length)
             // if(data.length == 0){
             // }
-            student_score_data = data
-            // student_score_data = JSON.parse(data)
+            student_score_data = JSON.parse(data)
             if (student_score_data.length <= 1) {
                 $(".data_overlay").html(`
                         <p class="font-weight-bold">No score record for this student</p>
@@ -1241,8 +1240,7 @@ function format_student_table(student_score_data, term, session_id, class_id) {
     let formattedString = skul_settings['grading'].replace(/([A-Z]):/g, '"$1":').replace(/:/g, ': ');
     grader = JSON.parse(formattedString)
     console.log(grader)
-    // 
-    console.log("some student", student_score_data)
+    // return
 
     if ($(".term.select_btn.active").attr("data-name") == "summary") {
         generateSessionSummary(student_score_data, session_id, $("#select_student_field").val(), class_id)
@@ -1573,7 +1571,6 @@ function select_receipient() {
 
 
 function calculate_Percentages_and_totals(data) {
-    console.log("fff", data)
     // Initialize variables for storing totals and maximum scores for each term and session
     let term1Total = 0,
         term1Max = 0;
@@ -1583,8 +1580,7 @@ function calculate_Percentages_and_totals(data) {
         term3Max = 0;
 
     // Iterate through the data array to sum up totals and max values for each term
-
-    Array.from(data).forEach(item => {
+    data.forEach(item => {
         // Parse item values as numbers to avoid type issues
         const total = parseFloat(item.Total) || 0;
         const ca1Total = parseFloat(item.ca1Total) || 0;
@@ -3046,34 +3042,19 @@ function by_class_view_content() {
             $(".data_overlay").show();
         },
         success: (data) => {
-            if (typeof data === "string") {
-                try {
-                    data = JSON.parse(data);
-                } catch (e) {
-                    console.error("Failed to parse data as JSON:", data);
-                    $(".data_overlay").html(`<p class="text-danger">Error: Invalid data format from server.</p>`);
-                    return;
-                }
-            }
-
-            if (!Array.isArray(data)) {
-                console.error("Expected array but received:", typeof data, data);
-                $(".data_overlay").html(`<p class="text-danger">Error: Unexpected data format.</p>`);
-                return;
-            }
-
+            data = JSON.parse(data);
             let grader = format_grade(skul_settings["grading"]);
-            if (data.length === 0) {
+            if (data.length <= 1) {
                 $(".data_overlay").html(`
-                    <p class="font-weight-bold">No record for the class selected</p>
+                <p class="font-weight-bold">No record for the class selected</p>
             `);
                 return;
             }
             $(".by_class_filter").show();
             $(".data_overlay").hide();
             $(".data_overlay").html(`
-                <p class="font-weight-bold">Fill the forms appropiately</p>
-                `);
+            <p class="font-weight-bold">Fill the forms appropiately</p>
+        `);
             // compute component count safely (avoid NaN if settingsData entries are missing)
             const ca1Flag = Number(settingsData.ca1) || 0;
             const ca2Flag = Number(settingsData.ca2) || 0;
@@ -3597,8 +3578,7 @@ function get_approval_btn(class_id, term_id, session_id) {
         type: "post",
         data: { 'action': 'get_approval', class_id, term_id, session_id, },
         success: (data) => {
-
-            // data = JSON.parse(data) //{ca1:1,ca2:0}
+            data = JSON.parse(data) //{ca1:1,ca2:0}
             console.log(data)
             // Object.entries(data[0]).forEach(([key,value]) => {
             str += settingsData.ca1 == 1 ? `<button type="button" class="btn btn-sm mr-2 select_btn approve_disaprove ${data[0].ca1 == '1' ? 'active' : ''} mt-3" data-name='ca1' onclick="approve_disaprove_comment(this)">Approve CA1</button>` : ''
@@ -3635,8 +3615,8 @@ const loadSettings = () => {
             'session_id': session_id
         },
         success: (data) => {
-            // settingsData = JSON.parse(data);
-            settingsData = data;
+            settingsData = JSON.parse(data);
+            // settingsData = data;
             // if ($("#report_page").val() === 'report_scores') {
             //     callback('student');
             //     // alert('lsc')
@@ -5099,8 +5079,7 @@ function getsubjects(classid, callback) {
                     $("#select_subject_field").empty()
                     return reject()
                 }
-                subjects = data
-                // subjects = JSON.parse(data)
+                subjects = JSON.parse(data)
                 if (callback == 'callback') {
                     if ($("#by_subj_btn").hasClass('active')) {
                         $("#select_subject_warning").hide()
@@ -5138,8 +5117,7 @@ function getstudents(classValue) {
         success: (data) => {
 
             let str;
-            let parsedData = data;
-            // let parsedData = JSON.parse(data);
+            let parsedData = JSON.parse(data);
             students = parsedData
             if ($("#by_subj_btn").hasClass('active')) {
                 students = parsedData;
@@ -7684,10 +7662,10 @@ function set_behaviour_comment(term, session, student_id, class_id, pagetype) {
         success: (data) => {
             data = data.trim();
             data = JSON.parse(data);
-            toggleBehaviourSectionsVisibility(data.show_behaviour_sections);
             // alert(data.staff_classId)
             // let staff_classId_json = JSON.parse(data.staff_classId)
             // alert((data.staff_classId).includes(class_id))
+            toggleBehaviourSectionsVisibility(data.show_behaviour_sections);
             thebehavedata = data.comment;
             console.log("thebehavedata", thebehavedata)
             console.log("thebehavedata2", data)
@@ -7899,6 +7877,146 @@ function set_behaviour_comment(term, session, student_id, class_id, pagetype) {
         },
     });
 }
+// function get_teacher_comment(term, session, student_id, class_id, pagetype) {
+//     // alert(class_id)
+//     // return
+//     if ($("#report_page").val() === 'report_scores') {
+//         pagetype = 'report'
+//     }
+//     $.ajax({
+//         url: '../controller.php',
+//         type: 'POST',
+//         data: { 'action': 'get_comment', term, session, student_id, class_id, pagetype },
+//         success: (data) => {
+//             data = data.trim();
+//             data = JSON.parse(data)
+//             let datacount = data.length;
+//             // alert(noofdata)
+//             data.map((item) => {
+//                 // if (item.comment != '') {
+//                 if (pagetype != 'post') {
+//                     if (item.role_type == '' || datacount == 1) {
+//                         $("#theprincipal_comment").html('No comment')
+//                         $("#theteacher_comment").html('No Comment')
+//                         $("#thereportteacher_comment12").html('No Comment')
+//                         $("#theprincipalreportteacher_comment12").html('No Comment')
+//                         // alert(item.role_type)
+//                     }
+//                     // alert('some')
+//                     if (item.role_type == 0) {
+//                         $("#theteacher_comment").html(item.comment == '' ? 'No comment' : item.comment)
+//                         $("#thereportteacher_comment12").html(item.comment == '' ? 'No comment' : item.comment)
+//                     } else if (item.role_type == 1) {
+//                         $("#theprincipal_comment").html(item.comment == '' ? 'No comment' : item.comment)
+//                         $("#theprincipalreportteacher_comment12").html(item.comment == '' ? 'No comment' : item.comment)
+//                     }
+//                     //  else if (item.role_type == '') {
+//                     //     alert('lk')
+//                     //     $("#theprincipal_comment").html('')
+//                     // }
+//                     // }
+//                 } else {
+//                     // if(class_id == item.staff_classId && item.role_type == 0){
+//                     //     $("#post_teacher_comment_container").show()
+//                     //     $("#post_teacher_comment_message").val(item.comment == '' ? 'No comment' : item.comment)
+//                     // }
+//                     // else{
+//                     //     alert('k')
+//                     //     $("#post_teacher_comment_container").hide()
+//                     // }
+//                     if (datacount == 1 || item.role_type == '') {
+//                         $("#post_teacher_comment_message").val('')
+//                         $("#post_principal_comment_message").val('')
+//                         // alert('commen')
+//                     }
+//                     console.log(item.comment)
+//                     $("#post_teacher_comment_message").html("item.comment")
+//                     if ((item.staff_classId).includes(class_id)) {
+//                         $("#post_teacher_comment_container").show()
+//                         if (item.role_type === '0') {
+//                             // alert('commen teaher')
+//                             $("#post_teacher_comment_message").val(item.comment)
+//                         }
+//                     } else {
+//                         // alert('commen teaher here 2')
+//                         $("#post_teacher_comment_container").hide()
+//                     }
+//                     if (item.staff_type == '2' || item.staff_type == '3' || item.staff_type == '4') { //if principal
+//                         if (item.role_type === "1") {
+//                             if ($("#post_teacher_comment_message").val() == '') {
+
+//                             }
+//                             $("#post_principal_comment_message").val(item.comment)
+//                             // alert('commen teaher here 3')
+//                         }
+//                     }
+//                 }
+
+
+//             })
+//             // if (data == 0) {
+//             //     // $("#post_teacher_comment_container").show()
+//             //     $("#thereportteacher_comment12").html('No comment')
+//             //     $("#theprincipalreportteacher_comment12").html('No comment')
+//             //     return
+//             // }
+//             // data.map((item) => {
+//             //     console.log('coment', item.comment)
+//             //     if (item.role_type == '0') {
+//             //         if (item.staff_classId == class_id && pagetype == 'post') {
+//             //             $("#post_teacher_comment_container").show()
+//             //             $("#post_teacher_comment_message").val(item.role_type = '0' ? item.comment : '')
+//             //         }
+//             //         else {
+//             //             $("#post_teacher_comment_container").hide()
+//             //             $("#thereportteacher_comment12").html(item.comment != '' ? item.comment : 'No comment')
+//             //             $("#theteacher_comment").html(item.comment != '' ? item.comment : 'No comment')
+//             //             $("#thereportteacher_comment").html(item.comment)
+//             //         }
+//             //     }
+//             //     else {
+//             //         $("#post_principal_comment_message").val(item.comment)
+//             //         // $("#thereportteacher_comment12").html(item.comment != '' ? item.comment : 'No comment')
+//             //         $("#theprincipalreportteacher_comment12").html(item.comment != '' ? item.comment : 'No comment')
+//             //     }
+
+//             // })
+//             // return
+//             // if (data == '') {
+//             //     console.log('empty data but have access')
+//             //     $("#post_teacher_comment_container").show()
+//             // }
+//             // else if (data == '0') {
+//             //     console.log("restricted no access")
+//             //     $("#post_teacher_comment_container").hide()
+//             // }
+//             // else {
+//             //     console.log("access granted fully")
+//             //     $("#post_teacher_comment_container").show()
+//             // }
+//             // return
+//             // if (data == 'no') {
+//             //     $("#view_teacher_comment_container").hide()
+//             //     $("#report_teacher_comment_container").hide()
+//             //     $("#post_teacher_comment_container").hide()
+//             // } else {
+//             //     $("#report_teacher_comment_container").show()
+//             //     $("#view_teacher_comment_container").show()
+//             //     if (pagetype == 'post') {
+//             //         alert('ll')
+//             //         $("#post_teacher_comment_container").show()
+//             //         $("#post_teacher_comment_message").val(data)
+//             //     }
+//             //     else if (pagetype == 'view') {
+//             //         $("#theteacher_comment").html(data)
+//             //     }
+//             //     else if (pagetype == 'report') {
+//             //         $("#thereportteacher_comment").html(data)
+//             //     }
+//             // }
+//         }
+//     })
+// }
 function get_teacher_comment(term, session, student_id, class_id, pagetype) {
     // alert(class_id)
     // return
@@ -8054,7 +8172,7 @@ function loadApproval() {
         data: { 'action': 'get_approval', class_id, term_id, session_id, },
         cache: true,
         success: (data) => {
-            // data = JSON.parse(data)
+            data = JSON.parse(data)
             approval_data = data[0];
         }
     })
@@ -8473,7 +8591,7 @@ async function post_table_data(filtertype, viewOrPostPage) {
         $("#post_teacher_comment_gb_container").hide()
     }
 
-    console.log("arrayValue1s", JSON.parse(arrayValues));
+    console.log("arrayValues", arrayValues);
     console.log("postdata", postdata);
     // alert("viewOrPostPage")
     let tableHtml = '';
@@ -8496,10 +8614,8 @@ async function post_table_data(filtertype, viewOrPostPage) {
             $(".data_overlay").html(`
                 <p class="font-weight-bold">Fill the forms appropiately</p>
             `)
-            // data = data.trim();
-            let response = data;
-            // let response = JSON.parse(data);
-            console.log("respponse", response)
+            data = data.trim();
+            let response = JSON.parse(data);
             let scores = response.scores;
             console.log("scores", scores);
             console.log("aproval", approval_data);
@@ -8536,7 +8652,7 @@ async function post_table_data(filtertype, viewOrPostPage) {
                         ${settingsData.exa == 1 ? `<td><input type="number"  class="w-xs-60 assess_input exatotal" onchange="updatehiddentotals(this,'exatotal')" ${approval_data.exam == '1' ? 'disabled' : ''} value="${scores.length > 0 ? scores[0].examTotal || '' : ''}" /></td>` : ''}
                         ${settingsData.exa == 1 ? `<td class="d-non ${hideshowtotals}"><input type="number"  class="w-xs-60 assess_input exatotal" onchange="updatehiddentotals(this,'exatotal')" ${approval_data.exam == '1' ? 'disabled' : ''} value="${scores.length > 0 ? scores[0].examTotal || '' : ''}" /></td>` : ''}
                     </tr>
-                    ${Array.from(arrayValues).map((arrayValue) => {
+                    ${arrayValues.map((arrayValue) => {
                     let nameToMatch;
                     let thestudentnameorsubj;
                     // let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue.name;
@@ -10736,7 +10852,7 @@ $(".settingsform").submit(function (event) {
         contentType: false,
         processData: false,
         success: (data) => {
-            // data = JSON.parse(data);
+            data = JSON.parse(data);
             if (data.status == '1') {
                 toastr.success(data.msg);
             } else {
@@ -14486,9 +14602,7 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
                 },
             });
 
-            data = gradingData;
             data = JSON.parse(gradingData);
-            console.log("ddd", data.settingsData)
             settingsData = data.settingsData[0];
             student_score_data = data.score_data;
 
@@ -15069,7 +15183,6 @@ async function set_behaviour_comment_report(
             success: (data) => {
                 data = data.trim();
                 data = JSON.parse(data);
-                toggleBehaviourSectionsVisibility(data.show_behaviour_sections, container);
                 // alert(data.staff_classId)
                 // let staff_classId_json = JSON.parse(data.staff_classId)
                 // alert((data.staff_classId).includes(class_id))
