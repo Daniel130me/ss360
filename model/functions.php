@@ -1,5 +1,6 @@
 <?php
 // error_reporting(E_ALL);
+require_once __DIR__ . '/report_card_columns.php';
 $date = date("Y-m-d H:i:s");
 function getSSessionName($id) {
     global $conn;
@@ -611,38 +612,9 @@ function get_default_report_template_config()
             'teacher_comment' => true,
             'head_teacher_comment' => true,
         ],
-        'score_columns' => [
-            'subject',
-            'ca1',
-            'ca2',
-            'ca3',
-            'practical',
-            'exam',
-            'total',
-            'percentage',
-            'grade',
-        ],
-        'available_cumulative_columns' => [
-            'first_term_total',
-            'second_term_total',
-            'third_term_total',
-            'grand_total',
-            'average',
-            'class_average',
-            'position',
-        ],
-        'labels' => [
-            'total' => 'Total',
-            'percentage' => 'Total(%)',
-            'grade' => 'Grade',
-            'first_term_total' => '1st Term Total',
-            'second_term_total' => '2nd Term Total',
-            'third_term_total' => '3rd Term Total',
-            'grand_total' => 'Grand Total',
-            'average' => 'Average',
-            'class_average' => 'Class Average',
-            'position' => 'Position',
-        ],
+        'score_columns' => get_default_report_score_columns(),
+        'available_cumulative_columns' => get_cumulative_report_score_columns(),
+        'labels' => get_report_score_column_labels(),
     ];
 }
 
@@ -664,24 +636,7 @@ function get_report_template_allowed_sections()
 
 function get_report_template_allowed_score_columns()
 {
-    return [
-        'subject',
-        'ca1',
-        'ca2',
-        'ca3',
-        'practical',
-        'exam',
-        'total',
-        'percentage',
-        'grade',
-        'first_term_total',
-        'second_term_total',
-        'third_term_total',
-        'grand_total',
-        'average',
-        'class_average',
-        'position',
-    ];
+    return get_report_score_column_keys();
 }
 
 function normalize_report_template_term_id($term_id)
@@ -703,7 +658,6 @@ function normalize_report_template_config($template)
     }
 
     $allowed_sections = get_report_template_allowed_sections();
-    $allowed_columns = get_report_template_allowed_score_columns();
 
     $normalized = $default_template;
     if (isset($template['version'])) {
@@ -740,25 +694,7 @@ function normalize_report_template_config($template)
 
     $normalized['sections'] = !empty($normalized_sections) ? $normalized_sections : $default_template['sections'];
 
-    $score_columns = [];
-    if (!empty($template['score_columns']) && is_array($template['score_columns'])) {
-        foreach ($template['score_columns'] as $column) {
-            $column = trim((string)$column);
-            if (in_array($column, $allowed_columns, true) && !in_array($column, $score_columns, true)) {
-                $score_columns[] = $column;
-            }
-        }
-    }
-
-    if (empty($score_columns)) {
-        $score_columns = $default_template['score_columns'];
-    } else {
-        $score_columns = array_values(array_filter($score_columns, function ($column) {
-            return $column !== 'subject';
-        }));
-        array_unshift($score_columns, 'subject');
-    }
-    $normalized['score_columns'] = $score_columns;
+    $normalized['score_columns'] = normalize_report_score_columns($template['score_columns'] ?? []);
 
     return $normalized;
 }
@@ -820,20 +756,12 @@ function legacy_report_settings_to_template($report_settings)
         $assessment_types = json_decode($assessment_types, true);
     }
 
-    $assessment_map = [
-        'ca1' => 'ca1',
-        'ca2' => 'ca2',
-        'ca3' => 'ca3',
-        'practical' => 'practical',
-        'exam' => 'exam',
-    ];
-
     $columns = ['subject'];
     if (is_array($assessment_types)) {
         foreach ($assessment_types as $assessment_type) {
-            $key = strtolower(trim((string)$assessment_type));
-            if (isset($assessment_map[$key])) {
-                $columns[] = $assessment_map[$key];
+            $column = map_legacy_assessment_to_report_column($assessment_type);
+            if ($column !== '') {
+                $columns[] = $column;
             }
         }
     }
