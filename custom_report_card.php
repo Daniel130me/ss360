@@ -2,6 +2,7 @@
 session_start();
 include_once("model/connect.php");
 include_once("model/functions.php");
+include_once("model/report_card_renderer.php");
 $school_id = $_SESSION['school_id'];
 $student_id = $_POST['student_id'];
 $class_id = $_POST['class_id'];
@@ -10,46 +11,32 @@ $term_id = $_POST['term_id'];
 $report_id = $_POST['report_id'];
 $sessionOrTerm = $_POST['sessionOrTerm'];
 
-$hidden_skills = json_decode($_SESSION['hidden_row'], true) ?? [];
+$report_context = build_report_card_context([
+    'school_id' => $school_id,
+    'student_id' => $student_id,
+    'class_id' => $class_id,
+    'session_id' => $session_id,
+    'term_id' => $term_id,
+    'session_or_term' => $sessionOrTerm,
+    'report_id' => $report_id,
+]);
 
-$select_school = mysqli_query($conn, "SELECT session_id,term_id, school_name, address, city, state, country, logo,phone2,phone1,email,stamp_pic FROM school WHERE id='$school_id'");
-$school_row = mysqli_fetch_array($select_school);
-
-$select_biodata = mysqli_query($conn, "SELECT * FROM students WHERE id='$student_id' AND school_id='$school_id'");
-$biorow = mysqli_fetch_array($select_biodata);
-
-// Fetch custom report settings
-$select_report = mysqli_query($conn, "SELECT * FROM report_settings WHERE id='$report_id' AND school_id='$school_id'");
-$report_settings = mysqli_fetch_array($select_report);
+$hidden_skills = $report_context['hidden_skills'];
+$school_row = $report_context['school_row'];
+$biorow = $report_context['student_row'];
+$report_settings = $report_context['legacy_report'];
 $report_name = $report_settings['report_name'] ?? 'Report Card';
-$assessment_types = json_decode($report_settings['assessment_type'], true) ?? [];
-
-$exact_term_id = $term_id;
-$select_settings = mysqli_query($conn, "SELECT first,second,third, ca1, ca2, ca3, practical, exam, grading,school_open FROM skul_settings WHERE session_id='$session_id' and term_id='$exact_term_id' and school_id='$school_id'");
-$setrow = mysqli_fetch_array($select_settings);
-
-$grading_system = json_decode($setrow['grading'], true) ?? [];
-if (is_array($grading_system)) {
-    arsort($grading_system);
-}
+$assessment_types = $report_settings['assessment_type'] ?? [];
+$exact_term_id = $report_context['exact_term_id'];
+$setrow = $report_context['settings_row'];
+$grading_system = $report_context['grading_system'];
 
 // Note: Calculations for Total, Percentage, and Grade will be handled by JavaScript in skul.js
 // based on the assessment_types selected for this custom report.
 
 $term_Note = strtoupper(get_term_name($term_id));
-$next_term = '';
-if ($term_id == 1) {
-    $next_term = $setrow['second'];
-} else if ($term_id == 2) {
-    $next_term = $setrow['third'];
-} else if ($term_id == 3) {
-    $next_term = $setrow['first'];
-}
-
-$department = '';
-if (!empty($biorow['department'])) {
-    $department = '[' . $biorow['department'] . ']';
-}
+$next_term = $report_context['next_term'];
+$department = $report_context['department'];
 ?>
 <style>
     .report-card {

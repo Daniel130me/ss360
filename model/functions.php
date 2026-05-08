@@ -708,7 +708,7 @@ function get_report_template_by_context($school_id, $session_id, $term_id)
     $term_id = normalize_report_template_term_id($term_id);
     $default_template = get_default_report_template_config();
 
-    if (!$conn) {
+    if (!isset($conn) || !$conn) {
         return $default_template;
     }
 
@@ -721,7 +721,21 @@ function get_report_template_by_context($school_id, $session_id, $term_id)
     $queries[] = "school_id='0' AND term_id='default' AND is_default='1' AND status='1'";
 
     foreach ($queries as $where_clause) {
-        $select_template = mysqli_query($conn, "SELECT * FROM report_templates WHERE $where_clause ORDER BY id DESC LIMIT 1");
+        try {
+            $select_template = mysqli_query($conn, "SELECT * FROM report_templates WHERE $where_clause ORDER BY id DESC LIMIT 1");
+        } catch (Throwable $e) {
+            return [
+                'id' => null,
+                'school_id' => 0,
+                'session_id' => null,
+                'term_id' => 'default',
+                'template_name' => $default_template['template_name'],
+                'template_json' => $default_template,
+                'is_default' => 1,
+                'status' => 1,
+            ];
+        }
+
         if ($select_template && $row = mysqli_fetch_assoc($select_template)) {
             $row['template_json'] = normalize_report_template_config($row['template_json']);
             return $row;
