@@ -941,6 +941,7 @@ while ($row = mysqli_fetch_array($select)) {
     </script>
     <script src="../dist/js/accounts.js?v=113join"></script>
     <script src="../dist/js/skul.js?v=0op"></script>
+    <script src="../dist/js/report_template_rendering.js"></script>
     <script>
         setTimeout(get_score_data(),
             setTimeout(() => {
