@@ -14623,6 +14623,11 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
 
             const tableContainer = reportDiv.find("#table_visuals_display_report");
             const commentContainer = reportDiv.find(".student_behaviour_skills");
+            const reportCardElement = reportDiv.find(".report-card").first();
+            const templateTableMode =
+                typeof window.getReportTemplateTableMode === "function"
+                    ? window.getReportTemplateTableMode(reportCardElement, term_id, sessionOrTerm)
+                    : "standard";
             await set_behaviour_comment_report(
                 term_id,
                 session_id,
@@ -14633,7 +14638,7 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
             );
             // alert(myschl)
             if (myschl == 13) {
-                if (sessionOrTerm == "session") {
+                if (sessionOrTerm == "session" || templateTableMode === "full_cumulative") {
                     await format_student_cummulative_table_report(
                         student_score_data,
                         student_id,
@@ -14642,7 +14647,7 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
                         settingsData.grade,
                         tableContainer
                     );
-                } else if (term_id == "2") {
+                } else if (term_id == "2" || templateTableMode === "second_term_cumulative") {
                     await format_2nd_term_student_cummulative_table_report(
                         student_score_data,
                         student_id,
@@ -14662,8 +14667,17 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
                     );
                 }
             } else {
-                if (sessionOrTerm == "session") {
+                if (sessionOrTerm == "session" || templateTableMode === "full_cumulative") {
                     await format_student_cummulative_table_report(
+                        student_score_data,
+                        student_id,
+                        session_id,
+                        class_id,
+                        settingsData.grade,
+                        tableContainer
+                    );
+                } else if (templateTableMode === "second_term_cumulative") {
+                    await format_2nd_term_student_cummulative_table_report(
                         student_score_data,
                         student_id,
                         session_id,

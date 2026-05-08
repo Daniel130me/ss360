@@ -26,6 +26,15 @@
         { key: "percentage", label: "Total(%)" },
         { key: "grade", label: "Grade" },
     ];
+    const cumulativeColumnKeys = [
+        "first_term_total",
+        "second_term_total",
+        "third_term_total",
+        "grand_total",
+        "average",
+        "class_average",
+        "position",
+    ];
 
     function parseTemplateColumns(reportCard) {
         let columns = reportCard.attr("data-template-columns") || "[]";
@@ -36,6 +45,26 @@
         }
 
         return Array.isArray(columns) && columns.length ? columns : standardColumns.map((column) => column.key);
+    }
+
+    function templateHasCumulativeColumns(reportCard) {
+        return parseTemplateColumns($(reportCard)).some((column) => cumulativeColumnKeys.includes(column));
+    }
+
+    function getReportTemplateTableMode(reportCard, termId, sessionOrTerm) {
+        if (!templateHasCumulativeColumns(reportCard)) {
+            return "standard";
+        }
+
+        if (sessionOrTerm === "session" || String(termId) === "3" || String(termId) === "cum") {
+            return "full_cumulative";
+        }
+
+        if (String(termId) === "2") {
+            return "second_term_cumulative";
+        }
+
+        return "standard";
     }
 
     function templateOrder(columns, availableColumns) {
@@ -140,4 +169,6 @@
     }
 
     window.applyReportTemplateToRenderedTable = applyReportTemplateToRenderedTable;
+    window.getReportTemplateTableMode = getReportTemplateTableMode;
+    window.reportTemplateHasCumulativeColumns = templateHasCumulativeColumns;
 })(window, jQuery);
