@@ -1,0 +1,133 @@
+.report-template-builder {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 18px;
+    margin: 18px 0 24px;
+    background: #fff;
+}
+
+.report-template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+}
+
+.report-template-panel {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 14px;
+    background: #f8fafc;
+}
+
+.report-template-panel-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 10px;
+}
+
+.report-template-preset {
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #fff;
+    color: #334155;
+    cursor: pointer;
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding: 8px 10px;
+    text-align: left;
+    width: 100%;
+}
+
+.report-template-preset.active,
+.report-template-preset:hover {
+    border-color: #2563eb;
+    color: #1d4ed8;
+}
+
+.report-toggle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 8px;
+}
+
+.report-template-toggle {
+    align-items: center;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #334155;
+    display: flex;
+    font-size: 0.85rem;
+    font-weight: 600;
+    gap: 8px;
+    padding: 8px 10px;
+}
+
+.report-template-toggle input {
+    margin: 0;
+}
+
+.report-column-picker {
+    display: grid;
+    grid-template-columns: minmax(180px, 1fr) minmax(220px, 1.4fr);
+    gap: 14px;
+}
+
+@media (max-width: 768px) {
+    .report-column-picker {
+        grid-template-columns: 1fr;
+    }
+}
+
+.report-column-list {
+    align-content: flex-start;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 42px;
+}
+
+.report-column-chip {
+    align-items: center;
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    color: #334155;
+    display: inline-flex;
+    font-size: 0.82rem;
+    font-weight: 700;
+    gap: 6px;
+    padding: 6px 9px;
+}
+
+.report-column-chip button {
+    background: transparent;
+    border: 0;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0 2px;
+}
+
+.report-column-chip.is-required {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.report-template-preview {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    margin-top: 14px;
+    overflow-x: auto;
+    padding: 12px;
+}
+
+.report-template-preview table {
+    margin-bottom: 0;
+    min-width: 640px;
+}
+
+.report-template-status {
+    min-height: 22px;
+}

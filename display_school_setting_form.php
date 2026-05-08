@@ -249,7 +249,9 @@ $row = mysqli_fetch_array($select);
         color: white;
         transform: translateY(-2px);
     }
+
 </style>
+<link rel="stylesheet" href="../dist/css/report_template_builder.css">
 
 <input type="hidden" name="action" value="settings">
 <div class="info-container mt-4 mb-4">
@@ -315,6 +317,88 @@ $row = mysqli_fetch_array($select);
     <div class="row mb-3">
         <div class="col-12">
             <button type="button" id="addMoreReports" class="btn btn-sm btn-outline-success"><i class="fas fa-plus mr-1"></i> Add More Report</button>
+        </div>
+    </div>
+    <div class="report-template-builder" id="reportTemplateBuilder">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+            <div>
+                <p class="font-weight-bold mb-1">Report card format</p>
+                <p class="p-0 mb-0 muted-text">Configure layout by term without changing score calculations.</p>
+            </div>
+            <div class="report-template-status small text-muted mt-2 mt-sm-0" id="reportTemplateStatusText"></div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-12 col-md-4">
+                <p class="p-0 mb-0 muted-text">Template Name</p>
+                <input type="text" class="form-control" id="reportTemplateName" value="Default Report Card">
+                <input type="hidden" id="reportTemplateId" value="">
+            </div>
+            <div class="form-group col-6 col-md-3">
+                <p class="p-0 mb-0 muted-text">Applies To</p>
+                <select class="form-control" id="reportTemplateTerm">
+                    <option value="default">School Default</option>
+                    <option value="1">1st Term</option>
+                    <option value="2">2nd Term</option>
+                    <option value="3">3rd Term</option>
+                    <option value="cumulative">Cumulative</option>
+                </select>
+            </div>
+            <div class="form-group col-6 col-md-3">
+                <p class="p-0 mb-0 muted-text">Availability</p>
+                <select class="form-control" id="reportTemplateStatus">
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+                </select>
+            </div>
+            <div class="form-group col-12 col-md-2 d-flex align-items-end">
+                <div class="icheck-primary">
+                    <input type="checkbox" id="reportTemplateDefault" value="1">
+                    <label for="reportTemplateDefault">Default</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="report-template-grid">
+            <div class="report-template-panel">
+                <div class="report-template-panel-title">Preset</div>
+                <button type="button" class="report-template-preset" data-preset="basic_term">Basic Term</button>
+                <button type="button" class="report-template-preset" data-preset="first_term">First Term</button>
+                <button type="button" class="report-template-preset" data-preset="second_term_brought_forward">Second Term With B/F</button>
+                <button type="button" class="report-template-preset" data-preset="third_term_cumulative">Third Term Cumulative</button>
+                <button type="button" class="report-template-preset" data-preset="cumulative">Cumulative Summary</button>
+            </div>
+
+            <div class="report-template-panel">
+                <div class="report-template-panel-title">Sections</div>
+                <div class="report-toggle-grid" id="reportTemplateSections"></div>
+            </div>
+
+            <div class="report-template-panel">
+                <div class="report-template-panel-title">Fields</div>
+                <div class="report-toggle-grid" id="reportTemplateFields"></div>
+            </div>
+        </div>
+
+        <div class="report-template-panel mt-3">
+            <div class="report-template-panel-title">Score Table Columns</div>
+            <div class="report-column-picker">
+                <div>
+                    <p class="p-0 mb-2 muted-text">Available Columns</p>
+                    <div class="report-column-list" id="availableReportColumns"></div>
+                </div>
+                <div>
+                    <p class="p-0 mb-2 muted-text">Selected Columns</p>
+                    <div class="report-column-list" id="selectedReportColumns"></div>
+                </div>
+            </div>
+            <div class="report-template-preview" id="reportTemplatePreview"></div>
+        </div>
+
+        <div class="d-flex flex-wrap justify-content-end mt-3">
+            <button type="button" class="btn btn-light mr-2 mb-2" id="resetReportTemplateDraft">Reset Draft</button>
+            <button type="button" class="btn btn-outline-primary mr-2 mb-2" id="loadReportTemplate">Load Format</button>
+            <button type="button" class="btn btn-primary mb-2" id="saveReportTemplate">Save Format</button>
         </div>
     </div>
     <div class="row mb-2">
@@ -577,4 +661,6 @@ $row = mysqli_fetch_array($select);
         initializeMapSetup();
     }
 </script>
+<script src="../dist/js/report_card_columns.js"></script>
+<script src="../dist/js/report_template_builder.js"></script>
 <script src="../dist/js/report_setting.js"></script>
