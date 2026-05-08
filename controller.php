@@ -1321,7 +1321,7 @@ if ($action === 'getsinglesessionreport_view') {
     $class_id = test_input($_POST['class_id']);
     $term_id = test_input($_POST['term_id']);
     $data[] = array();
-    
+
     // echo $appca2 = 0;
 
     // exit;
@@ -1517,7 +1517,8 @@ if ($action === 'get_stud_byClass_comment') {
                     <div>
                         <p style="font-size: 16px;"><?= $row['lastname'] ?> <?= $row['firstname'] . ' ' . $row['middlename'] ?>
                         </p>
-
+                        <button type="button" class="btn btn-sm btn-outline-primary show-score-btn" onclick="show_student_percent_score('<?= $row['id'] ?>', '<?= $class_id ?>', '<?= $session ?>', '<?= $term ?>', this)">Show score</button>
+                        <i style="display:none;" class="student_score_display">Score <span class="student_total_score_in_percentage"></span>%</i>
                     </div>
                 </td>
                 <td>
@@ -1671,6 +1672,27 @@ if ($action === 'get_stud_byClass_comment') {
         exit;
     }
 
+    // Returns the student's total score as a percentage
+    if ($action == 'get_student_percent_score') {
+        $student_id = test_input($_POST['student_id']);
+        $class_id = test_input($_POST['class_id']);
+        $session_id = test_input($_POST['session_id']);
+        $term_id = test_input($_POST['term_id']);
+
+        $total_score = get_total_score_per_student($student_id, $term_id, $session_id, $class_id, 'term');
+        $total_obtainable = get_total_obtainables($student_id, $term_id, $session_id, $class_id, 'term');
+
+        // Avoid division by zero when no scores exist
+        $percentage = ($total_obtainable > 0)
+            ? round(($total_score / $total_obtainable) * 100, 2)
+            : 0;
+
+        echo json_encode([
+            'status' => '1',
+            'percentage' => $percentage
+        ]);
+        exit;
+    }
 
     if ($action === 'save_comment') {
         $school_id = $_SESSION['school_id'];

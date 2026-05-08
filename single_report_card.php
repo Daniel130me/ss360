@@ -35,6 +35,62 @@ $exact_term_id = $term_id == 'cum' ? 3 : $term_id;
 // echo "SELECT first,second,third, ca1, ca2, ca3, practical, exam, grading,school_open FROM skul_settings WHERE session_id='$session_id' and term_id='$exact_term_id' and school_id='$school_id'";
 $select_settings = mysqli_query($conn, "SELECT first,second,third, ca1, ca2, ca3, practical, exam, grading,school_open FROM skul_settings WHERE session_id='$session_id' and term_id='$exact_term_id' and school_id='$school_id'");
 $setrow = mysqli_fetch_array($select_settings);
+$show_report_private_sections = false;
+$approval_row = array(
+    'ca1' => '0',
+    'ca2' => '0',
+    'ca3' => '0',
+    'practical' => '0',
+    'exam' => '0'
+);
+$settings_row = array(
+    'ca1' => isset($setrow['ca1']) ? $setrow['ca1'] : '0',
+    'ca2' => isset($setrow['ca2']) ? $setrow['ca2'] : '0',
+    'ca3' => isset($setrow['ca3']) ? $setrow['ca3'] : '0',
+    'practical' => isset($setrow['practical']) ? $setrow['practical'] : '0',
+    'exam' => isset($setrow['exam']) ? $setrow['exam'] : '0'
+);
+
+$select_approval = mysqli_query($conn, "SELECT ca1,ca2,ca3,practical,exam
+    FROM approval
+    WHERE school_id='$school_id' AND session_id='$session_id'
+    AND term_id='$exact_term_id' AND class_id='$class_id'");
+if ($approval_data = mysqli_fetch_array($select_approval)) {
+    $approval_row = $approval_data;
+}
+
+$enabled_components = array(
+    'ca1' => $settings_row['ca1'],
+    'ca2' => $settings_row['ca2'],
+    'ca3' => $settings_row['ca3'],
+    'practical' => $settings_row['practical'],
+    'exam' => $settings_row['exam']
+);
+
+$all_enabled_components_approved = true;
+$has_enabled_component = false;
+foreach ($enabled_components as $component => $enabled) {
+    if ($enabled == '1' || $enabled == 1) {
+        $has_enabled_component = true;
+        if (!isset($approval_row[$component]) || $approval_row[$component] != '1') {
+            $all_enabled_components_approved = false;
+            break;
+        }
+    }
+}
+
+$student_result_is_published = false;
+$select_status = mysqli_query($conn, "SELECT id FROM skulscores
+    WHERE school_id='$school_id' AND session_id='$session_id' AND term_id='$exact_term_id'
+    AND class_id='$class_id' AND student_id='$student_id' AND status='1'
+    LIMIT 1");
+if ($select_status && mysqli_num_rows($select_status) > 0) {
+    $student_result_is_published = true;
+}
+
+$show_report_private_sections = $has_enabled_component &&
+    $all_enabled_components_approved &&
+    $student_result_is_published;
 $grading_system = [];
 try {
     // Parse the grading string directly as JSON
@@ -58,6 +114,12 @@ $total_percent = $total_obtainable == 0 ? 0 : round((($total_score / $total_obta
 // echo "llkn";
 // exit;
 $grade = get_grade($total_percent, $grading_system);
+if (!$show_report_private_sections) {
+    $total_score = 0;
+    $total_obtainable = 0;
+    $total_percent = 0;
+    $grade = 'Poor';
+}
 if ($sessionOrTerm == 'session') {
     $term_Note = "THIRD";
     $next_term = $setrow['first'];
@@ -364,63 +426,65 @@ if (!empty($biorow['department'])) {
     <section class="grades" style="">
         <div id="table_visuals_display_report"></div>
     </section>
-    <section class="grades d-flex nowrap student_behaviour_skills" style="column-gap: 10px; align-items: flex-start;">
-        <?php
-        $behaviour_skills = [];
-        $psychomotive_skills = [];
-        $skills_query_report = mysqli_query($conn, "SELECT * FROM skills WHERE school_id = 0 OR school_id = '$school_id' ORDER BY id ASC");
-        while ($skill_row = mysqli_fetch_array($skills_query_report)) {
-            if ($skill_row['category'] == 'behaviour') {
-                $behaviour_skills[$skill_row['skill_key']] = $skill_row['skill_label'];
-            } elseif ($skill_row['category'] == 'psychomotor') {
-                $psychomotive_skills[$skill_row['skill_key']] = $skill_row['skill_label'];
+    <?php if ($show_report_private_sections): ?>
+        <section class="grades d-flex nowrap student_behaviour_skills" style="column-gap: 10px; align-items: flex-start;">
+            <?php
+            $behaviour_skills = [];
+            $psychomotive_skills = [];
+            $skills_query_report = mysqli_query($conn, "SELECT * FROM skills WHERE school_id = 0 OR school_id = '$school_id' ORDER BY id ASC");
+            while ($skill_row = mysqli_fetch_array($skills_query_report)) {
+                if ($skill_row['category'] == 'behaviour') {
+                    $behaviour_skills[$skill_row['skill_key']] = $skill_row['skill_label'];
+                } elseif ($skill_row['category'] == 'psychomotor') {
+                    $psychomotive_skills[$skill_row['skill_key']] = $skill_row['skill_label'];
+                }
             }
-        }
-        ?>
-        <div class="w-100">
-            <table class="behaviour_report_table w-100 report_card_table report-card-behaviour-table">
-                <thead>
-                    <tr class="">
-                        <th colspan="2" style="background-color: lightgrey;">General Behaviour</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($behaviour_skills as $key => $label):
-                        // echo $key;
-                        // print_r($hidden_skills);
-                        // echo in_array($key, $hidden_skills);
+            ?>
+            <div class="w-100">
+                <table class="behaviour_report_table w-100 report_card_table report-card-behaviour-table">
+                    <thead>
+                        <tr class="">
+                            <th colspan="2" style="background-color: lightgrey;">General Behaviour</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($behaviour_skills as $key => $label):
+                            // echo $key;
+                            // print_r($hidden_skills);
+                            // echo in_array($key, $hidden_skills);
                         ?>
 
-                        <?php if (!in_array($key, $hidden_skills)): ?>
-                            <tr>
-                                <td><?= $label ?></td>
-                                <td class="<?= $key ?>">Not rated</td>
-                            </tr>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-        <div class="w-100">
-            <table class="behaviour_report_table w-100 report_card_table report-card-psychomotive-table">
-                <thead>
-                    <tr>
-                        <th colspan="2" style="background-color: lightgrey;">Psychomotive Skills</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($psychomotive_skills as $key => $label): ?>
-                        <?php if (!in_array($key, $hidden_skills)): ?>
-                            <tr>
-                                <td><?= $label ?></td>
-                                <td class="<?= $key ?>">Not rated</td>
-                            </tr>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-    </section>
+                            <?php if (!in_array($key, $hidden_skills)): ?>
+                                <tr>
+                                    <td><?= $label ?></td>
+                                    <td class="<?= $key ?>">Not rated</td>
+                                </tr>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <div class="w-100">
+                <table class="behaviour_report_table w-100 report_card_table report-card-psychomotive-table">
+                    <thead>
+                        <tr>
+                            <th colspan="2" style="background-color: lightgrey;">Psychomotive Skills</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($psychomotive_skills as $key => $label): ?>
+                            <?php if (!in_array($key, $hidden_skills)): ?>
+                                <tr>
+                                    <td><?= $label ?></td>
+                                    <td class="<?= $key ?>">Not rated</td>
+                                </tr>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    <?php endif; ?>
     <section>
         <div style="width: 100%;">
             <div class="grades mb-4 d-flex mt-4" style="column-gap: 10px; align-items: flex-start;">
@@ -473,24 +537,26 @@ if (!empty($biorow['department'])) {
         </div>
     </section>
 
-    <section class="remarks">
-        <div class="mb-3">
-            <p class="mb-0"><strong><?= $school_id == '29' ? 'CLASS ' : '' ?>TEACHER'S COMMENT</strong></p>
-            <p class="mb-0 mt-0">
-                <?= get_comment_by_student($student_id, $exact_term_id, $session_id, $class_id, 0, 1) ?>
-            </p>
-        </div>
-        <div class="">
-            <p class="mb-0"><strong><?= strtoupper($_SESSION['whocomment']) ?>'S COMMENT</strong></p>
-            <p class="mb-0 mt-0">
-                <?= get_comment_by_student($student_id, $exact_term_id, $session_id, $class_id, 1, 1) ?>
-            </p>
-        </div>
-        <p style="margin-top: 60px;"><strong>SIGNATURE & STAMP:</strong> <span class=""><img
-                    style="width: auto; height: 45px; display: inline-block;"
-                    src="../uploads/<?= $school_row['stamp_pic'] == '' ? 'logo-placeholder.jpg' : $school_row['stamp_pic'] ?>"
-                    alt="Stamp Picture"></span></p>
-    </section>
+    <?php if ($show_report_private_sections): ?>
+        <section class="remarks">
+            <div class="mb-3">
+                <p class="mb-0"><strong><?= $school_id == '29' ? 'CLASS ' : '' ?>TEACHER'S COMMENT</strong></p>
+                <p class="mb-0 mt-0">
+                    <?= get_comment_by_student($student_id, $exact_term_id, $session_id, $class_id, 0, 1) ?>
+                </p>
+            </div>
+            <div class="">
+                <p class="mb-0"><strong><?= strtoupper($_SESSION['whocomment']) ?>'S COMMENT</strong></p>
+                <p class="mb-0 mt-0">
+                    <?= get_comment_by_student($student_id, $exact_term_id, $session_id, $class_id, 1, 1) ?>
+                </p>
+            </div>
+            <p style="margin-top: 60px;"><strong>SIGNATURE & STAMP:</strong> <span class=""><img
+                        style="width: auto; height: 45px; display: inline-block;"
+                        src="../uploads/<?= $school_row['stamp_pic'] == '' ? 'logo-placeholder.jpg' : $school_row['stamp_pic'] ?>"
+                        alt="Stamp Picture"></span></p>
+        </section>
+    <?php endif; ?>
 </div>
 <script>
     // const gradingSystem = <= $grading_system_js ?>;

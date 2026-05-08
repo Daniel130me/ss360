@@ -191,18 +191,18 @@ while ($row = mysqli_fetch_array($select)) {
             font-size: 0.82rem;
             font-weight: 700;
             letter-spacing: 0.3px;
-            color: #fff;
-            background: linear-gradient(135deg, #1e1f20 0%, #000000 60%, #3a3a3a 100%);
+            /* color: #fff; */
+            /* background: linear-gradient(135deg, #1e1f20 0%, #000000 60%, #3a3a3a 100%); */
             border: none;
             border-radius: 50px;
-            box-shadow: 0 3px 10px rgba(0, 123, 255, 0.35);
+            /* box-shadow: 0 3px 10px rgba(0, 123, 255, 0.35); */
             cursor: pointer;
             transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
         }
 
         .btn-print-report:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(0, 123, 255, 0.45);
+            box-shadow: 0 6px 18px rgba(108, 108, 108, 0.45);
             filter: brightness(1.08);
         }
 

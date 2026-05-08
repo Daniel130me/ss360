@@ -1032,6 +1032,54 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                 });
             }, 4000);
         }
+
+        /**
+         * Fetches and displays a student's total score as a percentage.
+         * Hides the trigger button once the score is shown.
+         *
+         * @param {string} studentId  - The student's database ID
+         * @param {string} classId    - The class ID
+         * @param {string} sessionId  - The session ID
+         * @param {string} termId     - The term ID
+         * @param {HTMLElement} button - The clicked button element (used for DOM scoping)
+         */
+        function show_student_percent_score(studentId, classId, sessionId, termId, button) {
+            var $btn = $(button);
+
+            // Disable button and show loading state
+            $btn.prop('disabled', true).text('Loading...');
+
+            $.ajax({
+                url: '../controller.php',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    action: 'get_student_percent_score',
+                    student_id: studentId,
+                    class_id: classId,
+                    session_id: sessionId,
+                    term_id: termId
+                },
+                success: function (response) {
+                    if (response.status == '1') {
+                        // Use siblings() for direct sibling lookup — avoids DataTable DOM issues
+                        var $scoreDisplay = $btn.siblings('.student_score_display');
+
+                        $scoreDisplay.find('.student_total_score_in_percentage').text(response.percentage);
+                        $scoreDisplay.css('display', 'inline'); // Explicitly set display for inline <i> element
+                        $btn.hide();
+                    } else {
+                        showNotification("Could not retrieve score", "error");
+                        $btn.prop('disabled', false).text('Show score');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log('Score fetch error:', status, error, xhr.responseText);
+                    showNotification("Error connecting to server", "error");
+                    $btn.prop('disabled', false).text('Show score');
+                }
+            });
+        }
     </script>
 
 </body>
