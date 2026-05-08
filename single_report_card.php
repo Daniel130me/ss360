@@ -2,6 +2,7 @@
 session_start();
 include_once("model/connect.php");
 include_once("model/functions.php");
+include_once("model/report_card_renderer.php");
 $school_id = $_SESSION['school_id'];
 $student_id = $_POST['student_id'];
 $class_id = $_POST['class_id'];
@@ -137,6 +138,9 @@ $department = '';
 if (!empty($biorow['department'])) {
     $department = '[' . $biorow['department'] . ']';
 }
+$template_context = get_report_template_by_context($school_id, $session_id, $term_id == 'cum' ? 'cumulative' : $term_id);
+$template = normalize_report_template_config($template_context['template_json'] ?? []);
+$template_columns = get_report_card_template_score_columns($template);
 ?>
 <style>
     /* .report-card {
@@ -342,27 +346,40 @@ if (!empty($biorow['department'])) {
 </style>
 
 
-<div class="report-card">
-    <div class="watermark"></div>
+<div class="report-card" data-template-columns='<?= htmlspecialchars(json_encode($template_columns), ENT_QUOTES, 'UTF-8') ?>'>
+    <?php if (report_card_template_field_enabled($template, 'school_logo')): ?>
+        <div class="watermark"></div>
+    <?php endif; ?>
+    <?php if (report_card_template_section_enabled($template, 'school_header')): ?>
     <table style="width: 100%; margin-bottom: 20px;">
         <tr style="vertical-align: top;">
-            <td style="width: auto;">
-                <div class="header-image mr-2">
-                    <img width="100" height="100" src="../uploads/<?= $school_row['logo'] ?>" alt="School Logo"
-                        class="logo">
-                </div>
-            </td>
+            <?php if (report_card_template_field_enabled($template, 'school_logo')): ?>
+                <td style="width: auto;">
+                    <div class="header-image mr-2">
+                        <img width="100" height="100" src="../uploads/<?= $school_row['logo'] ?>" alt="School Logo"
+                            class="logo">
+                    </div>
+                </td>
+            <?php endif; ?>
             <td style="vertical-align: top; width: 100%;">
                 <div>
-                    <p class="font-weight-bold" style="font-size: 25px; line-height: normal;">
-                        <?= $school_row['school_name'] ?>
-                    </p>
-                    <p style="max-width: 100%;">Address: <?= $school_row['address'] ?></p>
-                    <p class="">Tel: <?= $school_row['phone1'] . ', ' . $school_row['phone2'] ?></p>
-                    <p class="">Email: <?= $school_row['email'] ?></p>
+                    <?php if (report_card_template_field_enabled($template, 'school_name')): ?>
+                        <p class="font-weight-bold" style="font-size: 25px; line-height: normal;">
+                            <?= $school_row['school_name'] ?>
+                        </p>
+                    <?php endif; ?>
+                    <?php if (report_card_template_field_enabled($template, 'school_address')): ?>
+                        <p style="max-width: 100%;">Address: <?= $school_row['address'] ?></p>
+                    <?php endif; ?>
+                    <?php if (report_card_template_field_enabled($template, 'school_phone')): ?>
+                        <p class="">Tel: <?= $school_row['phone1'] . ', ' . $school_row['phone2'] ?></p>
+                    <?php endif; ?>
+                    <?php if (report_card_template_field_enabled($template, 'school_email')): ?>
+                        <p class="">Email: <?= $school_row['email'] ?></p>
+                    <?php endif; ?>
                 </div>
             </td>
-            <?php if (isset($biorow['photo']) && $biorow['photo'] != 'avatar.png'): ?>
+            <?php if (report_card_template_field_enabled($template, 'student_photo') && isset($biorow['photo']) && $biorow['photo'] != 'avatar.png'): ?>
                 <td style="width: 110px; text-align: right;">
                     <div class="header-image ml-2">
                         <img width="100" height="100" src="../uploads/<?= $biorow['photo'] ?>" alt="Student photo"
@@ -379,33 +396,62 @@ if (!empty($biorow['department'])) {
             </td>
         </tr>
     </table>
+    <?php endif; ?>
     <!-- <header>
         <img width="100" height="100" src="../uploads/<= $school_row['logo'] ?>" alt="School Logo" class="logo">
         <h1><= $school_row['school_name'] ?></h1>
         <p><= $school_row['address'] . ' ' . $school_row['city'] . ' ' . $school_row['state'] . ' ' . $school_row['country'] ?></p>
     </header> -->
 
+    <?php if (report_card_template_section_enabled($template, 'student_details') || report_card_template_section_enabled($template, 'performance_summary')): ?>
     <section class="grades d-flex" style="column-gap: 10px; justify-content: space-between; align-items: flex-start;">
+        <?php if (report_card_template_section_enabled($template, 'student_details')): ?>
         <table style="width:68%" class="report_card_table">
-            <tr>
-                <td class="student-name-header"
-                    data-student-name="<?= trim($biorow['lastname'] . ' ' . $biorow['firstname'] . ' ' . $biorow['middlename']) ?>">
-                    NAME: <?= $biorow['lastname'] . ' ' . $biorow['firstname'] . ' ' . $biorow['middlename'] ?></td>
-                <td>ADM. NO: <?= strtoupper($biorow['admission_no']) ?></td>
-            </tr>
-            <tr>
-                <td>CLASS: <?= get_class_by_classid($biorow['class_id']) . $department ?></td>
-                <td>NO IN CLASS: <?= get_total_student_in_class($biorow['class_id']) ?></td>
-            </tr>
-            <tr>
-                <td>NO OF TIMES SCHOOL OPENED: <?= $setrow['school_open'] ?></td>
-                <td>NEXT TERM BEGINS: <?= $next_term ?></td>
-            </tr>
-            <tr>
-                <td>NO OF TIMES PRESENT: <?= get_attendance_present($student_id, $exact_term_id, $session_id) ?></td>
-                <td>NO OF TIMES ABSENT: <?= get_attendance_absent($student_id, $exact_term_id, $session_id) ?></td>
-            </tr>
+            <?php if (report_card_template_field_enabled($template, 'student_name') || report_card_template_field_enabled($template, 'admission_no')): ?>
+                <tr>
+                    <?php if (report_card_template_field_enabled($template, 'student_name')): ?>
+                        <td class="student-name-header"
+                            data-student-name="<?= trim($biorow['lastname'] . ' ' . $biorow['firstname'] . ' ' . $biorow['middlename']) ?>">
+                            NAME: <?= $biorow['lastname'] . ' ' . $biorow['firstname'] . ' ' . $biorow['middlename'] ?></td>
+                    <?php endif; ?>
+                    <?php if (report_card_template_field_enabled($template, 'admission_no')): ?>
+                        <td>ADM. NO: <?= strtoupper($biorow['admission_no']) ?></td>
+                    <?php endif; ?>
+                </tr>
+            <?php endif; ?>
+            <?php if (report_card_template_field_enabled($template, 'class') || report_card_template_field_enabled($template, 'no_in_class')): ?>
+                <tr>
+                    <?php if (report_card_template_field_enabled($template, 'class')): ?>
+                        <td>CLASS: <?= get_class_by_classid($biorow['class_id']) . $department ?></td>
+                    <?php endif; ?>
+                    <?php if (report_card_template_field_enabled($template, 'no_in_class')): ?>
+                        <td>NO IN CLASS: <?= get_total_student_in_class($biorow['class_id']) ?></td>
+                    <?php endif; ?>
+                </tr>
+            <?php endif; ?>
+            <?php if (report_card_template_field_enabled($template, 'school_open') || report_card_template_field_enabled($template, 'next_term_begins')): ?>
+                <tr>
+                    <?php if (report_card_template_field_enabled($template, 'school_open')): ?>
+                        <td>NO OF TIMES SCHOOL OPENED: <?= $setrow['school_open'] ?></td>
+                    <?php endif; ?>
+                    <?php if (report_card_template_field_enabled($template, 'next_term_begins')): ?>
+                        <td>NEXT TERM BEGINS: <?= $next_term ?></td>
+                    <?php endif; ?>
+                </tr>
+            <?php endif; ?>
+            <?php if (report_card_template_field_enabled($template, 'times_present') || report_card_template_field_enabled($template, 'times_absent')): ?>
+                <tr>
+                    <?php if (report_card_template_field_enabled($template, 'times_present')): ?>
+                        <td>NO OF TIMES PRESENT: <?= get_attendance_present($student_id, $exact_term_id, $session_id) ?></td>
+                    <?php endif; ?>
+                    <?php if (report_card_template_field_enabled($template, 'times_absent')): ?>
+                        <td>NO OF TIMES ABSENT: <?= get_attendance_absent($student_id, $exact_term_id, $session_id) ?></td>
+                    <?php endif; ?>
+                </tr>
+            <?php endif; ?>
         </table>
+        <?php endif; ?>
+        <?php if (report_card_template_section_enabled($template, 'performance_summary')): ?>
         <table style="width:30%" class="report_card_table performance-summary-table">
             <thead>
                 <tr class="">
@@ -421,12 +467,16 @@ if (!empty($biorow['department'])) {
                 <td>GRADE: <strong><?= $grade ?></strong></td>
             </tr>
         </table>
+        <?php endif; ?>
     </section>
+    <?php endif; ?>
 
+    <?php if (report_card_template_section_enabled($template, 'score_table')): ?>
     <section class="grades" style="">
         <div id="table_visuals_display_report"></div>
     </section>
-    <?php if ($show_report_private_sections): ?>
+    <?php endif; ?>
+    <?php if ($show_report_private_sections && (report_card_template_section_enabled($template, 'behaviour_skills') || report_card_template_section_enabled($template, 'psychomotor_skills'))): ?>
         <section class="grades d-flex nowrap student_behaviour_skills" style="column-gap: 10px; align-items: flex-start;">
             <?php
             $behaviour_skills = [];
@@ -440,6 +490,7 @@ if (!empty($biorow['department'])) {
                 }
             }
             ?>
+            <?php if (report_card_template_section_enabled($template, 'behaviour_skills')): ?>
             <div class="w-100">
                 <table class="behaviour_report_table w-100 report_card_table report-card-behaviour-table">
                     <thead>
@@ -464,6 +515,8 @@ if (!empty($biorow['department'])) {
                     </tbody>
                 </table>
             </div>
+            <?php endif; ?>
+            <?php if (report_card_template_section_enabled($template, 'psychomotor_skills')): ?>
             <div class="w-100">
                 <table class="behaviour_report_table w-100 report_card_table report-card-psychomotive-table">
                     <thead>
@@ -483,11 +536,14 @@ if (!empty($biorow['department'])) {
                     </tbody>
                 </table>
             </div>
+            <?php endif; ?>
         </section>
     <?php endif; ?>
+    <?php if (report_card_template_section_enabled($template, 'grade_scale') || report_card_template_section_enabled($template, 'skill_rating_indices')): ?>
     <section>
         <div style="width: 100%;">
             <div class="grades mb-4 d-flex mt-4" style="column-gap: 10px; align-items: flex-start;">
+                <?php if (report_card_template_section_enabled($template, 'grade_scale')): ?>
                 <table style="width:auto;" class="report_card_table mb-3">
                     <thead>
                         <tr>
@@ -507,6 +563,8 @@ if (!empty($biorow['department'])) {
                         <?php endforeach; ?>
                     </tr>
                 </table>
+                <?php endif; ?>
+                <?php if (report_card_template_section_enabled($template, 'skill_rating_indices')): ?>
                 <table style="width:auto;" class="report_card_table mb-3">
                     <thead>
                         <tr class="">
@@ -529,6 +587,7 @@ if (!empty($biorow['department'])) {
                         <td style="font-size: 15px;">1</td>
                     </tr>
                 </table>
+                <?php endif; ?>
             </div>
 
         </div>
@@ -536,25 +595,34 @@ if (!empty($biorow['department'])) {
 
         </div>
     </section>
+    <?php endif; ?>
 
-    <?php if ($show_report_private_sections): ?>
+    <?php if ($show_report_private_sections && (report_card_template_section_enabled($template, 'comments') || report_card_template_section_enabled($template, 'signature_stamp'))): ?>
         <section class="remarks">
+            <?php if (report_card_template_section_enabled($template, 'comments')): ?>
+            <?php if (report_card_template_field_enabled($template, 'teacher_comment')): ?>
             <div class="mb-3">
                 <p class="mb-0"><strong><?= $school_id == '29' ? 'CLASS ' : '' ?>TEACHER'S COMMENT</strong></p>
                 <p class="mb-0 mt-0">
                     <?= get_comment_by_student($student_id, $exact_term_id, $session_id, $class_id, 0, 1) ?>
                 </p>
             </div>
+            <?php endif; ?>
+            <?php if (report_card_template_field_enabled($template, 'head_teacher_comment')): ?>
             <div class="">
                 <p class="mb-0"><strong><?= strtoupper($_SESSION['whocomment']) ?>'S COMMENT</strong></p>
                 <p class="mb-0 mt-0">
                     <?= get_comment_by_student($student_id, $exact_term_id, $session_id, $class_id, 1, 1) ?>
                 </p>
             </div>
+            <?php endif; ?>
+            <?php endif; ?>
+            <?php if (report_card_template_section_enabled($template, 'signature_stamp')): ?>
             <p style="margin-top: 60px;"><strong>SIGNATURE & STAMP:</strong> <span class=""><img
                         style="width: auto; height: 45px; display: inline-block;"
                         src="../uploads/<?= $school_row['stamp_pic'] == '' ? 'logo-placeholder.jpg' : $school_row['stamp_pic'] ?>"
                         alt="Stamp Picture"></span></p>
+            <?php endif; ?>
         </section>
     <?php endif; ?>
 </div>

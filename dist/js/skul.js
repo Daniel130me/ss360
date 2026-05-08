@@ -14769,6 +14769,9 @@ async function format_student_table_report(student_score_data, term, session_id,
 </table>`;
         }
         container.html(str);
+        if (typeof window.applyReportTemplateToRenderedTable === "function") {
+            window.applyReportTemplateToRenderedTable(container.closest(".report-card"));
+        }
         setTimeout(resolve, 100);
     });
 }
@@ -14959,6 +14962,9 @@ async function format_student_cummulative_table_report(student_score_data, stude
         `;
 
         $(containerSelector).html(tableHtml);
+        if (typeof window.applyReportTemplateToRenderedTable === "function") {
+            window.applyReportTemplateToRenderedTable($(containerSelector).closest(".report-card"));
+        }
 
         const tableId = `#cumulative_student_score_table_${student_id}`;
         // if ($.fn.DataTable.isDataTable(tableId)) {
@@ -15098,6 +15104,9 @@ async function format_2nd_term_student_cummulative_table_report(student_score_da
             </table>
         `;
         $(containerSelector).html(tableHtml);
+        if (typeof window.applyReportTemplateToRenderedTable === "function") {
+            window.applyReportTemplateToRenderedTable($(containerSelector).closest(".report-card"));
+        }
         const tableId = `#cumulative_student_score_table_${student_id}`;
         setTimeout(resolve, 100);
     });

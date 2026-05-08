@@ -1,0 +1,143 @@
+(function (window, $) {
+    const standardColumns = [
+        { key: "subject", label: "Subjects" },
+        { key: "ca1", label: "CA1" },
+        { key: "ca2", label: "CA2" },
+        { key: "ca3", label: "CA3" },
+        { key: "practical", label: "Practical" },
+        { key: "exam", label: "Exam" },
+        { key: "total", label: "Total" },
+        { key: "percentage", label: "Total(%)" },
+        { key: "grade", label: "Grade" },
+    ];
+
+    const cumulativeColumns = [
+        { key: "subject", label: "Subjects" },
+        { key: "ca1", label: "CA1" },
+        { key: "ca2", label: "CA2" },
+        { key: "ca3", label: "CA3" },
+        { key: "practical", label: "Practical" },
+        { key: "exam", label: "Exam" },
+        { key: "first_term_total", label: "1st Term Total" },
+        { key: "second_term_total", label: "2nd Term Total" },
+        { key: "third_term_total", label: "3rd Term Total" },
+        { key: "grand_total", label: "Grand Total" },
+        { key: "average", label: "Average" },
+        { key: "percentage", label: "Total(%)" },
+        { key: "grade", label: "Grade" },
+    ];
+
+    function parseTemplateColumns(reportCard) {
+        let columns = reportCard.attr("data-template-columns") || "[]";
+        try {
+            columns = JSON.parse(columns);
+        } catch (error) {
+            columns = [];
+        }
+
+        return Array.isArray(columns) && columns.length ? columns : standardColumns.map((column) => column.key);
+    }
+
+    function templateOrder(columns, availableColumns) {
+        const availableKeys = availableColumns.map((column) => column.key);
+        const ordered = columns.filter((key) => availableKeys.includes(key));
+        return ordered.length ? ordered : availableKeys;
+    }
+
+    function rebuildRows(table, orderedColumns, sourceColumns) {
+        const indexByKey = {};
+        sourceColumns.forEach((column, index) => {
+            indexByKey[column.key] = index;
+        });
+
+        table.find("tbody tr").each(function () {
+            const row = $(this);
+            const cells = row.children("td").detach();
+            orderedColumns.forEach((key) => {
+                const sourceIndex = indexByKey[key];
+                if (sourceIndex !== undefined && cells.eq(sourceIndex).length) {
+                    row.append(cells.eq(sourceIndex));
+                }
+            });
+        });
+    }
+
+    function rebuildSimpleTable(table, columns, sourceColumns) {
+        const orderedColumns = templateOrder(columns, sourceColumns);
+        const indexByKey = {};
+        sourceColumns.forEach((column, index) => {
+            indexByKey[column.key] = index;
+        });
+
+        const headRow = table.find("thead tr").first();
+        const headings = headRow.children("th").detach();
+        orderedColumns.forEach((key) => {
+            const sourceIndex = indexByKey[key];
+            if (sourceIndex !== undefined && headings.eq(sourceIndex).length) {
+                headRow.append(headings.eq(sourceIndex));
+            }
+        });
+        rebuildRows(table, orderedColumns, sourceColumns);
+    }
+
+    function rebuildCumulativeTable(table, columns) {
+        const sourceColumns = [{ key: "subject", label: "Subjects" }];
+        const leafHeaders = table
+            .find("thead tr:last th")
+            .map(function () {
+                return $(this).text().trim();
+            })
+            .get();
+        const leafColumnMap = {
+            CA1: "ca1",
+            CA2: "ca2",
+            CA3: "ca3",
+            Practical: "practical",
+            Exam: "exam",
+            "1st": "first_term_total",
+            "2nd": "second_term_total",
+            "3rd": "third_term_total",
+        };
+
+        leafHeaders.forEach((label) => {
+            const key = leafColumnMap[label];
+            const column = cumulativeColumns.find((item) => item.key === key);
+            if (column) {
+                sourceColumns.push(column);
+            }
+        });
+        ["grand_total", "average", "percentage", "grade"].forEach((key) => {
+            const column = cumulativeColumns.find((item) => item.key === key);
+            if (column) {
+                sourceColumns.push(column);
+            }
+        });
+        const orderedColumns = templateOrder(columns, sourceColumns);
+        const headerHtml = orderedColumns
+            .map((key) => {
+                const column = sourceColumns.find((item) => item.key === key);
+                return column ? `<th>${column.label}</th>` : "";
+            })
+            .join("");
+
+        table.find("thead").html(`<tr>${headerHtml}</tr>`);
+        rebuildRows(table, orderedColumns, sourceColumns);
+    }
+
+    function applyReportTemplateToRenderedTable(reportCard) {
+        const card = $(reportCard);
+        if (!card.length) {
+            return;
+        }
+
+        const columns = parseTemplateColumns(card);
+        card.find("#view_student_score_table").each(function () {
+            rebuildSimpleTable($(this), columns, standardColumns);
+        });
+        card.find("[id^='cumulative_student_score_table_']").each(function () {
+            rebuildCumulativeTable($(this), columns);
+        });
+    }
+
+    window.applyReportTemplateToRenderedTable = applyReportTemplateToRenderedTable;
+})(window, jQuery);
