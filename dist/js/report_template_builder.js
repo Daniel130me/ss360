@@ -115,6 +115,18 @@
         $("#reportTemplateStatusText").removeClass("text-danger text-success text-muted").addClass(className).text(message || "");
     }
 
+    function isExactTemplateMatch(templateRow, sessionId, termId) {
+        if (!templateRow || !templateRow.id) {
+            return false;
+        }
+
+        return (
+            String(templateRow.term_id || "default") === String(termId || "default") &&
+            String(templateRow.session_id || "") === String(sessionId || "") &&
+            String(templateRow.school_id || "0") !== "0"
+        );
+    }
+
     function defaultTemplate() {
         const columns = columnApi().defaultColumns.slice();
         return {
@@ -370,13 +382,14 @@
                 }
 
                 const data = response.data || {};
+                const isExactMatch = isExactTemplateMatch(data, sessionId, termId);
                 draft = normalizeTemplate(data.template_json);
                 draft.template_name = data.template_name || draft.template_name;
-                $("#reportTemplateId").val(data.id || "");
+                $("#reportTemplateId").val(isExactMatch ? data.id || "" : "");
                 $("#reportTemplateStatus").val(String(data.status == null ? 1 : data.status));
-                $("#reportTemplateDefault").prop("checked", String(data.is_default || "0") === "1");
+                $("#reportTemplateDefault").prop("checked", isExactMatch && String(data.is_default || "0") === "1");
                 renderAll();
-                setStatus(data.id ? "Loaded saved format." : "Loaded default format.", "success");
+                setStatus(isExactMatch ? "Loaded saved format." : "Loaded inherited format. Saving will create a copy for this context.", "success");
             },
             error: function () {
                 draft = defaultTemplate();

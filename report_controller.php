@@ -122,6 +122,14 @@ if ($action == 'save_report_template') {
     $session_sql = $session_id === null ? "NULL" : "'$session_id'";
 
     if ($id) {
+        $session_match = $session_id === null ? "session_id IS NULL" : "session_id='$session_id'";
+        $select_existing_template = mysqli_query($conn, "SELECT id FROM report_templates WHERE id='$id' AND school_id='$school_id' AND term_id='$term_id' AND $session_match LIMIT 1");
+        if (!$select_existing_template || mysqli_num_rows($select_existing_template) === 0) {
+            $id = null;
+        }
+    }
+
+    if ($id) {
         $query = "UPDATE report_templates SET
                     session_id=$session_sql,
                     term_id='$term_id',
