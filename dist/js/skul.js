@@ -14602,9 +14602,10 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
                 },
             });
 
-            data = JSON.parse(gradingData);
-            settingsData = data.settingsData[0];
-            student_score_data = data.score_data;
+            const gradingPayload =
+                typeof gradingData === "string" ? JSON.parse(gradingData) : gradingData;
+            settingsData = gradingPayload.settingsData[0];
+            student_score_data = gradingPayload.score_data;
 
             // Then get the report card HTML
             let myschl = null;
