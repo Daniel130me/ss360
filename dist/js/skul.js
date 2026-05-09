@@ -15205,8 +15205,7 @@ async function set_behaviour_comment_report(
                 pagetype,
             },
             success: (data) => {
-                data = data.trim();
-                data = JSON.parse(data);
+                data = typeof data === "string" ? JSON.parse(data.trim()) : data;
                 // alert(data.staff_classId)
                 // let staff_classId_json = JSON.parse(data.staff_classId)
                 // alert((data.staff_classId).includes(class_id))
