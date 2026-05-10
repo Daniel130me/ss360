@@ -2,11 +2,19 @@ $(document).ready(function () {
     let currentReportCard = null;
     let isNewReport = false;
 
+    function getSelectedSessionId() {
+        return $('#reportTemplateSessionValue').val() || $('#singleSessionValue').val();
+    }
+
+    function getSelectedTermId() {
+        return $('#reportCustomizationTermFilter .report-custom-term-setting.active').data('name') || $('.term_setting.active').data('name');
+    }
+
     // Fetch reports on page load (if session and term are set)
     fetchReports();
 
     // Trigger fetch when session changes
-    $('#singleSessionValue').on('change', function () {
+    $('#singleSessionValue, #reportTemplateSessionValue').on('change', function () {
         fetchReports();
     });
 
@@ -17,9 +25,15 @@ $(document).ready(function () {
         setTimeout(fetchReports, 100);
     });
 
+    $(document).on('click', '.report-custom-term-setting', function () {
+        $('.report-custom-term-setting').removeClass('active');
+        $(this).addClass('active');
+        fetchReports();
+    });
+
     function fetchReports() {
-        let session_id = $('#singleSessionValue').val();
-        let term_id = $('.term_setting.active').data('name');
+        let session_id = getSelectedSessionId();
+        let term_id = getSelectedTermId();
 
         if (!session_id || !term_id) return;
 
@@ -136,8 +150,8 @@ $(document).ready(function () {
             selectedAssessments.push($(this).val());
         });
 
-        let session_id = $('#singleSessionValue').val();
-        let term_id = $('.term_setting.active').data('name');
+        let session_id = getSelectedSessionId();
+        let term_id = getSelectedTermId();
         let status = $('#reportStatusSwitch').is(':checked') ? 1 : 0;
         let report_id = currentReportCard ? currentReportCard.data('id') : null;
 
@@ -211,8 +225,8 @@ $(document).ready(function () {
             assessments.push($(this).data('value'));
         });
 
-        let session_id = $('#singleSessionValue').val();
-        let term_id = $('.term_setting.active').data('name');
+        let session_id = getSelectedSessionId();
+        let term_id = getSelectedTermId();
 
         $.ajax({
             url: '../report_controller.php',

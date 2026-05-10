@@ -4929,6 +4929,7 @@ const init = () => {
     if ($("#settings_page").val() === 'view_Settings') {
         $("#school_info_placeholder_form").load('../display_school_info_form.php')
         $("#school_setting_placeholder_form").load('../display_school_setting_form.php')
+        $("#report_card_customization_placeholder").load('../display_report_card_customization_form.php')
     }
     if ($("#subject_page").val() === 'view_Subjects') {
         $("#subject_category_container").load('../display_subject_category.php')

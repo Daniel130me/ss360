@@ -116,6 +116,10 @@
         $("#reportTemplateStatusText").removeClass("text-danger text-success text-muted").addClass(className).text(message || "");
     }
 
+    function getSelectedSessionId() {
+        return $("#reportTemplateSessionValue").val() || $("#singleSessionValue").val();
+    }
+
     function getTermLabel(termId) {
         const labels = {
             default: "School Default",
@@ -346,7 +350,7 @@
     }
 
     function applyTemplateRowToEditor(templateRow, asCopy) {
-        const sessionId = $("#singleSessionValue").val();
+        const sessionId = getSelectedSessionId();
         const termId = templateRow.term_id || "default";
         const exactMatch = isExactTemplateMatch(templateRow, sessionId, termId);
 
@@ -368,7 +372,7 @@
     }
 
     function renderTemplateList() {
-        const sessionId = $("#singleSessionValue").val();
+        const sessionId = getSelectedSessionId();
         const html = templateList
             .map((templateRow) => {
                 const exactMatch = isExactTemplateMatch(templateRow, sessionId, templateRow.term_id);
@@ -404,7 +408,7 @@
     }
 
     function fetchTemplateList() {
-        const sessionId = $("#singleSessionValue").val();
+        const sessionId = getSelectedSessionId();
         if (!sessionId) {
             templateList = [];
             renderTemplateList();
@@ -455,7 +459,7 @@
     }
 
     function loadTemplate() {
-        const sessionId = $("#singleSessionValue").val();
+        const sessionId = getSelectedSessionId();
         const termId = $("#reportTemplateTerm").val() || "default";
 
         if (!sessionId) {
@@ -498,7 +502,7 @@
     }
 
     function saveTemplate() {
-        const sessionId = $("#singleSessionValue").val();
+        const sessionId = getSelectedSessionId();
         if (!sessionId) {
             setStatus("Select a session first.", "error");
             return;
@@ -574,7 +578,7 @@
         $("#loadReportTemplate").on("click", loadTemplate);
         $("#refreshReportTemplates").on("click", fetchTemplateList);
 
-        $("#singleSessionValue").on("change", function () {
+        $("#singleSessionValue, #reportTemplateSessionValue").on("change", function () {
             loadTemplate();
             fetchTemplateList();
         });
@@ -586,6 +590,13 @@
                 }
                 loadTemplate();
             }, 100);
+        });
+        $(document).on("click", ".report-custom-term-setting", function () {
+            const termId = $(this).data("name");
+            if (termId) {
+                $("#reportTemplateTerm").val(String(termId));
+            }
+            loadTemplate();
         });
 
         $("#saveReportTemplate").on("click", saveTemplate);

@@ -413,6 +413,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   data-target="#pills-settings" type="button" role="tab" aria-controls="pills-settings"
                   aria-selected="false">Settings</button>
               </li>
+              <li class="nav-item" role="presentation">
+                <button class="pill-link link-primary" id="pills-report-card-tab" data-toggle="pill"
+                  data-target="#pills-report-card" type="button" role="tab" aria-controls="pills-report-card"
+                  aria-selected="false">Report Card Customization</button>
+              </li>
               <li class="nav-item d-none" role="presentation">
                 <button class="pill-link link-primary" id="pills-skills-tab" data-toggle="pill"
                   data-target="#pills-skills" type="button" role="tab" aria-controls="pills-skills"
@@ -445,6 +450,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <div class="tab-pane fade" id="pills-settings" role="tabpanel" aria-labelledby="pills-settings-tab">
               <form id="school_setting_placeholder_form" class="settingsform">
               </form>
+            </div>
+            <div class="tab-pane fade" id="pills-report-card" role="tabpanel" aria-labelledby="pills-report-card-tab">
+              <div id="report_card_customization_placeholder">
+              </div>
             </div>
             <div class="tab-pane fade" id="pills-skills" role="tabpanel" aria-labelledby="pills-skills-tab">
               <div id="skills_config_placeholder">
