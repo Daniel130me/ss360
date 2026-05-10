@@ -1830,6 +1830,7 @@ $date = date("Y:m:d H:i:s");
 
             <?php
             }
+            exit;
         }
 
        
@@ -7303,6 +7304,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (isset($_GET['action'])) {
         $action = test_input($_GET['action']);
     }
+    if ($action !== 'upload_lesson_image') {
+        exit;
+    }
       // Handle image uploads for lesson notes via AJAX (CKEditor or fallback file input)
         // echo "pmpomdc";
         // exit;
@@ -7326,7 +7330,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (!$fileKey || !isset($_FILES[$fileKey]) || !is_uploaded_file($_FILES[$fileKey]['tmp_name'])) {
             header('Content-Type: application/json');
-            json_encode(array('error' => array('message' => 'No file uploaded')));
+            echo json_encode(array('error' => array('message' => 'No file uploaded')));
             exit;
         }
 
