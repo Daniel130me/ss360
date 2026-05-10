@@ -231,6 +231,7 @@ function get_billing_data() {
 //     });
 // }
 var student_score_data = [];
+var student_comparison_data = {};
 // get_score_data()
 
 // function toggle_grade_type(event) {
@@ -14327,6 +14328,7 @@ async function preview_custom_report_card(report_id) {
 
         // Set globals for other functions
         student_score_data = scoreResponse.score_data;
+        student_comparison_data = scoreResponse.comparison_data || {};
 
         if (!scoreResponse.settingsData || !scoreResponse.settingsData[0]) {
             console.error("Missing settingsData in scoreResponse:", scoreResponse);
@@ -14607,6 +14609,7 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
                 typeof gradingData === "string" ? JSON.parse(gradingData) : gradingData;
             settingsData = gradingPayload.settingsData[0];
             student_score_data = gradingPayload.score_data;
+            student_comparison_data = gradingPayload.comparison_data || {};
 
             // Then get the report card HTML
             let myschl = null;
@@ -14756,6 +14759,8 @@ async function format_student_table_report(student_score_data, term, session_id,
       <th>Total</th>         
           <th>Total(%)</th>
           <th>Grade</th>
+          <th>Class Average</th>
+          <th>Position</th>
       </tr>
   </thead>
   <tbody>
@@ -14776,6 +14781,8 @@ async function format_student_table_report(student_score_data, term, session_id,
       <td class="total-score">${customAssessments ? calculate_row_total(item, customAssessments) : item.Total}</td>
       <td class="percentage">${customAssessments ? calculate_row_percentage(item, customAssessments) : get_subject_percentage(item.subject_id, term, session_id, class_id)}</td>
       <td>${calculateGrade1(customAssessments ? calculate_row_percentage(item, customAssessments) : get_subject_percentage(item.subject_id, term, session_id, class_id), grader)}</td>
+      <td>${get_report_comparison_value(item.subject_id, term, "class_average")}</td>
+      <td>${get_report_comparison_value(item.subject_id, term, "position")}</td>
   </tr>
 `
                 // }
@@ -14822,6 +14829,15 @@ function calculate_row_percentage(item, assessments) {
         return Math.round((total / maxTotal) * 100).toString();
     }
     return "0";
+}
+
+function get_report_comparison_value(subjectId, termId, key, cumulativeScope = null) {
+    const comparisonData = student_comparison_data || {};
+    const scopeData = cumulativeScope
+        ? (((comparisonData.cumulative || {})[String(cumulativeScope)] || {})[String(subjectId)] || {})
+        : (((comparisonData.term || {})[String(termId)] || {})[String(subjectId)] || {});
+
+    return scopeData[key] || "-";
 }
 async function format_student_cummulative_table_report(student_score_data, student_id, session_id, class_id, grading_param, containerSelector) {
     // student_score_data: Array of all score objects
@@ -14908,6 +14924,8 @@ async function format_student_cummulative_table_report(student_score_data, stude
                         <th rowspan="2" style="vertical-align: middle;">Avg</th>
                         <th rowspan="2" style="vertical-align: middle;">(%)</th>
                         <th rowspan="2" style="vertical-align: middle;">Grade</th>
+                        <th rowspan="2" style="vertical-align: middle;">Class Average</th>
+                        <th rowspan="2" style="vertical-align: middle;">Position</th>
                     </tr>
                     <tr>
                         ${settingsData.ca1 == 0 ? '' : '<th>CA1</th>'}
@@ -14968,6 +14986,8 @@ async function format_student_cummulative_table_report(student_score_data, stude
                     <td>${averageScore > 0 ? averageScore.toFixed(0) : '-'}</td>
                     <td>${overallPercentage > 0 ? overallPercentage.toFixed(0) + '%' : '-'}</td>
                     <td>${grade}</td>
+                    <td>${get_report_comparison_value(subject.id, null, "class_average", "3")}</td>
+                    <td>${get_report_comparison_value(subject.id, null, "position", "3")}</td>
                 </tr>
             `;
         });
@@ -15068,6 +15088,8 @@ async function format_2nd_term_student_cummulative_table_report(student_score_da
                         <th rowspan="2" style="vertical-align: middle;">Avg</th>
                         <th rowspan="2" style="vertical-align: middle;">(%)</th>
                         <th rowspan="2" style="vertical-align: middle;">Grade</th>
+                        <th rowspan="2" style="vertical-align: middle;">Class Average</th>
+                        <th rowspan="2" style="vertical-align: middle;">Position</th>
                     </tr>
                     <tr>
                         ${settingsData.ca1 == 0 ? '' : '<th>CA1</th>'}
@@ -15112,6 +15134,8 @@ async function format_2nd_term_student_cummulative_table_report(student_score_da
                     <td>${averageScore > 0 ? averageScore.toFixed(0) : '-'}</td>
                     <td>${overallPercentage > 0 ? overallPercentage.toFixed(0) + '%' : '-'}</td>
                     <td>${grade}</td>
+                    <td>${get_report_comparison_value(subject.id, null, "class_average", "2")}</td>
+                    <td>${get_report_comparison_value(subject.id, null, "position", "2")}</td>
                 </tr>
             `;
         });

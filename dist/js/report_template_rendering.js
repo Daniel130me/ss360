@@ -9,6 +9,8 @@
         { key: "total", label: "Total" },
         { key: "percentage", label: "Total(%)" },
         { key: "grade", label: "Grade" },
+        { key: "class_average", label: "Class Average" },
+        { key: "position", label: "Position" },
     ];
 
     const cumulativeColumns = [
@@ -25,6 +27,8 @@
         { key: "average", label: "Average" },
         { key: "percentage", label: "Total(%)" },
         { key: "grade", label: "Grade" },
+        { key: "class_average", label: "Class Average" },
+        { key: "position", label: "Position" },
     ];
     const cumulativeColumnKeys = [
         "first_term_total",
@@ -32,8 +36,6 @@
         "third_term_total",
         "grand_total",
         "average",
-        "class_average",
-        "position",
     ];
 
     function escapeHtml(value) {
@@ -169,7 +171,7 @@
                 sourceColumns.push(column);
             }
         });
-        ["grand_total", "average", "percentage", "grade"].forEach((key) => {
+        ["grand_total", "average", "percentage", "grade", "class_average", "position"].forEach((key) => {
             const column = cumulativeColumns.find((item) => item.key === key);
             if (column) {
                 sourceColumns.push(column);

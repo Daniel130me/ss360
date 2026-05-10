@@ -1180,6 +1180,10 @@ $date = date("Y:m:d H:i:s");
         $class_id = test_input($_POST['class_id']);
         $term_id = test_input($_POST['term_id']);
         $score_data = array();
+        $comparison_data = array('term' => array(), 'cumulative' => array());
+        $template_context = get_report_template_by_context($school_id, $session_id, $term_id == 'cum' ? 'cumulative' : $term_id);
+        $template_columns = get_report_card_template_score_columns($template_context['template_json'] ?? array());
+        $needs_comparison_data = in_array('class_average', $template_columns, true) || in_array('position', $template_columns, true);
         // echo $sql = "SELECT b.subject as subjectname, s.*, t.firstname,t.lastname FROM skulscores s, subjects b, students t WHERE t.id=s.student_id AND b.id=s.subject_id AND s.session_id='$session_id' AND s.class_id='$class_id' AND s.student_id='$student_id' AND s.school_id='$school_id'");
         $select = mysqli_query($conn, "SELECT b.subject as subjectname, s.*, t.firstname,t.lastname FROM skulscores s, subjects b, students t WHERE t.id=s.student_id AND b.id=s.subject_id AND s.session_id='$session_id' AND s.class_id='$class_id' AND s.student_id='$student_id' AND s.school_id='$school_id'");        // $select = mysqli_query($conn, "SELECT * FROM skulscores WHERE session_id='$session_id' AND class_id='$class_id' AND student_id='$student_id' AND session_id='$session_id' AND term_id='$term_id'");
         while ($row = mysqli_fetch_array($select)) {
@@ -1240,6 +1244,14 @@ $date = date("Y:m:d H:i:s");
             //     'Term' => $row['term_id']
             // ];
         }
+        if ($needs_comparison_data) {
+            $comparison_rows = array();
+            $comparison_select = mysqli_query($conn, "SELECT subject_id, student_id, term_id, total FROM skulscores WHERE session_id='$session_id' AND class_id='$class_id' AND school_id='$school_id' AND status='1' AND total > 0");
+            while ($comparison_row = mysqli_fetch_assoc($comparison_select)) {
+                $comparison_rows[] = $comparison_row;
+            }
+            $comparison_data = build_report_score_comparison_data($comparison_rows, $student_id);
+        }
         $select = mysqli_query($conn, "SELECT * FROM skul_settings WHERE school_id='$school_id' AND term_id='$term_id' AND session_id='$session_id'");
         $settingsData = array();
         if ($row = mysqli_fetch_array($select)) {
@@ -1258,7 +1270,8 @@ $date = date("Y:m:d H:i:s");
         header('Content-Type: application/json');
         echo json_encode(array(
             'settingsData' => $settingsData,
-            'score_data' => $score_data
+            'score_data' => $score_data,
+            'comparison_data' => $comparison_data
         ));
         exit;
     }

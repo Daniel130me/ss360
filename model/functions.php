@@ -872,6 +872,87 @@ function legacy_report_settings_to_template($report_settings)
     return normalize_report_template_config($template);
 }
 
+function build_report_score_comparison_data($score_rows, $target_student_id)
+{
+    $comparison_data = ['term' => [], 'cumulative' => []];
+    $term_scores = [];
+
+    if (!is_array($score_rows)) {
+        return $comparison_data;
+    }
+
+    foreach ($score_rows as $row) {
+        $subject_id = (string)($row['subject_id'] ?? '');
+        $student_id = (string)($row['student_id'] ?? '');
+        $term_id = (string)($row['term_id'] ?? '');
+        $total = (float)($row['total'] ?? 0);
+
+        if ($subject_id === '' || $student_id === '' || $term_id === '' || $total <= 0) {
+            continue;
+        }
+
+        if (!isset($term_scores[$term_id][$subject_id])) {
+            $term_scores[$term_id][$subject_id] = [];
+        }
+        $term_scores[$term_id][$subject_id][$student_id] = $total;
+    }
+
+    foreach ($term_scores as $term_id => $subjects) {
+        foreach ($subjects as $subject_id => $student_scores) {
+            $comparison_data['term'][$term_id][$subject_id] = summarize_report_comparison_scores($student_scores, $target_student_id);
+        }
+    }
+
+    foreach (['2' => ['1', '2'], '3' => ['1', '2', '3']] as $scope => $terms) {
+        $subject_scores = [];
+        foreach ($terms as $term_id) {
+            foreach (($term_scores[$term_id] ?? []) as $subject_id => $student_scores) {
+                foreach ($student_scores as $student_id => $total) {
+                    if (!isset($subject_scores[$subject_id][$student_id])) {
+                        $subject_scores[$subject_id][$student_id] = 0;
+                    }
+                    $subject_scores[$subject_id][$student_id] += $total;
+                }
+            }
+        }
+
+        foreach ($subject_scores as $subject_id => $student_scores) {
+            $comparison_data['cumulative'][$scope][$subject_id] = summarize_report_comparison_scores($student_scores, $target_student_id);
+        }
+    }
+
+    return $comparison_data;
+}
+
+function summarize_report_comparison_scores($student_scores, $target_student_id)
+{
+    $student_scores = array_filter($student_scores, function ($score) {
+        return (float)$score > 0;
+    });
+
+    if (empty($student_scores)) {
+        return ['class_average' => '-', 'position' => '-'];
+    }
+
+    arsort($student_scores, SORT_NUMERIC);
+    $target_student_id = (string)$target_student_id;
+    $target_position = '-';
+    $rank = 0;
+
+    foreach ($student_scores as $student_id => $score) {
+        $rank++;
+        if ((string)$student_id === $target_student_id) {
+            $target_position = (string)$rank;
+            break;
+        }
+    }
+
+    return [
+        'class_average' => (string)round(array_sum($student_scores) / count($student_scores)),
+        'position' => $target_position,
+    ];
+}
+
 // function get_total_obtainables($studentid, $term_id, $session_id, $class_id) {
 //     global $conn;
 //     $select = mysqli_query($conn, "SELECT COUNT(*) as subject_count FROM skulscores 
