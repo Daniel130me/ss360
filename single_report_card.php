@@ -141,6 +141,15 @@ if (!empty($biorow['department'])) {
 $template_context = get_report_template_by_context($school_id, $session_id, $term_id == 'cum' ? 'cumulative' : $term_id);
 $template = normalize_report_template_config($template_context['template_json'] ?? []);
 $template_columns = get_report_card_template_score_columns($template);
+$template_labels = $template['labels'] ?? [];
+$report_title = render_report_template_text(
+    report_card_template_label($template, 'titles', 'term_title', '{term} TERM {session} ACADEMIC SESSION'),
+    [
+        'term' => $term_Note,
+        'session' => $_SESSION['session_name'] ?? '',
+        'report_name' => 'Report Card',
+    ]
+);
 ?>
 <style>
     /* .report-card {
@@ -346,7 +355,7 @@ $template_columns = get_report_card_template_score_columns($template);
 </style>
 
 
-<div class="report-card" data-template-columns='<?= htmlspecialchars(json_encode($template_columns), ENT_QUOTES, 'UTF-8') ?>'>
+<div class="report-card" data-template-columns='<?= htmlspecialchars(json_encode($template_columns), ENT_QUOTES, 'UTF-8') ?>' data-template-labels='<?= htmlspecialchars(json_encode($template_labels), ENT_QUOTES, 'UTF-8') ?>'>
     <?php if (report_card_template_field_enabled($template, 'school_logo')): ?>
         <div class="watermark"></div>
     <?php endif; ?>
@@ -390,9 +399,7 @@ $template_columns = get_report_card_template_score_columns($template);
         </tr>
         <tr>
             <td colspan="3">
-                <h2 class="font-weight-bold text-center my-3" style="font-size:1.3rem;"><?= $term_Note ?> TERM
-                    <?= $_SESSION['session_name'] ?> ACADEMIC SESSION
-                </h2>
+                <h2 class="font-weight-bold text-center my-3" style="font-size:1.3rem;"><?= htmlspecialchars($report_title) ?></h2>
             </td>
         </tr>
     </table>
@@ -412,40 +419,40 @@ $template_columns = get_report_card_template_score_columns($template);
                     <?php if (report_card_template_field_enabled($template, 'student_name')): ?>
                         <td class="student-name-header"
                             data-student-name="<?= trim($biorow['lastname'] . ' ' . $biorow['firstname'] . ' ' . $biorow['middlename']) ?>">
-                            NAME: <?= $biorow['lastname'] . ' ' . $biorow['firstname'] . ' ' . $biorow['middlename'] ?></td>
+                            <?= htmlspecialchars(report_card_template_label($template, 'fields', 'student_name', 'NAME')) ?>: <?= $biorow['lastname'] . ' ' . $biorow['firstname'] . ' ' . $biorow['middlename'] ?></td>
                     <?php endif; ?>
                     <?php if (report_card_template_field_enabled($template, 'admission_no')): ?>
-                        <td>ADM. NO: <?= strtoupper($biorow['admission_no']) ?></td>
+                        <td><?= htmlspecialchars(report_card_template_label($template, 'fields', 'admission_no', 'ADM. NO')) ?>: <?= strtoupper($biorow['admission_no']) ?></td>
                     <?php endif; ?>
                 </tr>
             <?php endif; ?>
             <?php if (report_card_template_field_enabled($template, 'class') || report_card_template_field_enabled($template, 'no_in_class')): ?>
                 <tr>
                     <?php if (report_card_template_field_enabled($template, 'class')): ?>
-                        <td>CLASS: <?= get_class_by_classid($biorow['class_id']) . $department ?></td>
+                        <td><?= htmlspecialchars(report_card_template_label($template, 'fields', 'class', 'CLASS')) ?>: <?= get_class_by_classid($biorow['class_id']) . $department ?></td>
                     <?php endif; ?>
                     <?php if (report_card_template_field_enabled($template, 'no_in_class')): ?>
-                        <td>NO IN CLASS: <?= get_total_student_in_class($biorow['class_id']) ?></td>
+                        <td><?= htmlspecialchars(report_card_template_label($template, 'fields', 'no_in_class', 'NO IN CLASS')) ?>: <?= get_total_student_in_class($biorow['class_id']) ?></td>
                     <?php endif; ?>
                 </tr>
             <?php endif; ?>
             <?php if (report_card_template_field_enabled($template, 'school_open') || report_card_template_field_enabled($template, 'next_term_begins')): ?>
                 <tr>
                     <?php if (report_card_template_field_enabled($template, 'school_open')): ?>
-                        <td>NO OF TIMES SCHOOL OPENED: <?= $setrow['school_open'] ?></td>
+                        <td><?= htmlspecialchars(report_card_template_label($template, 'fields', 'school_open', 'NO OF TIMES SCHOOL OPENED')) ?>: <?= $setrow['school_open'] ?></td>
                     <?php endif; ?>
                     <?php if (report_card_template_field_enabled($template, 'next_term_begins')): ?>
-                        <td>NEXT TERM BEGINS: <?= $next_term ?></td>
+                        <td><?= htmlspecialchars(report_card_template_label($template, 'fields', 'next_term_begins', 'NEXT TERM BEGINS')) ?>: <?= $next_term ?></td>
                     <?php endif; ?>
                 </tr>
             <?php endif; ?>
             <?php if (report_card_template_field_enabled($template, 'times_present') || report_card_template_field_enabled($template, 'times_absent')): ?>
                 <tr>
                     <?php if (report_card_template_field_enabled($template, 'times_present')): ?>
-                        <td>NO OF TIMES PRESENT: <?= get_attendance_present($student_id, $exact_term_id, $session_id) ?></td>
+                        <td><?= htmlspecialchars(report_card_template_label($template, 'fields', 'times_present', 'NO OF TIMES PRESENT')) ?>: <?= get_attendance_present($student_id, $exact_term_id, $session_id) ?></td>
                     <?php endif; ?>
                     <?php if (report_card_template_field_enabled($template, 'times_absent')): ?>
-                        <td>NO OF TIMES ABSENT: <?= get_attendance_absent($student_id, $exact_term_id, $session_id) ?></td>
+                        <td><?= htmlspecialchars(report_card_template_label($template, 'fields', 'times_absent', 'NO OF TIMES ABSENT')) ?>: <?= get_attendance_absent($student_id, $exact_term_id, $session_id) ?></td>
                     <?php endif; ?>
                 </tr>
             <?php endif; ?>
@@ -455,16 +462,16 @@ $template_columns = get_report_card_template_score_columns($template);
         <table style="width:30%" class="report_card_table performance-summary-table">
             <thead>
                 <tr class="">
-                    <th colspan="2" style="background-color: lightgrey;">Performance Summary</th>
+                    <th colspan="2" style="background-color: lightgrey;"><?= htmlspecialchars(report_card_template_label($template, 'sections', 'performance_summary', 'Performance Summary')) ?></th>
                 </tr>
             </thead>
             <tr>
-                <td>TOTAL SCORE: <strong><?= $total_score ?></strong></td>
-                <td>TOTAL OBTAINABLE: <strong> <?= $total_obtainable ?></strong></td>
+                <td><?= htmlspecialchars(report_card_template_label($template, 'summary', 'total_score', 'TOTAL SCORE')) ?>: <strong><?= $total_score ?></strong></td>
+                <td><?= htmlspecialchars(report_card_template_label($template, 'summary', 'total_obtainable', 'TOTAL OBTAINABLE')) ?>: <strong> <?= $total_obtainable ?></strong></td>
             </tr>
             <tr>
-                <td>PERCENTAGE: <strong><?= $total_percent ?></strong></td>
-                <td>GRADE: <strong><?= $grade ?></strong></td>
+                <td><?= htmlspecialchars(report_card_template_label($template, 'summary', 'percentage', 'PERCENTAGE')) ?>: <strong><?= $total_percent ?></strong></td>
+                <td><?= htmlspecialchars(report_card_template_label($template, 'summary', 'grade', 'GRADE')) ?>: <strong><?= $grade ?></strong></td>
             </tr>
         </table>
         <?php endif; ?>
@@ -495,7 +502,7 @@ $template_columns = get_report_card_template_score_columns($template);
                 <table class="behaviour_report_table w-100 report_card_table report-card-behaviour-table">
                     <thead>
                         <tr class="">
-                            <th colspan="2" style="background-color: lightgrey;">General Behaviour</th>
+                            <th colspan="2" style="background-color: lightgrey;"><?= htmlspecialchars(report_card_template_label($template, 'sections', 'behaviour_skills', 'General Behaviour')) ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -521,7 +528,7 @@ $template_columns = get_report_card_template_score_columns($template);
                 <table class="behaviour_report_table w-100 report_card_table report-card-psychomotive-table">
                     <thead>
                         <tr>
-                            <th colspan="2" style="background-color: lightgrey;">Psychomotive Skills</th>
+                            <th colspan="2" style="background-color: lightgrey;"><?= htmlspecialchars(report_card_template_label($template, 'sections', 'psychomotor_skills', 'Psychomotive Skills')) ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -547,17 +554,17 @@ $template_columns = get_report_card_template_score_columns($template);
                 <table style="width:auto;" class="report_card_table mb-3">
                     <thead>
                         <tr>
-                            <th colspan="7" style="text-align: center; background-color: lightgrey;">Grade Scale</th>
+                            <th colspan="7" style="text-align: center; background-color: lightgrey;"><?= htmlspecialchars(report_card_template_label($template, 'sections', 'grade_scale', 'Grade Scale')) ?></th>
                         </tr>
                     </thead>
                     <tr style="text-align: center;">
-                        <td style="font-size: 15px;"><strong>Score Range</strong></td>
+                        <td style="font-size: 15px;"><strong><?= htmlspecialchars(report_card_template_label($template, 'summary', 'score_range', 'Score Range')) ?></strong></td>
                         <?php foreach ($grading_system as $grade => $min_score): ?>
                             <td style="font-size:15px;"><?= $min_score ?>+</td>
                         <?php endforeach; ?>
                     </tr>
                     <tr style="text-align: center;">
-                        <td style="font-size: 15px;"><strong>Grade</strong></td>
+                        <td style="font-size: 15px;"><strong><?= htmlspecialchars(report_card_template_label($template, 'summary', 'grade_row', 'Grade')) ?></strong></td>
                         <?php foreach ($grading_system as $grade => $min_score): ?>
                             <td style="font-size: 15px;"><?= $grade ?></td>
                         <?php endforeach; ?>
@@ -568,8 +575,7 @@ $template_columns = get_report_card_template_score_columns($template);
                 <table style="width:auto;" class="report_card_table mb-3">
                     <thead>
                         <tr class="">
-                            <th colspan="7" style="text-align: center; background-color: lightgrey;">Skill Rating
-                                Indices</th>
+                            <th colspan="7" style="text-align: center; background-color: lightgrey;"><?= htmlspecialchars(report_card_template_label($template, 'sections', 'skill_rating_indices', 'Skill Rating Indices')) ?></th>
                         </tr>
                     </thead>
                     <tr>

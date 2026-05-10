@@ -614,8 +614,96 @@ function get_default_report_template_config()
         ],
         'score_columns' => get_default_report_score_columns(),
         'available_cumulative_columns' => get_cumulative_report_score_columns(),
-        'labels' => get_report_score_column_labels(),
+        'labels' => get_default_report_template_labels(),
     ];
+}
+
+function get_default_report_template_labels()
+{
+    return [
+        'columns' => get_report_score_column_labels(),
+        'sections' => [
+            'performance_summary' => 'Performance Summary',
+            'behaviour_skills' => 'General Behaviour',
+            'psychomotor_skills' => 'Psychomotive Skills',
+            'grade_scale' => 'Grade Scale',
+            'skill_rating_indices' => 'Skill Rating Indices',
+        ],
+        'fields' => [
+            'student_name' => 'NAME',
+            'admission_no' => 'ADM. NO',
+            'class' => 'CLASS',
+            'no_in_class' => 'NO IN CLASS',
+            'school_open' => 'NO OF TIMES SCHOOL OPENED',
+            'times_present' => 'NO OF TIMES PRESENT',
+            'times_absent' => 'NO OF TIMES ABSENT',
+            'next_term_begins' => 'NEXT TERM BEGINS',
+        ],
+        'summary' => [
+            'total_score' => 'TOTAL SCORE',
+            'total_obtainable' => 'TOTAL OBTAINABLE',
+            'percentage' => 'PERCENTAGE',
+            'grade' => 'GRADE',
+            'score_range' => 'Score Range',
+            'grade_row' => 'Grade',
+        ],
+        'titles' => [
+            'term_title' => '{term} TERM {session} ACADEMIC SESSION',
+            'custom_report_title' => '{report_name} - {term} {session}',
+        ],
+    ];
+}
+
+function normalize_report_template_labels($labels)
+{
+    $default_labels = get_default_report_template_labels();
+    if (!is_array($labels)) {
+        return $default_labels;
+    }
+
+    // Older templates stored column labels as a flat key/value array.
+    $has_grouped_labels = false;
+    foreach (array_keys($default_labels) as $group) {
+        if (isset($labels[$group]) && is_array($labels[$group])) {
+            $has_grouped_labels = true;
+            break;
+        }
+    }
+    if (!$has_grouped_labels) {
+        $labels = ['columns' => $labels];
+    }
+
+    $normalized = $default_labels;
+    foreach ($default_labels as $group => $group_labels) {
+        if (!isset($labels[$group]) || !is_array($labels[$group])) {
+            continue;
+        }
+        foreach ($group_labels as $key => $fallback_label) {
+            if (isset($labels[$group][$key]) && trim((string)$labels[$group][$key]) !== '') {
+                $normalized[$group][$key] = trim((string)$labels[$group][$key]);
+            }
+        }
+    }
+
+    return $normalized;
+}
+
+function report_card_template_label($template, $group, $key, $fallback = '')
+{
+    $labels = normalize_report_template_labels($template['labels'] ?? []);
+    if (isset($labels[$group][$key]) && trim((string)$labels[$group][$key]) !== '') {
+        return $labels[$group][$key];
+    }
+    return $fallback;
+}
+
+function render_report_template_text($text, $tokens = [])
+{
+    $text = (string)$text;
+    foreach ($tokens as $key => $value) {
+        $text = str_replace('{' . $key . '}', (string)$value, $text);
+    }
+    return $text;
 }
 
 function get_report_template_allowed_sections()
@@ -673,7 +761,7 @@ function normalize_report_template_config($template)
         $normalized['fields'] = array_merge($default_template['fields'], $template['fields']);
     }
     if (isset($template['labels']) && is_array($template['labels'])) {
-        $normalized['labels'] = array_merge($default_template['labels'], $template['labels']);
+        $normalized['labels'] = normalize_report_template_labels($template['labels']);
     }
 
     $normalized_sections = [];

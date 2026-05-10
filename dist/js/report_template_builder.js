@@ -158,7 +158,7 @@
             fields: Object.assign({}, defaultFields),
             score_columns: columns,
             available_cumulative_columns: (columnApi().cumulativeColumns || []).slice(),
-            labels: buildColumnLabels(),
+            labels: buildDefaultLabels(),
         };
     }
 
@@ -167,6 +167,69 @@
             labels[key] = columnApi().getColumnLabel(key);
             return labels;
         }, {});
+    }
+
+    function buildDefaultLabels() {
+        return {
+            columns: buildColumnLabels(),
+            sections: {
+                performance_summary: "Performance Summary",
+                behaviour_skills: "General Behaviour",
+                psychomotor_skills: "Psychomotive Skills",
+                grade_scale: "Grade Scale",
+                skill_rating_indices: "Skill Rating Indices",
+            },
+            fields: {
+                student_name: "NAME",
+                admission_no: "ADM. NO",
+                class: "CLASS",
+                no_in_class: "NO IN CLASS",
+                school_open: "NO OF TIMES SCHOOL OPENED",
+                times_present: "NO OF TIMES PRESENT",
+                times_absent: "NO OF TIMES ABSENT",
+                next_term_begins: "NEXT TERM BEGINS",
+            },
+            summary: {
+                total_score: "TOTAL SCORE",
+                total_obtainable: "TOTAL OBTAINABLE",
+                percentage: "PERCENTAGE",
+                grade: "GRADE",
+                score_range: "Score Range",
+                grade_row: "Grade",
+            },
+            titles: {
+                term_title: "{term} TERM {session} ACADEMIC SESSION",
+                custom_report_title: "{report_name} - {term} {session}",
+            },
+        };
+    }
+
+    function normalizeTemplateLabels(labels) {
+        const defaults = buildDefaultLabels();
+        const source = labels && typeof labels === "object" ? labels : {};
+        const hasGroupedLabels = Object.keys(defaults).some((group) => source[group] && typeof source[group] === "object");
+        const groupedSource = hasGroupedLabels ? source : { columns: source };
+        const normalized = {};
+
+        Object.keys(defaults).forEach((group) => {
+            normalized[group] = Object.assign({}, defaults[group]);
+            if (!groupedSource[group] || typeof groupedSource[group] !== "object") {
+                return;
+            }
+
+            Object.keys(defaults[group]).forEach((key) => {
+                const label = groupedSource[group][key];
+                if (String(label || "").trim() !== "") {
+                    normalized[group][key] = String(label).trim();
+                }
+            });
+        });
+
+        return normalized;
+    }
+
+    function getDraftLabel(group, key, fallback) {
+        return (draft.labels && draft.labels[group] && draft.labels[group][key]) || fallback || key;
     }
 
     function normalizeTemplate(template) {
@@ -192,7 +255,7 @@
         base.fields = Object.assign({}, defaultFields, source.fields || {});
         base.score_columns = columnApi().normalizeColumns(source.score_columns || base.score_columns);
         base.template_name = source.template_name || base.template_name;
-        base.labels = Object.assign({}, base.labels, source.labels || {});
+        base.labels = normalizeTemplateLabels(source.labels || base.labels);
 
         return base;
     }
@@ -228,6 +291,40 @@
         renderToggles("#reportTemplateFields", fieldLabels, draft.fields, "report-field-toggle");
     }
 
+    function renderLabelEditor() {
+        const groups = [
+            { key: "titles", title: "Titles" },
+            { key: "columns", title: "Score Table Columns" },
+            { key: "sections", title: "Section Headings" },
+            { key: "fields", title: "Student Detail Labels" },
+            { key: "summary", title: "Summary / Scale Labels" },
+        ];
+        const defaults = buildDefaultLabels();
+        const html = groups
+            .map((group) => {
+                const inputs = Object.keys(defaults[group.key])
+                    .map((key) => {
+                        return `
+                            <div class="form-group mb-2">
+                                <p class="p-0 mb-0 muted-text small">${escapeHtml(defaults[group.key][key])}</p>
+                                <input type="text" class="form-control form-control-sm report-label-input" data-group="${escapeHtml(group.key)}" data-key="${escapeHtml(key)}" value="${escapeHtml(getDraftLabel(group.key, key, defaults[group.key][key]))}">
+                            </div>
+                        `;
+                    })
+                    .join("");
+
+                return `
+                    <div class="report-label-group">
+                        <div class="report-template-panel-title">${escapeHtml(group.title)}</div>
+                        ${inputs}
+                    </div>
+                `;
+            })
+            .join("");
+
+        $("#reportTemplateLabels").html(html);
+    }
+
     function renderColumns() {
         const selected = draft.score_columns;
         const availableHtml = columnApi().keys
@@ -235,7 +332,7 @@
             .map((key) => {
                 return `
                     <span class="report-column-chip">
-                        ${escapeHtml(columnApi().getColumnLabel(key))}
+                        ${escapeHtml(getDraftLabel("columns", key, columnApi().getColumnLabel(key)))}
                         <button type="button" class="add-report-column" data-column="${escapeHtml(key)}" title="Add column">
                             <i class="fas fa-plus"></i>
                         </button>
@@ -252,7 +349,7 @@
                     : `<button type="button" class="remove-report-column" data-column="${escapeHtml(key)}" title="Remove column"><i class="fas fa-times"></i></button>`;
                 return `
                     <span class="report-column-chip ${isRequired ? "is-required" : ""}">
-                        ${escapeHtml(columnApi().getColumnLabel(key))}
+                        ${escapeHtml(getDraftLabel("columns", key, columnApi().getColumnLabel(key)))}
                         <button type="button" class="move-report-column" data-column="${escapeHtml(key)}" data-direction="left" title="Move left" ${index === 0 ? "disabled" : ""}>
                             <i class="fas fa-chevron-left"></i>
                         </button>
@@ -271,7 +368,7 @@
 
     function renderPreview() {
         const headers = draft.score_columns
-            .map((key) => `<th>${escapeHtml(columnApi().getColumnLabel(key))}</th>`)
+            .map((key) => `<th>${escapeHtml(getDraftLabel("columns", key, columnApi().getColumnLabel(key)))}</th>`)
             .join("");
 
         const sampleRows = [
@@ -321,10 +418,10 @@
             .join("");
 
         const header = isSectionEnabled("school_header")
-            ? `<div class="text-center mb-2"><strong>${draft.fields.school_name ? "School Name" : ""}</strong><div class="small text-muted">${draft.fields.school_address ? "School Address" : ""}</div></div>`
+            ? `<div class="text-center mb-2"><strong>${draft.fields.school_name ? "School Name" : ""}</strong><div class="small text-muted">${draft.fields.school_address ? "School Address" : ""}</div><div class="font-weight-bold mt-2">${escapeHtml(getDraftLabel("titles", "term_title", "{term} TERM {session} ACADEMIC SESSION").replace("{term}", "THIRD").replace("{session}", "2024/2025"))}</div></div>`
             : "";
         const student = isSectionEnabled("student_details")
-            ? `<div class="small mb-2">${draft.fields.student_name ? "<strong>Student:</strong> Sample Student " : ""}${draft.fields.class ? "<strong>Class:</strong> Basic 5 " : ""}${draft.fields.admission_no ? "<strong>Adm No:</strong> SS/001" : ""}</div>`
+            ? `<div class="small mb-2">${draft.fields.student_name ? `<strong>${escapeHtml(getDraftLabel("fields", "student_name", "Student"))}:</strong> Sample Student ` : ""}${draft.fields.class ? `<strong>${escapeHtml(getDraftLabel("fields", "class", "Class"))}:</strong> Basic 5 ` : ""}${draft.fields.admission_no ? `<strong>${escapeHtml(getDraftLabel("fields", "admission_no", "Adm No"))}:</strong> SS/001` : ""}</div>`
             : "";
         const footer = isSectionEnabled("comments")
             ? `<div class="small mt-2">${draft.fields.teacher_comment ? "<strong>Teacher Comment:</strong> Good performance. " : ""}${draft.fields.head_teacher_comment ? "<strong>Head Teacher:</strong> Keep it up." : ""}</div>`
@@ -345,6 +442,7 @@
         $("#reportTemplateName").val(draft.template_name);
         renderSections();
         renderFields();
+        renderLabelEditor();
         renderColumns();
         renderPreview();
     }
@@ -453,7 +551,15 @@
         draft.sections = sections;
         draft.fields = fields;
         draft.score_columns = columnApi().normalizeColumns(draft.score_columns);
-        draft.labels = buildColumnLabels();
+        $(".report-label-input").each(function () {
+            const group = $(this).data("group");
+            const key = $(this).data("key");
+            if (!draft.labels[group]) {
+                draft.labels[group] = {};
+            }
+            draft.labels[group][key] = $(this).val().trim() || buildDefaultLabels()[group][key];
+        });
+        draft.labels = normalizeTemplateLabels(draft.labels);
 
         return normalizeTemplate(draft);
     }
@@ -616,6 +722,17 @@
 
         $(document).on("change", ".report-section-toggle, .report-field-toggle", function () {
             collectDraftFromForm();
+            renderPreview();
+        });
+
+        $(document).on("input", ".report-label-input", function () {
+            const group = $(this).data("group");
+            const key = $(this).data("key");
+            if (!draft.labels[group]) {
+                draft.labels[group] = {};
+            }
+            draft.labels[group][key] = $(this).val().trim() || buildDefaultLabels()[group][key];
+            renderColumns();
             renderPreview();
         });
 

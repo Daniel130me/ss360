@@ -36,6 +36,15 @@
         "position",
     ];
 
+    function escapeHtml(value) {
+        return String(value || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
     function parseTemplateColumns(reportCard) {
         let columns = reportCard.attr("data-template-columns") || "[]";
         try {
@@ -45,6 +54,28 @@
         }
 
         return Array.isArray(columns) && columns.length ? columns : standardColumns.map((column) => column.key);
+    }
+
+    function parseTemplateLabels(reportCard) {
+        let labels = reportCard.attr("data-template-labels") || "{}";
+        try {
+            labels = JSON.parse(labels);
+        } catch (error) {
+            labels = {};
+        }
+        if (!labels || typeof labels !== "object") {
+            return {};
+        }
+
+        const hasGroupedLabels = ["columns", "sections", "fields", "summary", "titles"].some((group) => labels[group] && typeof labels[group] === "object");
+        return hasGroupedLabels ? labels : { columns: labels };
+    }
+
+    function templateColumnLabel(labels, key, fallback) {
+        if (labels.columns && labels.columns[key]) {
+            return labels.columns[key];
+        }
+        return fallback || key;
     }
 
     function templateHasCumulativeColumns(reportCard) {
@@ -91,7 +122,7 @@
         });
     }
 
-    function rebuildSimpleTable(table, columns, sourceColumns) {
+    function rebuildSimpleTable(table, columns, sourceColumns, labels) {
         const orderedColumns = templateOrder(columns, sourceColumns);
         const indexByKey = {};
         sourceColumns.forEach((column, index) => {
@@ -103,13 +134,16 @@
         orderedColumns.forEach((key) => {
             const sourceIndex = indexByKey[key];
             if (sourceIndex !== undefined && headings.eq(sourceIndex).length) {
-                headRow.append(headings.eq(sourceIndex));
+                const heading = headings.eq(sourceIndex);
+                const column = sourceColumns.find((item) => item.key === key);
+                heading.text(templateColumnLabel(labels, key, column ? column.label : heading.text()));
+                headRow.append(heading);
             }
         });
         rebuildRows(table, orderedColumns, sourceColumns);
     }
 
-    function rebuildCumulativeTable(table, columns) {
+    function rebuildCumulativeTable(table, columns, labels) {
         const sourceColumns = [{ key: "subject", label: "Subjects" }];
         const leafHeaders = table
             .find("thead tr:last th")
@@ -145,7 +179,7 @@
         const headerHtml = orderedColumns
             .map((key) => {
                 const column = sourceColumns.find((item) => item.key === key);
-                return column ? `<th>${column.label}</th>` : "";
+                return column ? `<th>${escapeHtml(templateColumnLabel(labels, key, column.label))}</th>` : "";
             })
             .join("");
 
@@ -160,11 +194,12 @@
         }
 
         const columns = parseTemplateColumns(card);
+        const labels = parseTemplateLabels(card);
         card.find("#view_student_score_table").each(function () {
-            rebuildSimpleTable($(this), columns, standardColumns);
+            rebuildSimpleTable($(this), columns, standardColumns, labels);
         });
         card.find("[id^='cumulative_student_score_table_']").each(function () {
-            rebuildCumulativeTable($(this), columns);
+            rebuildCumulativeTable($(this), columns, labels);
         });
     }
 

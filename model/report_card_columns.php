@@ -3,7 +3,7 @@ function get_report_score_column_registry()
 {
     return [
         'subject' => [
-            'label' => 'Subject',
+            'label' => 'Subjects',
             'group' => 'identity',
             'required' => true,
             'source' => 'subject',

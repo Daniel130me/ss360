@@ -1,7 +1,7 @@
 (function (window) {
     const registry = {
         subject: {
-            label: "Subject",
+            label: "Subjects",
             group: "identity",
             required: true,
             source: "subject",

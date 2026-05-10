@@ -183,3 +183,16 @@
     flex-wrap: wrap;
     gap: 6px;
 }
+
+.report-label-editor {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.report-label-group {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px;
+}

@@ -252,6 +252,12 @@ $row = mysqli_fetch_array($select);
         </div>
 
         <div class="report-template-panel mt-3">
+            <div class="report-template-panel-title">Labels</div>
+            <p class="p-0 mb-3 muted-text">Rename titles, section headings, field labels, and score table columns without changing calculations.</p>
+            <div class="report-label-editor" id="reportTemplateLabels"></div>
+        </div>
+
+        <div class="report-template-panel mt-3">
             <div class="report-template-panel-title">Score Table Columns</div>
             <div class="report-column-picker">
                 <div>
