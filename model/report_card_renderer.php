@@ -89,11 +89,6 @@ function report_card_template_field_enabled($template, $field_key)
     return !isset($template['fields'][$field_key]) || (bool)$template['fields'][$field_key];
 }
 
-function get_report_card_template_score_columns($template)
-{
-    return normalize_report_score_columns($template['score_columns'] ?? []);
-}
-
 function build_report_card_context($params)
 {
     global $conn;

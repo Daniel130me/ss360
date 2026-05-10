@@ -872,6 +872,11 @@ function legacy_report_settings_to_template($report_settings)
     return normalize_report_template_config($template);
 }
 
+function get_report_card_template_score_columns($template)
+{
+    return normalize_report_score_columns($template['score_columns'] ?? []);
+}
+
 function build_report_score_comparison_data($score_rows, $target_student_id)
 {
     $comparison_data = ['term' => [], 'cumulative' => []];
