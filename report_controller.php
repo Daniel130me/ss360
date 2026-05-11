@@ -71,29 +71,22 @@ if ($action == 'fetch_reports') {
 }
 
 if ($action == 'fetch_report_template') {
-    $session_id = $_POST['session_id'] ?? null;
     $term_id = $_POST['term_id'] ?? 'default';
-    $template = get_report_template_by_context($school_id, $session_id, $term_id);
+    $template = get_report_template_by_context($school_id, null, $term_id);
 
     echo json_encode(['status' => 'success', 'data' => $template]);
     exit;
 }
 
 if ($action == 'fetch_report_templates') {
-    $session_id = $_POST['session_id'] ?? null;
     $term_id = isset($_POST['term_id']) ? normalize_report_template_term_id($_POST['term_id']) : '';
     $where = "school_id='$school_id'";
-
-    if ($session_id !== null && $session_id !== '') {
-        $session_id = (int)$session_id;
-        $where .= " AND (session_id='$session_id' OR session_id IS NULL)";
-    }
 
     if ($term_id !== '') {
         $where .= " AND term_id='$term_id'";
     }
 
-    $select_templates = mysqli_query($conn, "SELECT * FROM report_templates WHERE $where ORDER BY is_default DESC, term_id ASC, id ASC");
+    $select_templates = mysqli_query($conn, "SELECT * FROM report_templates WHERE $where ORDER BY is_default DESC, term_id ASC, session_id IS NULL DESC, id ASC");
     if (!$select_templates) {
         echo json_encode(['status' => 'error', 'message' => mysqli_error($conn)]);
         exit;
@@ -111,7 +104,6 @@ if ($action == 'fetch_report_templates') {
 
 if ($action == 'save_report_template') {
     $id = isset($_POST['id']) && $_POST['id'] !== '' ? (int)$_POST['id'] : null;
-    $session_id = isset($_POST['session_id']) && $_POST['session_id'] !== '' ? (int)$_POST['session_id'] : null;
     $term_id = normalize_report_template_term_id($_POST['term_id'] ?? 'default');
     $template_name = mysqli_real_escape_string($conn, trim($_POST['template_name'] ?? 'Report Card'));
     $template_json = normalize_report_template_config($_POST['template_json'] ?? []);
@@ -119,19 +111,22 @@ if ($action == 'save_report_template') {
     $is_default = isset($_POST['is_default']) ? (int)$_POST['is_default'] : 0;
     $status = isset($_POST['status']) ? (int)$_POST['status'] : 1;
     $user_id = $_SESSION['userid'] ?? 0;
-    $session_sql = $session_id === null ? "NULL" : "'$session_id'";
 
     if ($id) {
-        $session_match = $session_id === null ? "session_id IS NULL" : "session_id='$session_id'";
-        $select_existing_template = mysqli_query($conn, "SELECT id FROM report_templates WHERE id='$id' AND school_id='$school_id' AND term_id='$term_id' AND $session_match LIMIT 1");
+        $select_existing_template = mysqli_query($conn, "SELECT id FROM report_templates WHERE id='$id' AND school_id='$school_id' LIMIT 1");
         if (!$select_existing_template || mysqli_num_rows($select_existing_template) === 0) {
             $id = null;
+        }
+    } else {
+        $select_existing_template = mysqli_query($conn, "SELECT id FROM report_templates WHERE school_id='$school_id' AND term_id='$term_id' ORDER BY session_id IS NULL DESC, id DESC LIMIT 1");
+        if ($select_existing_template && $row = mysqli_fetch_assoc($select_existing_template)) {
+            $id = (int)$row['id'];
         }
     }
 
     if ($id) {
         $query = "UPDATE report_templates SET
-                    session_id=$session_sql,
+                    session_id=NULL,
                     term_id='$term_id',
                     template_name='$template_name',
                     template_json='$template_json',
@@ -144,11 +139,29 @@ if ($action == 'save_report_template') {
         $query = "INSERT INTO report_templates
                     (school_id, session_id, term_id, template_name, template_json, is_default, status, createdby, datecreated)
                   VALUES
-                    ('$school_id', $session_sql, '$term_id', '$template_name', '$template_json', '$is_default', '$status', '$user_id', NOW())";
+                    ('$school_id', NULL, '$term_id', '$template_name', '$template_json', '$is_default', '$status', '$user_id', NOW())";
     }
 
     if (mysqli_query($conn, $query)) {
         echo json_encode(['status' => 'success', 'id' => $id ?: mysqli_insert_id($conn)]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => mysqli_error($conn)]);
+    }
+    exit;
+}
+
+if ($action == 'delete_report_template') {
+    $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+
+    if ($id <= 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Template not found']);
+        exit;
+    }
+
+    $query = "DELETE FROM report_templates WHERE id='$id' AND school_id='$school_id'";
+
+    if (mysqli_query($conn, $query)) {
+        echo json_encode(['status' => 'success']);
     } else {
         echo json_encode(['status' => 'error', 'message' => mysqli_error($conn)]);
     }

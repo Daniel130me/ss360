@@ -116,10 +116,6 @@
         $("#reportTemplateStatusText").removeClass("text-danger text-success text-muted").addClass(className).text(message || "");
     }
 
-    function getSelectedSessionId() {
-        return $("#reportTemplateSessionValue").val() || $("#singleSessionValue").val();
-    }
-
     function getTermLabel(termId) {
         const labels = {
             default: "School Default",
@@ -132,14 +128,13 @@
         return labels[String(termId || "default")] || "School Default";
     }
 
-    function isExactTemplateMatch(templateRow, sessionId, termId) {
+    function isExactTemplateMatch(templateRow, termId) {
         if (!templateRow || !templateRow.id) {
             return false;
         }
 
         return (
             String(templateRow.term_id || "default") === String(termId || "default") &&
-            String(templateRow.session_id || "") === String(sessionId || "") &&
             String(templateRow.school_id || "0") !== "0"
         );
     }
@@ -448,9 +443,8 @@
     }
 
     function applyTemplateRowToEditor(templateRow, asCopy) {
-        const sessionId = getSelectedSessionId();
         const termId = templateRow.term_id || "default";
-        const exactMatch = isExactTemplateMatch(templateRow, sessionId, termId);
+        const exactMatch = isExactTemplateMatch(templateRow, termId);
 
         $("#reportTemplateTerm").val(termId);
         draft = normalizeTemplate(templateRow.template_json);
@@ -466,17 +460,14 @@
         }
 
         renderAll();
-        setStatus(asCopy || !exactMatch ? "Loaded as a copy for the selected context." : "Loaded saved format.", "success");
+        setStatus(asCopy || !exactMatch ? "Loaded as a copy." : "Loaded saved format.", "success");
     }
 
     function renderTemplateList() {
-        const sessionId = getSelectedSessionId();
         const html = templateList
             .map((templateRow) => {
-                const exactMatch = isExactTemplateMatch(templateRow, sessionId, templateRow.term_id);
                 const statusText = String(templateRow.status || "0") === "1" ? "Active" : "Inactive";
                 const statusClass = String(templateRow.status || "0") === "1" ? "" : "is-off";
-                const scopeText = exactMatch ? "Exact" : "Inherited";
                 const defaultBadge = String(templateRow.is_default || "0") === "1" ? '<span class="report-template-list-badge">Default</span>' : "";
                 const archiveLabel = String(templateRow.status || "0") === "1" ? "Archive" : "Restore";
                 const nextStatus = String(templateRow.status || "0") === "1" ? 0 : 1;
@@ -487,15 +478,15 @@
                             <div class="report-template-list-title">${escapeHtml(templateRow.template_name || "Report Card")}</div>
                             <div class="report-template-list-meta">
                                 <span class="report-template-list-badge">${escapeHtml(getTermLabel(templateRow.term_id))}</span>
-                                <span class="report-template-list-badge">${scopeText}</span>
+                                <span class="report-template-list-badge">All Sessions</span>
                                 <span class="report-template-list-badge ${statusClass}">${statusText}</span>
                                 ${defaultBadge}
                             </div>
                         </div>
                         <div class="report-template-list-actions">
                             <button type="button" class="btn btn-sm btn-outline-primary edit-report-template" data-id="${escapeHtml(templateRow.id)}">Edit</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary copy-report-template" data-id="${escapeHtml(templateRow.id)}">Copy</button>
                             <button type="button" class="btn btn-sm btn-outline-danger toggle-report-template-status" data-id="${escapeHtml(templateRow.id)}" data-status="${nextStatus}">${archiveLabel}</button>
+                            <button type="button" class="btn btn-sm btn-danger delete-report-template" data-id="${escapeHtml(templateRow.id)}">Delete</button>
                         </div>
                     </div>
                 `;
@@ -506,20 +497,12 @@
     }
 
     function fetchTemplateList() {
-        const sessionId = getSelectedSessionId();
-        if (!sessionId) {
-            templateList = [];
-            renderTemplateList();
-            return;
-        }
-
         $.ajax({
             url: "../report_controller.php",
             type: "POST",
             dataType: "json",
             data: {
                 action: "fetch_report_templates",
-                session_id: sessionId,
             },
             success: function (response) {
                 templateList = response.status === "success" && Array.isArray(response.data) ? response.data : [];
@@ -565,13 +548,7 @@
     }
 
     function loadTemplate() {
-        const sessionId = getSelectedSessionId();
         const termId = $("#reportTemplateTerm").val() || "default";
-
-        if (!sessionId) {
-            setStatus("Select a session first.", "error");
-            return;
-        }
 
         setStatus("Loading format...", "");
         $.ajax({
@@ -580,7 +557,6 @@
             dataType: "json",
             data: {
                 action: "fetch_report_template",
-                session_id: sessionId,
                 term_id: termId,
             },
             success: function (response) {
@@ -590,14 +566,14 @@
                 }
 
                 const data = response.data || {};
-                const isExactMatch = isExactTemplateMatch(data, sessionId, termId);
+                const isExactMatch = isExactTemplateMatch(data, termId);
                 draft = normalizeTemplate(data.template_json);
                 draft.template_name = data.template_name || draft.template_name;
                 $("#reportTemplateId").val(isExactMatch ? data.id || "" : "");
                 $("#reportTemplateStatus").val(String(data.status == null ? 1 : data.status));
                 $("#reportTemplateDefault").prop("checked", isExactMatch && String(data.is_default || "0") === "1");
                 renderAll();
-                setStatus(isExactMatch ? "Loaded saved format." : "Loaded inherited format. Saving will create a copy for this context.", "success");
+                setStatus(isExactMatch ? "Loaded saved school-wide format." : "Loaded default format. Saving will create a school-wide format.", "success");
             },
             error: function () {
                 draft = defaultTemplate();
@@ -608,12 +584,6 @@
     }
 
     function saveTemplate() {
-        const sessionId = getSelectedSessionId();
-        if (!sessionId) {
-            setStatus("Select a session first.", "error");
-            return;
-        }
-
         const payload = collectDraftFromForm();
         setStatus("Saving format...", "");
 
@@ -624,7 +594,6 @@
             data: {
                 action: "save_report_template",
                 id: $("#reportTemplateId").val(),
-                session_id: sessionId,
                 term_id: $("#reportTemplateTerm").val() || "default",
                 template_name: payload.template_name,
                 template_json: JSON.stringify(payload),
@@ -684,10 +653,7 @@
         $("#loadReportTemplate").on("click", loadTemplate);
         $("#refreshReportTemplates").on("click", fetchTemplateList);
 
-        $("#singleSessionValue, #reportTemplateSessionValue").on("change", function () {
-            loadTemplate();
-            fetchTemplateList();
-        });
+        $("#singleSessionValue").on("change", loadTemplate);
         $(document).on("click", ".term_setting", function () {
             const termId = $(this).data("name");
             setTimeout(function () {
@@ -762,7 +728,7 @@
             moveColumn($(this).data("column"), $(this).data("direction"));
         });
 
-        $(document).on("click", ".edit-report-template, .copy-report-template", function () {
+        $(document).on("click", ".edit-report-template", function () {
             const templateId = String($(this).data("id"));
             const templateRow = templateList.find((item) => String(item.id) === templateId);
             if (!templateRow) {
@@ -770,7 +736,7 @@
                 return;
             }
 
-            applyTemplateRowToEditor(templateRow, $(this).hasClass("copy-report-template"));
+            applyTemplateRowToEditor(templateRow, false);
         });
 
         $(document).on("click", ".toggle-report-template-status", function () {
@@ -796,6 +762,38 @@
                 },
                 error: function () {
                     setStatus("Could not update format.", "error");
+                },
+            });
+        });
+
+        $(document).on("click", ".delete-report-template", function () {
+            const templateId = $(this).data("id");
+            if (!confirm("Permanently delete this report format?")) {
+                return;
+            }
+
+            $.ajax({
+                url: "../report_controller.php",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    action: "delete_report_template",
+                    id: templateId,
+                },
+                success: function (response) {
+                    if (response.status === "success") {
+                        if (String($("#reportTemplateId").val()) === String(templateId)) {
+                            $("#reportTemplateId").val("");
+                        }
+                        setStatus("Format permanently deleted.", "success");
+                        fetchTemplateList();
+                        loadTemplate();
+                    } else {
+                        setStatus(response.message || "Could not delete format.", "error");
+                    }
+                },
+                error: function () {
+                    setStatus("Could not delete format.", "error");
                 },
             });
         });

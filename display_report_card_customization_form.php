@@ -148,19 +148,7 @@ $row = mysqli_fetch_array($select);
     <div class="d-flex flex-wrap justify-content-between align-items-start mb-4">
         <div>
             <p class="font-weight-bold mb-1">Report Card Customization</p>
-            <p class="p-0 mb-0 muted-text">Create custom report formats and term-specific report card layouts.</p>
-        </div>
-        <div class="form-group mb-0" style="min-width: 180px;">
-            <p class="p-0 mb-0 muted-text">Select Session</p>
-            <select id="reportTemplateSessionValue" class="form-control select2">
-                <?php
-                $select_session = mysqli_query($conn, "SELECT id, session FROM sessions ORDER BY session ASC");
-                while ($row_session = mysqli_fetch_array($select_session)) {
-                    $selected = $row['session'] === $row_session['id'] ? 'selected' : '';
-                ?>
-                    <option <?= $selected ?> value="<?= $row_session['id'] ?>"><?= $row_session['session'] ?></option>
-                <?php } ?>
-            </select>
+            <p class="p-0 mb-0 muted-text">Create school-wide report formats. Saved formats apply to every session until you update or delete them.</p>
         </div>
     </div>
 

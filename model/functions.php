@@ -792,7 +792,6 @@ function get_report_template_by_context($school_id, $session_id, $term_id)
     global $conn;
 
     $school_id = (int)$school_id;
-    $session_id = $session_id === null || $session_id === '' ? null : (int)$session_id;
     $term_id = normalize_report_template_term_id($term_id);
     $default_template = get_default_report_template_config();
 
@@ -801,16 +800,13 @@ function get_report_template_by_context($school_id, $session_id, $term_id)
     }
 
     $queries = [];
-    if ($session_id !== null) {
-        $queries[] = "school_id='$school_id' AND session_id='$session_id' AND term_id='$term_id' AND status='1'";
-    }
-    $queries[] = "school_id='$school_id' AND session_id IS NULL AND term_id='$term_id' AND status='1'";
+    $queries[] = "school_id='$school_id' AND term_id='$term_id' AND status='1'";
     $queries[] = "school_id='$school_id' AND term_id='default' AND is_default='1' AND status='1'";
     $queries[] = "school_id='0' AND term_id='default' AND is_default='1' AND status='1'";
 
     foreach ($queries as $where_clause) {
         try {
-            $select_template = mysqli_query($conn, "SELECT * FROM report_templates WHERE $where_clause ORDER BY id DESC LIMIT 1");
+            $select_template = mysqli_query($conn, "SELECT * FROM report_templates WHERE $where_clause ORDER BY session_id IS NULL DESC, id DESC LIMIT 1");
         } catch (Throwable $e) {
             return [
                 'id' => null,
