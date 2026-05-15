@@ -8899,6 +8899,8 @@ async function post_table_data(filtertype, viewOrPostPage) {
                     right: 0
                 }
             });
+            hideScoreSaveMessage();
+            initializeScoreChangeTracking();
         }
     });
 }
@@ -10045,6 +10047,107 @@ function updatehiddentotals(event, class_selected) {
     $(`.assess_input.${class_selected}`).val($(event).val())
 }
 
+const scoreInputFields = {
+    all: ['ca1', 'ca1Total', 'ca2', 'ca2Total', 'ca3', 'ca3Total', 'practical', 'practicalTotal', 'exam', 'examTotal'],
+    ca1: ['ca1', 'ca1Total'],
+    ca2: ['ca2', 'ca2Total'],
+    ca3: ['ca3', 'ca3Total'],
+    pra: ['practical', 'practicalTotal'],
+    exam: ['exam', 'examTotal']
+};
+
+function getActiveScoreMode() {
+    if ($("#by_ca1").hasClass('active')) return 'ca1';
+    if ($("#by_ca2").hasClass('active')) return 'ca2';
+    if ($("#by_ca3").hasClass('active')) return 'ca3';
+    if ($("#by_pra").hasClass('active')) return 'pra';
+    if ($("#by_exam").hasClass('active')) return 'exam';
+    return 'all';
+}
+
+function getActiveScoreFields() {
+    if (!$("#by_all").hasClass('active')) {
+        return scoreInputFields[getActiveScoreMode()] || [];
+    }
+
+    const fields = [];
+    if (settingsData.ca1 == 1) fields.push('ca1', 'ca1Total');
+    if (settingsData.ca2 == 1) fields.push('ca2', 'ca2Total');
+    if (settingsData.ca3 == 1) fields.push('ca3', 'ca3Total');
+    if (settingsData.pra == 1) fields.push('practical', 'practicalTotal');
+    if (settingsData.exa == 1) fields.push('exam', 'examTotal');
+    return fields;
+}
+
+function normalizeScoreValue(value) {
+    return value === undefined || value === null || value === '' ? '' : String(Number(value));
+}
+
+function initializeScoreChangeTracking() {
+    const fields = getActiveScoreFields();
+
+    $('#post_score_table_by_student tbody tr').each(function () {
+        $(this).find('input[type="number"]').each(function (index) {
+            const field = fields[index];
+            if (!field) return;
+
+            $(this)
+                .attr('data-score-field', field)
+                .attr('data-original-value', normalizeScoreValue($(this).val()))
+                .removeClass('border border-warning');
+        });
+    });
+}
+
+function markScoreConflicts(conflicts) {
+    if (!Array.isArray(conflicts)) return;
+
+    conflicts.forEach((conflict) => {
+        $('#post_score_table_by_student tbody tr').each(function () {
+            const rowSubjectOrNameId = String($(this).find('.assess_subject').attr('data-id') || '');
+            const rowMatchesStudent = $("#by_subj_btn").hasClass('active') && rowSubjectOrNameId === String(conflict.student_id);
+            const rowMatchesSubject = $("#by_stud_btn").hasClass('active') && rowSubjectOrNameId === String(conflict.subject_id);
+
+            if (!rowMatchesStudent && !rowMatchesSubject) return;
+
+            $(this)
+                .find(`[data-score-field="${conflict.field}"]`)
+                .addClass('border border-warning text-danger font-weight-bold')
+                .attr('title', `Another user updated this score to ${conflict.current_value}. This is the input with the conflict.`);
+        });
+    });
+}
+
+function showScoreSaveMessage(type, message) {
+    const alertClass = type === 'warning' ? 'alert-warning' : type === 'success' ? 'alert-success' : 'alert-info';
+
+    $('#score_save_message')
+        .removeClass('alert-warning alert-success alert-info alert-danger')
+        .addClass(alertClass)
+        .html(message)
+        .show();
+}
+
+function hideScoreSaveMessage() {
+    $('#score_save_message').hide().html('');
+}
+
+function updateSavedScoreTotals(classValue, termValue, sessionValue) {
+    $.ajax({
+        url: "../controller.php",
+        type: "POST",
+        data: {
+            'action': 'update_total_score',
+            classValue,
+            termValue,
+            sessionValue
+        },
+        success: (data) => {
+            console.log('updatesores', data)
+        }
+    })
+}
+
 // alert('k')
 function submitScores() {
     const termValue = $(".select_btn.term.active").attr("data-name");
@@ -10056,56 +10159,33 @@ function submitScores() {
 
     function processRow(row, extraFields = {}) {
         const subjectOrNameId = $(row).find('.assess_subject').attr('data-id');
+        if (subjectOrNameId === 'NAN') return;
+
         const scoreData = {
             term: termValue,
             class: classValue,
             session: sessionValue,
             subjectOrNameId,
-            ...extraFields
+            ...extraFields,
+            changedFields: [],
+            originalValues: {}
         };
 
-        let inputs = $(row).find('input[type="number"]');
-        let inputIndex = 0;
+        $(row).find('input[type="number"][data-score-field]').each(function () {
+            const field = $(this).attr('data-score-field');
+            const originalValue = normalizeScoreValue($(this).attr('data-original-value'));
+            const currentValue = normalizeScoreValue($(this).val());
 
-        if ($("#by_all").hasClass('active')) {
-            if (settingsData.ca1 == 1) {
-                scoreData.ca1 = Number(inputs.eq(inputIndex++).val() || 0);
-                scoreData.ca1Total = Number(inputs.eq(inputIndex++).val() || 0);
-            }
-            if (settingsData.ca2 == 1) {
-                scoreData.ca2 = Number(inputs.eq(inputIndex++).val() || 0);
-                scoreData.ca2Total = Number(inputs.eq(inputIndex++).val() || 0);
-            }
-            if (settingsData.ca3 == 1) {
-                scoreData.ca3 = Number(inputs.eq(inputIndex++).val() || 0);
-                scoreData.ca3Total = Number(inputs.eq(inputIndex++).val() || 0);
-            }
-            if (settingsData.pra == 1) {
-                scoreData.practical = Number(inputs.eq(inputIndex++).val() || 0);
-                scoreData.practicalTotal = Number(inputs.eq(inputIndex++).val() || 0);
-            }
-            if (settingsData.exa == 1) {
-                scoreData.exam = Number(inputs.eq(inputIndex++).val() || 0);
-                scoreData.examTotal = Number(inputs.eq(inputIndex++).val() || 0);
-            }
-        } else if ($("#by_ca1").hasClass('active')) {
-            scoreData.ca1 = Number(inputs.eq(0).val() || 0);
-            scoreData.ca1Total = Number(inputs.eq(1).val() || 0);
-        } else if ($("#by_ca2").hasClass('active')) {
-            scoreData.ca2 = Number(inputs.eq(0).val() || 0);
-            scoreData.ca2Total = Number(inputs.eq(1).val() || 0);
-        } else if ($("#by_ca3").hasClass('active')) {
-            scoreData.ca3 = Number(inputs.eq(0).val() || 0);
-            scoreData.ca3Total = Number(inputs.eq(1).val() || 0);
-        } else if ($("#by_pra").hasClass('active')) {
-            scoreData.practical = Number(inputs.eq(0).val() || 0);
-            scoreData.practicalTotal = Number(inputs.eq(1).val() || 0);
-        } else if ($("#by_exam").hasClass('active')) {
-            scoreData.exam = Number(inputs.eq(0).val() || 0);
-            scoreData.examTotal = Number(inputs.eq(1).val() || 0);
+            if (currentValue === originalValue) return;
+
+            scoreData[field] = currentValue === '' ? 0 : Number(currentValue);
+            scoreData.originalValues[field] = originalValue;
+            scoreData.changedFields.push(field);
+        });
+
+        if (scoreData.changedFields.length > 0) {
+            tableData.push(scoreData);
         }
-
-        tableData.push(scoreData);
     }
 
     function processTable(extraFields = {}) {
@@ -10133,27 +10213,23 @@ function submitScores() {
                 if (data.status == '1') {
                     setTimeout(track_scores_changes, 1000);
                     toastr.success(data.msg);
-                    // alert('kingnow')
-                    $.ajax({
-                        url: "../controller.php",
-                        type: "POST",
-                        data: {
-                            'action': 'update_total_score',
-                            classValue,
-                            termValue,
-                            sessionValue
-                        },
-                        success: (data) => {
-                            console.log('updatesores', data)
-                        }
-                    })
+                    showScoreSaveMessage('success', data.msg);
+                    initializeScoreChangeTracking();
+                    updateSavedScoreTotals(classValue, termValue, sessionValue);
+                } else if (data.status == '409') {
+                    markScoreConflicts(data.conflicts);
+                    showScoreSaveMessage('warning', data.msg);
+                    if (Number(data.saved || 0) > 0) {
+                        updateSavedScoreTotals(classValue, termValue, sessionValue);
+                    }
                 } else {
+                    showScoreSaveMessage('warning', data.err);
                     toastr.error(data.err);
                 }
             }
         });
     } else {
-        console.error("Error: No data to submit.");
+        showScoreSaveMessage('info', "No score changes to submit");
     }
 }
 

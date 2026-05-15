@@ -2691,224 +2691,147 @@ $date = date("Y:m:d H:i:s");
 
 
         if ($action === 'submit_scores') {
-            $scores = isset($_POST['scores']) ? $_POST['scores'] : [];
+            $scores = isset($_POST['scores']) && is_array($_POST['scores']) ? $_POST['scores'] : [];
             $school_id = $_SESSION['school_id'];
             $_SESSION['new_scores'] = $scores;
-            if($school_id == '13' || $school_id == '27') {
-                        echo json_encode(array('status' => '1', 'msg' => 'You are not permitted to record scores for now, meet the management for access'));
-                return false;
-            }
+
+            // if ($school_id == '13' || $school_id == '27') {
+            //     echo json_encode(array('status' => '1', 'msg' => 'You are not permitted to record scores for now, meet the management for access'));
+            //     return false;
+            // }
+
+            $score_columns = [
+                'ca1' => 'ca1',
+                'ca1Total' => 'ca1Total',
+                'ca2' => 'ca2',
+                'ca2Total' => 'ca2Total',
+                'ca3' => 'ca3',
+                'ca3Total' => 'ca3Total',
+                'practical' => 'pra',
+                'practicalTotal' => 'praTotal',
+                'exam' => 'exam',
+                'examTotal' => 'examTotal'
+            ];
+            $select_columns = implode(', ', array_values($score_columns));
+            $saved_count = 0;
+            $conflicts = [];
+            $errors = [];
 
             foreach ($scores as $score) {
-
-                if ($score['subjectOrNameId'] == 'NAN') {
+                if (!is_array($score) || !isset($score['subjectOrNameId']) || $score['subjectOrNameId'] == 'NAN') {
                     continue;
                 }
-                if (isset($score['studentId'])) {
-                    $_SESSION['studentOrsubject'] = 'student';
-                    $subject = $score['subjectOrNameId'];
-                    // exit;
-                    $student_id = $score['studentId'];
-                    $class = $score['class'];
-                    $term = $score['term'];
-                    $session = $score['session'];
 
-                    $ca1 = isset($score['ca1']) ? $score['ca1'] : null;
-                    $ca1Total = isset($score['ca1Total']) ? $score['ca1Total'] : null;
-                    $ca2 = isset($score['ca2']) ? $score['ca2'] : null;
-                    $ca2Total = isset($score['ca2Total']) ? $score['ca2Total'] : null;
-                    $ca3 = isset($score['ca3']) ? $score['ca3'] : null;
-                    $ca3Total = isset($score['ca3Total']) ? $score['ca3Total'] : null;
-                    $pra = isset($score['practical']) ? $score['practical'] : null;
-                    $praTotal = isset($score['practicalTotal']) ? $score['practicalTotal'] : null;
-                    $exam = isset($score['exam']) ? $score['exam'] : null;
-                    $examTotal = isset($score['examTotal']) ? $score['examTotal'] : null;
+                $student = isset($score['studentId']) ? $score['studentId'] : $score['subjectOrNameId'];
+                $subject = isset($score['studentId']) ? $score['subjectOrNameId'] : (isset($score['subjectId']) ? $score['subjectId'] : null);
+                $class = isset($score['class']) ? $score['class'] : null;
+                $term = isset($score['term']) ? $score['term'] : null;
+                $session = isset($score['session']) ? $score['session'] : null;
+                $changed_fields = isset($score['changedFields']) && is_array($score['changedFields']) ? $score['changedFields'] : [];
+                $original_values = isset($score['originalValues']) && is_array($score['originalValues']) ? $score['originalValues'] : [];
 
-                    $selectQuery = "SELECT subject_id, student_id, class_id, term_id, session_id, school_id FROM skulscores WHERE student_id='$student_id' AND subject_id='$subject' AND class_id='$class' AND session_id='$session' AND term_id='$term'";
-                    $select = mysqli_query($conn, $selectQuery);
+                if (!$student || !$subject || !$class || !$term || !$session || empty($changed_fields)) {
+                    continue;
+                }
 
-                    if (mysqli_num_rows($select) > 0) {
-                        $updateQuery = "UPDATE skulscores SET ";
-                        $updateFields = [];
-                        if ($ca1 !== null) $updateFields[] = "ca1='$ca1'";
-                        if ($ca1Total !== null) $updateFields[] = "ca1Total='$ca1Total'";
-                        if ($ca2 !== null) $updateFields[] = "ca2='$ca2'";
-                        if ($ca2Total !== null) $updateFields[] = "ca2Total='$ca2Total'";
-                        if ($ca3 !== null) $updateFields[] = "ca3='$ca3'";
-                        if ($ca3Total !== null) $updateFields[] = "ca3Total='$ca3Total'";
-                        if ($pra !== null) $updateFields[] = "pra='$pra'";
-                        if ($praTotal !== null) $updateFields[] = "praTotal='$praTotal'";
-                        if ($exam !== null) $updateFields[] = "exam='$exam'";
-                        if ($examTotal !== null) $updateFields[] = "examTotal='$examTotal'";
-                        $updateQuery .= implode(", ", $updateFields);
-                        $updateQuery .= " WHERE subject_id='$subject' AND student_id='$student_id' AND class_id='$class' AND session_id='$session' AND term_id='$term' AND school_id='$school_id'";
-                        $update = mysqli_query($conn, $updateQuery);
-                        // if ($update) {
-                        //     echo json_encode(array('status' => '1', 'msg'=>'Submitted succesfully'));
-                        // } else {
-                        //     echo json_encode(array('status' => '0', "err" => "Scores not submitted, try again"));
-                        //     // echo "update error: " . mysqli_error($conn) . "\n";
-                        //     // echo "Update Query: " . $updateQuery . "\n";
-                        // }
-                    } else {
-                        $insertFields = "(student_id, subject_id, class_id, term_id, session_id, school_id";
-                        $insertValues = "('$student_id', '$subject', '$class', '$term', '$session', '$school_id'";
-                        if ($ca1 !== null) {
-                            $insertFields .= ", ca1";
-                            $insertValues .= ", '$ca1'";
-                        }
-                        if ($ca1Total !== null) {
-                            $insertFields .= ", ca1Total";
-                            $insertValues .= ", '$ca1Total'";
-                        }
-                        if ($ca2 !== null) {
-                            $insertFields .= ", ca2";
-                            $insertValues .= ", '$ca2'";
-                        }
-                        if ($ca2Total !== null) {
-                            $insertFields .= ", ca2Total";
-                            $insertValues .= ", '$ca2Total'";
-                        }
-                        if ($ca3 !== null) {
-                            $insertFields .= ", ca3";
-                            $insertValues .= ", '$ca3'";
-                        }
-                        if ($ca3Total !== null) {
-                            $insertFields .= ", ca3Total";
-                            $insertValues .= ", '$ca3Total'";
-                        }
-                        if ($pra !== null) {
-                            $insertFields .= ", pra";
-                            $insertValues .= ", '$pra'";
-                        }
-                        if ($praTotal !== null) {
-                            $insertFields .= ", praTotal";
-                            $insertValues .= ", '$praTotal'";
-                        }
-                        if ($exam !== null) {
-                            $insertFields .= ", exam";
-                            $insertValues .= ", '$exam'";
-                        }
-                        if ($examTotal !== null) {
-                            $insertFields .= ", examTotal";
-                            $insertValues .= ", '$examTotal'";
-                        }
-                        $insertFields .= ")";
-                        $insertValues .= ")";
-                        $insertQuery = "INSERT INTO skulscores $insertFields VALUES $insertValues";
-                        $insert = mysqli_query($conn, $insertQuery);
-                        // if ($insert) {
-                        //     echo json_encode(array('status' => '1', 'msg'=>'Submitted succesfully'));
-                        // } else {
-                        //     echo json_encode(array('status' => '0', "err" => "Scores not submitted, try again"));
-                        //     // echo "insert error: " . mysqli_error($conn) . "\n";
-                        //     // echo "Insert Query: " . $insertQuery . "\n";
-                        // }
+                $_SESSION['studentOrsubject'] = isset($score['studentId']) ? 'student' : 'subject';
+
+                $student = mysqli_real_escape_string($conn, test_input($student));
+                $subject = mysqli_real_escape_string($conn, test_input($subject));
+                $class = mysqli_real_escape_string($conn, test_input($class));
+                $term = mysqli_real_escape_string($conn, test_input($term));
+                $session = mysqli_real_escape_string($conn, test_input($session));
+                $lock_name = 'score_' . md5("$school_id:$session:$term:$class:$student:$subject");
+                $lock_result = mysqli_query($conn, "SELECT GET_LOCK('$lock_name', 5) AS lock_status");
+                $lock_row = $lock_result ? mysqli_fetch_assoc($lock_result) : null;
+
+                if (!$lock_row || $lock_row['lock_status'] != '1') {
+                    $errors[] = 'Could not lock score row for saving. Please try again.';
+                    continue;
+                }
+
+                $select = mysqli_query($conn, "SELECT id, $select_columns FROM skulscores WHERE student_id='$student' AND subject_id='$subject' AND class_id='$class' AND session_id='$session' AND term_id='$term' AND school_id='$school_id' LIMIT 1");
+                if (!$select) {
+                    $errors[] = mysqli_error($conn);
+                    mysqli_query($conn, "SELECT RELEASE_LOCK('$lock_name')");
+                    continue;
+                }
+
+                $existing_score = mysqli_fetch_assoc($select);
+                $update_fields = [];
+                $insert_fields = ['student_id', 'subject_id', 'class_id', 'term_id', 'session_id', 'school_id', 'createdby', 'datecreated', 'updatedby', 'dateupdated'];
+                $insert_values = ["'$student'", "'$subject'", "'$class'", "'$term'", "'$session'", "'$school_id'", "'{$_SESSION['userid']}'", "'$date'", "'{$_SESSION['userid']}'", "'$date'"];
+
+                foreach ($changed_fields as $field) {
+                    if (!isset($score_columns[$field]) || !array_key_exists($field, $score)) {
+                        continue;
                     }
-                } else if (isset($score['subjectId'])) {
-                    $_SESSION['studentOrsubject'] = 'subject';
-                    $student = $score['subjectOrNameId'];
-                    $subject = $score['subjectId'];
-                    $class = $score['class'];
-                    $term = $score['term'];
-                    $session = $score['session'];
 
-                    $ca1 = isset($score['ca1']) ? $score['ca1'] : null;
-                    $ca1Total = isset($score['ca1Total']) ? $score['ca1Total'] : null;
-                    $ca2 = isset($score['ca2']) ? $score['ca2'] : null;
-                    $ca2Total = isset($score['ca2Total']) ? $score['ca2Total'] : null;
-                    $ca3 = isset($score['ca3']) ? $score['ca3'] : null;
-                    $ca3Total = isset($score['ca3Total']) ? $score['ca3Total'] : null;
-                    $pra = isset($score['practical']) ? $score['practical'] : null;
-                    $praTotal = isset($score['practicalTotal']) ? $score['practicalTotal'] : null;
-                    $exam = isset($score['exam']) ? $score['exam'] : null;
-                    $examTotal = isset($score['examTotal']) ? $score['examTotal'] : null;
+                    $column = $score_columns[$field];
+                    $new_value = mysqli_real_escape_string($conn, test_input($score[$field]));
+                    $original_value = array_key_exists($field, $original_values) ? (string) $original_values[$field] : '';
+                    $current_value = $existing_score ? (string) ($existing_score[$column] ?? '') : '';
+                    $original_compare_value = $original_value === '' ? '0' : $original_value;
+                    $current_compare_value = $current_value === '' ? '0' : $current_value;
 
-                    $select = mysqli_query($conn, "SELECT * FROM skulscores WHERE student_id='$student' AND subject_id='$subject' AND class_id='$class' AND session_id='$session' AND term_id='$term' AND school_id='$school_id'");
+                    // A conflict means another browser changed this exact score cell after this page loaded.
+                    if ($existing_score && $current_compare_value !== $original_compare_value) {
+                        $conflicts[] = [
+                            'student_id' => $student,
+                            'subject_id' => $subject,
+                            'field' => $field,
+                            'current_value' => $current_value,
+                            'submitted_value' => (string) $score[$field],
+                            'original_value' => $original_value
+                        ];
+                        continue;
+                    }
 
-                    if (mysqli_num_rows($select) > 0) {
-                        $updateQuery = "UPDATE skulscores SET ";
-                        $updateFields = [];
-                        if ($ca1 !== null) $updateFields[] = "ca1='$ca1'";
-                        if ($ca1Total !== null) $updateFields[] = "ca1Total='$ca1Total'";
-                        if ($ca2 !== null) $updateFields[] = "ca2='$ca2'";
-                        if ($ca2Total !== null) $updateFields[] = "ca2Total='$ca2Total'";
-                        if ($ca3 !== null) $updateFields[] = "ca3='$ca3'";
-                        if ($ca3Total !== null) $updateFields[] = "ca3Total='$ca3Total'";
-                        if ($pra !== null) $updateFields[] = "pra='$pra'";
-                        if ($praTotal !== null) $updateFields[] = "praTotal='$praTotal'";
-                        if ($exam !== null) $updateFields[] = "exam='$exam'";
-                        if ($examTotal !== null) $updateFields[] = "examTotal='$examTotal'";
-                        $updateQuery .= implode(", ", $updateFields);
-                        $updateQuery .= " WHERE student_id='$student' AND subject_id='$subject' AND class_id='$class' AND session_id='$session' AND term_id='$term' AND school_id='$school_id'";
-                        $update = mysqli_query($conn, $updateQuery);
-                        // if ($update) {
-                        //     echo json_encode(array('status' => '1', 'msg'=>'Submitted succesfully'));
-                        // } else {
-                        //     echo json_encode(array('status' => '0', "err" => "Scores not submitted, try again"));
-                        //     // echo "update error for subject filter: " . mysqli_error($conn);
-                        // }
-                    } else {
-                        $insertFields = "(subject_id, student_id, class_id, term_id, session_id, school_id";
-                        $insertValues = "('$subject', '$student', '$class', '$term', '$session', '$school_id'";
-                        if ($ca1 !== null) {
-                            $insertFields .= ", ca1";
-                            $insertValues .= ", '$ca1'";
-                        }
-                        if ($ca1Total !== null) {
-                            $insertFields .= ", ca1Total";
-                            $insertValues .= ", '$ca1Total'";
-                        }
-                        if ($ca2 !== null) {
-                            $insertFields .= ", ca2";
-                            $insertValues .= ", '$ca2'";
-                        }
-                        if ($ca2Total !== null) {
-                            $insertFields .= ", ca2Total";
-                            $insertValues .= ", '$ca2Total'";
-                        }
-                        if ($ca3 !== null) {
-                            $insertFields .= ", ca3";
-                            $insertValues .= ", '$ca3'";
-                        }
-                        if ($ca3Total !== null) {
-                            $insertFields .= ", ca3Total";
-                            $insertValues .= ", '$ca3Total'";
-                        }
-                        if ($pra !== null) {
-                            $insertFields .= ", pra";
-                            $insertValues .= ", '$pra'";
-                        }
-                        if ($praTotal !== null) {
-                            $insertFields .= ", praTotal";
-                            $insertValues .= ", '$praTotal'";
-                        }
-                        if ($exam !== null) {
-                            $insertFields .= ", exam";
-                            $insertValues .= ", '$exam'";
-                        }
-                        if ($examTotal !== null) {
-                            $insertFields .= ", examTotal";
-                            $insertValues .= ", '$examTotal'";
-                        }
-                        $insertFields .= ")";
-                        $insertValues .= ")";
-                        $insertQuery = "INSERT INTO skulscores $insertFields VALUES $insertValues";
-                        $insert = mysqli_query($conn, $insertQuery);
-                        // if ($insert) {
-                        //     echo json_encode(array('status' => '1', 'msg' => 'Submitted succesfully'));
-                        // } else {
-                        //     echo json_encode(array('status' => '0', "err" => "Scores not submitted, try again"));
-                        // }
+                    $update_fields[] = "$column='$new_value'";
+                    $insert_fields[] = $column;
+                    $insert_values[] = "'$new_value'";
+                }
+
+                if (empty($update_fields)) {
+                    mysqli_query($conn, "SELECT RELEASE_LOCK('$lock_name')");
+                    continue;
+                }
+
+                if ($existing_score) {
+                    $update_fields[] = "updatedby='{$_SESSION['userid']}'";
+                    $update_fields[] = "dateupdated='$date'";
+                    $update_query = "UPDATE skulscores SET " . implode(', ', $update_fields) . " WHERE id='{$existing_score['id']}' AND school_id='$school_id'";
+                    $saved_count += mysqli_query($conn, $update_query) ? 1 : 0;
+                    if (mysqli_error($conn)) {
+                        $errors[] = mysqli_error($conn);
+                    }
+                } else {
+                    $insert_query = "INSERT INTO skulscores (" . implode(', ', $insert_fields) . ") VALUES (" . implode(', ', $insert_values) . ")";
+                    $saved_count += mysqli_query($conn, $insert_query) ? 1 : 0;
+                    if (mysqli_error($conn)) {
+                        $errors[] = mysqli_error($conn);
                     }
                 }
+
+                mysqli_query($conn, "SELECT RELEASE_LOCK('$lock_name')");
             }
-            // $insert = mysqli_query($conn, $insertQuery);
-            // if ($insert) {
-            echo json_encode(array('status' => '1', 'msg' => 'Submitted succesfully'));
-            // } else {
-            //     echo json_encode(array('status' => '0', "err" => "Scores not submitted, try again"));
-            // }
+
+            if (!empty($conflicts)) {
+                echo json_encode([
+                    'status' => '409',
+                    'msg' => 'Another user has updated the score in the input field with the yellow border and red text. The other scores you changed have already been saved. Please reload to see the latest score, then update it again if needed.',
+                    'saved' => $saved_count,
+                    'conflicts' => $conflicts
+                ]);
+                exit;
+            }
+
+            if (!empty($errors)) {
+                echo json_encode(['status' => '0', 'err' => 'Scores not submitted, try again', 'errors' => $errors]);
+                exit;
+            }
+
+            echo json_encode(['status' => '1', 'msg' => $saved_count > 0 ? 'Submitted succesfully' : 'No score changes to submit', 'saved' => $saved_count]);
         }
 
 
