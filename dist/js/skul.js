@@ -4696,6 +4696,8 @@ function get_stud_byClass_comment() {
                 $(".data_overlay").hide()
                 $("#student_table_comment").show()
                 $("#student_table_comment").html(data)
+                hideCommentSaveMessage()
+                initializeCommentChangeTracking()
             }
         }
     })
@@ -4709,24 +4711,96 @@ function get_comment_skills(student_id) {
     // get_teacher_comment($(".comment_term").val(),$(".comment_Session").val(),$(".student_id_for_comment").val(),$(".comment_class").val(), 'post')
 }
 
+function initializeCommentChangeTracking() {
+    $('#student_table_comment textarea[data-comment-role]').each(function () {
+        $(this)
+            .attr('data-original-comment', $(this).val() || '')
+            .removeClass('border border-warning text-danger font-weight-bold');
+    });
+}
+
+function showCommentSaveMessage(type, message) {
+    const alertClass = type === 'warning' ? 'alert-warning' : type === 'success' ? 'alert-success' : 'alert-info';
+
+    $('#comment_save_message')
+        .removeClass('alert-warning alert-success alert-info alert-danger')
+        .addClass(alertClass)
+        .html(message)
+        .show();
+}
+
+function hideCommentSaveMessage() {
+    $('#comment_save_message').hide().html('');
+}
+
+function markCommentConflicts(conflicts) {
+    if (!Array.isArray(conflicts)) return;
+
+    conflicts.forEach((conflict) => {
+        const selector = conflict.role_type == '1' ? '.principal_comment_comment' : '.teacher_comment_comment';
+
+        $('.comment_tb_row').each(function () {
+            const studentId = String($(this).find('.student_id_comment').val() || '');
+            if (studentId !== String(conflict.student_id)) return;
+
+            $(this)
+                .find(selector)
+                .addClass('border border-warning text-danger font-weight-bold')
+                .attr('title', 'Another user updated this comment. Reload to review the latest comment.');
+        });
+    });
+}
+
+function resetSavedCommentTracking(commentsData, conflicts) {
+    const conflictKeys = new Set((conflicts || []).map((conflict) => `${conflict.student_id}:${conflict.role_type}`));
+
+    commentsData.forEach((comment) => {
+        const studentId = String(comment.student_id || '');
+
+        if ('teacher_comment' in comment && !conflictKeys.has(`${studentId}:0`)) {
+            $(`.comment_tb_row .student_id_comment[value="${studentId}"]`)
+                .closest('.comment_tb_row')
+                .find('.teacher_comment_comment')
+                .attr('data-original-comment', comment.teacher_comment || '');
+        }
+
+        if ('principal_comment' in comment && !conflictKeys.has(`${studentId}:1`)) {
+            $(`.comment_tb_row .student_id_comment[value="${studentId}"]`)
+                .closest('.comment_tb_row')
+                .find('.principal_comment_comment')
+                .attr('data-original-comment', comment.principal_comment || '');
+        }
+    });
+}
+
 function save_comment() {
     let commentsData = [];
     $('.comment_tb_row').each(function () {
         let studentId = $(this).find('.student_id_comment').val();
-        let teacherComment = $(this).find('.teacher_comment_comment').val();
-        let principalComment = $(this).find('.principal_comment_comment').val();
-        // alert(studentId)
-        // Escape single quotes to prevent errors
-        function escapeQuotes(str) {
-            return typeof str === 'string' ? str.replace(/'/g, '&#39;') : str;
+        let teacherInput = $(this).find('.teacher_comment_comment');
+        let principalInput = $(this).find('.principal_comment_comment');
+        let commentData = { student_id: studentId };
+
+        if (teacherInput.length && teacherInput.val() !== teacherInput.attr('data-original-comment')) {
+            commentData.teacher_comment = teacherInput.val();
+            commentData.original_teacher_comment = teacherInput.attr('data-original-comment') || '';
         }
-        commentsData.push({
-            student_id: studentId,
-            teacher_comment: escapeQuotes(teacherComment),
-            principal_comment: escapeQuotes(principalComment)
-        });
+
+        if (principalInput.length && principalInput.val() !== principalInput.attr('data-original-comment')) {
+            commentData.principal_comment = principalInput.val();
+            commentData.original_principal_comment = principalInput.attr('data-original-comment') || '';
+        }
+
+        if ('teacher_comment' in commentData || 'principal_comment' in commentData) {
+            commentsData.push(commentData);
+        }
     });
     console.log("comdata", commentsData)
+
+    if (commentsData.length < 1) {
+        showCommentSaveMessage('info', 'No comment changes to save');
+        return;
+    }
 
     // Send comments data to the server using AJAX
     $.ajax({
@@ -4743,9 +4817,18 @@ function save_comment() {
             data = JSON.parse(data)
             if (data.status == 1) {
                 toastr.success("Comment saved")
+                showCommentSaveMessage('success', 'Comment saved');
+                initializeCommentChangeTracking();
+            } else if (data.status == 409) {
+                markCommentConflicts(data.conflicts);
+                resetSavedCommentTracking(commentsData, data.conflicts);
+                showCommentSaveMessage('warning', data.msg);
+            } else {
+                showCommentSaveMessage('warning', data.err || 'Error saving comments.');
+                toastr.error(data.err || 'Error saving comments.');
             }
         },
-        error: function () {
+        error: function (xhr, status, error) {
             alert('Error saving comments.' + error);
         }
     });

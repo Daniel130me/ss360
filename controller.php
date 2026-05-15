@@ -1547,6 +1547,7 @@ $date = date("Y:m:d H:i:s");
                         }
                         ?>
                         <textarea name="" rows="2" cols="" class="w-100 teacher_comment_comment"
+                            data-comment-role="teacher"
                             style="padding: 5px; border-radius:5px; margin-bottom: -5px;"
                             placeholder="Teacher's comment"><?= $comment_teacher ?></textarea>
                         <div class="d-flex"><a href="#suggestionModal" data-toggle="modal" data-student_id="<?= $row['id'] ?>"
@@ -1578,6 +1579,7 @@ $date = date("Y:m:d H:i:s");
                         ?>
                         <td>
                             <textarea name="" rows="2" cols="" class="w-100 principal_comment_comment"
+                                data-comment-role="principal"
                                 style="padding: 5px; border-radius:5px; margin-bottom:-5px;"
                                 placeholder="<?=$_SESSION['whocomment']?>'s comment"><?= $comment_principal ?></textarea>
                             <div class="d-flex"><a href="#suggestionModal" data-toggle="modal" data-student_id="<?= $row['id'] ?>"
@@ -1707,73 +1709,108 @@ $date = date("Y:m:d H:i:s");
 
         if ($action === 'save_comment') {
             $school_id = $_SESSION['school_id'];
-            $comments = $_POST['comments'];
+            $comments = isset($_POST['comments']) && is_array($_POST['comments']) ? $_POST['comments'] : [];
             $term_id = test_input($_POST['term_id']);
             $session_id = test_input($_POST['session_id']);
             $class_id = test_input($_POST['class_id']);
-            // var_dump($comments);
+            $saved_count = 0;
+            $conflicts = [];
+            $errors = [];
+
             foreach ($comments as $comment) {
-                // echo "student_id='{$comment['student_id']}' AND class_id='$class_id' AND session_id='$session_id' AND term_id='$term_id' AND school_id='$school_id' AND role_type='1'.<br>'";
-                // // check if comment exist for the student first, then update if it exist
-                // if(!does_it_exist("comment","comment","student_id='{$comment['student_id']}' AND class_id='$class_id' AND session_id='$session_id' AND term_id='$term_id' AND school_id='$school_id' AND role_type='1'")){
-                //     echo "no";
-                // }
-                // else {
-                //     "yes";
-                // }
-                if ($comment['teacher_comment']) {
-                    $check = mysqli_query($conn, "SELECT comment FROM 
-                comment WHERE student_id='{$comment['student_id']}' 
-                AND class_id='$class_id' AND student_id='{$comment['student_id']}' AND session_id='$session_id' 
-                AND term_id='$term_id' AND school_id='$school_id' 
-                AND role_type='0'");
-                    if (mysqli_num_rows($check) > 0) {
-                        // echo "yes";
-                    //     echo "UPDATE comment 
-                    // SET comment='{$comment['teacher_comment']}', 
-                    // updatedby='{$_SESSION["userid"]}', role_type='0',
-                    // dateupdated='$date', commentby='{$_SESSION["userid"]}' 
-                    // WHERE class_id='$class_id' AND student_id='{$comment['student_id']}' AND session_id='$session_id' 
-                    // AND term_id='$term_id' AND school_id='$school_id'";
-                        $update_comment = mysqli_query($conn, "UPDATE comment 
-                    SET comment='{$comment['teacher_comment']}', 
-                    updatedby='{$_SESSION["userid"]}', role_type='0',
-                    dateupdated='$date', commentby='{$_SESSION["userid"]}' 
-                    WHERE class_id='$class_id' AND student_id='{$comment['student_id']}' AND session_id='$session_id' 
-                    AND term_id='$term_id' AND school_id='$school_id'");
-                    } else {
-                    //     echo "INSERT INTO 
-                    // comment(class_id,student_id,comment,comment_type,role_type,session_id,term_id,datecreated,createdby,commentby,school_id) 
-                    // VALUES('$class_id','{$comment['student_id']}','{$comment['teacher_comment']}','1','0','$session_id','$term_id','$date',{$_SESSION['userid']},{$_SESSION['userid']},'$school_id')";
-                        $insert_comment = mysqli_query($conn, "INSERT INTO 
-                    comment(class_id,student_id,comment,comment_type,role_type,session_id,term_id,datecreated,createdby,commentby,school_id) 
-                    VALUES('$class_id','{$comment['student_id']}','{$comment['teacher_comment']}','1','0','$session_id','$term_id','$date',{$_SESSION['userid']},{$_SESSION['userid']},'$school_id')");
-                    }
+                if (!is_array($comment) || empty($comment['student_id'])) {
+                    continue;
                 }
 
-                if ($comment['principal_comment']) {
-                    $check = mysqli_query($conn, "SELECT comment FROM 
-                comment WHERE student_id='{$comment['student_id']}' 
-                AND class_id='$class_id' AND session_id='$session_id' 
-                AND term_id='$term_id' AND school_id='{$comment['student_id']}' 
-                AND role_type='1'");
-                    if (mysqli_num_rows($check) > 0) {
+                $student_id = mysqli_real_escape_string($conn, test_input($comment['student_id']));
+                $comment_updates = [
+                    [
+                        'role_type' => '0',
+                        'comment_key' => 'teacher_comment',
+                        'original_key' => 'original_teacher_comment'
+                    ],
+                    [
+                        'role_type' => '1',
+                        'comment_key' => 'principal_comment',
+                        'original_key' => 'original_principal_comment'
+                    ]
+                ];
 
-                        $update_comment = mysqli_query($conn, "UPDATE comment 
-            SET comment='{$comment['principal_comment']}', 
-            updatedby='{$_SESSION["userid"]}', role_type='1', 
-            dateupdated='$date', commentby='{$_SESSION["userid"]}' 
-            WHERE class_id='$class_id' 
-            AND student_id='{$comment['student_id']}' AND session_id='$session_id' 
-            AND term_id='$term_id' AND school_id='$school_id'");
-                    } else {
-                        $insert_comment = mysqli_query($conn, "INSERT INTO 
-                    comment(class_id,student_id,comment,comment_type,role_type,session_id,term_id,datecreated,createdby,commentby,school_id) 
-                    VALUES('$class_id','{$comment['student_id']}','{$comment['principal_comment']}','1','1','$session_id','$term_id','$date',{$_SESSION['userid']},{$_SESSION['userid']},'$school_id')");
+                foreach ($comment_updates as $comment_update) {
+                    $comment_key = $comment_update['comment_key'];
+                    $original_key = $comment_update['original_key'];
+                    $role_type = $comment_update['role_type'];
+
+                    if (!array_key_exists($comment_key, $comment)) {
+                        continue;
                     }
+
+                    $new_comment = mysqli_real_escape_string($conn, $comment[$comment_key]);
+                    $original_comment = array_key_exists($original_key, $comment) ? (string) $comment[$original_key] : '';
+                    $lock_name = 'comment_' . md5("$school_id:$session_id:$term_id:$class_id:$student_id:$role_type");
+                    $lock_result = mysqli_query($conn, "SELECT GET_LOCK('$lock_name', 5) AS lock_status");
+                    $lock_row = $lock_result ? mysqli_fetch_assoc($lock_result) : null;
+
+                    if (!$lock_row || $lock_row['lock_status'] != '1') {
+                        $errors[] = 'Could not lock comment for saving. Please try again.';
+                        continue;
+                    }
+
+                    $check = mysqli_query($conn, "SELECT id, comment FROM comment WHERE student_id='$student_id' AND class_id='$class_id' AND session_id='$session_id' AND term_id='$term_id' AND school_id='$school_id' AND role_type='$role_type' LIMIT 1");
+                    if (!$check) {
+                        $errors[] = mysqli_error($conn);
+                        mysqli_query($conn, "SELECT RELEASE_LOCK('$lock_name')");
+                        continue;
+                    }
+
+                    $existing_comment = mysqli_fetch_assoc($check);
+                    $current_comment = $existing_comment ? (string) $existing_comment['comment'] : '';
+
+                    // A conflict means another user changed this exact comment box after this page loaded.
+                    if ($current_comment !== $original_comment) {
+                        $conflicts[] = [
+                            'student_id' => $student_id,
+                            'role_type' => $role_type,
+                            'current_comment' => $current_comment,
+                            'submitted_comment' => (string) $comment[$comment_key],
+                            'original_comment' => $original_comment
+                        ];
+                        mysqli_query($conn, "SELECT RELEASE_LOCK('$lock_name')");
+                        continue;
+                    }
+
+                    if ($existing_comment) {
+                        $update_comment = mysqli_query($conn, "UPDATE comment SET comment='$new_comment', updatedby='{$_SESSION["userid"]}', dateupdated='$date', commentby='{$_SESSION["userid"]}' WHERE id='{$existing_comment['id']}' AND school_id='$school_id'");
+                        $saved_count += $update_comment ? 1 : 0;
+                    } elseif (trim((string) $comment[$comment_key]) !== '') {
+                        $insert_comment = mysqli_query($conn, "INSERT INTO comment(class_id,student_id,comment,comment_type,role_type,session_id,term_id,datecreated,createdby,commentby,school_id) VALUES('$class_id','$student_id','$new_comment','1','$role_type','$session_id','$term_id','$date',{$_SESSION['userid']},{$_SESSION['userid']},'$school_id')");
+                        $saved_count += $insert_comment ? 1 : 0;
+                    }
+
+                    if (mysqli_error($conn)) {
+                        $errors[] = mysqli_error($conn);
+                    }
+
+                    mysqli_query($conn, "SELECT RELEASE_LOCK('$lock_name')");
                 }
             }
-                echo json_encode(array('status' => '1'));
+
+            if (!empty($conflicts)) {
+                echo json_encode([
+                    'status' => '409',
+                    'msg' => 'Another user has updated the comment box with the yellow border and red text. The other comments you changed have already been saved. Please reload to see the latest comment, then update it again if needed.',
+                    'saved' => $saved_count,
+                    'conflicts' => $conflicts
+                ]);
+                exit;
+            }
+
+            if (!empty($errors)) {
+                echo json_encode(['status' => '0', 'err' => 'Comment not saved, try again', 'errors' => $errors]);
+                exit;
+            }
+
+            echo json_encode(array('status' => '1', 'saved' => $saved_count));
         }
 
         if ($action === 'get_stud_byClass_report') {

@@ -407,6 +407,7 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                             <table id="student_table_comment" class="display nowrap" style="width:100%;">
 
                             </table>
+                            <div id="comment_save_message" class="alert mt-3 mb-0" style="display:none;"></div>
                             <div class="" id="">
                                 <button type="button" class="btn btn-primary" onclick="save_comment()">Save
                                     Comments</button>
