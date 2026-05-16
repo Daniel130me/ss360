@@ -443,6 +443,187 @@ function does_it_exist($what_to_select, $tbl, $condition)
     return $ans;
 }
 
+function transport_admin_staff_types()
+{
+    return [1, 2, 3, 4];
+}
+
+function transport_current_school_id()
+{
+    return isset($_SESSION['school_id']) ? (int) $_SESSION['school_id'] : 0;
+}
+
+function transport_current_user_id()
+{
+    return isset($_SESSION['userid']) ? (int) $_SESSION['userid'] : 0;
+}
+
+function transport_is_staff_user()
+{
+    return isset($_SESSION['staff_type']);
+}
+
+function transport_is_admin()
+{
+    if (!transport_is_staff_user()) {
+        return false;
+    }
+
+    return in_array((int) $_SESSION['staff_type'], transport_admin_staff_types(), true);
+}
+
+function transport_stmt_bind($stmt, $types, $params)
+{
+    if ($types === '' || empty($params)) {
+        return true;
+    }
+
+    $refs = [$stmt, $types];
+    foreach ($params as $key => $value) {
+        $refs[] = &$params[$key];
+    }
+
+    return call_user_func_array('mysqli_stmt_bind_param', $refs);
+}
+
+function transport_fetch_one($sql, $types = '', $params = [])
+{
+    global $conn;
+
+    $stmt = mysqli_prepare($conn, $sql);
+    if (!$stmt) {
+        return null;
+    }
+
+    transport_stmt_bind($stmt, $types, $params);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $row = $result ? mysqli_fetch_assoc($result) : null;
+    mysqli_stmt_close($stmt);
+
+    return $row ?: null;
+}
+
+function transport_parent_can_view_student($student_id)
+{
+    if (transport_is_staff_user()) {
+        return false;
+    }
+
+    $row = transport_fetch_one(
+        "SELECT id FROM students WHERE id = ? AND parent_id = ? AND school_id = ? LIMIT 1",
+        'iii',
+        [(int) $student_id, transport_current_user_id(), transport_current_school_id()]
+    );
+
+    return $row !== null;
+}
+
+function transport_staff_can_view_bus($bus_id)
+{
+    if (!transport_is_staff_user()) {
+        return false;
+    }
+
+    $row = transport_fetch_one(
+        "SELECT id FROM school_buses WHERE id = ? AND school_id = ? LIMIT 1",
+        'ii',
+        [(int) $bus_id, transport_current_school_id()]
+    );
+
+    return $row !== null;
+}
+
+function transport_staff_can_track_bus($bus_id)
+{
+    if (!transport_is_staff_user()) {
+        return false;
+    }
+
+    if (transport_is_admin()) {
+        return transport_staff_can_view_bus($bus_id);
+    }
+
+    $row = transport_fetch_one(
+        "SELECT id FROM school_buses
+         WHERE id = ? AND school_id = ? AND status = 1
+         AND (driver_staff_id = ? OR assistant_staff_id = ?)
+         LIMIT 1",
+        'iiii',
+        [(int) $bus_id, transport_current_school_id(), transport_current_user_id(), transport_current_user_id()]
+    );
+
+    return $row !== null;
+}
+
+function transport_parent_can_view_bus($bus_id, $student_id = null)
+{
+    if (transport_is_staff_user()) {
+        return false;
+    }
+
+    $params = [transport_current_user_id(), transport_current_school_id(), (int) $bus_id];
+    $types = 'iii';
+    $student_filter = '';
+
+    if ($student_id !== null) {
+        $student_filter = ' AND s.id = ?';
+        $types .= 'i';
+        $params[] = (int) $student_id;
+    }
+
+    $row = transport_fetch_one(
+        "SELECT bsa.id
+         FROM bus_student_assignments bsa
+         INNER JOIN students s ON s.id = bsa.student_id AND s.school_id = bsa.school_id
+         WHERE s.parent_id = ? AND bsa.school_id = ? AND bsa.bus_id = ?
+         AND bsa.status = 1{$student_filter}
+         LIMIT 1",
+        $types,
+        $params
+    );
+
+    return $row !== null;
+}
+
+function transport_get_tracking_settings($school_id = null)
+{
+    $school_id = $school_id === null ? transport_current_school_id() : (int) $school_id;
+    $defaults = [
+        'update_interval_seconds' => 20,
+        'stale_after_seconds' => 90,
+        'min_movement_meters' => 30,
+        'max_accuracy_meters' => 100,
+        'history_retention_days' => 30,
+    ];
+
+    if ($school_id <= 0) {
+        return $defaults;
+    }
+
+    $row = transport_fetch_one(
+        "SELECT update_interval_seconds, stale_after_seconds, min_movement_meters,
+                max_accuracy_meters, history_retention_days
+         FROM bus_tracking_settings
+         WHERE school_id = ? AND status = 1
+         LIMIT 1",
+        'i',
+        [$school_id]
+    );
+
+    if (!$row) {
+        return $defaults;
+    }
+
+    return [
+        'update_interval_seconds' => max(15, (int) $row['update_interval_seconds']),
+        'stale_after_seconds' => max(30, (int) $row['stale_after_seconds']),
+        'min_movement_meters' => max(0, (int) $row['min_movement_meters']),
+        'max_accuracy_meters' => max(20, (int) $row['max_accuracy_meters']),
+        'history_retention_days' => max(1, (int) $row['history_retention_days']),
+    ];
+}
+
 function calculate_age($birthdate)
 {
     if($birthdate == '0000-00-00') {
