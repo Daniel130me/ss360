@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 if (!isset($_SESSION['userid'])) {
     header("Location: login");
     exit();
@@ -376,7 +378,7 @@ $can_manage_transport = transport_is_admin();
         }
 
         function postTransport(data) {
-            return $.ajax({ url: 'bus_controller.php', method: 'POST', data, dataType: 'json' });
+            return $.ajax({ url: '../bus_controller.php', method: 'POST', data, dataType: 'json' });
         }
 
         function optionHtml(rows, label, includeBlank = true) {
@@ -599,10 +601,11 @@ $can_manage_transport = transport_is_admin();
 
         function hydrateActiveDriverTrip() {
             const active = state.driverBuses.find(bus => bus.active_trip_id);
-            if (!active || driverState.tripId) return;
+            if (!active) return;
             $('#driver_bus_id').val(active.id);
             $('#driver_route_id').val(active.active_route_id || '');
             $('#driver_direction').val(active.active_direction || 'to_home');
+            if (driverState.tripId) return;
             driverState.tripId = active.active_trip_id;
             $('#driverTripStatus').text('Active trip #' + driverState.tripId + ' ready');
             $('#startTripBtn').text('Resume GPS').prop('disabled', false);

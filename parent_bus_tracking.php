@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 if (!isset($_SESSION['userid'])) {
     header("Location: login");
     exit();
@@ -198,7 +200,7 @@ while ($row = mysqli_fetch_assoc($select)) {
                 return;
             }
             $.ajax({
-                url: 'bus_controller.php',
+                url: '../bus_controller.php',
                 method: 'POST',
                 dataType: 'json',
                 data: { action: 'parent_snapshot', student_id: studentId }
@@ -221,7 +223,7 @@ while ($row = mysqli_fetch_assoc($select)) {
             const studentId = $('#studentSelect').val();
             if (!parentMapState.tripId || !parentMapState.busId || !studentId) return loadParentSnapshot();
             $.ajax({
-                url: 'bus_controller.php',
+                url: '../bus_controller.php',
                 method: 'POST',
                 dataType: 'json',
                 data: {

@@ -83,6 +83,8 @@ $row = mysqli_fetch_assoc($select);
     <script src="../dist/js/adminlte.min.js"></script>
     <!-- Toastr -->
     <script src="../plugins/toastr/toastr.min.js"></script>
+    <!-- Select2 -->
+    <script src="../plugins/select2/js/select2.full.min.js"></script>
     <script src="../dist/js/skul.js"></script>
         <script>
         $(window).on('load', function() {

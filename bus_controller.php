@@ -1,5 +1,8 @@
 <?php
-session_start();
+date_default_timezone_set('Africa/Lagos');
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 include_once("model/connect.php");
 include_once("model/functions.php");
 
@@ -574,7 +577,7 @@ switch ($action) {
                     r.route_name,
                     cl.last_location_id, cl.latitude, cl.longitude, cl.accuracy_meters,
                     cl.speed_mps, cl.heading_degrees, cl.recorded_at,
-                    TIMESTAMPDIFF(SECOND, cl.recorded_at, NOW()) AS seconds_since_update
+                    GREATEST(0, TIMESTAMPDIFF(SECOND, cl.recorded_at, NOW())) AS seconds_since_update
              FROM school_buses b
              LEFT JOIN staff ds ON ds.id = b.driver_staff_id AND ds.school_id = b.school_id
              LEFT JOIN bus_trips t ON t.bus_id = b.id AND t.school_id = b.school_id AND t.trip_status = 'active'
@@ -604,7 +607,7 @@ switch ($action) {
                     r.route_name,
                     cl.last_location_id, cl.latitude, cl.longitude, cl.accuracy_meters,
                     cl.speed_mps, cl.heading_degrees, cl.recorded_at,
-                    TIMESTAMPDIFF(SECOND, cl.recorded_at, NOW()) AS seconds_since_update
+                    GREATEST(0, TIMESTAMPDIFF(SECOND, cl.recorded_at, NOW())) AS seconds_since_update
              FROM bus_student_assignments a
              INNER JOIN school_buses b ON b.id = a.bus_id AND b.school_id = a.school_id
              INNER JOIN students s ON s.id = a.student_id AND s.school_id = a.school_id
