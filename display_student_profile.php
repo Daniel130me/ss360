@@ -1036,6 +1036,61 @@ while ($row = mysqli_fetch_array($select)) {
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
+        function get_student_ai_reply_chunks(content) {
+            const safe = $('<div>').text(content || '').html();
+            const paragraphs = safe.split(/\n{2,}/).map(function(part) {
+                return part.trim();
+            }).filter(Boolean);
+
+            if (!paragraphs.length && safe.trim()) {
+                return [safe.trim()];
+            }
+
+            const chunks = [];
+            paragraphs.forEach(function(paragraph) {
+                const bulletLines = paragraph.split(/\n/).filter(function(line) {
+                    return /^[-*]\s+/.test(line.trim());
+                });
+
+                if (bulletLines.length > 1) {
+                    bulletLines.forEach(function(line) {
+                        chunks.push(line.trim());
+                    });
+                } else {
+                    chunks.push(paragraph);
+                }
+            });
+
+            return chunks.length ? chunks : ['No response available.'];
+        }
+
+        function append_student_ai_message_stream(content, onDone) {
+            const message = $('<div>').addClass('ai-message assistant');
+            $('#student_ai_chat_window').append(message);
+
+            const chunks = get_student_ai_reply_chunks(content);
+            const renderedChunks = [];
+            let index = 0;
+
+            function renderNextChunk() {
+                if (index >= chunks.length) {
+                    if (typeof onDone === 'function') {
+                        onDone();
+                    }
+                    return;
+                }
+
+                renderedChunks.push(chunks[index]);
+                message.html(format_student_ai_reply(renderedChunks.join('\n\n')));
+                const chatWindow = document.getElementById('student_ai_chat_window');
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+                index++;
+                setTimeout(renderNextChunk, 180);
+            }
+
+            renderNextChunk();
+        }
+
         function render_student_ai_suggestions(suggestions) {
             const container = $('#student_ai_suggestions');
             container.empty();
@@ -1116,10 +1171,11 @@ while ($row = mysqli_fetch_array($select)) {
                         return;
                     }
 
-                    append_student_ai_message('assistant', response.reply);
                     studentAiHistory.push({ role: 'user', content: message });
                     studentAiHistory.push({ role: 'assistant', content: response.reply });
-                    render_student_ai_suggestions(response.suggested_prompts || []);
+                    append_student_ai_message_stream(response.reply, function() {
+                        render_student_ai_suggestions(response.suggested_prompts || []);
+                    });
                 },
                 error: function(xhr) {
                     $('#student_ai_loading').remove();
