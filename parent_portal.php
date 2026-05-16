@@ -267,6 +267,9 @@ while ($row = mysqli_fetch_array($select)) {
                         <a href="parent_profile" class="dropdown-item text-muted d-flex">
                             <i class="material-symbols-outlined mr-2 d-inline">person</i> Profile
                         </a>
+                        <a href="parent_bus_tracking" class="dropdown-item text-muted d-flex">
+                            <span class="material-symbols-outlined mr-2">directions_bus</span> Bus Tracking
+                        </a>
                         <a href="change_password_parent" class="dropdown-item text-muted d-flex">
                             <span class="material-symbols-outlined mr-2">lock</span> Change PIN
                         </a>

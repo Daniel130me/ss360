@@ -28,6 +28,7 @@ $can_manage_transport = transport_is_admin();
     <link rel="stylesheet" href="../plugins/toastr/toastr.min.css">
     <link rel="stylesheet" href="../plugins/select2/css/select2.min.css">
     <link rel="stylesheet" href="../dist/css/adminlte.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
@@ -93,6 +94,14 @@ $can_manage_transport = transport_is_admin();
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
             gap: 12px;
+        }
+
+        #staffBusMap {
+            border-radius: 8px;
+            height: 420px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            width: 100%;
         }
     </style>
 </head>
@@ -188,6 +197,7 @@ $can_manage_transport = transport_is_admin();
                                     <h5 class="font-weight-bold mb-0">Active Buses</h5>
                                     <span class="text-muted small" id="liveUpdatedAt">Loading...</span>
                                 </div>
+                                <div id="staffBusMap"></div>
                                 <div id="liveBusTable"></div>
                             </div>
                         </div>
@@ -350,10 +360,12 @@ $can_manage_transport = transport_is_admin();
     <script src="../plugins/toastr/toastr.min.js"></script>
     <script src="../plugins/select2/js/select2.full.min.js"></script>
     <script src="../dist/js/adminlte.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         const canManageTransport = <?= $can_manage_transport ? 'true' : 'false' ?>;
         const state = { buses: [], driverBuses: [], routes: [], stops: [], assignments: [], staff: [], students: [], settings: {} };
         const driverState = { tripId: null, watchId: null, latestPosition: null, sendTimer: null, lastSentAt: 0, lastSentPoint: null };
+        const mapState = { map: null, markers: {}, hasFitBounds: false };
 
         function escapeHtml(value) {
             return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
@@ -379,6 +391,7 @@ $can_manage_transport = transport_is_admin();
 
         function renderLive(rows) {
             $('#liveUpdatedAt').text('Updated ' + new Date().toLocaleTimeString());
+            updateStaffMap(rows);
             if (!rows.length) {
                 $('#liveBusTable').html('<div class="empty-state">No bus has been registered yet.</div>');
                 return;
@@ -392,6 +405,52 @@ $can_manage_transport = transport_is_admin();
             });
             html += '</tbody></table></div>';
             $('#liveBusTable').html(html);
+        }
+
+        function initStaffMap() {
+            if (mapState.map || typeof L === 'undefined') return;
+            mapState.map = L.map('staffBusMap').setView([9.082, 8.6753], 6);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(mapState.map);
+        }
+
+        function animateMarker(marker, nextLatLng) {
+            const start = marker.getLatLng();
+            const steps = 20;
+            let current = 0;
+            const timer = setInterval(function() {
+                current += 1;
+                const lat = start.lat + ((nextLatLng[0] - start.lat) * current / steps);
+                const lng = start.lng + ((nextLatLng[1] - start.lng) * current / steps);
+                marker.setLatLng([lat, lng]);
+                if (current >= steps) clearInterval(timer);
+            }, 35);
+        }
+
+        function updateStaffMap(rows) {
+            initStaffMap();
+            if (!mapState.map) return;
+            const bounds = [];
+            rows.forEach(row => {
+                if (!row.latitude || !row.longitude) return;
+                const latLng = [Number(row.latitude), Number(row.longitude)];
+                const popup = '<strong>' + escapeHtml(row.bus_name) + '</strong><br>' +
+                    escapeHtml(row.direction || 'No active trip') + '<br>' +
+                    'Last update: ' + escapeHtml(row.recorded_at || 'Unknown');
+                if (mapState.markers[row.bus_id]) {
+                    animateMarker(mapState.markers[row.bus_id], latLng);
+                    mapState.markers[row.bus_id].setPopupContent(popup);
+                } else {
+                    mapState.markers[row.bus_id] = L.marker(latLng).addTo(mapState.map).bindPopup(popup);
+                }
+                bounds.push(latLng);
+            });
+            if (bounds.length && !mapState.hasFitBounds) {
+                mapState.map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+                mapState.hasFitBounds = true;
+            }
         }
 
         function renderBuses() {
@@ -685,6 +744,7 @@ $can_manage_transport = transport_is_admin();
 
         $(function() {
             refreshTransportData();
+            setInterval(refreshTransportData, Math.max(15, Number(state.settings.update_interval_seconds || 20)) * 1000);
         });
     </script>
 </body>
