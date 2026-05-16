@@ -199,6 +199,28 @@ switch ($action) {
         );
         bus_json(['status' => '1', 'buses' => $rows]);
 
+    case 'list_transport_options':
+        bus_require_staff();
+        $staff = bus_fetch_all(
+            "SELECT id, CONCAT(lastname, ' ', firstname, ' ', COALESCE(middlename, '')) AS name, phone
+             FROM staff
+             WHERE school_id = ? AND status = 1
+             ORDER BY lastname ASC, firstname ASC",
+            'i',
+            [$school_id]
+        );
+        $students = bus_fetch_all(
+            "SELECT s.id, CONCAT(s.lastname, ' ', s.firstname, ' ', COALESCE(s.middlename, '')) AS name,
+                    c.classname
+             FROM students s
+             LEFT JOIN class c ON c.id = s.class_id AND c.school_id = s.school_id
+             WHERE s.school_id = ? AND s.status = 1
+             ORDER BY s.lastname ASC, s.firstname ASC",
+            'i',
+            [$school_id]
+        );
+        bus_json(['status' => '1', 'staff' => $staff, 'students' => $students]);
+
     case 'save_bus':
         bus_require_admin();
         $bus_id = (int) bus_request('bus_id', 0);
