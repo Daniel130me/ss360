@@ -411,11 +411,13 @@ switch ($action) {
     case 'driver_context':
         bus_require_staff();
         $rows = bus_fetch_all(
-            "SELECT id, bus_name, bus_number, plate_number
-             FROM school_buses
-             WHERE school_id = ? AND status = 1
-             AND (? IN (1,2,3,4) OR driver_staff_id = ? OR assistant_staff_id = ?)
-             ORDER BY bus_name ASC",
+            "SELECT b.id, b.bus_name, b.bus_number, b.plate_number,
+                    t.id AS active_trip_id, t.direction AS active_direction, t.route_id AS active_route_id
+             FROM school_buses b
+             LEFT JOIN bus_trips t ON t.bus_id = b.id AND t.school_id = b.school_id AND t.trip_status = 'active'
+             WHERE b.school_id = ? AND b.status = 1
+             AND (? IN (1,2,3,4) OR b.driver_staff_id = ? OR b.assistant_staff_id = ?)
+             ORDER BY b.bus_name ASC",
             'iiii',
             [$school_id, (int) ($_SESSION['staff_type'] ?? 0), $user_id, $user_id]
         );
@@ -437,7 +439,7 @@ switch ($action) {
             [$school_id, $bus_id]
         );
         if ($active) {
-            bus_json(['status' => '1', 'msg' => 'Trip already active', 'trip_id' => $active['id']]);
+            bus_json(['status' => '1', 'msg' => 'Trip already active', 'trip_id' => $active['id'], 'settings' => bus_settings_payload($school_id)]);
         }
 
         $insert = bus_execute(

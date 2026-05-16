@@ -172,6 +172,7 @@ $can_manage_transport = transport_is_admin();
 
                     <div class="nav nav-pills transport-toolbar mb-3" role="tablist">
                         <a class="nav-link active" data-toggle="pill" href="#transport-live" role="tab">Live Dashboard</a>
+                        <a class="nav-link" data-toggle="pill" href="#transport-driver" role="tab">Driver Mode</a>
                         <?php if ($can_manage_transport) { ?>
                             <a class="nav-link" data-toggle="pill" href="#transport-buses" role="tab">Buses</a>
                             <a class="nav-link" data-toggle="pill" href="#transport-routes" role="tab">Routes & Stops</a>
@@ -188,6 +189,45 @@ $can_manage_transport = transport_is_admin();
                                     <span class="text-muted small" id="liveUpdatedAt">Loading...</span>
                                 </div>
                                 <div id="liveBusTable"></div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="transport-driver" role="tabpanel">
+                            <div class="row">
+                                <div class="col-lg-5 mb-3">
+                                    <div class="transport-panel">
+                                        <h5 class="font-weight-bold">Trip Control</h5>
+                                        <form id="driverTripForm">
+                                            <div class="form-group"><label>Bus</label><select class="form-control" id="driver_bus_id" required></select></div>
+                                            <div class="form-group"><label>Route</label><select class="form-control" id="driver_route_id"></select></div>
+                                            <div class="form-group">
+                                                <label>Direction</label>
+                                                <select class="form-control" id="driver_direction">
+                                                    <option value="to_school">Going to school</option>
+                                                    <option value="to_home">Going home</option>
+                                                </select>
+                                            </div>
+                                            <div class="d-flex" style="gap: 8px;">
+                                                <button class="btn btn-success flex-fill" type="submit" id="startTripBtn">Start</button>
+                                                <button class="btn btn-danger flex-fill" type="button" id="stopTripBtn" disabled>Stop</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="col-lg-7 mb-3">
+                                    <div class="transport-panel">
+                                        <h5 class="font-weight-bold">Tracking Status</h5>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3"><p class="text-muted mb-1">Trip</p><strong id="driverTripStatus">Not started</strong></div>
+                                            <div class="col-md-6 mb-3"><p class="text-muted mb-1">GPS accuracy</p><strong id="driverAccuracy">Waiting</strong></div>
+                                            <div class="col-md-6 mb-3"><p class="text-muted mb-1">Last sent</p><strong id="driverLastSent">Never</strong></div>
+                                            <div class="col-md-6 mb-3"><p class="text-muted mb-1">Server response</p><strong id="driverServerStatus">Idle</strong></div>
+                                        </div>
+                                        <div class="alert alert-light border mb-0" id="driverPermissionHint">
+                                            Location sharing starts only after Start and stops when the trip is stopped.
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -312,7 +352,8 @@ $can_manage_transport = transport_is_admin();
     <script src="../dist/js/adminlte.min.js"></script>
     <script>
         const canManageTransport = <?= $can_manage_transport ? 'true' : 'false' ?>;
-        const state = { buses: [], routes: [], stops: [], assignments: [], staff: [], students: [], settings: {} };
+        const state = { buses: [], driverBuses: [], routes: [], stops: [], assignments: [], staff: [], students: [], settings: {} };
+        const driverState = { tripId: null, watchId: null, latestPosition: null, sendTimer: null, lastSentAt: 0, lastSentPoint: null };
 
         function escapeHtml(value) {
             return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
@@ -405,6 +446,8 @@ $can_manage_transport = transport_is_admin();
             $('#assignment_bus_id').html(optionHtml(state.buses, 'bus'));
             $('#stop_route_id, #assignment_route_id').html(optionHtml(state.routes, 'route'));
             $('#assignment_stop_id').html(optionHtml(state.stops, 'stop'));
+            $('#driver_bus_id').html(optionHtml(state.driverBuses, 'bus'));
+            $('#driver_route_id').html(optionHtml(state.routes, 'route'));
         }
 
         function fillSettings() {
@@ -414,17 +457,26 @@ $can_manage_transport = transport_is_admin();
         function refreshTransportData() {
             $.when(
                 postTransport({ action: 'staff_snapshot' }),
+                postTransport({ action: 'driver_context' }),
                 canManageTransport ? postTransport({ action: 'list_transport_options' }) : $.Deferred().resolve([{ status: '1', staff: [], students: [] }]),
                 canManageTransport ? postTransport({ action: 'list_buses' }) : $.Deferred().resolve([{ status: '1', buses: [] }]),
-                canManageTransport ? postTransport({ action: 'list_routes' }) : $.Deferred().resolve([{ status: '1', routes: [] }]),
+                postTransport({ action: 'list_routes' }),
                 canManageTransport ? postTransport({ action: 'list_route_stops' }) : $.Deferred().resolve([{ status: '1', stops: [] }]),
                 canManageTransport ? postTransport({ action: 'list_assignments' }) : $.Deferred().resolve([{ status: '1', assignments: [] }]),
                 canManageTransport ? postTransport({ action: 'get_settings' }) : $.Deferred().resolve([{ status: '1', settings: {} }])
-            ).done(function(snapshotResp, optionsResp, busesResp, routesResp, stopsResp, assignmentsResp, settingsResp) {
+            ).done(function(snapshotResp, driverResp, optionsResp, busesResp, routesResp, stopsResp, assignmentsResp, settingsResp) {
                 const snapshot = snapshotResp[0] || {};
                 renderLive(snapshot.buses || []);
+                const driver = driverResp[0] || {};
+                state.driverBuses = driver.buses || [];
+                state.settings = driver.settings || state.settings || {};
 
-                if (!canManageTransport) return;
+                if (!canManageTransport) {
+                    state.routes = (routesResp[0] || {}).routes || [];
+                    fillSelects();
+                    hydrateActiveDriverTrip();
+                    return;
+                }
                 const options = optionsResp[0] || {};
                 state.staff = options.staff || [];
                 state.students = options.students || [];
@@ -435,6 +487,7 @@ $can_manage_transport = transport_is_admin();
                 state.settings = (settingsResp[0] || {}).settings || {};
                 fillSelects();
                 fillSettings();
+                hydrateActiveDriverTrip();
                 renderBuses();
                 renderRoutesAndStops();
                 renderAssignments();
@@ -484,6 +537,136 @@ $can_manage_transport = transport_is_admin();
             $('#assignment_stop_id').val(row.stop_id || '');
             $('#assignment_status').val(row.status);
         }
+
+        function hydrateActiveDriverTrip() {
+            const active = state.driverBuses.find(bus => bus.active_trip_id);
+            if (!active || driverState.tripId) return;
+            $('#driver_bus_id').val(active.id);
+            $('#driver_route_id').val(active.active_route_id || '');
+            $('#driver_direction').val(active.active_direction || 'to_home');
+            driverState.tripId = active.active_trip_id;
+            $('#driverTripStatus').text('Active trip #' + driverState.tripId + ' ready');
+            $('#startTripBtn').text('Resume GPS').prop('disabled', false);
+            $('#stopTripBtn').prop('disabled', false);
+        }
+
+        function driverDistanceMeters(a, b) {
+            if (!a || !b) return Infinity;
+            const radius = 6371000;
+            const toRad = value => value * Math.PI / 180;
+            const dLat = toRad(b.latitude - a.latitude);
+            const dLng = toRad(b.longitude - a.longitude);
+            const calc = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.latitude)) * Math.cos(toRad(b.latitude)) * Math.sin(dLng / 2) ** 2;
+            return radius * (2 * Math.atan2(Math.sqrt(calc), Math.sqrt(1 - calc)));
+        }
+
+        function startWatchingPosition() {
+            if (!navigator.geolocation) {
+                $('#driverServerStatus').text('GPS not supported');
+                return;
+            }
+            if (driverState.watchId !== null) navigator.geolocation.clearWatch(driverState.watchId);
+            driverState.watchId = navigator.geolocation.watchPosition(function(position) {
+                driverState.latestPosition = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    accuracy: position.coords.accuracy,
+                    speed: position.coords.speed,
+                    heading: position.coords.heading
+                };
+                $('#driverAccuracy').text(Math.round(position.coords.accuracy || 0) + 'm');
+            }, function(error) {
+                $('#driverServerStatus').text(error.message || 'GPS error');
+            }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 });
+        }
+
+        function stopWatchingPosition() {
+            if (driverState.watchId !== null) {
+                navigator.geolocation.clearWatch(driverState.watchId);
+                driverState.watchId = null;
+            }
+            if (driverState.sendTimer) {
+                clearInterval(driverState.sendTimer);
+                driverState.sendTimer = null;
+            }
+            driverState.latestPosition = null;
+            driverState.lastSentPoint = null;
+            driverState.lastSentAt = 0;
+        }
+
+        function sendDriverLocation() {
+            if (!driverState.tripId || !driverState.latestPosition) return;
+            const now = Date.now();
+            const intervalMs = Math.max(15, Number(state.settings.update_interval_seconds || 20)) * 1000;
+            const minMovement = Math.max(0, Number(state.settings.min_movement_meters || 30));
+            const point = { latitude: driverState.latestPosition.latitude, longitude: driverState.latestPosition.longitude };
+            if ((now - driverState.lastSentAt) < intervalMs) return;
+            if (driverDistanceMeters(driverState.lastSentPoint, point) < minMovement && driverState.lastSentAt > 0) return;
+
+            postTransport({
+                action: 'submit_location',
+                trip_id: driverState.tripId,
+                latitude: driverState.latestPosition.latitude,
+                longitude: driverState.latestPosition.longitude,
+                accuracy_meters: driverState.latestPosition.accuracy || '',
+                speed_mps: driverState.latestPosition.speed || '',
+                heading_degrees: driverState.latestPosition.heading || ''
+            }).done(function(resp) {
+                driverState.lastSentAt = now;
+                if (resp.accepted) {
+                    driverState.lastSentPoint = point;
+                    $('#driverLastSent').text(new Date().toLocaleTimeString());
+                    $('#driverServerStatus').text('Location sent');
+                } else {
+                    $('#driverServerStatus').text(resp.reason || 'Skipped');
+                }
+            }).fail(function(xhr) {
+                $('#driverServerStatus').text((xhr.responseJSON && xhr.responseJSON.err) || 'Send failed');
+            });
+        }
+
+        $('#driverTripForm').on('submit', function(event) {
+            event.preventDefault();
+            const busId = $('#driver_bus_id').val();
+            if (!busId) return toastr.error('Select a bus');
+            postTransport({
+                action: 'start_trip',
+                bus_id: busId,
+                route_id: $('#driver_route_id').val(),
+                direction: $('#driver_direction').val()
+            }).done(function(resp) {
+                if (resp.status !== '1') return toastr.error(resp.err || 'Unable to start trip');
+                driverState.tripId = resp.trip_id;
+                state.settings = resp.settings || state.settings;
+                $('#driverTripStatus').text('Active trip #' + driverState.tripId);
+                $('#startTripBtn').text('Tracking').prop('disabled', true);
+                $('#stopTripBtn').prop('disabled', false);
+                $('#driverServerStatus').text('Tracking started');
+                startWatchingPosition();
+                driverState.sendTimer = setInterval(sendDriverLocation, 3000);
+                toastr.success(resp.msg || 'Trip started');
+            }).fail(function(xhr) {
+                toastr.error((xhr.responseJSON && xhr.responseJSON.err) || 'Unable to start trip');
+            });
+        });
+
+        $('#stopTripBtn').on('click', function() {
+            if (!driverState.tripId) return;
+            postTransport({ action: 'stop_trip', trip_id: driverState.tripId }).done(function(resp) {
+                if (resp.status !== '1') return toastr.error(resp.err || 'Unable to stop trip');
+                stopWatchingPosition();
+                driverState.tripId = null;
+                $('#driverTripStatus').text('Stopped');
+                $('#driverAccuracy').text('Waiting');
+                $('#driverServerStatus').text('Tracking stopped');
+                $('#startTripBtn').text('Start').prop('disabled', false);
+                $('#stopTripBtn').prop('disabled', true);
+                toastr.success(resp.msg || 'Trip stopped');
+                refreshTransportData();
+            }).fail(function(xhr) {
+                toastr.error((xhr.responseJSON && xhr.responseJSON.err) || 'Unable to stop trip');
+            });
+        });
 
         $('#busForm, #routeForm, #stopForm, #assignmentForm, #settingsForm').on('submit', function(event) {
             event.preventDefault();
