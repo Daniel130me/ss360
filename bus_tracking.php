@@ -223,6 +223,7 @@ $can_manage_transport = transport_is_admin();
                                                 <button class="btn btn-success flex-fill" type="submit" id="startTripBtn">Start</button>
                                                 <button class="btn btn-danger flex-fill" type="button" id="stopTripBtn" disabled>Stop</button>
                                             </div>
+                                            <button class="btn btn-outline-primary btn-block mt-2" type="button" id="sendLocationNowBtn" disabled>Send current location now</button>
                                         </form>
                                     </div>
                                 </div>
@@ -610,6 +611,7 @@ $can_manage_transport = transport_is_admin();
             $('#driverTripStatus').text('Active trip #' + driverState.tripId + ' ready');
             $('#startTripBtn').text('Resume GPS').prop('disabled', false);
             $('#stopTripBtn').prop('disabled', false);
+            $('#sendLocationNowBtn').prop('disabled', false);
         }
 
         function driverDistanceMeters(a, b) {
@@ -628,18 +630,30 @@ $can_manage_transport = transport_is_admin();
                 return;
             }
             if (driverState.watchId !== null) navigator.geolocation.clearWatch(driverState.watchId);
+            $('#driverServerStatus').text('Waiting for GPS permission');
+            navigator.geolocation.getCurrentPosition(function(position) {
+                updateDriverPosition(position);
+                sendDriverLocation(true);
+            }, function(error) {
+                $('#driverServerStatus').text(error.message || 'GPS permission/location error');
+            }, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
             driverState.watchId = navigator.geolocation.watchPosition(function(position) {
-                driverState.latestPosition = {
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude,
-                    accuracy: position.coords.accuracy,
-                    speed: position.coords.speed,
-                    heading: position.coords.heading
-                };
-                $('#driverAccuracy').text(Math.round(position.coords.accuracy || 0) + 'm');
+                updateDriverPosition(position);
             }, function(error) {
                 $('#driverServerStatus').text(error.message || 'GPS error');
             }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 });
+        }
+
+        function updateDriverPosition(position) {
+            driverState.latestPosition = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                accuracy: position.coords.accuracy,
+                speed: position.coords.speed,
+                heading: position.coords.heading
+            };
+            $('#driverAccuracy').text(Math.round(position.coords.accuracy || 0) + 'm');
+            $('#driverServerStatus').text('GPS fix received');
         }
 
         function stopWatchingPosition() {
@@ -654,17 +668,23 @@ $can_manage_transport = transport_is_admin();
             driverState.latestPosition = null;
             driverState.lastSentPoint = null;
             driverState.lastSentAt = 0;
+            $('#sendLocationNowBtn').prop('disabled', true);
         }
 
-        function sendDriverLocation() {
-            if (!driverState.tripId || !driverState.latestPosition) return;
+        function sendDriverLocation(force = false) {
+            if (!driverState.tripId) return;
+            if (!driverState.latestPosition) {
+                $('#driverServerStatus').text('No GPS fix yet');
+                return;
+            }
             const now = Date.now();
             const intervalMs = Math.max(15, Number(state.settings.update_interval_seconds || 20)) * 1000;
             const minMovement = Math.max(0, Number(state.settings.min_movement_meters || 30));
             const point = { latitude: driverState.latestPosition.latitude, longitude: driverState.latestPosition.longitude };
-            if ((now - driverState.lastSentAt) < intervalMs) return;
-            if (driverDistanceMeters(driverState.lastSentPoint, point) < minMovement && driverState.lastSentAt > 0) return;
+            if (!force && (now - driverState.lastSentAt) < intervalMs) return;
+            if (!force && driverDistanceMeters(driverState.lastSentPoint, point) < minMovement && driverState.lastSentAt > 0) return;
 
+            $('#driverServerStatus').text('Sending location');
             postTransport({
                 action: 'submit_location',
                 trip_id: driverState.tripId,
@@ -703,6 +723,7 @@ $can_manage_transport = transport_is_admin();
                 $('#driverTripStatus').text('Active trip #' + driverState.tripId);
                 $('#startTripBtn').text('Tracking').prop('disabled', true);
                 $('#stopTripBtn').prop('disabled', false);
+                $('#sendLocationNowBtn').prop('disabled', false);
                 $('#driverServerStatus').text('Tracking started');
                 startWatchingPosition();
                 driverState.sendTimer = setInterval(sendDriverLocation, 3000);
@@ -728,6 +749,18 @@ $can_manage_transport = transport_is_admin();
             }).fail(function(xhr) {
                 toastr.error((xhr.responseJSON && xhr.responseJSON.err) || 'Unable to stop trip');
             });
+        });
+
+        $('#sendLocationNowBtn').on('click', function() {
+            if (!driverState.tripId) return toastr.error('Start or resume a trip first');
+            if (!navigator.geolocation) return toastr.error('GPS is not supported in this browser');
+            $('#driverServerStatus').text('Requesting current location');
+            navigator.geolocation.getCurrentPosition(function(position) {
+                updateDriverPosition(position);
+                sendDriverLocation(true);
+            }, function(error) {
+                $('#driverServerStatus').text(error.message || 'GPS permission/location error');
+            }, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
         });
 
         $('#busForm, #routeForm, #stopForm, #assignmentForm, #settingsForm').on('submit', function(event) {
