@@ -191,11 +191,11 @@ while ($row = mysqli_fetch_array($select)) {
             font-size: 0.82rem;
             font-weight: 700;
             letter-spacing: 0.3px;
-            /* color: #fff; */
-            /* background: linear-gradient(135deg, #1e1f20 0%, #000000 60%, #3a3a3a 100%); */
+            /*color: #fff;*/
+            /*background: linear-gradient(135deg, #1e1f20 0%, #000000 60%, #3a3a3a 100%);*/
             border: none;
             border-radius: 50px;
-            /* box-shadow: 0 3px 10px rgba(0, 123, 255, 0.35); */
+            /*box-shadow: 0 3px 10px rgba(0, 123, 255, 0.35);*/
             cursor: pointer;
             transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
         }
@@ -516,10 +516,10 @@ while ($row = mysqli_fetch_array($select)) {
 
                                         <div class="d-flex flex-wrap mt-3 mb-2" style="gap: 10px;">
                                             <button class="btn-print-report" id="preview-term-pdf" onclick="preview_report_card_multiple('student_page','term')">
-                                                <i class="fas fa-print"></i> Term Report
+                                                <i class="fas fa-print"></i> Print Term Report
                                             </button>
-                                            <button class="btn-print-report" id="preview-session-pdf" onclick="preview_report_card_multiple('student_page','session')">
-                                                <i class="fas fa-print"></i> Cumulative Report
+                                            <button class="btn-print-report d-none" id="preview-session-pdf" onclick="preview_report_card_multiple('student_page','session')">
+                                                <i class="fas fa-print"></i> Print Cumulative Report
                                             </button>
                                         </div>
                                     </div>
@@ -613,7 +613,7 @@ while ($row = mysqli_fetch_array($select)) {
                                                 </table>
                                             </div>
 
-                                            <div class="psychomotive_skills_section">
+                                             <div class="psychomotive_skills_section">
                                                 <p class="font-weight-bold text-muted">Psychomotive Skills</p>
                                                 <table class="behaviour_report_table w-100">
                                                     <thead>
@@ -941,7 +941,6 @@ while ($row = mysqli_fetch_array($select)) {
     </script>
     <script src="../dist/js/accounts.js?v=113join"></script>
     <script src="../dist/js/skul.js?v=0op"></script>
-    <script src="../dist/js/report_template_rendering.js"></script>
     <script>
         setTimeout(get_score_data(),
             setTimeout(() => {
