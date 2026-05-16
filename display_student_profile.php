@@ -1089,7 +1089,6 @@ while ($row = mysqli_fetch_array($select)) {
             const sessionId = $('#select_session_field').val();
             const historyBeforeMessage = studentAiHistory.slice(-6);
             append_student_ai_message('user', message);
-            studentAiHistory.push({ role: 'user', content: message });
             input.val('');
 
             $('#student_ai_send_btn').prop('disabled', true).html('Thinking...');
@@ -1113,15 +1112,12 @@ while ($row = mysqli_fetch_array($select)) {
                     $('#student_ai_loading').remove();
                     if (!response || response.status !== 'success') {
                         append_student_ai_message('assistant', response && response.message ? response.message : 'We cannot process this request at this time. Please try again in a few minutes.');
-                        render_student_ai_suggestions(
-                            response && Array.isArray(response.suggested_prompts) && response.suggested_prompts.length
-                                ? response.suggested_prompts
-                                : studentAiLastSuggestions
-                        );
+                        render_student_ai_suggestions(studentAiLastSuggestions);
                         return;
                     }
 
                     append_student_ai_message('assistant', response.reply);
+                    studentAiHistory.push({ role: 'user', content: message });
                     studentAiHistory.push({ role: 'assistant', content: response.reply });
                     render_student_ai_suggestions(response.suggested_prompts || []);
                 },

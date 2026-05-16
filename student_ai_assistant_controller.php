@@ -87,6 +87,51 @@ function ss360_check_assistant_rate_limit($conn, $user_id)
     return ['allowed' => true, 'limit' => $limit, 'count' => $count + 1];
 }
 
+function ss360_student_ai_cache_key($school_id, $student_id, $class_id, $session_id, $term_id)
+{
+    return implode(':', [
+        (int)$school_id,
+        (int)$student_id,
+        (int)$class_id,
+        (int)$session_id,
+        preg_replace('/[^a-zA-Z0-9_-]/', '', (string)$term_id),
+    ]);
+}
+
+function ss360_get_cached_student_ai_context($conn, $school_id, $student_id, $class_id, $session_id, $term_id)
+{
+    $cache_key = ss360_student_ai_cache_key($school_id, $student_id, $class_id, $session_id, $term_id);
+    $cache_ttl = 600;
+
+    if (!isset($_SESSION['student_ai_context_cache']) || !is_array($_SESSION['student_ai_context_cache'])) {
+        $_SESSION['student_ai_context_cache'] = [];
+    }
+
+    $cached = $_SESSION['student_ai_context_cache'][$cache_key] ?? null;
+    if (is_array($cached) && isset($cached['created_at'], $cached['context']) && (time() - (int)$cached['created_at']) <= $cache_ttl) {
+        return ['status' => 'success', 'context' => $cached['context'], 'cache' => 'hit'];
+    }
+
+    $context_result = ss360_build_student_ai_context_base($conn, $school_id, $student_id, $class_id, $session_id, $term_id);
+    if ($context_result['status'] !== 'success') {
+        return $context_result;
+    }
+
+    $_SESSION['student_ai_context_cache'][$cache_key] = [
+        'created_at' => time(),
+        'context' => $context_result['context'],
+    ];
+
+    if (count($_SESSION['student_ai_context_cache']) > 8) {
+        uasort($_SESSION['student_ai_context_cache'], function ($a, $b) {
+            return ($a['created_at'] ?? 0) <=> ($b['created_at'] ?? 0);
+        });
+        $_SESSION['student_ai_context_cache'] = array_slice($_SESSION['student_ai_context_cache'], -8, null, true);
+    }
+
+    return ['status' => 'success', 'context' => $context_result['context'], 'cache' => 'miss'];
+}
+
 $action = $_POST['action'] ?? '';
 if ($action !== 'chat') {
     echo json_encode(['status' => 'error', 'message' => 'Invalid action']);
@@ -116,11 +161,12 @@ if (!$rate['allowed']) {
     exit;
 }
 
-$context_result = ss360_build_student_ai_context($conn, $school_id, $student_id, $class_id, $session_id, $term_id, $message);
+$context_result = ss360_get_cached_student_ai_context($conn, $school_id, $student_id, $class_id, $session_id, $term_id);
 if ($context_result['status'] !== 'success') {
     echo json_encode($context_result);
     exit;
 }
+$context_result['context'] = ss360_filter_context_for_question($context_result['context'], $message);
 
 $history = ss360_get_short_history($_POST['history'] ?? '[]');
 

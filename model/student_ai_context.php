@@ -434,7 +434,7 @@ function ss360_filter_context_for_question($context, $message)
     return $context;
 }
 
-function ss360_build_student_ai_context($conn, $school_id, $student_id, $class_id, $session_id, $term_id, $message = '')
+function ss360_build_student_ai_context_base($conn, $school_id, $student_id, $class_id, $session_id, $term_id)
 {
     $profile = ss360_get_student_ai_profile($conn, $school_id, $student_id, $class_id, $session_id);
     if (!$profile) {
@@ -470,6 +470,19 @@ function ss360_build_student_ai_context($conn, $school_id, $student_id, $class_i
 
     return [
         'status' => 'success',
-        'context' => ss360_filter_context_for_question($context, $message),
+        'context' => $context,
+    ];
+}
+
+function ss360_build_student_ai_context($conn, $school_id, $student_id, $class_id, $session_id, $term_id, $message = '')
+{
+    $context_result = ss360_build_student_ai_context_base($conn, $school_id, $student_id, $class_id, $session_id, $term_id);
+    if ($context_result['status'] !== 'success') {
+        return $context_result;
+    }
+
+    return [
+        'status' => 'success',
+        'context' => ss360_filter_context_for_question($context_result['context'], $message),
     ];
 }
