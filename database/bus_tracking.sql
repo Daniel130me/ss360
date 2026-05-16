@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS `bus_student_assignments` (
   `datecreated` DATETIME NOT NULL,
   `dateupdated` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uniq_bus_student_active` (`school_id`, `student_id`, `status`),
+  KEY `idx_bus_student_active` (`school_id`, `student_id`, `status`),
   KEY `idx_bus_assignments_bus` (`school_id`, `bus_id`, `status`),
   KEY `idx_bus_assignments_student` (`school_id`, `student_id`, `status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

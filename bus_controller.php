@@ -387,6 +387,16 @@ switch ($action) {
             bus_json(['status' => '0', 'err' => 'Bus and student are required'], 422);
         }
 
+        if ($status === 1) {
+            bus_execute(
+                "UPDATE bus_student_assignments
+                 SET status = 0, updatedby = ?, dateupdated = ?
+                 WHERE school_id = ? AND student_id = ? AND id <> ?",
+                'isiii',
+                [$user_id, $date, $school_id, $student_id, $assignment_id]
+            );
+        }
+
         if ($assignment_id > 0) {
             bus_execute(
                 "UPDATE bus_student_assignments
