@@ -615,7 +615,7 @@ while ($row = mysqli_fetch_array($select)) {
                             </div>
                         </div>
                     </div>
-                    <div class="container-fluid col-md-6">
+                    <div class="container-fluid col-md-9" id="middle_panel">
                         <div class="input-group mb-3 d-flex align-items-md-center align-items-start" style="width: 300px;">
                             <label for="" class="mb-0 mr-2 text-muted">Select Session:</label>
                             <select class="form-control select2" onchange="get_score_data()" id="select_session_field" style="width: 50%;">
@@ -1113,6 +1113,7 @@ while ($row = mysqli_fetch_array($select)) {
 
         function talk_to_ai() {
             $('#student_ai_assistant_panel').show();
+            $('#middle_panel').removeClass('col-md-9').addClass('col-md-6');
             if (!studentAiStarted) {
                 append_student_ai_message(
                     'assistant',
@@ -1131,6 +1132,7 @@ while ($row = mysqli_fetch_array($select)) {
 
         function close_student_ai_assistant() {
             $('#student_ai_assistant_panel').hide();
+            $('#middle_panel').removeClass('col-md-6').addClass('col-md-9');
         }
 
         function send_student_ai_message() {
