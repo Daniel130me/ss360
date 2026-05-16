@@ -191,6 +191,66 @@ while ($row = mysqli_fetch_array($select)) {
             margin-bottom: 16px;
             z-index: 1000;
         }
+
+        #student_ai_assistant_panel {
+            display: none;
+        }
+
+        .ai-chat-window {
+            max-height: 420px;
+            overflow-y: auto;
+            border: 1px solid #eef1f6;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+
+        .ai-message {
+            border-radius: 8px;
+            padding: 9px 11px;
+            margin-bottom: 8px;
+            line-height: 1.35;
+        }
+
+        .ai-message.user {
+            margin-left: 18px;
+            background: #007bff;
+            color: #fff;
+        }
+
+        .ai-message.assistant {
+            margin-right: 18px;
+            background: #fff;
+            color: #263238;
+            border: 1px solid #e8edf3;
+        }
+
+        .ai-message.assistant p {
+            margin-bottom: 8px;
+        }
+
+        .ai-message.assistant ul {
+            padding-left: 18px;
+            margin-bottom: 8px;
+        }
+
+        .ai-message.assistant li {
+            margin-bottom: 5px;
+        }
+
+        .ai-suggestion-btn {
+            border: 1px solid #d8e4f8;
+            background: #fff;
+            color: #007bff;
+            border-radius: 6px;
+            padding: 5px 8px;
+            margin: 0 5px 6px 0;
+            font-size: 12px;
+            text-align: left;
+        }
+
+        .ai-suggestion-btn:hover {
+            background: #eef6ff;
+        }
     </style>
 </head>
 
@@ -555,7 +615,7 @@ while ($row = mysqli_fetch_array($select)) {
                             </div>
                         </div>
                     </div>
-                    <div class="container-fluid col-md-9">
+                    <div class="container-fluid col-md-6">
                         <div class="input-group mb-3 d-flex align-items-md-center align-items-start" style="width: 300px;">
                             <label for="" class="mb-0 mr-2 text-muted">Select Session:</label>
                             <select class="form-control select2" onchange="get_score_data()" id="select_session_field" style="width: 50%;">
@@ -594,7 +654,11 @@ while ($row = mysqli_fetch_array($select)) {
                                             onclick="table_visual_Score_toggle(this)">
                                             <i class="material-symbols-outlined mr-1">legend_toggle</i> Show Chart
                                         </button>
-
+                                        <button type="button" style="padding: 4px 1px 0px 2px; background-color:white; border-radius: 5px; border:none;"
+                                            id="talk_to_ai_btn" class="ml-3 d-flex accent"
+                                            onclick="talk_to_ai()">
+                                            <i class="material-symbols-outlined mr-1">smart_toy</i> Talk to an AI assistant
+                                        </button>
                                     </div>
                                     <!-- </div> -->
                                     <div id="table_visuals_display" class="pt-3">
@@ -761,6 +825,25 @@ while ($row = mysqli_fetch_array($select)) {
                             </div>
                         </div>
                     </div>
+                    <div class="container-fluid col-12 col-md-3 mb-3" id="student_ai_assistant_panel">
+                        <div class="py-3 px-15 bg-white space_content_box" style="border-radius: 10px; position: relative">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h3 style="font-size: 1.3rem; font-weight:bold;" class="text-primary mb-1">SS360 AI Assistant</h3>
+                                <button type="button" class="btn btn-sm btn-light" onclick="close_student_ai_assistant()" title="Close assistant">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <p class="small text-muted mb-2">
+                                Hello <?= htmlspecialchars($_SESSION['firstname'] . ' ' . $_SESSION['lastname']) ?>, let's talk about <?= htmlspecialchars($data[0]['lastname'] . ' ' . $data[0]['firstname']) ?> using score evidence only.
+                            </p>
+                            <div id="student_ai_chat_window" class="ai-chat-window p-2 mb-2"></div>
+                            <div id="student_ai_suggestions" class="mb-2"></div>
+                            <textarea id="student_ai_message" class="form-control form-control-sm mb-2" rows="3" placeholder="Ask about strengths, weak subjects, trends, or recommendations"></textarea>
+                            <button type="button" id="student_ai_send_btn" class="btn btn-primary btn-sm w-100" onclick="send_student_ai_message()">
+                                <i class="material-symbols-outlined mr-1" style="font-size: 17px; vertical-align: middle;">send</i> Send
+                            </button>
+                        </div>
+                    </div>
                 </div>
              
 
@@ -898,6 +981,161 @@ while ($row = mysqli_fetch_array($select)) {
     <script>
         let class_id = <?= $data[0]['class_id'] ?>;
         let student_id = <?= $data[0]['id'] ?>;
+        let studentAiHistory = [];
+        let studentAiStarted = false;
+        let studentAiLastSuggestions = [];
+
+        function format_student_ai_reply(content) {
+            let safe = $('<div>').text(content || '').html();
+            safe = safe.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            const lines = safe.split(/\n+/);
+            let html = '';
+            let listOpen = false;
+
+            lines.forEach(function(line) {
+                const trimmed = line.trim();
+                if (!trimmed) {
+                    return;
+                }
+
+                if (/^[-*]\s+/.test(trimmed)) {
+                    if (!listOpen) {
+                        html += '<ul>';
+                        listOpen = true;
+                    }
+                    html += '<li>' + trimmed.replace(/^[-*]\s+/, '') + '</li>';
+                    return;
+                }
+
+                if (listOpen) {
+                    html += '</ul>';
+                    listOpen = false;
+                }
+                html += '<p>' + trimmed + '</p>';
+            });
+
+            if (listOpen) {
+                html += '</ul>';
+            }
+
+            return html || '<p>No response available.</p>';
+        }
+
+        function append_student_ai_message(role, content) {
+            const safeRole = role === 'user' ? 'user' : 'assistant';
+            const message = $('<div>')
+                .addClass('ai-message')
+                .addClass(safeRole);
+            if (safeRole === 'assistant') {
+                message.html(format_student_ai_reply(content));
+            } else {
+                message.text(content || '');
+            }
+            $('#student_ai_chat_window').append(message);
+            const chatWindow = document.getElementById('student_ai_chat_window');
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function render_student_ai_suggestions(suggestions) {
+            const container = $('#student_ai_suggestions');
+            container.empty();
+            if (!Array.isArray(suggestions)) {
+                return;
+            }
+
+            studentAiLastSuggestions = suggestions.slice(0, 4);
+            studentAiLastSuggestions.forEach(function(prompt) {
+                const button = $('<button type="button">')
+                    .addClass('ai-suggestion-btn')
+                    .text(prompt)
+                    .on('click', function() {
+                        $('#student_ai_message').val(prompt);
+                        send_student_ai_message();
+                    });
+                container.append(button);
+            });
+        }
+
+        function talk_to_ai() {
+            $('#student_ai_assistant_panel').show();
+            if (!studentAiStarted) {
+                append_student_ai_message(
+                    'assistant',
+                    'Hi, I can help interpret ' + firstname + ' ' + lastname + '\'s scores, trends, class comparison, strengths, weaknesses, and next-step recommendations.'
+                );
+                render_student_ai_suggestions([
+                    'Summarize this student performance',
+                    'What are the strongest subjects?',
+                    'Where is the student declining?',
+                    'Suggest intervention steps'
+                ]);
+                studentAiStarted = true;
+            }
+            $('#student_ai_message').focus();
+        }
+
+        function close_student_ai_assistant() {
+            $('#student_ai_assistant_panel').hide();
+        }
+
+        function send_student_ai_message() {
+            const input = $('#student_ai_message');
+            const message = input.val().trim();
+            if (!message) {
+                return;
+            }
+
+            const selectedTerm = $('.term.select_btn.active').attr('data-name') || 'summary';
+            const sessionId = $('#select_session_field').val();
+            const historyBeforeMessage = studentAiHistory.slice(-6);
+            append_student_ai_message('user', message);
+            studentAiHistory.push({ role: 'user', content: message });
+            input.val('');
+
+            $('#student_ai_send_btn').prop('disabled', true).html('Thinking...');
+            const loading = $('<div>').addClass('ai-message assistant').attr('id', 'student_ai_loading').text('Reviewing score evidence...');
+            $('#student_ai_chat_window').append(loading);
+
+            $.ajax({
+                url: '../student_ai_assistant_controller.php',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    action: 'chat',
+                    student_id: student_id,
+                    class_id: class_id,
+                    session_id: sessionId,
+                    term_id: selectedTerm,
+                    message: message,
+                    history: JSON.stringify(historyBeforeMessage)
+                },
+                success: function(response) {
+                    $('#student_ai_loading').remove();
+                    if (!response || response.status !== 'success') {
+                        append_student_ai_message('assistant', response && response.message ? response.message : 'We cannot process this request at this time. Please try again in a few minutes.');
+                        render_student_ai_suggestions(
+                            response && Array.isArray(response.suggested_prompts) && response.suggested_prompts.length
+                                ? response.suggested_prompts
+                                : studentAiLastSuggestions
+                        );
+                        return;
+                    }
+
+                    append_student_ai_message('assistant', response.reply);
+                    studentAiHistory.push({ role: 'assistant', content: response.reply });
+                    render_student_ai_suggestions(response.suggested_prompts || []);
+                },
+                error: function(xhr) {
+                    $('#student_ai_loading').remove();
+                    console.error('student AI assistant error:', xhr && xhr.responseText);
+                    append_student_ai_message('assistant', 'We cannot process this request at this time. Please try again in a few minutes.');
+                    render_student_ai_suggestions(studentAiLastSuggestions);
+                },
+                complete: function() {
+                    $('#student_ai_send_btn').prop('disabled', false).html('<i class="material-symbols-outlined mr-1" style="font-size: 17px; vertical-align: middle;">send</i> Send');
+                }
+            });
+        }
         let school_id = <?= $_SESSION['school_id'] ?>;
         let myschl = school_id;
         let photo = '<?= $data[0]['photo'] ?>';
