@@ -345,7 +345,11 @@ $can_manage_transport = transport_is_admin();
                                         <div class="form-group"><label>Update interval seconds</label><input type="number" min="15" class="form-control" name="update_interval_seconds" id="update_interval_seconds"></div>
                                         <div class="form-group"><label>Stale after seconds</label><input type="number" min="30" class="form-control" name="stale_after_seconds" id="stale_after_seconds"></div>
                                         <div class="form-group"><label>Minimum movement meters</label><input type="number" min="0" class="form-control" name="min_movement_meters" id="min_movement_meters"></div>
-                                        <div class="form-group"><label>Maximum accuracy meters</label><input type="number" min="20" class="form-control" name="max_accuracy_meters" id="max_accuracy_meters"></div>
+                                        <div class="form-group">
+                                            <label>Maximum accuracy meters</label>
+                                            <input type="number" min="20" class="form-control" name="max_accuracy_meters" id="max_accuracy_meters">
+                                            <small class="form-text text-muted">Use 100m for normal phone testing; tighten later if drivers test outdoors reliably.</small>
+                                        </div>
                                         <div class="form-group"><label>History retention days</label><input type="number" min="1" class="form-control" name="history_retention_days" id="history_retention_days"></div>
                                         <div class="form-group d-flex align-items-end"><button class="btn btn-primary btn-block" type="submit">Save Settings</button></div>
                                     </form>
@@ -700,11 +704,22 @@ $can_manage_transport = transport_is_admin();
                     $('#driverLastSent').text(new Date().toLocaleTimeString());
                     $('#driverServerStatus').text('Location sent');
                 } else {
-                    $('#driverServerStatus').text(resp.reason || 'Skipped');
+                    $('#driverServerStatus').text(driverSkipMessage(resp));
                 }
             }).fail(function(xhr) {
                 $('#driverServerStatus').text((xhr.responseJSON && xhr.responseJSON.err) || 'Send failed');
             });
+        }
+
+        function driverSkipMessage(resp) {
+            if (resp.reason === 'low_accuracy') {
+                const actual = resp.accuracy_meters ? Math.round(Number(resp.accuracy_meters)) + 'm' : 'too low';
+                const max = resp.max_accuracy_meters ? Math.round(Number(resp.max_accuracy_meters)) + 'm' : 'current limit';
+                return 'GPS accuracy ' + actual + '; limit is ' + max;
+            }
+            if (resp.reason === 'throttled') return 'Waiting for update interval';
+            if (resp.reason === 'minimal_movement') return 'Skipped: bus has barely moved';
+            return resp.reason || 'Skipped';
         }
 
         $('#driverTripForm').on('submit', function(event) {

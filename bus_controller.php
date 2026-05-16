@@ -511,7 +511,13 @@ switch ($action) {
 
         $settings = transport_get_tracking_settings($school_id);
         if ($accuracy !== null && $accuracy > $settings['max_accuracy_meters']) {
-            bus_json(['status' => '1', 'accepted' => false, 'reason' => 'low_accuracy']);
+            bus_json([
+                'status' => '1',
+                'accepted' => false,
+                'reason' => 'low_accuracy',
+                'accuracy_meters' => round($accuracy, 2),
+                'max_accuracy_meters' => (int) $settings['max_accuracy_meters'],
+            ]);
         }
 
         $current = bus_fetch_one(
