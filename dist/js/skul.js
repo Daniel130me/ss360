@@ -8977,10 +8977,10 @@ async function post_table_data(filtertype, viewOrPostPage) {
                 scrollX: true,
                 paging: false,
                 ordering: false,
-                fixedColumns: {
-                    left: 1,
-                    right: 0
-                }
+                // fixedColumns: {
+                //     left: 1,
+                //     right: 0
+                // }
             });
             hideScoreSaveMessage();
             initializeScoreChangeTracking();
