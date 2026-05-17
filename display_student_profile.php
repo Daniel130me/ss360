@@ -836,6 +836,9 @@ while ($row = mysqli_fetch_array($select)) {
                             <p class="small text-muted mb-2">
                                 Hello <?= htmlspecialchars($_SESSION['firstname'] . ' ' . $_SESSION['lastname']) ?>, let's talk about <?= htmlspecialchars($data[0]['lastname'] . ' ' . $data[0]['firstname']) ?> using score evidence only.
                             </p>
+                            <span id="student_ai_usage_display" class="badge badge-info p-2 mb-2" style="display:none; font-size: 13px;">
+                                Daily AI Use: <span id="student-ai-usage-count">0</span> / <span id="student-ai-usage-limit">5</span> (<span id="student-ai-usage-remaining">5</span> left)
+                            </span>
                             <div id="student_ai_chat_window" class="ai-chat-window p-2 mb-2"></div>
                             <div id="student_ai_suggestions" class="mb-2"></div>
                             <textarea id="student_ai_message" class="form-control form-control-sm mb-2" rows="3" placeholder="Ask about strengths, weak subjects, trends, or recommendations"></textarea>
@@ -984,9 +987,58 @@ while ($row = mysqli_fetch_array($select)) {
         let studentAiHistory = [];
         let studentAiStarted = false;
         let studentAiLastSuggestions = [];
+        let studentAiUsage = {
+            usage: 0,
+            limit: 5,
+            remaining: null
+        };
+
+        function update_student_ai_usage_display(usage, limit, remaining) {
+            const safeUsage = parseInt(usage, 10) || 0;
+            const safeLimit = parseInt(limit, 10) || 0;
+            const safeRemaining = remaining !== undefined && remaining !== null
+                ? (parseInt(remaining, 10) || 0)
+                : Math.max(0, safeLimit - safeUsage);
+
+            studentAiUsage = {
+                usage: safeUsage,
+                limit: safeLimit,
+                remaining: safeRemaining
+            };
+
+            $('#student-ai-usage-count').text(safeUsage);
+            $('#student-ai-usage-limit').text(safeLimit);
+            $('#student-ai-usage-remaining').text(safeRemaining);
+            $('#student_ai_usage_display')
+                .show()
+                .toggleClass('badge-danger', safeRemaining <= 0)
+                .toggleClass('badge-info', safeRemaining > 0);
+
+            if (safeRemaining <= 0) {
+                $('#student_ai_send_btn').prop('disabled', true).html('Limit Reached');
+            }
+        }
+
+        function load_student_ai_usage() {
+            $.ajax({
+                url: '../student_ai_assistant_controller.php',
+                type: 'POST',
+                dataType: 'json',
+                data: { action: 'get_usage_count' },
+                success: function(response) {
+                    if (response && response.status === 'success') {
+                        update_student_ai_usage_display(response.usage, response.limit, response.remaining);
+                    }
+                },
+                error: function(xhr) {
+                    console.error('student AI usage check error:', xhr && xhr.responseText);
+                }
+            });
+        }
 
         function format_student_ai_reply(content) {
-            let safe = $('<div>').text(content || '').html();
+            const normalizedContent = (content || '').replace(/\\r\\n|\\n|\\r/g, '\n');
+            let safe = $('<div>').text(normalizedContent).html();
             safe = safe.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             const lines = safe.split(/\n+/);
             let html = '';
@@ -1037,7 +1089,8 @@ while ($row = mysqli_fetch_array($select)) {
         }
 
         function get_student_ai_reply_chunks(content) {
-            const safe = $('<div>').text(content || '').html();
+            const normalizedContent = (content || '').replace(/\\r\\n|\\n|\\r/g, '\n');
+            const safe = $('<div>').text(normalizedContent).html();
             const paragraphs = safe.split(/\n{2,}/).map(function(part) {
                 return part.trim();
             }).filter(Boolean);
@@ -1114,6 +1167,7 @@ while ($row = mysqli_fetch_array($select)) {
         function talk_to_ai() {
             $('#student_ai_assistant_panel').show();
             $('#middle_panel').removeClass('col-md-9').addClass('col-md-6');
+            load_student_ai_usage();
             if (!studentAiStarted) {
                 append_student_ai_message(
                     'assistant',
@@ -1136,6 +1190,11 @@ while ($row = mysqli_fetch_array($select)) {
         }
 
         function send_student_ai_message() {
+            if (studentAiUsage.remaining !== null && studentAiUsage.remaining <= 0) {
+                append_student_ai_message('assistant', 'Daily AI limit reached. Please try again tomorrow or ask an administrator to increase your limit.');
+                return;
+            }
+
             const input = $('#student_ai_message');
             const message = input.val().trim();
             if (!message) {
@@ -1168,6 +1227,9 @@ while ($row = mysqli_fetch_array($select)) {
                 success: function(response) {
                     $('#student_ai_loading').remove();
                     if (!response || response.status !== 'success') {
+                        if (response && response.limit !== undefined) {
+                            update_student_ai_usage_display(response.usage || 0, response.limit, response.remaining || 0);
+                        }
                         append_student_ai_message('assistant', response && response.message ? response.message : 'We cannot process this request at this time. Please try again in a few minutes.');
                         render_student_ai_suggestions(studentAiLastSuggestions);
                         return;
@@ -1175,6 +1237,9 @@ while ($row = mysqli_fetch_array($select)) {
 
                     studentAiHistory.push({ role: 'user', content: message });
                     studentAiHistory.push({ role: 'assistant', content: response.reply });
+                    if (response.usage) {
+                        update_student_ai_usage_display(response.usage.count, response.usage.limit, response.usage.remaining);
+                    }
                     append_student_ai_message_stream(response.reply, function() {
                         render_student_ai_suggestions(response.suggested_prompts || []);
                     });
@@ -1186,7 +1251,10 @@ while ($row = mysqli_fetch_array($select)) {
                     render_student_ai_suggestions(studentAiLastSuggestions);
                 },
                 complete: function() {
-                    $('#student_ai_send_btn').prop('disabled', false).html('<i class="material-symbols-outlined mr-1" style="font-size: 17px; vertical-align: middle;">send</i> Send');
+                    const hasReachedLimit = studentAiUsage.remaining !== null && studentAiUsage.remaining <= 0;
+                    $('#student_ai_send_btn')
+                        .prop('disabled', hasReachedLimit)
+                        .html(hasReachedLimit ? 'Limit Reached' : '<i class="material-symbols-outlined mr-1" style="font-size: 17px; vertical-align: middle;">send</i> Send');
                 }
             });
         }

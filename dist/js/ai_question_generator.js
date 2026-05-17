@@ -28,7 +28,7 @@ function openAIGeneratorModal() {
             try {
                 const res = JSON.parse(response);
                 if (res.status === 'success') {
-                    $('#ai-usage-count').text(res.usage);
+                    updateAIUsageBadge(res.usage, res.limit, res.remaining);
                     $('#ai-usage-display').show();
                     
                     if (res.usage >= res.limit) {
@@ -46,6 +46,16 @@ function openAIGeneratorModal() {
     });
 
     $('#aiQuestionGeneratorModal').modal('show');
+}
+
+function updateAIUsageBadge(usage, limit, remaining) {
+    const safeUsage = parseInt(usage, 10) || 0;
+    const safeLimit = parseInt(limit, 10) || 0;
+    const safeRemaining = remaining !== undefined ? (parseInt(remaining, 10) || 0) : Math.max(0, safeLimit - safeUsage);
+
+    $('#ai-usage-count').text(safeUsage);
+    $('#ai-usage-limit').text(safeLimit);
+    $('#ai-usage-remaining').text(safeRemaining);
 }
 
 function generateQuestionsWithAI() {
@@ -104,8 +114,8 @@ function generateQuestionsWithAI() {
                     
                     // Update usage if provided in response
                     if (res.usage !== undefined) {
-                        $('#ai-usage-count').text(res.usage);
-                        if (res.usage >= 5) {
+                        updateAIUsageBadge(res.usage, res.limit, res.remaining);
+                        if (res.usage >= res.limit) {
                             $('#ai-usage-display').removeClass('badge-info').addClass('badge-danger');
                             $('#ai-generate-btn').prop('disabled', true).text('Limit Reached');
                         }

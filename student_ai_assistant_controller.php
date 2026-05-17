@@ -8,6 +8,7 @@ if (!isset($_SESSION['userid'])) {
 }
 
 include_once("model/connect.php");
+include_once("model/ai_usage.php");
 include_once("model/student_ai_context.php");
 include_once("model/ai_client.php");
 
@@ -19,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 function ss360_ai_clean_text($value, $limit = 1000)
 {
     $value = trim(strip_tags((string)$value));
+    $value = str_replace(["\\r\\n", "\\n", "\\r"], "\n", $value);
     if (strlen($value) > $limit) {
         $value = substr($value, 0, $limit);
     }
@@ -42,49 +44,6 @@ function ss360_get_short_history($history_json)
         }
     }
     return $clean;
-}
-
-function ss360_check_assistant_rate_limit($conn, $user_id)
-{
-    $today = date('Y-m-d');
-    $limit = 30;
-
-    $create_sql = "CREATE TABLE IF NOT EXISTS ai_assistant_usage_logs (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        user_id INT NOT NULL,
-        usage_date DATE NOT NULL,
-        message_count INT DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP NULL DEFAULT NULL,
-        UNIQUE KEY user_date (user_id, usage_date)
-    )";
-    mysqli_query($conn, $create_sql);
-
-    $stmt = mysqli_prepare($conn, "SELECT message_count FROM ai_assistant_usage_logs WHERE user_id = ? AND usage_date = ?");
-    mysqli_stmt_bind_param($stmt, 'is', $user_id, $today);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    $row = mysqli_fetch_assoc($result);
-    mysqli_stmt_close($stmt);
-
-    $count = (int)($row['message_count'] ?? 0);
-    if ($count >= $limit) {
-        return ['allowed' => false, 'limit' => $limit, 'count' => $count];
-    }
-
-    if ($row) {
-        $stmt = mysqli_prepare($conn, "UPDATE ai_assistant_usage_logs SET message_count = message_count + 1, updated_at = NOW() WHERE user_id = ? AND usage_date = ?");
-        mysqli_stmt_bind_param($stmt, 'is', $user_id, $today);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-    } else {
-        $stmt = mysqli_prepare($conn, "INSERT INTO ai_assistant_usage_logs (user_id, usage_date, message_count) VALUES (?, ?, 1)");
-        mysqli_stmt_bind_param($stmt, 'is', $user_id, $today);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-    }
-
-    return ['allowed' => true, 'limit' => $limit, 'count' => $count + 1];
 }
 
 function ss360_student_ai_cache_key($school_id, $student_id, $class_id, $session_id, $term_id)
@@ -133,6 +92,17 @@ function ss360_get_cached_student_ai_context($conn, $school_id, $student_id, $cl
 }
 
 $action = $_POST['action'] ?? '';
+if ($action === 'get_usage_count') {
+    $usage = ss360_ai_usage_get($conn, intval($_SESSION['userid']));
+    echo json_encode([
+        'status' => 'success',
+        'usage' => $usage['used'],
+        'limit' => $usage['limit'],
+        'remaining' => $usage['remaining'],
+    ]);
+    exit;
+}
+
 if ($action !== 'chat') {
     echo json_encode(['status' => 'error', 'message' => 'Invalid action']);
     exit;
@@ -151,12 +121,14 @@ if ($student_id <= 0 || $class_id <= 0 || $session_id <= 0 || $message === '') {
     exit;
 }
 
-$rate = ss360_check_assistant_rate_limit($conn, $user_id);
-if (!$rate['allowed']) {
+$usage_check = ss360_ai_usage_can_consume($conn, $user_id, 1);
+if (!$usage_check['allowed']) {
     echo json_encode([
         'status' => 'error',
-        'message' => 'Daily AI assistant limit reached. Please try again tomorrow.',
-        'limit' => $rate['limit'],
+        'message' => 'Daily AI limit reached. Please try again tomorrow',
+        'usage' => $usage_check['used'],
+        'limit' => $usage_check['limit'],
+        'remaining' => $usage_check['remaining'],
     ]);
     exit;
 }
@@ -178,7 +150,10 @@ Be conversational, practical, and suggestive.
 Format reply for readability with short paragraphs and simple bullet lists.
 Use section labels such as \"Quick summary\", \"Strengths\", \"Concerns\", and \"Recommended next steps\" when useful.
 Use Markdown-style bold only for important subject names or section labels.
-Return ONLY valid JSON with:
+Return ONLY valid JSON. The first non-whitespace character must be { and the last must be }.
+Do not write Markdown outside the JSON object. Put the full staff-facing Markdown text inside the reply string.
+Use escaped newlines inside JSON strings when you need paragraphs or bullet lists.
+Return exactly this JSON shape:
 {
   \"reply\": \"staff-facing response\",
   \"suggested_prompts\": [\"short next question\", \"short next question\", \"short next question\"],
@@ -201,11 +176,19 @@ foreach ($history as $item) {
 
 $messages[] = ['role' => 'user', 'content' => $message];
 
-$ai_result = ss360_ai_chat_json($messages, 0.35);
+$ai_result = ss360_ai_chat_json($conn, $messages, 0.35, [
+    'response_format_json' => true,
+    'recover_failed_generation' => true,
+]);
 if ($ai_result['status'] !== 'success') {
     echo json_encode([
         'status' => 'temporary_error',
         'message' => 'We cannot process this request at this time. Please try again in a few minutes.',
+        'debug_message' => $ai_result['message'] ?? 'Unknown AI provider error.',
+        'debug' => [
+            'http_status' => $ai_result['http_status'] ?? null,
+            'provider_debug' => $ai_result['debug'] ?? null,
+        ],
         'suggested_prompts' => [
             'Summarize this student performance',
             'What are the strongest subjects?',
@@ -234,13 +217,16 @@ $suggested = array_slice(array_values(array_map(function ($item) {
     return ss360_ai_clean_text($item, 90);
 }, $suggested)), 0, 4);
 
+$usage = ss360_ai_usage_record_success($conn, $user_id, 1);
+
 echo json_encode([
     'status' => 'success',
     'reply' => $reply,
     'suggested_prompts' => $suggested,
     'insights' => is_array($data['insights'] ?? null) ? $data['insights'] : [],
     'usage' => [
-        'count' => $rate['count'],
-        'limit' => $rate['limit'],
+        'count' => $usage['used'],
+        'limit' => $usage['limit'],
+        'remaining' => $usage['remaining'],
     ],
 ]);
