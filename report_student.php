@@ -273,6 +273,7 @@ $stud_row = mysqli_fetch_array($select);
     <script>
         var skul_settings = <?= $_SESSION['skul_settings'] ?>;
     </script>
+    <script src="dist/js/report_template_rendering.js?v=20260519"></script>
     <script src="dist/js/skul.js"></script>
     <script>
         var tabhead = document.getElementById("tabhead");

@@ -479,8 +479,8 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
         let myschl = <?php echo $_SESSION['school_id'] ?>
     </script>
 
+    <script src="../dist/js/report_template_rendering.js?v=20260519"></script>
     <script src="../dist/js/skul.js?v=01ert"></script>
-    <script src="../dist/js/report_template_rendering.js"></script>
 
 
 </body>
