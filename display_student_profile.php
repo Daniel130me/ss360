@@ -196,32 +196,101 @@ while ($row = mysqli_fetch_array($select)) {
             display: none;
         }
 
-        .ai-chat-window {
-            max-height: 420px;
-            overflow-y: auto;
-            border: 1px solid #eef1f6;
-            border-radius: 8px;
-            background: #f8fafc;
+        .student-ai-card {
+            border: 1px solid #e7edf6;
+            border-radius: 12px;
+            position: sticky;
+            top: 82px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+            overflow: hidden;
         }
 
-        .ai-message {
-            border-radius: 8px;
-            padding: 9px 11px;
-            margin-bottom: 8px;
+        .student-ai-header {
+            background: linear-gradient(135deg, #0d6efd, #4f8df7);
+            color: #fff;
+            padding: 14px 14px 12px;
+        }
+
+        .student-ai-header h3 {
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .student-ai-subtitle {
+            color: rgba(255, 255, 255, 0.86);
+            font-size: 12px;
+            margin: 4px 0 0;
             line-height: 1.35;
         }
 
+        .student-ai-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.16);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 34px;
+        }
+
+        .student-ai-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.16);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .student-ai-body {
+            padding: 12px;
+            background: #fff;
+        }
+
+        #student_ai_usage_display {
+            border-radius: 999px;
+            font-size: 12px !important;
+            font-weight: 600;
+        }
+
+        .ai-chat-window {
+            height: 430px;
+            overflow-y: auto;
+            border: 1px solid #e8edf5;
+            border-radius: 10px;
+            background: #f8fafc;
+            scroll-behavior: smooth;
+        }
+
+        .ai-message {
+            border-radius: 14px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            line-height: 1.45;
+            font-size: 13px;
+            max-width: 92%;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        }
+
         .ai-message.user {
-            margin-left: 18px;
+            margin-left: auto;
             background: #007bff;
             color: #fff;
+            border-bottom-right-radius: 4px;
         }
 
         .ai-message.assistant {
-            margin-right: 18px;
+            margin-right: auto;
             background: #fff;
             color: #263238;
             border: 1px solid #e8edf3;
+            border-bottom-left-radius: 4px;
         }
 
         .ai-message.assistant p {
@@ -237,19 +306,114 @@ while ($row = mysqli_fetch_array($select)) {
             margin-bottom: 5px;
         }
 
+        .ai-thinking {
+            color: #607086;
+            font-style: italic;
+        }
+
+        .student-ai-suggestions-label {
+            color: #607086;
+            font-size: 12px;
+            font-weight: 700;
+            margin: 10px 0 6px;
+        }
+
+        #student_ai_suggestions {
+            max-height: 116px;
+            overflow-y: auto;
+        }
+
         .ai-suggestion-btn {
-            border: 1px solid #d8e4f8;
-            background: #fff;
+            border: 1px solid #d8e6fa;
+            background: #f8fbff;
             color: #007bff;
-            border-radius: 6px;
-            padding: 5px 8px;
+            border-radius: 999px;
+            padding: 7px 10px;
             margin: 0 5px 6px 0;
             font-size: 12px;
             text-align: left;
+            line-height: 1.25;
         }
 
         .ai-suggestion-btn:hover {
             background: #eef6ff;
+        }
+
+        .student-ai-composer {
+            border: 1px solid #dce5f1;
+            border-radius: 12px;
+            padding: 8px;
+            background: #fff;
+        }
+
+        #student_ai_message {
+            border: none;
+            resize: none;
+            box-shadow: none;
+            padding: 4px 2px 8px;
+            font-size: 13px;
+        }
+
+        #student_ai_message:focus {
+            box-shadow: none;
+        }
+
+        #student_ai_send_btn {
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 34px;
+            padding: 6px 13px;
+        }
+
+        @media (max-width: 767.98px) {
+            body.student-ai-open {
+                overflow: hidden;
+            }
+
+            #student_ai_assistant_panel {
+                position: fixed;
+                inset: 62px 0 0 0;
+                z-index: 2050;
+                padding: 0;
+                margin: 0 !important;
+                background: rgba(15, 23, 42, 0.22);
+            }
+
+            .student-ai-card {
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                top: 0;
+                border-radius: 18px 18px 0 0;
+                display: flex;
+                flex-direction: column;
+                box-shadow: 0 -14px 36px rgba(15, 23, 42, 0.22);
+            }
+
+            .student-ai-body {
+                display: flex;
+                flex: 1;
+                min-height: 0;
+                flex-direction: column;
+            }
+
+            .ai-chat-window {
+                flex: 1;
+                min-height: 0;
+                height: auto;
+            }
+
+            #student_ai_suggestions {
+                max-height: 92px;
+            }
+
+            .ai-message {
+                max-width: 94%;
+                font-size: 13px;
+            }
         }
     </style>
 </head>
@@ -826,25 +990,48 @@ while ($row = mysqli_fetch_array($select)) {
                         </div>
                     </div>
                     <div class="container-fluid col-12 col-md-3 mb-3" id="student_ai_assistant_panel">
-                        <div class="py-3 px-15 bg-white space_content_box" style="border-radius: 10px; position: relative">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <h3 style="font-size: 1.3rem; font-weight:bold;" class="text-primary mb-1">SS360 AI Assistant</h3>
-                                <button type="button" class="btn btn-sm btn-light" onclick="close_student_ai_assistant()" title="Close assistant">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
+                        <div class="bg-white student-ai-card">
+                            <div class="student-ai-header">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="d-flex align-items-center">
+                                        <span class="student-ai-icon mr-2">
+                                            <i class="material-symbols-outlined">smart_toy</i>
+                                        </span>
+                                        <div>
+                                            <h3>SS360 AI Assistant</h3>
+                                            <p class="student-ai-subtitle">
+                                                Score evidence for <?= htmlspecialchars($data[0]['lastname'] . ' ' . $data[0]['firstname']) ?>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="student-ai-close" onclick="close_student_ai_assistant()" title="Close assistant">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
                             </div>
-                            <p class="small text-muted mb-2">
-                                Hello <?= htmlspecialchars($_SESSION['firstname'] . ' ' . $_SESSION['lastname']) ?>, let's talk about <?= htmlspecialchars($data[0]['lastname'] . ' ' . $data[0]['firstname']) ?> using score evidence only.
-                            </p>
-                            <span id="student_ai_usage_display" class="badge badge-info p-2 mb-2" style="display:none; font-size: 13px;">
-                                Daily AI Use: <span id="student-ai-usage-count">0</span> / <span id="student-ai-usage-limit">5</span> (<span id="student-ai-usage-remaining">5</span> left)
-                            </span>
-                            <div id="student_ai_chat_window" class="ai-chat-window p-2 mb-2"></div>
-                            <div id="student_ai_suggestions" class="mb-2"></div>
-                            <textarea id="student_ai_message" class="form-control form-control-sm mb-2" rows="3" placeholder="Ask about strengths, weak subjects, trends, or recommendations"></textarea>
-                            <button type="button" id="student_ai_send_btn" class="btn btn-primary btn-sm w-100" onclick="send_student_ai_message()">
-                                <i class="material-symbols-outlined mr-1" style="font-size: 17px; vertical-align: middle;">send</i> Send
-                            </button>
+                            <div class="student-ai-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="small text-muted">Academic performance partner</span>
+                                    <span id="student_ai_usage_display" class="badge badge-info p-2" style="display:none;">
+                                        <span id="student-ai-usage-count">0</span>/<span id="student-ai-usage-limit">5</span>
+                                        <span class="d-none d-sm-inline">used</span>
+                                        <span class="mx-1">&bull;</span>
+                                        <span id="student-ai-usage-remaining">5</span>
+                                        <span>left</span>
+                                    </span>
+                                </div>
+                                <div id="student_ai_chat_window" class="ai-chat-window p-2 mb-2"></div>
+                                <p class="student-ai-suggestions-label">Suggested next questions</p>
+                                <div id="student_ai_suggestions" class="mb-2"></div>
+                                <div class="student-ai-composer">
+                                    <textarea id="student_ai_message" class="form-control form-control-sm mb-1" rows="3" placeholder="Ask about strengths, weak subjects, trends, or recommendations"></textarea>
+                                    <div class="d-flex justify-content-end">
+                                        <button type="button" id="student_ai_send_btn" class="btn btn-primary btn-sm" onclick="send_student_ai_message()">
+                                            <i class="material-symbols-outlined mr-1" style="font-size: 17px;">send</i> Send
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1166,6 +1353,7 @@ while ($row = mysqli_fetch_array($select)) {
 
         function talk_to_ai() {
             $('#student_ai_assistant_panel').show();
+            $('body').addClass('student-ai-open');
             $('#middle_panel').removeClass('col-md-9').addClass('col-md-6');
             load_student_ai_usage();
             if (!studentAiStarted) {
@@ -1186,10 +1374,15 @@ while ($row = mysqli_fetch_array($select)) {
 
         function close_student_ai_assistant() {
             $('#student_ai_assistant_panel').hide();
+            $('body').removeClass('student-ai-open');
             $('#middle_panel').removeClass('col-md-6').addClass('col-md-9');
         }
 
         function send_student_ai_message() {
+            if ($('#student_ai_send_btn').prop('disabled')) {
+                return;
+            }
+
             if (studentAiUsage.remaining !== null && studentAiUsage.remaining <= 0) {
                 append_student_ai_message('assistant', 'Daily AI limit reached. Please try again tomorrow or ask an administrator to increase your limit.');
                 return;
@@ -1208,7 +1401,7 @@ while ($row = mysqli_fetch_array($select)) {
             input.val('');
 
             $('#student_ai_send_btn').prop('disabled', true).html('Thinking...');
-            const loading = $('<div>').addClass('ai-message assistant').attr('id', 'student_ai_loading').text('Reviewing score evidence...');
+            const loading = $('<div>').addClass('ai-message assistant ai-thinking').attr('id', 'student_ai_loading').text('Reviewing score evidence...');
             $('#student_ai_chat_window').append(loading);
 
             $.ajax({
@@ -1258,6 +1451,13 @@ while ($row = mysqli_fetch_array($select)) {
                 }
             });
         }
+
+        $('#student_ai_message').on('keydown', function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                send_student_ai_message();
+            }
+        });
         let school_id = <?= $_SESSION['school_id'] ?>;
         let myschl = school_id;
         let photo = '<?= $data[0]['photo'] ?>';
