@@ -1,5 +1,6 @@
 <?php
 // error_reporting(E_ALL);
+require_once __DIR__ . '/report_card_columns.php';
 $date = date("Y-m-d H:i:s");
 function getSSessionName($id) {
     global $conn;
@@ -32,6 +33,81 @@ function get_class_id_by_student_id($student_id) {
     } else {
         return null; // Or handle the case where no class is found for the student
     }
+}
+
+function resolve_student_report_class_id($student_id, $session_id, $term_id, $requested_class_id, $school_id = null)
+{
+    global $conn;
+
+    $student_id = (int)$student_id;
+    $session_id = (int)$session_id;
+    $requested_class_id = (int)$requested_class_id;
+    $school_id = $school_id === null ? (int)($_SESSION['school_id'] ?? 0) : (int)$school_id;
+    $term_id = (string)$term_id;
+    $exact_term_id = $term_id === 'cum' ? '3' : (int)$term_id;
+    $has_term_filter = $term_id === 'cum' || (ctype_digit($term_id) && (int)$term_id > 0);
+
+    if ($student_id <= 0 || $session_id <= 0 || $school_id <= 0) {
+        return $requested_class_id;
+    }
+
+    if ($requested_class_id > 0) {
+        $requested_check = mysqli_query($conn, "SELECT id FROM skulscores
+            WHERE school_id='$school_id' AND student_id='$student_id' AND session_id='$session_id'
+            AND class_id='$requested_class_id'" . (!$has_term_filter || $term_id === 'cum' ? "" : " AND term_id='$exact_term_id'") . "
+            LIMIT 1");
+
+        if ($requested_check && mysqli_num_rows($requested_check) > 0) {
+            return $requested_class_id;
+        }
+    }
+
+    // If the student's current class has no score rows for this report period,
+    // use the class stored on the historical score rows for the selected session/term.
+    $resolve_query = "SELECT class_id, COUNT(*) AS score_rows
+        FROM skulscores
+        WHERE school_id='$school_id' AND student_id='$student_id' AND session_id='$session_id'";
+
+    if ($has_term_filter && $term_id !== 'cum') {
+        $resolve_query .= " AND term_id='$exact_term_id'";
+    }
+
+    $resolve_query .= " GROUP BY class_id ORDER BY score_rows DESC, class_id DESC LIMIT 1";
+    $resolved = mysqli_query($conn, $resolve_query);
+
+    if ($resolved && $row = mysqli_fetch_assoc($resolved)) {
+        return (int)$row['class_id'];
+    }
+
+    return $requested_class_id;
+}
+
+function get_total_students_with_scores_in_class($class_id, $session_id, $term_id, $school_id = null)
+{
+    global $conn;
+
+    $class_id = (int)$class_id;
+    $session_id = (int)$session_id;
+    $school_id = $school_id === null ? (int)($_SESSION['school_id'] ?? 0) : (int)$school_id;
+    $term_id = (string)$term_id;
+    $exact_term_id = $term_id === 'cum' ? '3' : (int)$term_id;
+
+    if ($class_id <= 0 || $session_id <= 0 || $school_id <= 0) {
+        return 0;
+    }
+
+    $query = "SELECT COUNT(DISTINCT student_id) AS total_student
+        FROM skulscores
+        WHERE school_id='$school_id' AND class_id='$class_id' AND session_id='$session_id'";
+
+    if ($term_id !== 'cum') {
+        $query .= " AND term_id='$exact_term_id'";
+    }
+
+    $select = mysqli_query($conn, $query);
+    $row = mysqli_fetch_assoc($select);
+
+    return (int)($row['total_student'] ?? 0);
 }
 function get_lateness_time()
 {
@@ -442,6 +518,187 @@ function does_it_exist($what_to_select, $tbl, $condition)
     return $ans;
 }
 
+function transport_admin_staff_types()
+{
+    return [1, 2, 3, 4];
+}
+
+function transport_current_school_id()
+{
+    return isset($_SESSION['school_id']) ? (int) $_SESSION['school_id'] : 0;
+}
+
+function transport_current_user_id()
+{
+    return isset($_SESSION['userid']) ? (int) $_SESSION['userid'] : 0;
+}
+
+function transport_is_staff_user()
+{
+    return isset($_SESSION['staff_type']);
+}
+
+function transport_is_admin()
+{
+    if (!transport_is_staff_user()) {
+        return false;
+    }
+
+    return in_array((int) $_SESSION['staff_type'], transport_admin_staff_types(), true);
+}
+
+function transport_stmt_bind($stmt, $types, $params)
+{
+    if ($types === '' || empty($params)) {
+        return true;
+    }
+
+    $refs = [$stmt, $types];
+    foreach ($params as $key => $value) {
+        $refs[] = &$params[$key];
+    }
+
+    return call_user_func_array('mysqli_stmt_bind_param', $refs);
+}
+
+function transport_fetch_one($sql, $types = '', $params = [])
+{
+    global $conn;
+
+    $stmt = mysqli_prepare($conn, $sql);
+    if (!$stmt) {
+        return null;
+    }
+
+    transport_stmt_bind($stmt, $types, $params);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $row = $result ? mysqli_fetch_assoc($result) : null;
+    mysqli_stmt_close($stmt);
+
+    return $row ?: null;
+}
+
+function transport_parent_can_view_student($student_id)
+{
+    if (transport_is_staff_user()) {
+        return false;
+    }
+
+    $row = transport_fetch_one(
+        "SELECT id FROM students WHERE id = ? AND parent_id = ? AND school_id = ? LIMIT 1",
+        'iii',
+        [(int) $student_id, transport_current_user_id(), transport_current_school_id()]
+    );
+
+    return $row !== null;
+}
+
+function transport_staff_can_view_bus($bus_id)
+{
+    if (!transport_is_staff_user()) {
+        return false;
+    }
+
+    $row = transport_fetch_one(
+        "SELECT id FROM school_buses WHERE id = ? AND school_id = ? LIMIT 1",
+        'ii',
+        [(int) $bus_id, transport_current_school_id()]
+    );
+
+    return $row !== null;
+}
+
+function transport_staff_can_track_bus($bus_id)
+{
+    if (!transport_is_staff_user()) {
+        return false;
+    }
+
+    if (transport_is_admin()) {
+        return transport_staff_can_view_bus($bus_id);
+    }
+
+    $row = transport_fetch_one(
+        "SELECT id FROM school_buses
+         WHERE id = ? AND school_id = ? AND status = 1
+         AND (driver_staff_id = ? OR assistant_staff_id = ?)
+         LIMIT 1",
+        'iiii',
+        [(int) $bus_id, transport_current_school_id(), transport_current_user_id(), transport_current_user_id()]
+    );
+
+    return $row !== null;
+}
+
+function transport_parent_can_view_bus($bus_id, $student_id = null)
+{
+    if (transport_is_staff_user()) {
+        return false;
+    }
+
+    $params = [transport_current_user_id(), transport_current_school_id(), (int) $bus_id];
+    $types = 'iii';
+    $student_filter = '';
+
+    if ($student_id !== null) {
+        $student_filter = ' AND s.id = ?';
+        $types .= 'i';
+        $params[] = (int) $student_id;
+    }
+
+    $row = transport_fetch_one(
+        "SELECT bsa.id
+         FROM bus_student_assignments bsa
+         INNER JOIN students s ON s.id = bsa.student_id AND s.school_id = bsa.school_id
+         WHERE s.parent_id = ? AND bsa.school_id = ? AND bsa.bus_id = ?
+         AND bsa.status = 1{$student_filter}
+         LIMIT 1",
+        $types,
+        $params
+    );
+
+    return $row !== null;
+}
+
+function transport_get_tracking_settings($school_id = null)
+{
+    $school_id = $school_id === null ? transport_current_school_id() : (int) $school_id;
+    $defaults = [
+        'update_interval_seconds' => 20,
+        'stale_after_seconds' => 90,
+        'min_movement_meters' => 30,
+        'max_accuracy_meters' => 100,
+        'history_retention_days' => 30,
+    ];
+
+    if ($school_id <= 0) {
+        return $defaults;
+    }
+
+    $row = transport_fetch_one(
+        "SELECT update_interval_seconds, stale_after_seconds, min_movement_meters,
+                max_accuracy_meters, history_retention_days
+         FROM bus_tracking_settings
+         WHERE school_id = ? AND status = 1
+         LIMIT 1",
+        'i',
+        [$school_id]
+    );
+
+    if (!$row) {
+        return $defaults;
+    }
+
+    return [
+        'update_interval_seconds' => max(15, (int) $row['update_interval_seconds']),
+        'stale_after_seconds' => max(30, (int) $row['stale_after_seconds']),
+        'min_movement_meters' => max(0, (int) $row['min_movement_meters']),
+        'max_accuracy_meters' => max(20, (int) $row['max_accuracy_meters']),
+        'history_retention_days' => max(1, (int) $row['history_retention_days']),
+    ];
+}
+
 function calculate_age($birthdate)
 {
     if($birthdate == '0000-00-00') {
@@ -571,6 +828,388 @@ $query = "SELECT COUNT(*) as subject_count
     $row = mysqli_fetch_array($select);
     return $row['subject_count'] * 100; // Each subject has a maximum score of 100
 }
+function get_default_report_template_config()
+{
+    return [
+        'version' => 1,
+        'template_name' => 'Default Report Card',
+        'page' => [
+            'size' => 'A4',
+            'orientation' => 'portrait',
+            'show_watermark' => true,
+        ],
+        'sections' => [
+            ['key' => 'school_header', 'enabled' => true, 'order' => 1],
+            ['key' => 'student_details', 'enabled' => true, 'order' => 2],
+            ['key' => 'performance_summary', 'enabled' => true, 'order' => 3],
+            ['key' => 'score_table', 'enabled' => true, 'order' => 4],
+            ['key' => 'behaviour_skills', 'enabled' => true, 'order' => 5],
+            ['key' => 'psychomotor_skills', 'enabled' => true, 'order' => 6],
+            ['key' => 'grade_scale', 'enabled' => true, 'order' => 7],
+            ['key' => 'skill_rating_indices', 'enabled' => true, 'order' => 8],
+            ['key' => 'comments', 'enabled' => true, 'order' => 9],
+            ['key' => 'signature_stamp', 'enabled' => true, 'order' => 10],
+        ],
+        'fields' => [
+            'school_logo' => true,
+            'school_name' => true,
+            'school_address' => true,
+            'school_phone' => true,
+            'school_email' => true,
+            'student_photo' => true,
+            'student_name' => true,
+            'admission_no' => true,
+            'class' => true,
+            'no_in_class' => true,
+            'school_open' => true,
+            'times_present' => true,
+            'times_absent' => true,
+            'next_term_begins' => true,
+            'teacher_comment' => true,
+            'head_teacher_comment' => true,
+        ],
+        'score_columns' => get_default_report_score_columns(),
+        'available_cumulative_columns' => get_cumulative_report_score_columns(),
+        'labels' => get_default_report_template_labels(),
+    ];
+}
+
+function get_default_report_template_labels()
+{
+    return [
+        'columns' => get_report_score_column_labels(),
+        'sections' => [
+            'performance_summary' => 'Performance Summary',
+            'behaviour_skills' => 'General Behaviour',
+            'psychomotor_skills' => 'Psychomotive Skills',
+            'grade_scale' => 'Grade Scale',
+            'skill_rating_indices' => 'Skill Rating Indices',
+        ],
+        'fields' => [
+            'student_name' => 'NAME',
+            'admission_no' => 'ADM. NO',
+            'class' => 'CLASS',
+            'no_in_class' => 'NO IN CLASS',
+            'school_open' => 'NO OF TIMES SCHOOL OPENED',
+            'times_present' => 'NO OF TIMES PRESENT',
+            'times_absent' => 'NO OF TIMES ABSENT',
+            'next_term_begins' => 'NEXT TERM BEGINS',
+        ],
+        'summary' => [
+            'total_score' => 'TOTAL SCORE',
+            'total_obtainable' => 'TOTAL OBTAINABLE',
+            'percentage' => 'PERCENTAGE',
+            'grade' => 'GRADE',
+            'score_range' => 'Score Range',
+            'grade_row' => 'Grade',
+        ],
+        'titles' => [
+            'term_title' => '{term} TERM {session} ACADEMIC SESSION',
+            'custom_report_title' => '{report_name} - {term} {session}',
+        ],
+    ];
+}
+
+function normalize_report_template_labels($labels)
+{
+    $default_labels = get_default_report_template_labels();
+    if (!is_array($labels)) {
+        return $default_labels;
+    }
+
+    // Older templates stored column labels as a flat key/value array.
+    $has_grouped_labels = false;
+    foreach (array_keys($default_labels) as $group) {
+        if (isset($labels[$group]) && is_array($labels[$group])) {
+            $has_grouped_labels = true;
+            break;
+        }
+    }
+    if (!$has_grouped_labels) {
+        $labels = ['columns' => $labels];
+    }
+
+    $normalized = $default_labels;
+    foreach ($default_labels as $group => $group_labels) {
+        if (!isset($labels[$group]) || !is_array($labels[$group])) {
+            continue;
+        }
+        foreach ($group_labels as $key => $fallback_label) {
+            if (isset($labels[$group][$key]) && trim((string)$labels[$group][$key]) !== '') {
+                $normalized[$group][$key] = trim((string)$labels[$group][$key]);
+            }
+        }
+    }
+
+    return $normalized;
+}
+
+function report_card_template_label($template, $group, $key, $fallback = '')
+{
+    $labels = normalize_report_template_labels($template['labels'] ?? []);
+    if (isset($labels[$group][$key]) && trim((string)$labels[$group][$key]) !== '') {
+        return $labels[$group][$key];
+    }
+    return $fallback;
+}
+
+function render_report_template_text($text, $tokens = [])
+{
+    $text = (string)$text;
+    foreach ($tokens as $key => $value) {
+        $text = str_replace('{' . $key . '}', (string)$value, $text);
+    }
+    return $text;
+}
+
+function get_report_template_allowed_sections()
+{
+    return [
+        'school_header',
+        'student_details',
+        'performance_summary',
+        'score_table',
+        'behaviour_skills',
+        'psychomotor_skills',
+        'grade_scale',
+        'skill_rating_indices',
+        'comments',
+        'signature_stamp',
+    ];
+}
+
+function get_report_template_allowed_score_columns()
+{
+    return get_report_score_column_keys();
+}
+
+function normalize_report_template_term_id($term_id)
+{
+    $term_id = trim((string)$term_id);
+    $allowed_terms = ['default', '1', '2', '3', 'cumulative'];
+    return in_array($term_id, $allowed_terms, true) ? $term_id : 'default';
+}
+
+function normalize_report_template_config($template)
+{
+    if (is_string($template)) {
+        $template = json_decode($template, true);
+    }
+
+    $default_template = get_default_report_template_config();
+    if (!is_array($template)) {
+        return $default_template;
+    }
+
+    $allowed_sections = get_report_template_allowed_sections();
+
+    $normalized = $default_template;
+    if (isset($template['version'])) {
+        $normalized['version'] = (int)$template['version'];
+    }
+    if (!empty($template['template_name'])) {
+        $normalized['template_name'] = trim((string)$template['template_name']);
+    }
+    if (isset($template['page']) && is_array($template['page'])) {
+        $normalized['page'] = array_merge($default_template['page'], $template['page']);
+    }
+    if (isset($template['fields']) && is_array($template['fields'])) {
+        $normalized['fields'] = array_merge($default_template['fields'], $template['fields']);
+    }
+    if (isset($template['labels']) && is_array($template['labels'])) {
+        $normalized['labels'] = normalize_report_template_labels($template['labels']);
+    }
+
+    $normalized_sections = [];
+
+    if (!empty($template['sections']) && is_array($template['sections'])) {
+        foreach ($template['sections'] as $section) {
+            if (!is_array($section) || empty($section['key']) || !in_array($section['key'], $allowed_sections, true)) {
+                continue;
+            }
+
+            $normalized_sections[] = [
+                'key' => $section['key'],
+                'enabled' => !isset($section['enabled']) || (bool)$section['enabled'],
+                'order' => isset($section['order']) ? (int)$section['order'] : count($normalized_sections) + 1,
+            ];
+        }
+    }
+
+    $normalized['sections'] = !empty($normalized_sections) ? $normalized_sections : $default_template['sections'];
+
+    $normalized['score_columns'] = normalize_report_score_columns($template['score_columns'] ?? []);
+
+    return $normalized;
+}
+
+function get_report_template_by_context($school_id, $session_id, $term_id)
+{
+    global $conn;
+
+    $school_id = (int)$school_id;
+    $term_id = normalize_report_template_term_id($term_id);
+    $default_template = get_default_report_template_config();
+
+    if (!isset($conn) || !$conn) {
+        return $default_template;
+    }
+
+    $queries = [];
+    $queries[] = "school_id='$school_id' AND term_id='$term_id' AND status='1'";
+    $queries[] = "school_id='$school_id' AND term_id='default' AND is_default='1' AND status='1'";
+    $queries[] = "school_id='0' AND term_id='default' AND is_default='1' AND status='1'";
+
+    foreach ($queries as $where_clause) {
+        try {
+            $select_template = mysqli_query($conn, "SELECT * FROM report_templates WHERE $where_clause ORDER BY session_id IS NULL DESC, id DESC LIMIT 1");
+        } catch (Throwable $e) {
+            return [
+                'id' => null,
+                'school_id' => 0,
+                'session_id' => null,
+                'term_id' => 'default',
+                'template_name' => $default_template['template_name'],
+                'template_json' => $default_template,
+                'is_default' => 1,
+                'status' => 1,
+            ];
+        }
+
+        if ($select_template && $row = mysqli_fetch_assoc($select_template)) {
+            $row['template_json'] = normalize_report_template_config($row['template_json']);
+            return $row;
+        }
+    }
+
+    return [
+        'id' => null,
+        'school_id' => 0,
+        'session_id' => null,
+        'term_id' => 'default',
+        'template_name' => $default_template['template_name'],
+        'template_json' => $default_template,
+        'is_default' => 1,
+        'status' => 1,
+    ];
+}
+
+function legacy_report_settings_to_template($report_settings)
+{
+    $template = get_default_report_template_config();
+    if (!is_array($report_settings)) {
+        return $template;
+    }
+
+    if (!empty($report_settings['report_name'])) {
+        $template['template_name'] = $report_settings['report_name'];
+    }
+
+    $assessment_types = $report_settings['assessment_type'] ?? [];
+    if (is_string($assessment_types)) {
+        $assessment_types = json_decode($assessment_types, true);
+    }
+
+    $columns = ['subject'];
+    if (is_array($assessment_types)) {
+        foreach ($assessment_types as $assessment_type) {
+            $column = map_legacy_assessment_to_report_column($assessment_type);
+            if ($column !== '') {
+                $columns[] = $column;
+            }
+        }
+    }
+
+    $template['score_columns'] = array_merge(array_values(array_unique($columns)), ['total', 'percentage', 'grade']);
+    return normalize_report_template_config($template);
+}
+
+function get_report_card_template_score_columns($template)
+{
+    return normalize_report_score_columns($template['score_columns'] ?? []);
+}
+
+function build_report_score_comparison_data($score_rows, $target_student_id)
+{
+    $comparison_data = ['term' => [], 'cumulative' => []];
+    $term_scores = [];
+
+    if (!is_array($score_rows)) {
+        return $comparison_data;
+    }
+
+    foreach ($score_rows as $row) {
+        $subject_id = (string)($row['subject_id'] ?? '');
+        $student_id = (string)($row['student_id'] ?? '');
+        $term_id = (string)($row['term_id'] ?? '');
+        $total = (float)($row['total'] ?? 0);
+
+        if ($subject_id === '' || $student_id === '' || $term_id === '' || $total <= 0) {
+            continue;
+        }
+
+        if (!isset($term_scores[$term_id][$subject_id])) {
+            $term_scores[$term_id][$subject_id] = [];
+        }
+        $term_scores[$term_id][$subject_id][$student_id] = $total;
+    }
+
+    foreach ($term_scores as $term_id => $subjects) {
+        foreach ($subjects as $subject_id => $student_scores) {
+            $comparison_data['term'][$term_id][$subject_id] = summarize_report_comparison_scores($student_scores, $target_student_id);
+        }
+    }
+
+    foreach (['2' => ['1', '2'], '3' => ['1', '2', '3']] as $scope => $terms) {
+        $subject_scores = [];
+        foreach ($terms as $term_id) {
+            foreach (($term_scores[$term_id] ?? []) as $subject_id => $student_scores) {
+                foreach ($student_scores as $student_id => $total) {
+                    if (!isset($subject_scores[$subject_id][$student_id])) {
+                        $subject_scores[$subject_id][$student_id] = 0;
+                    }
+                    $subject_scores[$subject_id][$student_id] += $total;
+                }
+            }
+        }
+
+        foreach ($subject_scores as $subject_id => $student_scores) {
+            $comparison_data['cumulative'][$scope][$subject_id] = summarize_report_comparison_scores($student_scores, $target_student_id);
+        }
+    }
+
+    return $comparison_data;
+}
+
+function summarize_report_comparison_scores($student_scores, $target_student_id)
+{
+    $student_scores = array_filter($student_scores, function ($score) {
+        return (float)$score > 0;
+    });
+
+    if (empty($student_scores)) {
+        return ['class_average' => '-', 'position' => '-'];
+    }
+
+    arsort($student_scores, SORT_NUMERIC);
+    $target_student_id = (string)$target_student_id;
+    $target_position = '-';
+    $rank = 0;
+
+    foreach ($student_scores as $student_id => $score) {
+        $rank++;
+        if ((string)$student_id === $target_student_id) {
+            $target_position = (string)$rank;
+            break;
+        }
+    }
+
+    return [
+        'class_average' => (string)round(array_sum($student_scores) / count($student_scores)),
+        'position' => $target_position,
+    ];
+}
+
 // function get_total_obtainables($studentid, $term_id, $session_id, $class_id) {
 //     global $conn;
 //     $select = mysqli_query($conn, "SELECT COUNT(*) as subject_count FROM skulscores 

@@ -191,6 +191,230 @@ while ($row = mysqli_fetch_array($select)) {
             margin-bottom: 16px;
             z-index: 1000;
         }
+
+        #student_ai_assistant_panel {
+            display: none;
+        }
+
+        .student-ai-card {
+            border: 1px solid #e7edf6;
+            border-radius: 12px;
+            position: sticky;
+            top: 82px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+            overflow: hidden;
+        }
+
+        .student-ai-header {
+            background: linear-gradient(135deg, #0d6efd, #4f8df7);
+            color: #fff;
+            padding: 14px 14px 12px;
+        }
+
+        .student-ai-header h3 {
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .student-ai-subtitle {
+            color: rgba(255, 255, 255, 0.86);
+            font-size: 12px;
+            margin: 4px 0 0;
+            line-height: 1.35;
+        }
+
+        .student-ai-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.16);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 34px;
+        }
+
+        .student-ai-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.16);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .student-ai-body {
+            padding: 12px;
+            background: #fff;
+        }
+
+        #student_ai_usage_display {
+            border-radius: 999px;
+            font-size: 12px !important;
+            font-weight: 600;
+        }
+
+        .ai-chat-window {
+            height: 430px;
+            overflow-y: auto;
+            border: 1px solid #e8edf5;
+            border-radius: 10px;
+            background: #f8fafc;
+            scroll-behavior: smooth;
+        }
+
+        .ai-message {
+            border-radius: 14px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            line-height: 1.45;
+            font-size: 13px;
+            max-width: 92%;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        }
+
+        .ai-message.user {
+            margin-left: auto;
+            background: #007bff;
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-message.assistant {
+            margin-right: auto;
+            background: #fff;
+            color: #263238;
+            border: 1px solid #e8edf3;
+            border-bottom-left-radius: 4px;
+        }
+
+        .ai-message.assistant p {
+            margin-bottom: 8px;
+        }
+
+        .ai-message.assistant ul {
+            padding-left: 18px;
+            margin-bottom: 8px;
+        }
+
+        .ai-message.assistant li {
+            margin-bottom: 5px;
+        }
+
+        .ai-thinking {
+            color: #607086;
+            font-style: italic;
+        }
+
+        .student-ai-suggestions-label {
+            color: #607086;
+            font-size: 12px;
+            font-weight: 700;
+            margin: 10px 0 6px;
+        }
+
+        #student_ai_suggestions {
+            max-height: 116px;
+            overflow-y: auto;
+        }
+
+        .ai-suggestion-btn {
+            border: 1px solid #d8e6fa;
+            background: #f8fbff;
+            color: #007bff;
+            border-radius: 999px;
+            padding: 7px 10px;
+            margin: 0 5px 6px 0;
+            font-size: 12px;
+            text-align: left;
+            line-height: 1.25;
+        }
+
+        .ai-suggestion-btn:hover {
+            background: #eef6ff;
+        }
+
+        .student-ai-composer {
+            border: 1px solid #dce5f1;
+            border-radius: 12px;
+            padding: 8px;
+            background: #fff;
+        }
+
+        #student_ai_message {
+            border: none;
+            resize: none;
+            box-shadow: none;
+            padding: 4px 2px 8px;
+            font-size: 13px;
+        }
+
+        #student_ai_message:focus {
+            box-shadow: none;
+        }
+
+        #student_ai_send_btn {
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 34px;
+            padding: 6px 13px;
+        }
+
+        @media (max-width: 767.98px) {
+            body.student-ai-open {
+                overflow: hidden;
+            }
+
+            #student_ai_assistant_panel {
+                position: fixed;
+                inset: 62px 0 0 0;
+                z-index: 2050;
+                padding: 0;
+                margin: 0 !important;
+                background: rgba(15, 23, 42, 0.22);
+            }
+
+            .student-ai-card {
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                top: 0;
+                border-radius: 18px 18px 0 0;
+                display: flex;
+                flex-direction: column;
+                box-shadow: 0 -14px 36px rgba(15, 23, 42, 0.22);
+            }
+
+            .student-ai-body {
+                display: flex;
+                flex: 1;
+                min-height: 0;
+                flex-direction: column;
+            }
+
+            .ai-chat-window {
+                flex: 1;
+                min-height: 0;
+                height: auto;
+            }
+
+            #student_ai_suggestions {
+                max-height: 92px;
+            }
+
+            .ai-message {
+                max-width: 94%;
+                font-size: 13px;
+            }
+        }
     </style>
 </head>
 
@@ -555,7 +779,7 @@ while ($row = mysqli_fetch_array($select)) {
                             </div>
                         </div>
                     </div>
-                    <div class="container-fluid col-md-9">
+                    <div class="container-fluid col-md-9" id="middle_panel">
                         <div class="input-group mb-3 d-flex align-items-md-center align-items-start" style="width: 300px;">
                             <label for="" class="mb-0 mr-2 text-muted">Select Session:</label>
                             <select class="form-control select2" onchange="get_score_data()" id="select_session_field" style="width: 50%;">
@@ -594,7 +818,11 @@ while ($row = mysqli_fetch_array($select)) {
                                             onclick="table_visual_Score_toggle(this)">
                                             <i class="material-symbols-outlined mr-1">legend_toggle</i> Show Chart
                                         </button>
-
+                                        <button type="button" style="padding: 4px 1px 0px 2px; background-color:white; border-radius: 5px; border:none;"
+                                            id="talk_to_ai_btn" class="ml-3 d-flex accent"
+                                            onclick="talk_to_ai()">
+                                            <i class="material-symbols-outlined mr-1">smart_toy</i> Talk to an AI assistant
+                                        </button>
                                     </div>
                                     <!-- </div> -->
                                     <div id="table_visuals_display" class="pt-3">
@@ -761,6 +989,51 @@ while ($row = mysqli_fetch_array($select)) {
                             </div>
                         </div>
                     </div>
+                    <div class="container-fluid col-12 col-md-3 mb-3" id="student_ai_assistant_panel">
+                        <div class="bg-white student-ai-card">
+                            <div class="student-ai-header">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="d-flex align-items-center">
+                                        <span class="student-ai-icon mr-2">
+                                            <i class="material-symbols-outlined">smart_toy</i>
+                                        </span>
+                                        <div>
+                                            <h3>SS360 AI Assistant</h3>
+                                            <p class="student-ai-subtitle">
+                                                Score evidence for <?= htmlspecialchars($data[0]['lastname'] . ' ' . $data[0]['firstname']) ?>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="student-ai-close" onclick="close_student_ai_assistant()" title="Close assistant">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="student-ai-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="small text-muted">Academic performance partner</span>
+                                    <span id="student_ai_usage_display" class="badge badge-info p-2" style="display:none;">
+                                        <span id="student-ai-usage-count">0</span>/<span id="student-ai-usage-limit">5</span>
+                                        <span class="d-none d-sm-inline">used</span>
+                                        <span class="mx-1">&bull;</span>
+                                        <span id="student-ai-usage-remaining">5</span>
+                                        <span>left</span>
+                                    </span>
+                                </div>
+                                <div id="student_ai_chat_window" class="ai-chat-window p-2 mb-2"></div>
+                                <p class="student-ai-suggestions-label">Suggested next questions</p>
+                                <div id="student_ai_suggestions" class="mb-2"></div>
+                                <div class="student-ai-composer">
+                                    <textarea id="student_ai_message" class="form-control form-control-sm mb-1" rows="3" placeholder="Ask about strengths, weak subjects, trends, or recommendations"></textarea>
+                                    <div class="d-flex justify-content-end">
+                                        <button type="button" id="student_ai_send_btn" class="btn btn-primary btn-sm" onclick="send_student_ai_message()">
+                                            <i class="material-symbols-outlined mr-1" style="font-size: 17px;">send</i> Send
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
              
 
@@ -898,6 +1171,293 @@ while ($row = mysqli_fetch_array($select)) {
     <script>
         let class_id = <?= $data[0]['class_id'] ?>;
         let student_id = <?= $data[0]['id'] ?>;
+        let studentAiHistory = [];
+        let studentAiStarted = false;
+        let studentAiLastSuggestions = [];
+        let studentAiUsage = {
+            usage: 0,
+            limit: 5,
+            remaining: null
+        };
+
+        function update_student_ai_usage_display(usage, limit, remaining) {
+            const safeUsage = parseInt(usage, 10) || 0;
+            const safeLimit = parseInt(limit, 10) || 0;
+            const safeRemaining = remaining !== undefined && remaining !== null
+                ? (parseInt(remaining, 10) || 0)
+                : Math.max(0, safeLimit - safeUsage);
+
+            studentAiUsage = {
+                usage: safeUsage,
+                limit: safeLimit,
+                remaining: safeRemaining
+            };
+
+            $('#student-ai-usage-count').text(safeUsage);
+            $('#student-ai-usage-limit').text(safeLimit);
+            $('#student-ai-usage-remaining').text(safeRemaining);
+            $('#student_ai_usage_display')
+                .show()
+                .toggleClass('badge-danger', safeRemaining <= 0)
+                .toggleClass('badge-info', safeRemaining > 0);
+
+            if (safeRemaining <= 0) {
+                $('#student_ai_send_btn').prop('disabled', true).html('Limit Reached');
+            }
+        }
+
+        function load_student_ai_usage() {
+            $.ajax({
+                url: '../student_ai_assistant_controller.php',
+                type: 'POST',
+                dataType: 'json',
+                data: { action: 'get_usage_count' },
+                success: function(response) {
+                    if (response && response.status === 'success') {
+                        update_student_ai_usage_display(response.usage, response.limit, response.remaining);
+                    }
+                },
+                error: function(xhr) {
+                    console.error('student AI usage check error:', xhr && xhr.responseText);
+                }
+            });
+        }
+
+        function format_student_ai_reply(content) {
+            const normalizedContent = (content || '').replace(/\\r\\n|\\n|\\r/g, '\n');
+            let safe = $('<div>').text(normalizedContent).html();
+            safe = safe.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            const lines = safe.split(/\n+/);
+            let html = '';
+            let listOpen = false;
+
+            lines.forEach(function(line) {
+                const trimmed = line.trim();
+                if (!trimmed) {
+                    return;
+                }
+
+                if (/^[-*]\s+/.test(trimmed)) {
+                    if (!listOpen) {
+                        html += '<ul>';
+                        listOpen = true;
+                    }
+                    html += '<li>' + trimmed.replace(/^[-*]\s+/, '') + '</li>';
+                    return;
+                }
+
+                if (listOpen) {
+                    html += '</ul>';
+                    listOpen = false;
+                }
+                html += '<p>' + trimmed + '</p>';
+            });
+
+            if (listOpen) {
+                html += '</ul>';
+            }
+
+            return html || '<p>No response available.</p>';
+        }
+
+        function append_student_ai_message(role, content) {
+            const safeRole = role === 'user' ? 'user' : 'assistant';
+            const message = $('<div>')
+                .addClass('ai-message')
+                .addClass(safeRole);
+            if (safeRole === 'assistant') {
+                message.html(format_student_ai_reply(content));
+            } else {
+                message.text(content || '');
+            }
+            $('#student_ai_chat_window').append(message);
+            const chatWindow = document.getElementById('student_ai_chat_window');
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function get_student_ai_reply_chunks(content) {
+            const normalizedContent = (content || '').replace(/\\r\\n|\\n|\\r/g, '\n');
+            const safe = $('<div>').text(normalizedContent).html();
+            const paragraphs = safe.split(/\n{2,}/).map(function(part) {
+                return part.trim();
+            }).filter(Boolean);
+
+            if (!paragraphs.length && safe.trim()) {
+                return [safe.trim()];
+            }
+
+            const chunks = [];
+            paragraphs.forEach(function(paragraph) {
+                const bulletLines = paragraph.split(/\n/).filter(function(line) {
+                    return /^[-*]\s+/.test(line.trim());
+                });
+
+                if (bulletLines.length > 1) {
+                    bulletLines.forEach(function(line) {
+                        chunks.push(line.trim());
+                    });
+                } else {
+                    chunks.push(paragraph);
+                }
+            });
+
+            return chunks.length ? chunks : ['No response available.'];
+        }
+
+        function append_student_ai_message_stream(content, onDone) {
+            const message = $('<div>').addClass('ai-message assistant');
+            $('#student_ai_chat_window').append(message);
+
+            const chunks = get_student_ai_reply_chunks(content);
+            const renderedChunks = [];
+            let index = 0;
+
+            function renderNextChunk() {
+                if (index >= chunks.length) {
+                    if (typeof onDone === 'function') {
+                        onDone();
+                    }
+                    return;
+                }
+
+                renderedChunks.push(chunks[index]);
+                message.html(format_student_ai_reply(renderedChunks.join('\n\n')));
+                const chatWindow = document.getElementById('student_ai_chat_window');
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+                index++;
+                setTimeout(renderNextChunk, 180);
+            }
+
+            renderNextChunk();
+        }
+
+        function render_student_ai_suggestions(suggestions) {
+            const container = $('#student_ai_suggestions');
+            container.empty();
+            if (!Array.isArray(suggestions)) {
+                return;
+            }
+
+            studentAiLastSuggestions = suggestions.slice(0, 4);
+            studentAiLastSuggestions.forEach(function(prompt) {
+                const button = $('<button type="button">')
+                    .addClass('ai-suggestion-btn')
+                    .text(prompt)
+                    .on('click', function() {
+                        $('#student_ai_message').val(prompt);
+                        send_student_ai_message();
+                    });
+                container.append(button);
+            });
+        }
+
+        function talk_to_ai() {
+            $('#student_ai_assistant_panel').show();
+            $('body').addClass('student-ai-open');
+            $('#middle_panel').removeClass('col-md-9').addClass('col-md-6');
+            load_student_ai_usage();
+            if (!studentAiStarted) {
+                append_student_ai_message(
+                    'assistant',
+                    'Hi, I can help interpret ' + firstname + ' ' + lastname + '\'s scores, trends, class comparison, strengths, weaknesses, and next-step recommendations.'
+                );
+                render_student_ai_suggestions([
+                    'Summarize this student performance',
+                    'What are the strongest subjects?',
+                    'Where is the student declining?',
+                    'Suggest intervention steps'
+                ]);
+                studentAiStarted = true;
+            }
+            $('#student_ai_message').focus();
+        }
+
+        function close_student_ai_assistant() {
+            $('#student_ai_assistant_panel').hide();
+            $('body').removeClass('student-ai-open');
+            $('#middle_panel').removeClass('col-md-6').addClass('col-md-9');
+        }
+
+        function send_student_ai_message() {
+            if ($('#student_ai_send_btn').prop('disabled')) {
+                return;
+            }
+
+            if (studentAiUsage.remaining !== null && studentAiUsage.remaining <= 0) {
+                append_student_ai_message('assistant', 'Daily AI limit reached. Please try again tomorrow or ask an administrator to increase your limit.');
+                return;
+            }
+
+            const input = $('#student_ai_message');
+            const message = input.val().trim();
+            if (!message) {
+                return;
+            }
+
+            const selectedTerm = $('.term.select_btn.active').attr('data-name') || 'summary';
+            const sessionId = $('#select_session_field').val();
+            const historyBeforeMessage = studentAiHistory.slice(-6);
+            append_student_ai_message('user', message);
+            input.val('');
+
+            $('#student_ai_send_btn').prop('disabled', true).html('Thinking...');
+            const loading = $('<div>').addClass('ai-message assistant ai-thinking').attr('id', 'student_ai_loading').text('Reviewing score evidence...');
+            $('#student_ai_chat_window').append(loading);
+
+            $.ajax({
+                url: '../student_ai_assistant_controller.php',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    action: 'chat',
+                    student_id: student_id,
+                    class_id: class_id,
+                    session_id: sessionId,
+                    term_id: selectedTerm,
+                    message: message,
+                    history: JSON.stringify(historyBeforeMessage)
+                },
+                success: function(response) {
+                    $('#student_ai_loading').remove();
+                    if (!response || response.status !== 'success') {
+                        if (response && response.limit !== undefined) {
+                            update_student_ai_usage_display(response.usage || 0, response.limit, response.remaining || 0);
+                        }
+                        append_student_ai_message('assistant', response && response.message ? response.message : 'We cannot process this request at this time. Please try again in a few minutes.');
+                        render_student_ai_suggestions(studentAiLastSuggestions);
+                        return;
+                    }
+
+                    studentAiHistory.push({ role: 'user', content: message });
+                    studentAiHistory.push({ role: 'assistant', content: response.reply });
+                    if (response.usage) {
+                        update_student_ai_usage_display(response.usage.count, response.usage.limit, response.usage.remaining);
+                    }
+                    append_student_ai_message_stream(response.reply, function() {
+                        render_student_ai_suggestions(response.suggested_prompts || []);
+                    });
+                },
+                error: function(xhr) {
+                    $('#student_ai_loading').remove();
+                    console.error('student AI assistant error:', xhr && xhr.responseText);
+                    append_student_ai_message('assistant', 'We cannot process this request at this time. Please try again in a few minutes.');
+                    render_student_ai_suggestions(studentAiLastSuggestions);
+                },
+                complete: function() {
+                    const hasReachedLimit = studentAiUsage.remaining !== null && studentAiUsage.remaining <= 0;
+                    $('#student_ai_send_btn')
+                        .prop('disabled', hasReachedLimit)
+                        .html(hasReachedLimit ? 'Limit Reached' : '<i class="material-symbols-outlined mr-1" style="font-size: 17px; vertical-align: middle;">send</i> Send');
+                }
+            });
+        }
+
+        $('#student_ai_message').on('keydown', function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                send_student_ai_message();
+            }
+        });
         let school_id = <?= $_SESSION['school_id'] ?>;
         let myschl = school_id;
         let photo = '<?= $data[0]['photo'] ?>';

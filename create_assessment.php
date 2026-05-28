@@ -721,7 +721,7 @@ if ($assessment_id) {
                     </div>
                     <div class="modal-footer d-flex justify-content-between">
                         <div>
-                            <span id="ai-usage-display" class="badge badge-info p-2" style="display:none; font-size: 14px;">Daily Limit: <span id="ai-usage-count">0</span> / 5</span>
+                            <span id="ai-usage-display" class="badge badge-info p-2" style="display:none; font-size: 14px;">Daily AI Use: <span id="ai-usage-count">0</span> / <span id="ai-usage-limit">5</span> (<span id="ai-usage-remaining">5</span> left)</span>
                         </div>
                         <div>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

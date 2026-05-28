@@ -191,11 +191,11 @@ while ($row = mysqli_fetch_array($select)) {
             font-size: 0.82rem;
             font-weight: 700;
             letter-spacing: 0.3px;
-            /* color: #fff; */
-            /* background: linear-gradient(135deg, #1e1f20 0%, #000000 60%, #3a3a3a 100%); */
+            /*color: #fff;*/
+            /*background: linear-gradient(135deg, #1e1f20 0%, #000000 60%, #3a3a3a 100%);*/
             border: none;
             border-radius: 50px;
-            /* box-shadow: 0 3px 10px rgba(0, 123, 255, 0.35); */
+            /*box-shadow: 0 3px 10px rgba(0, 123, 255, 0.35);*/
             cursor: pointer;
             transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
         }
@@ -266,6 +266,9 @@ while ($row = mysqli_fetch_array($select)) {
                     <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right p-2" style="border-radius: 10px;">
                         <a href="parent_profile" class="dropdown-item text-muted d-flex">
                             <i class="material-symbols-outlined mr-2 d-inline">person</i> Profile
+                        </a>
+                        <a href="parent_bus_tracking" class="dropdown-item text-muted d-flex">
+                            <span class="material-symbols-outlined mr-2">directions_bus</span> Bus Tracking
                         </a>
                         <a href="change_password_parent" class="dropdown-item text-muted d-flex">
                             <span class="material-symbols-outlined mr-2">lock</span> Change PIN
@@ -516,10 +519,10 @@ while ($row = mysqli_fetch_array($select)) {
 
                                         <div class="d-flex flex-wrap mt-3 mb-2" style="gap: 10px;">
                                             <button class="btn-print-report" id="preview-term-pdf" onclick="preview_report_card_multiple('student_page','term')">
-                                                <i class="fas fa-print"></i> Term Report
+                                                <i class="fas fa-print"></i> Print Term Report
                                             </button>
-                                            <button class="btn-print-report" id="preview-session-pdf" onclick="preview_report_card_multiple('student_page','session')">
-                                                <i class="fas fa-print"></i> Cumulative Report
+                                            <button class="btn-print-report d-none" id="preview-session-pdf" onclick="preview_report_card_multiple('student_page','session')">
+                                                <i class="fas fa-print"></i> Print Cumulative Report
                                             </button>
                                         </div>
                                     </div>
@@ -613,7 +616,7 @@ while ($row = mysqli_fetch_array($select)) {
                                                 </table>
                                             </div>
 
-                                            <div class="psychomotive_skills_section">
+                                             <div class="psychomotive_skills_section">
                                                 <p class="font-weight-bold text-muted">Psychomotive Skills</p>
                                                 <table class="behaviour_report_table w-100">
                                                     <thead>

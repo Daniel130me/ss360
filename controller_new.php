@@ -1113,11 +1113,10 @@ switch ($action) {
                     $_SESSION['hidden_row'] = $row_sch['hidden_skills'];
                     $_SESSION['whocomment'] = $row_sch['commentby'] == '' ? "Head Teacher" : $row_sch['commentby'];
 
-                    echo json_encode(array('status' => '1', 'location' => isset($_SESSION['location']) ? $_SESSION['location'] : 'parent_portal'));
                     $select_Setting_query = "SELECT * FROM skul_settings WHERE school_id={$_SESSION['school_id']}";
                     $setting_result = mysqli_query($conn, $select_Setting_query);
                     $setting_row = mysqli_fetch_array($setting_result);
-                    if ($setting_result) {
+                    if ($setting_result && $setting_row) {
                         $_SESSION['skul_settings'] = json_encode(array(
                             'session' => $setting_row['session_id'],
                             'first' => $setting_row['first'],
@@ -1131,6 +1130,7 @@ switch ($action) {
                             'grading' => $setting_row['grading']
                         ));
                     }
+                    echo json_encode(array('status' => '1', 'location' => isset($_SESSION['location']) ? $_SESSION['location'] : 'parent_portal'));
                     exit;
                 } else {
                     echo json_encode(array('status' => '0', 'err' => 'Incorrect PIN, Try again'));
@@ -1192,12 +1192,10 @@ switch ($action) {
                 // print_r($_SESSION['hidden_row']);
                 // print_r($_SESSION['whocomment']);
 
-                echo json_encode(array('status' => '1', 'location' => 'dashboard'));
-                // echo json_encode(array('status' => '1', 'location' => isset($_SESSION['location']) ? $_SESSION['location'] : 'dashboard'));
                 $select_Setting_query = "SELECT * FROM skul_settings WHERE school_id={$_SESSION['school_id']} AND session_id={$_SESSION['session_id']} AND term_id={$_SESSION['term_id']}";
                 $setting_result = mysqli_query($conn, $select_Setting_query);
                 $setting_row = mysqli_fetch_array($setting_result);
-                if ($setting_result) {
+                if ($setting_result && $setting_row) {
                     $_SESSION['skul_settings'] = json_encode(array(
                         'session' => $setting_row['session_id'],
                         'first' => $setting_row['first'],
@@ -1211,6 +1209,8 @@ switch ($action) {
                         'grading' => $setting_row['grading']
                     ));
                 }
+                echo json_encode(array('status' => '1', 'location' => 'dashboard'));
+                // echo json_encode(array('status' => '1', 'location' => isset($_SESSION['location']) ? $_SESSION['location'] : 'dashboard'));
             } else {
                 echo json_encode(array('status' => '0', 'err' => 'Incorrect PIN, Try again'));
                 exit;

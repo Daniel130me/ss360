@@ -231,6 +231,7 @@ function get_billing_data() {
 //     });
 // }
 var student_score_data = [];
+var student_comparison_data = {};
 // get_score_data()
 
 // function toggle_grade_type(event) {
@@ -278,7 +279,7 @@ $(".url_upadter").submit(function (event) {
         success: (data) => {
             $($btn).attr("disabled", false)
             $($btn).html($btntext)
-            // data = JSON.parse(data)
+            data = JSON.parse(data)
             if (data.status == '1') {
                 // alert(data)
                 toastr.success("Updated succesfully")
@@ -328,7 +329,7 @@ function get_notices(userid, usertype) {
         data: { action: 'get_msg', usertype, userid, },
         success: (resp) => {
             console.log(resp)
-            // resp = JSON.parse(resp)
+            resp = JSON.parse(resp)
             if (resp.status == '1') {
                 data = resp.data
                 console.log(data)
@@ -528,11 +529,12 @@ function send_subject_info_to_modal(subjectId, sessionId) {
     $('#singleSessionValue').select2();
 }
 
-function check_result_toggle() {
+function check_result_toggle(classIdOverride = null) {
+    const activeClassId = classIdOverride || window.currentReportClassId || $("#select_class_field").val();
     if ($("#table_visual_Score_toggle").hasClass("visuals")) {
-        display_visual_score(student_score_data, $(".term.select_btn.active").attr("data-name"), $("#select_session_field").val(), $("#select_class_field").val())
+        display_visual_score(student_score_data, $(".term.select_btn.active").attr("data-name"), $("#select_session_field").val(), activeClassId)
     } else {
-        format_student_table(student_score_data, $(".term.select_btn.active").attr("data-name"), $("#select_session_field").val(), $("#select_class_field").val())
+        format_student_table(student_score_data, $(".term.select_btn.active").attr("data-name"), $("#select_session_field").val(), activeClassId)
     }
 }
 function table_visual_Score_toggle(event) {
@@ -1001,13 +1003,15 @@ function get_score_data() {
             $(".data_overlay").show()
         },
         success: (data) => {
-            console.log("llope", data)
+            console.log(data)
             // console.log('l', )
             // alert(data.length)
             // if(data.length == 0){
             // }
-            student_score_data = data
-            // student_score_data = JSON.parse(data)
+            student_score_data = JSON.parse(data)
+            const responseMeta = student_score_data[0] || {};
+            const reportClassId = responseMeta.effective_class_id || class_id;
+            window.currentReportClassId = reportClassId;
             if (student_score_data.length <= 1) {
                 $(".data_overlay").html(`
                         <p class="font-weight-bold">No score record for this student</p>
@@ -1024,7 +1028,7 @@ function get_score_data() {
             // format_student_table(student_score_data,term_id,session_id,class_id)
             let totals = calculate_Percentages_and_totals(student_score_data);
             // display_session_charts(totals.term1Percentage, totals.term2Percentage, totals.term3Percentage, totals.sessionPercentage)
-            check_result_toggle()
+            check_result_toggle(reportClassId)
 
 
             // get_teacher_comment(term_id, session_id, student_id, class_id, 'view')
@@ -1241,8 +1245,7 @@ function format_student_table(student_score_data, term, session_id, class_id) {
     let formattedString = skul_settings['grading'].replace(/([A-Z]):/g, '"$1":').replace(/:/g, ': ');
     grader = JSON.parse(formattedString)
     console.log(grader)
-    // 
-    console.log("some student", student_score_data)
+    // return
 
     if ($(".term.select_btn.active").attr("data-name") == "summary") {
         generateSessionSummary(student_score_data, session_id, $("#select_student_field").val(), class_id)
@@ -1573,7 +1576,6 @@ function select_receipient() {
 
 
 function calculate_Percentages_and_totals(data) {
-    console.log("fff", data)
     // Initialize variables for storing totals and maximum scores for each term and session
     let term1Total = 0,
         term1Max = 0;
@@ -1583,8 +1585,7 @@ function calculate_Percentages_and_totals(data) {
         term3Max = 0;
 
     // Iterate through the data array to sum up totals and max values for each term
-
-    Array.from(data).forEach(item => {
+    data.forEach(item => {
         // Parse item values as numbers to avoid type issues
         const total = parseFloat(item.Total) || 0;
         const ca1Total = parseFloat(item.ca1Total) || 0;
@@ -3046,34 +3047,19 @@ function by_class_view_content() {
             $(".data_overlay").show();
         },
         success: (data) => {
-            if (typeof data === "string") {
-                try {
-                    data = JSON.parse(data);
-                } catch (e) {
-                    console.error("Failed to parse data as JSON:", data);
-                    $(".data_overlay").html(`<p class="text-danger">Error: Invalid data format from server.</p>`);
-                    return;
-                }
-            }
-
-            if (!Array.isArray(data)) {
-                console.error("Expected array but received:", typeof data, data);
-                $(".data_overlay").html(`<p class="text-danger">Error: Unexpected data format.</p>`);
-                return;
-            }
-
+            data = JSON.parse(data);
             let grader = format_grade(skul_settings["grading"]);
-            if (data.length === 0) {
+            if (data.length <= 1) {
                 $(".data_overlay").html(`
-                    <p class="font-weight-bold">No record for the class selected</p>
+                <p class="font-weight-bold">No record for the class selected</p>
             `);
                 return;
             }
             $(".by_class_filter").show();
             $(".data_overlay").hide();
             $(".data_overlay").html(`
-                <p class="font-weight-bold">Fill the forms appropiately</p>
-                `);
+            <p class="font-weight-bold">Fill the forms appropiately</p>
+        `);
             // compute component count safely (avoid NaN if settingsData entries are missing)
             const ca1Flag = Number(settingsData.ca1) || 0;
             const ca2Flag = Number(settingsData.ca2) || 0;
@@ -3597,8 +3583,7 @@ function get_approval_btn(class_id, term_id, session_id) {
         type: "post",
         data: { 'action': 'get_approval', class_id, term_id, session_id, },
         success: (data) => {
-
-            // data = JSON.parse(data) //{ca1:1,ca2:0}
+            data = JSON.parse(data) //{ca1:1,ca2:0}
             console.log(data)
             // Object.entries(data[0]).forEach(([key,value]) => {
             str += settingsData.ca1 == 1 ? `<button type="button" class="btn btn-sm mr-2 select_btn approve_disaprove ${data[0].ca1 == '1' ? 'active' : ''} mt-3" data-name='ca1' onclick="approve_disaprove_comment(this)">Approve CA1</button>` : ''
@@ -3635,8 +3620,8 @@ const loadSettings = () => {
             'session_id': session_id
         },
         success: (data) => {
-            // settingsData = JSON.parse(data);
-            settingsData = data;
+            settingsData = JSON.parse(data);
+            // settingsData = data;
             // if ($("#report_page").val() === 'report_scores') {
             //     callback('student');
             //     // alert('lsc')
@@ -4715,6 +4700,8 @@ function get_stud_byClass_comment() {
                 $(".data_overlay").hide()
                 $("#student_table_comment").show()
                 $("#student_table_comment").html(data)
+                hideCommentSaveMessage()
+                initializeCommentChangeTracking()
             }
         }
     })
@@ -4728,24 +4715,96 @@ function get_comment_skills(student_id) {
     // get_teacher_comment($(".comment_term").val(),$(".comment_Session").val(),$(".student_id_for_comment").val(),$(".comment_class").val(), 'post')
 }
 
+function initializeCommentChangeTracking() {
+    $('#student_table_comment textarea[data-comment-role]').each(function () {
+        $(this)
+            .attr('data-original-comment', $(this).val() || '')
+            .removeClass('border border-warning text-danger font-weight-bold');
+    });
+}
+
+function showCommentSaveMessage(type, message) {
+    const alertClass = type === 'warning' ? 'alert-warning' : type === 'success' ? 'alert-success' : 'alert-info';
+
+    $('#comment_save_message')
+        .removeClass('alert-warning alert-success alert-info alert-danger')
+        .addClass(alertClass)
+        .html(message)
+        .show();
+}
+
+function hideCommentSaveMessage() {
+    $('#comment_save_message').hide().html('');
+}
+
+function markCommentConflicts(conflicts) {
+    if (!Array.isArray(conflicts)) return;
+
+    conflicts.forEach((conflict) => {
+        const selector = conflict.role_type == '1' ? '.principal_comment_comment' : '.teacher_comment_comment';
+
+        $('.comment_tb_row').each(function () {
+            const studentId = String($(this).find('.student_id_comment').val() || '');
+            if (studentId !== String(conflict.student_id)) return;
+
+            $(this)
+                .find(selector)
+                .addClass('border border-warning text-danger font-weight-bold')
+                .attr('title', 'Another user updated this comment. Reload to review the latest comment.');
+        });
+    });
+}
+
+function resetSavedCommentTracking(commentsData, conflicts) {
+    const conflictKeys = new Set((conflicts || []).map((conflict) => `${conflict.student_id}:${conflict.role_type}`));
+
+    commentsData.forEach((comment) => {
+        const studentId = String(comment.student_id || '');
+
+        if ('teacher_comment' in comment && !conflictKeys.has(`${studentId}:0`)) {
+            $(`.comment_tb_row .student_id_comment[value="${studentId}"]`)
+                .closest('.comment_tb_row')
+                .find('.teacher_comment_comment')
+                .attr('data-original-comment', comment.teacher_comment || '');
+        }
+
+        if ('principal_comment' in comment && !conflictKeys.has(`${studentId}:1`)) {
+            $(`.comment_tb_row .student_id_comment[value="${studentId}"]`)
+                .closest('.comment_tb_row')
+                .find('.principal_comment_comment')
+                .attr('data-original-comment', comment.principal_comment || '');
+        }
+    });
+}
+
 function save_comment() {
     let commentsData = [];
     $('.comment_tb_row').each(function () {
         let studentId = $(this).find('.student_id_comment').val();
-        let teacherComment = $(this).find('.teacher_comment_comment').val();
-        let principalComment = $(this).find('.principal_comment_comment').val();
-        // alert(studentId)
-        // Escape single quotes to prevent errors
-        function escapeQuotes(str) {
-            return typeof str === 'string' ? str.replace(/'/g, '&#39;') : str;
+        let teacherInput = $(this).find('.teacher_comment_comment');
+        let principalInput = $(this).find('.principal_comment_comment');
+        let commentData = { student_id: studentId };
+
+        if (teacherInput.length && teacherInput.val() !== teacherInput.attr('data-original-comment')) {
+            commentData.teacher_comment = teacherInput.val();
+            commentData.original_teacher_comment = teacherInput.attr('data-original-comment') || '';
         }
-        commentsData.push({
-            student_id: studentId,
-            teacher_comment: escapeQuotes(teacherComment),
-            principal_comment: escapeQuotes(principalComment)
-        });
+
+        if (principalInput.length && principalInput.val() !== principalInput.attr('data-original-comment')) {
+            commentData.principal_comment = principalInput.val();
+            commentData.original_principal_comment = principalInput.attr('data-original-comment') || '';
+        }
+
+        if ('teacher_comment' in commentData || 'principal_comment' in commentData) {
+            commentsData.push(commentData);
+        }
     });
     console.log("comdata", commentsData)
+
+    if (commentsData.length < 1) {
+        showCommentSaveMessage('info', 'No comment changes to save');
+        return;
+    }
 
     // Send comments data to the server using AJAX
     $.ajax({
@@ -4762,9 +4821,18 @@ function save_comment() {
             data = JSON.parse(data)
             if (data.status == 1) {
                 toastr.success("Comment saved")
+                showCommentSaveMessage('success', 'Comment saved');
+                initializeCommentChangeTracking();
+            } else if (data.status == 409) {
+                markCommentConflicts(data.conflicts);
+                resetSavedCommentTracking(commentsData, data.conflicts);
+                showCommentSaveMessage('warning', data.msg);
+            } else {
+                showCommentSaveMessage('warning', data.err || 'Error saving comments.');
+                toastr.error(data.err || 'Error saving comments.');
             }
         },
-        error: function () {
+        error: function (xhr, status, error) {
             alert('Error saving comments.' + error);
         }
     });
@@ -4949,6 +5017,7 @@ const init = () => {
     if ($("#settings_page").val() === 'view_Settings') {
         $("#school_info_placeholder_form").load('../display_school_info_form.php')
         $("#school_setting_placeholder_form").load('../display_school_setting_form.php')
+        $("#report_card_customization_placeholder").load('../display_report_card_customization_form.php')
     }
     if ($("#subject_page").val() === 'view_Subjects') {
         $("#subject_category_container").load('../display_subject_category.php')
@@ -5099,8 +5168,7 @@ function getsubjects(classid, callback) {
                     $("#select_subject_field").empty()
                     return reject()
                 }
-                subjects = data
-                // subjects = JSON.parse(data)
+                subjects = JSON.parse(data)
                 if (callback == 'callback') {
                     if ($("#by_subj_btn").hasClass('active')) {
                         $("#select_subject_warning").hide()
@@ -5138,8 +5206,7 @@ function getstudents(classValue) {
         success: (data) => {
 
             let str;
-            let parsedData = data;
-            // let parsedData = JSON.parse(data);
+            let parsedData = JSON.parse(data);
             students = parsedData
             if ($("#by_subj_btn").hasClass('active')) {
                 students = parsedData;
@@ -7684,10 +7751,10 @@ function set_behaviour_comment(term, session, student_id, class_id, pagetype) {
         success: (data) => {
             data = data.trim();
             data = JSON.parse(data);
-            toggleBehaviourSectionsVisibility(data.show_behaviour_sections);
             // alert(data.staff_classId)
             // let staff_classId_json = JSON.parse(data.staff_classId)
             // alert((data.staff_classId).includes(class_id))
+            toggleBehaviourSectionsVisibility(data.show_behaviour_sections);
             thebehavedata = data.comment;
             console.log("thebehavedata", thebehavedata)
             console.log("thebehavedata2", data)
@@ -7899,6 +7966,146 @@ function set_behaviour_comment(term, session, student_id, class_id, pagetype) {
         },
     });
 }
+// function get_teacher_comment(term, session, student_id, class_id, pagetype) {
+//     // alert(class_id)
+//     // return
+//     if ($("#report_page").val() === 'report_scores') {
+//         pagetype = 'report'
+//     }
+//     $.ajax({
+//         url: '../controller.php',
+//         type: 'POST',
+//         data: { 'action': 'get_comment', term, session, student_id, class_id, pagetype },
+//         success: (data) => {
+//             data = data.trim();
+//             data = JSON.parse(data)
+//             let datacount = data.length;
+//             // alert(noofdata)
+//             data.map((item) => {
+//                 // if (item.comment != '') {
+//                 if (pagetype != 'post') {
+//                     if (item.role_type == '' || datacount == 1) {
+//                         $("#theprincipal_comment").html('No comment')
+//                         $("#theteacher_comment").html('No Comment')
+//                         $("#thereportteacher_comment12").html('No Comment')
+//                         $("#theprincipalreportteacher_comment12").html('No Comment')
+//                         // alert(item.role_type)
+//                     }
+//                     // alert('some')
+//                     if (item.role_type == 0) {
+//                         $("#theteacher_comment").html(item.comment == '' ? 'No comment' : item.comment)
+//                         $("#thereportteacher_comment12").html(item.comment == '' ? 'No comment' : item.comment)
+//                     } else if (item.role_type == 1) {
+//                         $("#theprincipal_comment").html(item.comment == '' ? 'No comment' : item.comment)
+//                         $("#theprincipalreportteacher_comment12").html(item.comment == '' ? 'No comment' : item.comment)
+//                     }
+//                     //  else if (item.role_type == '') {
+//                     //     alert('lk')
+//                     //     $("#theprincipal_comment").html('')
+//                     // }
+//                     // }
+//                 } else {
+//                     // if(class_id == item.staff_classId && item.role_type == 0){
+//                     //     $("#post_teacher_comment_container").show()
+//                     //     $("#post_teacher_comment_message").val(item.comment == '' ? 'No comment' : item.comment)
+//                     // }
+//                     // else{
+//                     //     alert('k')
+//                     //     $("#post_teacher_comment_container").hide()
+//                     // }
+//                     if (datacount == 1 || item.role_type == '') {
+//                         $("#post_teacher_comment_message").val('')
+//                         $("#post_principal_comment_message").val('')
+//                         // alert('commen')
+//                     }
+//                     console.log(item.comment)
+//                     $("#post_teacher_comment_message").html("item.comment")
+//                     if ((item.staff_classId).includes(class_id)) {
+//                         $("#post_teacher_comment_container").show()
+//                         if (item.role_type === '0') {
+//                             // alert('commen teaher')
+//                             $("#post_teacher_comment_message").val(item.comment)
+//                         }
+//                     } else {
+//                         // alert('commen teaher here 2')
+//                         $("#post_teacher_comment_container").hide()
+//                     }
+//                     if (item.staff_type == '2' || item.staff_type == '3' || item.staff_type == '4') { //if principal
+//                         if (item.role_type === "1") {
+//                             if ($("#post_teacher_comment_message").val() == '') {
+
+//                             }
+//                             $("#post_principal_comment_message").val(item.comment)
+//                             // alert('commen teaher here 3')
+//                         }
+//                     }
+//                 }
+
+
+//             })
+//             // if (data == 0) {
+//             //     // $("#post_teacher_comment_container").show()
+//             //     $("#thereportteacher_comment12").html('No comment')
+//             //     $("#theprincipalreportteacher_comment12").html('No comment')
+//             //     return
+//             // }
+//             // data.map((item) => {
+//             //     console.log('coment', item.comment)
+//             //     if (item.role_type == '0') {
+//             //         if (item.staff_classId == class_id && pagetype == 'post') {
+//             //             $("#post_teacher_comment_container").show()
+//             //             $("#post_teacher_comment_message").val(item.role_type = '0' ? item.comment : '')
+//             //         }
+//             //         else {
+//             //             $("#post_teacher_comment_container").hide()
+//             //             $("#thereportteacher_comment12").html(item.comment != '' ? item.comment : 'No comment')
+//             //             $("#theteacher_comment").html(item.comment != '' ? item.comment : 'No comment')
+//             //             $("#thereportteacher_comment").html(item.comment)
+//             //         }
+//             //     }
+//             //     else {
+//             //         $("#post_principal_comment_message").val(item.comment)
+//             //         // $("#thereportteacher_comment12").html(item.comment != '' ? item.comment : 'No comment')
+//             //         $("#theprincipalreportteacher_comment12").html(item.comment != '' ? item.comment : 'No comment')
+//             //     }
+
+//             // })
+//             // return
+//             // if (data == '') {
+//             //     console.log('empty data but have access')
+//             //     $("#post_teacher_comment_container").show()
+//             // }
+//             // else if (data == '0') {
+//             //     console.log("restricted no access")
+//             //     $("#post_teacher_comment_container").hide()
+//             // }
+//             // else {
+//             //     console.log("access granted fully")
+//             //     $("#post_teacher_comment_container").show()
+//             // }
+//             // return
+//             // if (data == 'no') {
+//             //     $("#view_teacher_comment_container").hide()
+//             //     $("#report_teacher_comment_container").hide()
+//             //     $("#post_teacher_comment_container").hide()
+//             // } else {
+//             //     $("#report_teacher_comment_container").show()
+//             //     $("#view_teacher_comment_container").show()
+//             //     if (pagetype == 'post') {
+//             //         alert('ll')
+//             //         $("#post_teacher_comment_container").show()
+//             //         $("#post_teacher_comment_message").val(data)
+//             //     }
+//             //     else if (pagetype == 'view') {
+//             //         $("#theteacher_comment").html(data)
+//             //     }
+//             //     else if (pagetype == 'report') {
+//             //         $("#thereportteacher_comment").html(data)
+//             //     }
+//             // }
+//         }
+//     })
+// }
 function get_teacher_comment(term, session, student_id, class_id, pagetype) {
     // alert(class_id)
     // return
@@ -8054,7 +8261,7 @@ function loadApproval() {
         data: { 'action': 'get_approval', class_id, term_id, session_id, },
         cache: true,
         success: (data) => {
-            // data = JSON.parse(data)
+            data = JSON.parse(data)
             approval_data = data[0];
         }
     })
@@ -8473,7 +8680,7 @@ async function post_table_data(filtertype, viewOrPostPage) {
         $("#post_teacher_comment_gb_container").hide()
     }
 
-    console.log("arrayValue1s", JSON.parse(arrayValues));
+    console.log("arrayValues", arrayValues);
     console.log("postdata", postdata);
     // alert("viewOrPostPage")
     let tableHtml = '';
@@ -8496,10 +8703,8 @@ async function post_table_data(filtertype, viewOrPostPage) {
             $(".data_overlay").html(`
                 <p class="font-weight-bold">Fill the forms appropiately</p>
             `)
-            // data = data.trim();
-            let response = data;
-            // let response = JSON.parse(data);
-            console.log("respponse", response)
+            data = data.trim();
+            let response = JSON.parse(data);
             let scores = response.scores;
             console.log("scores", scores);
             console.log("aproval", approval_data);
@@ -8536,7 +8741,7 @@ async function post_table_data(filtertype, viewOrPostPage) {
                         ${settingsData.exa == 1 ? `<td><input type="number"  class="w-xs-60 assess_input exatotal" onchange="updatehiddentotals(this,'exatotal')" ${approval_data.exam == '1' ? 'disabled' : ''} value="${scores.length > 0 ? scores[0].examTotal || '' : ''}" /></td>` : ''}
                         ${settingsData.exa == 1 ? `<td class="d-non ${hideshowtotals}"><input type="number"  class="w-xs-60 assess_input exatotal" onchange="updatehiddentotals(this,'exatotal')" ${approval_data.exam == '1' ? 'disabled' : ''} value="${scores.length > 0 ? scores[0].examTotal || '' : ''}" /></td>` : ''}
                     </tr>
-                    ${Array.from(arrayValues).map((arrayValue) => {
+                    ${arrayValues.map((arrayValue) => {
                     let nameToMatch;
                     let thestudentnameorsubj;
                     // let nameToMatch = filtertype === 'student' ? arrayValue.subject : arrayValue.name;
@@ -8776,11 +8981,13 @@ async function post_table_data(filtertype, viewOrPostPage) {
                 scrollX: true,
                 paging: false,
                 ordering: false,
-                fixedColumns: {
-                    left: 1,
-                    right: 0
-                }
+                // fixedColumns: {
+                //     left: 1,
+                //     right: 0
+                // }
             });
+            hideScoreSaveMessage();
+            initializeScoreChangeTracking();
         }
     });
 }
@@ -9927,6 +10134,107 @@ function updatehiddentotals(event, class_selected) {
     $(`.assess_input.${class_selected}`).val($(event).val())
 }
 
+const scoreInputFields = {
+    all: ['ca1', 'ca1Total', 'ca2', 'ca2Total', 'ca3', 'ca3Total', 'practical', 'practicalTotal', 'exam', 'examTotal'],
+    ca1: ['ca1', 'ca1Total'],
+    ca2: ['ca2', 'ca2Total'],
+    ca3: ['ca3', 'ca3Total'],
+    pra: ['practical', 'practicalTotal'],
+    exam: ['exam', 'examTotal']
+};
+
+function getActiveScoreMode() {
+    if ($("#by_ca1").hasClass('active')) return 'ca1';
+    if ($("#by_ca2").hasClass('active')) return 'ca2';
+    if ($("#by_ca3").hasClass('active')) return 'ca3';
+    if ($("#by_pra").hasClass('active')) return 'pra';
+    if ($("#by_exam").hasClass('active')) return 'exam';
+    return 'all';
+}
+
+function getActiveScoreFields() {
+    if (!$("#by_all").hasClass('active')) {
+        return scoreInputFields[getActiveScoreMode()] || [];
+    }
+
+    const fields = [];
+    if (settingsData.ca1 == 1) fields.push('ca1', 'ca1Total');
+    if (settingsData.ca2 == 1) fields.push('ca2', 'ca2Total');
+    if (settingsData.ca3 == 1) fields.push('ca3', 'ca3Total');
+    if (settingsData.pra == 1) fields.push('practical', 'practicalTotal');
+    if (settingsData.exa == 1) fields.push('exam', 'examTotal');
+    return fields;
+}
+
+function normalizeScoreValue(value) {
+    return value === undefined || value === null || value === '' ? '' : String(Number(value));
+}
+
+function initializeScoreChangeTracking() {
+    const fields = getActiveScoreFields();
+
+    $('#post_score_table_by_student tbody tr').each(function () {
+        $(this).find('input[type="number"]').each(function (index) {
+            const field = fields[index];
+            if (!field) return;
+
+            $(this)
+                .attr('data-score-field', field)
+                .attr('data-original-value', normalizeScoreValue($(this).val()))
+                .removeClass('border border-warning');
+        });
+    });
+}
+
+function markScoreConflicts(conflicts) {
+    if (!Array.isArray(conflicts)) return;
+
+    conflicts.forEach((conflict) => {
+        $('#post_score_table_by_student tbody tr').each(function () {
+            const rowSubjectOrNameId = String($(this).find('.assess_subject').attr('data-id') || '');
+            const rowMatchesStudent = $("#by_subj_btn").hasClass('active') && rowSubjectOrNameId === String(conflict.student_id);
+            const rowMatchesSubject = $("#by_stud_btn").hasClass('active') && rowSubjectOrNameId === String(conflict.subject_id);
+
+            if (!rowMatchesStudent && !rowMatchesSubject) return;
+
+            $(this)
+                .find(`[data-score-field="${conflict.field}"]`)
+                .addClass('border border-warning text-danger font-weight-bold')
+                .attr('title', `Another user updated this score to ${conflict.current_value}. This is the input with the conflict.`);
+        });
+    });
+}
+
+function showScoreSaveMessage(type, message) {
+    const alertClass = type === 'warning' ? 'alert-warning' : type === 'success' ? 'alert-success' : 'alert-info';
+
+    $('#score_save_message')
+        .removeClass('alert-warning alert-success alert-info alert-danger')
+        .addClass(alertClass)
+        .html(message)
+        .show();
+}
+
+function hideScoreSaveMessage() {
+    $('#score_save_message').hide().html('');
+}
+
+function updateSavedScoreTotals(classValue, termValue, sessionValue) {
+    $.ajax({
+        url: "../controller.php",
+        type: "POST",
+        data: {
+            'action': 'update_total_score',
+            classValue,
+            termValue,
+            sessionValue
+        },
+        success: (data) => {
+            console.log('updatesores', data)
+        }
+    })
+}
+
 // alert('k')
 function submitScores() {
     const termValue = $(".select_btn.term.active").attr("data-name");
@@ -9938,56 +10246,33 @@ function submitScores() {
 
     function processRow(row, extraFields = {}) {
         const subjectOrNameId = $(row).find('.assess_subject').attr('data-id');
+        if (subjectOrNameId === 'NAN') return;
+
         const scoreData = {
             term: termValue,
             class: classValue,
             session: sessionValue,
             subjectOrNameId,
-            ...extraFields
+            ...extraFields,
+            changedFields: [],
+            originalValues: {}
         };
 
-        let inputs = $(row).find('input[type="number"]');
-        let inputIndex = 0;
+        $(row).find('input[type="number"][data-score-field]').each(function () {
+            const field = $(this).attr('data-score-field');
+            const originalValue = normalizeScoreValue($(this).attr('data-original-value'));
+            const currentValue = normalizeScoreValue($(this).val());
 
-        if ($("#by_all").hasClass('active')) {
-            if (settingsData.ca1 == 1) {
-                scoreData.ca1 = Number(inputs.eq(inputIndex++).val() || 0);
-                scoreData.ca1Total = Number(inputs.eq(inputIndex++).val() || 0);
-            }
-            if (settingsData.ca2 == 1) {
-                scoreData.ca2 = Number(inputs.eq(inputIndex++).val() || 0);
-                scoreData.ca2Total = Number(inputs.eq(inputIndex++).val() || 0);
-            }
-            if (settingsData.ca3 == 1) {
-                scoreData.ca3 = Number(inputs.eq(inputIndex++).val() || 0);
-                scoreData.ca3Total = Number(inputs.eq(inputIndex++).val() || 0);
-            }
-            if (settingsData.pra == 1) {
-                scoreData.practical = Number(inputs.eq(inputIndex++).val() || 0);
-                scoreData.practicalTotal = Number(inputs.eq(inputIndex++).val() || 0);
-            }
-            if (settingsData.exa == 1) {
-                scoreData.exam = Number(inputs.eq(inputIndex++).val() || 0);
-                scoreData.examTotal = Number(inputs.eq(inputIndex++).val() || 0);
-            }
-        } else if ($("#by_ca1").hasClass('active')) {
-            scoreData.ca1 = Number(inputs.eq(0).val() || 0);
-            scoreData.ca1Total = Number(inputs.eq(1).val() || 0);
-        } else if ($("#by_ca2").hasClass('active')) {
-            scoreData.ca2 = Number(inputs.eq(0).val() || 0);
-            scoreData.ca2Total = Number(inputs.eq(1).val() || 0);
-        } else if ($("#by_ca3").hasClass('active')) {
-            scoreData.ca3 = Number(inputs.eq(0).val() || 0);
-            scoreData.ca3Total = Number(inputs.eq(1).val() || 0);
-        } else if ($("#by_pra").hasClass('active')) {
-            scoreData.practical = Number(inputs.eq(0).val() || 0);
-            scoreData.practicalTotal = Number(inputs.eq(1).val() || 0);
-        } else if ($("#by_exam").hasClass('active')) {
-            scoreData.exam = Number(inputs.eq(0).val() || 0);
-            scoreData.examTotal = Number(inputs.eq(1).val() || 0);
+            if (currentValue === originalValue) return;
+
+            scoreData[field] = currentValue === '' ? 0 : Number(currentValue);
+            scoreData.originalValues[field] = originalValue;
+            scoreData.changedFields.push(field);
+        });
+
+        if (scoreData.changedFields.length > 0) {
+            tableData.push(scoreData);
         }
-
-        tableData.push(scoreData);
     }
 
     function processTable(extraFields = {}) {
@@ -10015,27 +10300,23 @@ function submitScores() {
                 if (data.status == '1') {
                     setTimeout(track_scores_changes, 1000);
                     toastr.success(data.msg);
-                    // alert('kingnow')
-                    $.ajax({
-                        url: "../controller.php",
-                        type: "POST",
-                        data: {
-                            'action': 'update_total_score',
-                            classValue,
-                            termValue,
-                            sessionValue
-                        },
-                        success: (data) => {
-                            console.log('updatesores', data)
-                        }
-                    })
+                    showScoreSaveMessage('success', data.msg);
+                    initializeScoreChangeTracking();
+                    updateSavedScoreTotals(classValue, termValue, sessionValue);
+                } else if (data.status == '409') {
+                    markScoreConflicts(data.conflicts);
+                    showScoreSaveMessage('warning', data.msg);
+                    if (Number(data.saved || 0) > 0) {
+                        updateSavedScoreTotals(classValue, termValue, sessionValue);
+                    }
                 } else {
+                    showScoreSaveMessage('warning', data.err);
                     toastr.error(data.err);
                 }
             }
         });
     } else {
-        console.error("Error: No data to submit.");
+        showScoreSaveMessage('info', "No score changes to submit");
     }
 }
 
@@ -10736,7 +11017,7 @@ $(".settingsform").submit(function (event) {
         contentType: false,
         processData: false,
         success: (data) => {
-            // data = JSON.parse(data);
+            data = JSON.parse(data);
             if (data.status == '1') {
                 toastr.success(data.msg);
             } else {
@@ -14210,6 +14491,8 @@ async function preview_custom_report_card(report_id) {
 
         // Set globals for other functions
         student_score_data = scoreResponse.score_data;
+        student_comparison_data = scoreResponse.comparison_data || {};
+        const resolvedClassId = scoreResponse.effective_class_id || activeClassId;
 
         if (!scoreResponse.settingsData || !scoreResponse.settingsData[0]) {
             console.error("Missing settingsData in scoreResponse:", scoreResponse);
@@ -14232,7 +14515,7 @@ async function preview_custom_report_card(report_id) {
             type: "POST",
             data: {
                 student_id: activeStudentId,
-                class_id: activeClassId,
+                class_id: resolvedClassId,
                 session_id: session_id,
                 term_id: term_id,
                 report_id: report_id,
@@ -14248,7 +14531,7 @@ async function preview_custom_report_card(report_id) {
             student_score_data,
             term_id,
             session_id,
-            activeClassId,
+            resolvedClassId,
             grading,
             tableContainer,
             customAssessments
@@ -14262,7 +14545,7 @@ async function preview_custom_report_card(report_id) {
             term_id,
             session_id,
             activeStudentId,
-            activeClassId,
+            resolvedClassId,
             'term',
             previewContent
         );
@@ -14452,7 +14735,6 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
         term_id = $("#select_term_field").val();
         if (term_id == "cum") {
             sessionOrTerm = "session";
-            term_id = 3;
         }
         class_id = $("#select_class_field_report").val();
     } else if (page_type == "student_page") {
@@ -14486,11 +14768,13 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
                 },
             });
 
-            data = gradingData;
-            data = JSON.parse(gradingData);
-            console.log("ddd", data.settingsData)
-            settingsData = data.settingsData[0];
-            student_score_data = data.score_data;
+            const gradingPayload =
+                typeof gradingData === "string" ? JSON.parse(gradingData) : gradingData;
+            settingsData = gradingPayload.settingsData[0];
+            student_score_data = gradingPayload.score_data;
+            student_comparison_data = gradingPayload.comparison_data || {};
+            const reportClassId = gradingPayload.effective_class_id || class_id;
+            const commentTermId = term_id == "cum" ? 3 : term_id;
 
             // Then get the report card HTML
             let myschl = null;
@@ -14500,7 +14784,7 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
                         ? "../single_report_card-homat.php"
                         : "../single_report_card.php",
                 type: "POST",
-                data: { student_id, class_id, session_id, term_id, sessionOrTerm },
+                data: { student_id, class_id: reportClassId, session_id, term_id, sessionOrTerm },
             });
 
             // Create a container for this specific report
@@ -14509,31 +14793,36 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
 
             const tableContainer = reportDiv.find("#table_visuals_display_report");
             const commentContainer = reportDiv.find(".student_behaviour_skills");
+            const reportCardElement = reportDiv.find(".report-card").first();
+            const templateTableMode =
+                typeof window.getReportTemplateTableMode === "function"
+                    ? window.getReportTemplateTableMode(reportCardElement, term_id, sessionOrTerm)
+                    : "standard";
             await set_behaviour_comment_report(
-                term_id,
+                commentTermId,
                 session_id,
                 student_id,
-                class_id,
+                reportClassId,
                 "view",
                 commentContainer
             );
             // alert(myschl)
             if (myschl == 13) {
-                if (sessionOrTerm == "session") {
+                if (sessionOrTerm == "session" || templateTableMode === "full_cumulative") {
                     await format_student_cummulative_table_report(
                         student_score_data,
                         student_id,
                         session_id,
-                        class_id,
+                        reportClassId,
                         settingsData.grade,
                         tableContainer
                     );
-                } else if (term_id == "2") {
+                } else if (term_id == "2" || templateTableMode === "second_term_cumulative") {
                     await format_2nd_term_student_cummulative_table_report(
                         student_score_data,
                         student_id,
                         session_id,
-                        class_id,
+                        reportClassId,
                         settingsData.grade,
                         tableContainer
                     );
@@ -14542,18 +14831,27 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
                         student_score_data,
                         term_id,
                         session_id,
-                        class_id,
+                        reportClassId,
                         settingsData.grade,
                         tableContainer
                     );
                 }
             } else {
-                if (sessionOrTerm == "session") {
+                if (sessionOrTerm == "session" || templateTableMode === "full_cumulative") {
                     await format_student_cummulative_table_report(
                         student_score_data,
                         student_id,
                         session_id,
-                        class_id,
+                        reportClassId,
+                        settingsData.grade,
+                        tableContainer
+                    );
+                } else if (templateTableMode === "second_term_cumulative") {
+                    await format_2nd_term_student_cummulative_table_report(
+                        student_score_data,
+                        student_id,
+                        session_id,
+                        reportClassId,
                         settingsData.grade,
                         tableContainer
                     );
@@ -14562,7 +14860,7 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
                         student_score_data,
                         term_id,
                         session_id,
-                        class_id,
+                        reportClassId,
                         settingsData.grade,
                         tableContainer
                     );
@@ -14626,6 +14924,8 @@ async function format_student_table_report(student_score_data, term, session_id,
       <th>Total</th>         
           <th>Total(%)</th>
           <th>Grade</th>
+          <th>Class Average</th>
+          <th>Position</th>
       </tr>
   </thead>
   <tbody>
@@ -14646,6 +14946,8 @@ async function format_student_table_report(student_score_data, term, session_id,
       <td class="total-score">${customAssessments ? calculate_row_total(item, customAssessments) : item.Total}</td>
       <td class="percentage">${customAssessments ? calculate_row_percentage(item, customAssessments) : get_subject_percentage(item.subject_id, term, session_id, class_id)}</td>
       <td>${calculateGrade1(customAssessments ? calculate_row_percentage(item, customAssessments) : get_subject_percentage(item.subject_id, term, session_id, class_id), grader)}</td>
+      <td>${get_report_comparison_value(item.subject_id, term, "class_average")}</td>
+      <td>${get_report_comparison_value(item.subject_id, term, "position")}</td>
   </tr>
 `
                 // }
@@ -14655,6 +14957,9 @@ async function format_student_table_report(student_score_data, term, session_id,
 </table>`;
         }
         container.html(str);
+        if (typeof window.applyReportTemplateToRenderedTable === "function") {
+            window.applyReportTemplateToRenderedTable(container.closest(".report-card"));
+        }
         setTimeout(resolve, 100);
     });
 }
@@ -14689,6 +14994,15 @@ function calculate_row_percentage(item, assessments) {
         return Math.round((total / maxTotal) * 100).toString();
     }
     return "0";
+}
+
+function get_report_comparison_value(subjectId, termId, key, cumulativeScope = null) {
+    const comparisonData = student_comparison_data || {};
+    const scopeData = cumulativeScope
+        ? (((comparisonData.cumulative || {})[String(cumulativeScope)] || {})[String(subjectId)] || {})
+        : (((comparisonData.term || {})[String(termId)] || {})[String(subjectId)] || {});
+
+    return scopeData[key] || "-";
 }
 async function format_student_cummulative_table_report(student_score_data, student_id, session_id, class_id, grading_param, containerSelector) {
     // student_score_data: Array of all score objects
@@ -14775,6 +15089,8 @@ async function format_student_cummulative_table_report(student_score_data, stude
                         <th rowspan="2" style="vertical-align: middle;">Avg</th>
                         <th rowspan="2" style="vertical-align: middle;">(%)</th>
                         <th rowspan="2" style="vertical-align: middle;">Grade</th>
+                        <th rowspan="2" style="vertical-align: middle;">Class Average</th>
+                        <th rowspan="2" style="vertical-align: middle;">Position</th>
                     </tr>
                     <tr>
                         ${settingsData.ca1 == 0 ? '' : '<th>CA1</th>'}
@@ -14835,6 +15151,8 @@ async function format_student_cummulative_table_report(student_score_data, stude
                     <td>${averageScore > 0 ? averageScore.toFixed(0) : '-'}</td>
                     <td>${overallPercentage > 0 ? overallPercentage.toFixed(0) + '%' : '-'}</td>
                     <td>${grade}</td>
+                    <td>${get_report_comparison_value(subject.id, null, "class_average", "3")}</td>
+                    <td>${get_report_comparison_value(subject.id, null, "position", "3")}</td>
                 </tr>
             `;
         });
@@ -14845,6 +15163,9 @@ async function format_student_cummulative_table_report(student_score_data, stude
         `;
 
         $(containerSelector).html(tableHtml);
+        if (typeof window.applyReportTemplateToRenderedTable === "function") {
+            window.applyReportTemplateToRenderedTable($(containerSelector).closest(".report-card"));
+        }
 
         const tableId = `#cumulative_student_score_table_${student_id}`;
         // if ($.fn.DataTable.isDataTable(tableId)) {
@@ -14932,6 +15253,8 @@ async function format_2nd_term_student_cummulative_table_report(student_score_da
                         <th rowspan="2" style="vertical-align: middle;">Avg</th>
                         <th rowspan="2" style="vertical-align: middle;">(%)</th>
                         <th rowspan="2" style="vertical-align: middle;">Grade</th>
+                        <th rowspan="2" style="vertical-align: middle;">Class Average</th>
+                        <th rowspan="2" style="vertical-align: middle;">Position</th>
                     </tr>
                     <tr>
                         ${settingsData.ca1 == 0 ? '' : '<th>CA1</th>'}
@@ -14976,6 +15299,8 @@ async function format_2nd_term_student_cummulative_table_report(student_score_da
                     <td>${averageScore > 0 ? averageScore.toFixed(0) : '-'}</td>
                     <td>${overallPercentage > 0 ? overallPercentage.toFixed(0) + '%' : '-'}</td>
                     <td>${grade}</td>
+                    <td>${get_report_comparison_value(subject.id, null, "class_average", "2")}</td>
+                    <td>${get_report_comparison_value(subject.id, null, "position", "2")}</td>
                 </tr>
             `;
         });
@@ -14984,6 +15309,9 @@ async function format_2nd_term_student_cummulative_table_report(student_score_da
             </table>
         `;
         $(containerSelector).html(tableHtml);
+        if (typeof window.applyReportTemplateToRenderedTable === "function") {
+            window.applyReportTemplateToRenderedTable($(containerSelector).closest(".report-card"));
+        }
         const tableId = `#cumulative_student_score_table_${student_id}`;
         setTimeout(resolve, 100);
     });
@@ -15067,9 +15395,7 @@ async function set_behaviour_comment_report(
                 pagetype,
             },
             success: (data) => {
-                data = data.trim();
-                data = JSON.parse(data);
-                toggleBehaviourSectionsVisibility(data.show_behaviour_sections, container);
+                data = typeof data === "string" ? JSON.parse(data.trim()) : data;
                 // alert(data.staff_classId)
                 // let staff_classId_json = JSON.parse(data.staff_classId)
                 // alert((data.staff_classId).includes(class_id))

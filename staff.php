@@ -214,6 +214,14 @@ $school_id = $_SESSION['school_id'];
                                 </p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="bus_tracking" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">directions_bus</i>
+                                    Bus Tracking
+                                </p>
+                            </a>
+                        </li>
                         
                         
                         <li class="nav-item">

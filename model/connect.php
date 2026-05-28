@@ -22,7 +22,11 @@ if (!mysqli_real_connect($conn, $host, $user, $pass, $db, $port, NULL, $apply_ss
     die("Connect Error: " . mysqli_connect_error());
 }
 
-mysqli_query($conn, "SET time_zone = 'Africa/Lagos'");
+try {
+    mysqli_query($conn, "SET time_zone = 'Africa/Lagos'");
+} catch (mysqli_sql_exception $e) {
+    mysqli_query($conn, "SET time_zone = '+01:00'");
+}
 
 if (!$conn) {
     die("Error connecting to the database" . mysqli_error($conn));

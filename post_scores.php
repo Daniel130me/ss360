@@ -551,6 +551,7 @@ $all_skills_keys = array_merge(array_keys($behaviour_skills), array_keys($psycho
                         <table id="post_score_table_by_student" class="display nowrap" style="width:100%;">
                         </table>
                         <!-- <button type="button" class="btn btn-primary btn-block btn-md-auto mt-2" onclick="submitScores()">Submit Scores</button> -->
+                        <div id="score_save_message" class="alert mt-3 mb-0" style="display:none;"></div>
                         <div class="row mt-3">
                             <div class="col-12 col-md-auto mb-2 mb-md-0">
                                 <button class="btn btn-primary btn-block btn-md-auto" onclick="submitScores()">Submit
