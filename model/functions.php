@@ -547,6 +547,31 @@ function transport_is_admin()
     return in_array((int) $_SESSION['staff_type'], transport_admin_staff_types(), true);
 }
 
+function transport_user_has_assigned_bus($staff_id = null, $school_id = null)
+{
+    if (!transport_is_staff_user()) {
+        return false;
+    }
+
+    $staff_id = $staff_id === null ? transport_current_user_id() : (int) $staff_id;
+    $school_id = $school_id === null ? transport_current_school_id() : (int) $school_id;
+
+    if ($staff_id <= 0 || $school_id <= 0) {
+        return false;
+    }
+
+    $row = transport_fetch_one(
+        "SELECT id FROM school_buses
+         WHERE school_id = ? AND status = 1
+         AND (driver_staff_id = ? OR assistant_staff_id = ?)
+         LIMIT 1",
+        'iii',
+        [$school_id, $staff_id, $staff_id]
+    );
+
+    return $row !== null;
+}
+
 function transport_stmt_bind($stmt, $types, $params)
 {
     if ($types === '' || empty($params)) {

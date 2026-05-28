@@ -1209,7 +1209,8 @@ switch ($action) {
                         'grading' => $setting_row['grading']
                     ));
                 }
-                echo json_encode(array('status' => '1', 'location' => 'dashboard'));
+                $login_location = (!transport_is_admin() && transport_user_has_assigned_bus()) ? 'bus_driver' : 'dashboard';
+                echo json_encode(array('status' => '1', 'location' => $login_location));
                 // echo json_encode(array('status' => '1', 'location' => isset($_SESSION['location']) ? $_SESSION['location'] : 'dashboard'));
             } else {
                 echo json_encode(array('status' => '0', 'err' => 'Incorrect PIN, Try again'));

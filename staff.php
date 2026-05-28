@@ -464,6 +464,7 @@ $school_id = $_SESSION['school_id'];
                                                 }
                                                 ?>
                                             </select>
+                                            <small class="text-muted">For bus drivers, choose the Driver role here, then assign the staff member to a bus on Bus Tracking.</small>
                                         </div>
                                     </div>
                                 </div>

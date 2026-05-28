@@ -15,6 +15,10 @@ if (!transport_is_staff_user()) {
 }
 
 $can_manage_transport = transport_is_admin();
+if (!$can_manage_transport) {
+    header("Location: " . (transport_user_has_assigned_bus() ? "bus_driver" : "dashboard"));
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -98,6 +102,41 @@ $can_manage_transport = transport_is_admin();
             gap: 12px;
         }
 
+        .setup-guide {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        }
+
+        .setup-step {
+            background: #fff;
+            border: 1px solid #e9eef5;
+            border-radius: 8px;
+            padding: 14px;
+        }
+
+        .setup-step.done {
+            border-color: #b9e7c8;
+        }
+
+        .setup-step strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .setup-step p {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .field-hint {
+            color: #6c757d;
+            display: block;
+            font-size: 0.82rem;
+            margin-top: 4px;
+        }
+
         #staffBusMap {
             border-radius: 8px;
             height: 420px;
@@ -173,8 +212,8 @@ $can_manage_transport = transport_is_admin();
                 <div class="container-fluid">
                     <div class="d-flex align-items-center justify-content-between flex-wrap mb-3">
                         <div>
-                            <h4 class="mb-1 font-weight-bold">Bus Tracking</h4>
-                            <p class="text-muted mb-0">Current transport activity and setup</p>
+                            <h4 class="mb-1 font-weight-bold">Bus Tracking Setup</h4>
+                            <p class="text-muted mb-0">Set up buses, assign drivers and students, then monitor active trips.</p>
                         </div>
                         <button type="button" class="btn btn-primary d-flex align-items-center" onclick="refreshTransportData()">
                             <span class="material-symbols-outlined mr-1">refresh</span> Refresh
@@ -183,17 +222,15 @@ $can_manage_transport = transport_is_admin();
 
                     <div class="nav nav-pills transport-toolbar mb-3" role="tablist">
                         <a class="nav-link active" data-toggle="pill" href="#transport-live" role="tab">Live Dashboard</a>
-                        <a class="nav-link" data-toggle="pill" href="#transport-driver" role="tab">Driver Mode</a>
-                        <?php if ($can_manage_transport) { ?>
-                            <a class="nav-link" data-toggle="pill" href="#transport-buses" role="tab">Buses</a>
-                            <a class="nav-link" data-toggle="pill" href="#transport-routes" role="tab">Routes & Stops</a>
-                            <a class="nav-link" data-toggle="pill" href="#transport-assignments" role="tab">Assignments</a>
-                            <a class="nav-link" data-toggle="pill" href="#transport-settings" role="tab">Settings</a>
-                        <?php } ?>
+                        <a class="nav-link" data-toggle="pill" href="#transport-buses" role="tab">1. Buses & Drivers</a>
+                        <a class="nav-link" data-toggle="pill" href="#transport-assignments" role="tab">2. Assign Students</a>
+                        <a class="nav-link" data-toggle="pill" href="#transport-routes" role="tab">Optional Pickup Plan</a>
+                        <a class="nav-link" data-toggle="pill" href="#transport-settings" role="tab">Advanced Settings</a>
                     </div>
 
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="transport-live" role="tabpanel">
+                            <div class="setup-guide mb-3" id="setupGuide"></div>
                             <div class="transport-panel">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <h5 class="font-weight-bold mb-0">Active Buses</h5>
@@ -203,63 +240,30 @@ $can_manage_transport = transport_is_admin();
                                 <div id="liveBusTable"></div>
                             </div>
                         </div>
-
-                        <div class="tab-pane fade" id="transport-driver" role="tabpanel">
-                            <div class="row">
-                                <div class="col-lg-5 mb-3">
-                                    <div class="transport-panel">
-                                        <h5 class="font-weight-bold">Trip Control</h5>
-                                        <form id="driverTripForm">
-                                            <div class="form-group"><label>Bus</label><select class="form-control" id="driver_bus_id" required></select></div>
-                                            <div class="form-group"><label>Route</label><select class="form-control" id="driver_route_id"></select></div>
-                                            <div class="form-group">
-                                                <label>Direction</label>
-                                                <select class="form-control" id="driver_direction">
-                                                    <option value="to_school">Going to school</option>
-                                                    <option value="to_home">Going home</option>
-                                                </select>
-                                            </div>
-                                            <div class="d-flex" style="gap: 8px;">
-                                                <button class="btn btn-success flex-fill" type="submit" id="startTripBtn">Start</button>
-                                                <button class="btn btn-danger flex-fill" type="button" id="stopTripBtn" disabled>Stop</button>
-                                            </div>
-                                            <button class="btn btn-outline-primary btn-block mt-2" type="button" id="sendLocationNowBtn" disabled>Send current location now</button>
-                                        </form>
-                                    </div>
-                                </div>
-                                <div class="col-lg-7 mb-3">
-                                    <div class="transport-panel">
-                                        <h5 class="font-weight-bold">Tracking Status</h5>
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3"><p class="text-muted mb-1">Trip</p><strong id="driverTripStatus">Not started</strong></div>
-                                            <div class="col-md-6 mb-3"><p class="text-muted mb-1">GPS accuracy</p><strong id="driverAccuracy">Waiting</strong></div>
-                                            <div class="col-md-6 mb-3"><p class="text-muted mb-1">Last sent</p><strong id="driverLastSent">Never</strong></div>
-                                            <div class="col-md-6 mb-3"><p class="text-muted mb-1">Server response</p><strong id="driverServerStatus">Idle</strong></div>
-                                        </div>
-                                        <div class="alert alert-light border mb-0" id="driverPermissionHint">
-                                            Location sharing starts only after Start and stops when the trip is stopped.
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <?php if ($can_manage_transport) { ?>
                             <div class="tab-pane fade" id="transport-buses" role="tabpanel">
                                 <div class="row">
                                     <div class="col-lg-4 mb-3">
                                         <div class="transport-panel">
-                                            <h5 class="font-weight-bold">Bus Details</h5>
+                                            <h5 class="font-weight-bold">Add Bus And Driver</h5>
+                                            <p class="text-muted">Create the bus, then choose the driver staff account that will send live location.</p>
                                             <form id="busForm">
                                                 <input type="hidden" name="action" value="save_bus">
                                                 <input type="hidden" name="bus_id" id="bus_id">
-                                                <div class="form-group"><label>Bus name</label><input class="form-control" name="bus_name" id="bus_name" required></div>
+                                                <div class="form-group"><label>Bus name</label><input class="form-control" name="bus_name" id="bus_name" placeholder="Example: Bus 1" required></div>
                                                 <div class="form-grid">
-                                                    <div class="form-group"><label>Bus number</label><input class="form-control" name="bus_number" id="bus_number"></div>
-                                                    <div class="form-group"><label>Plate number</label><input class="form-control" name="plate_number" id="plate_number"></div>
+                                                    <div class="form-group"><label>Bus number</label><input class="form-control" name="bus_number" id="bus_number" placeholder="Example: 123"></div>
+                                                    <div class="form-group"><label>Plate number</label><input class="form-control" name="plate_number" id="plate_number" placeholder="Example: ABC-123"></div>
                                                 </div>
-                                                <div class="form-group"><label>Driver</label><select class="form-control" name="driver_staff_id" id="driver_staff_id"></select></div>
-                                                <div class="form-group"><label>Assistant</label><select class="form-control" name="assistant_staff_id" id="assistant_staff_id"></select></div>
+                                                <div class="form-group">
+                                                    <label>Driver staff account</label>
+                                                    <select class="form-control" name="driver_staff_id" id="driver_staff_id"></select>
+                                                    <small class="field-hint">Register the driver on the Staff page first, then select the driver here.</small>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Bus assistant</label>
+                                                    <select class="form-control" name="assistant_staff_id" id="assistant_staff_id"></select>
+                                                    <small class="field-hint">Optional. Assistants can also start tracking for this bus.</small>
+                                                </div>
                                                 <div class="form-grid">
                                                     <div class="form-group"><label>Driver phone</label><input class="form-control" name="driver_phone" id="driver_phone"></div>
                                                     <div class="form-group"><label>Capacity</label><input type="number" min="0" class="form-control" name="capacity" id="capacity"></div>
@@ -278,11 +282,12 @@ $can_manage_transport = transport_is_admin();
                                 <div class="row">
                                     <div class="col-lg-4 mb-3">
                                         <div class="transport-panel">
-                                            <h5 class="font-weight-bold">Route</h5>
+                                            <h5 class="font-weight-bold">Pickup / Drop-off Plan</h5>
+                                            <p class="text-muted">Use this only when you want to name a route and list pickup stops. Bus tracking can work without it.</p>
                                             <form id="routeForm">
                                                 <input type="hidden" name="action" value="save_route">
                                                 <input type="hidden" name="route_id" id="route_id">
-                                                <div class="form-group"><label>Route name</label><input class="form-control" name="route_name" id="route_name" required></div>
+                                                <div class="form-group"><label>Plan name</label><input class="form-control" name="route_name" id="route_name" placeholder="Example: Majidun - Ogolonto" required></div>
                                                 <div class="form-group"><label>Description</label><textarea class="form-control" name="description" id="description" rows="2"></textarea></div>
                                                 <div class="form-grid">
                                                     <div class="form-group"><label>To school label</label><input class="form-control" name="to_school_label" id="to_school_label" value="Going to school"></div>
@@ -295,16 +300,17 @@ $can_manage_transport = transport_is_admin();
                                     </div>
                                     <div class="col-lg-4 mb-3">
                                         <div class="transport-panel">
-                                            <h5 class="font-weight-bold">Stop</h5>
+                                            <h5 class="font-weight-bold">Add Stop</h5>
+                                            <p class="text-muted">Stops help the school record pickup order. Coordinates are optional for now unless you want exact stop mapping.</p>
                                             <form id="stopForm">
                                                 <input type="hidden" name="action" value="save_route_stop">
                                                 <input type="hidden" name="stop_id" id="stop_id">
-                                                <div class="form-group"><label>Route</label><select class="form-control" name="route_id" id="stop_route_id" required></select></div>
+                                                <div class="form-group"><label>Pickup plan</label><select class="form-control" name="route_id" id="stop_route_id" required></select></div>
                                                 <div class="form-group"><label>Stop name</label><input class="form-control" name="stop_name" id="stop_name" required></div>
                                                 <div class="form-grid">
-                                                    <div class="form-group"><label>Latitude</label><input type="number" step="0.0000001" class="form-control" name="latitude" id="latitude" required></div>
-                                                    <div class="form-group"><label>Longitude</label><input type="number" step="0.0000001" class="form-control" name="longitude" id="longitude" required></div>
-                                                    <div class="form-group"><label>Order</label><input type="number" class="form-control" name="stop_order" id="stop_order" value="0"></div>
+                                                    <div class="form-group"><label>Latitude</label><input type="number" step="0.0000001" class="form-control" name="latitude" id="latitude" value="0"></div>
+                                                    <div class="form-group"><label>Longitude</label><input type="number" step="0.0000001" class="form-control" name="longitude" id="longitude" value="0"></div>
+                                                    <div class="form-group"><label>Pickup order</label><input type="number" class="form-control" name="stop_order" id="stop_order" value="0"></div>
                                                 </div>
                                                 <button class="btn btn-primary btn-block" type="submit">Save Stop</button>
                                                 <button class="btn btn-light btn-block" type="button" onclick="resetStopForm()">Clear</button>
@@ -319,14 +325,15 @@ $can_manage_transport = transport_is_admin();
                                 <div class="row">
                                     <div class="col-lg-4 mb-3">
                                         <div class="transport-panel">
-                                            <h5 class="font-weight-bold">Student Assignment</h5>
+                                            <h5 class="font-weight-bold">Assign Student To Bus</h5>
+                                            <p class="text-muted">Parents will only see the bus connected to their own child.</p>
                                             <form id="assignmentForm">
                                                 <input type="hidden" name="action" value="save_assignment">
                                                 <input type="hidden" name="assignment_id" id="assignment_id">
                                                 <div class="form-group"><label>Student</label><select class="form-control" name="student_id" id="assignment_student_id" required></select></div>
                                                 <div class="form-group"><label>Bus</label><select class="form-control" name="bus_id" id="assignment_bus_id" required></select></div>
-                                                <div class="form-group"><label>Route</label><select class="form-control" name="route_id" id="assignment_route_id"></select></div>
-                                                <div class="form-group"><label>Stop</label><select class="form-control" name="stop_id" id="assignment_stop_id"></select></div>
+                                                <div class="form-group"><label>Pickup plan</label><select class="form-control" name="route_id" id="assignment_route_id"></select></div>
+                                                <div class="form-group"><label>Pickup stop</label><select class="form-control" name="stop_id" id="assignment_stop_id"></select></div>
                                                 <div class="form-group"><label>Status</label><select class="form-control" name="status" id="assignment_status"><option value="1">Active</option><option value="0">Inactive</option></select></div>
                                                 <button class="btn btn-primary btn-block" type="submit">Save Assignment</button>
                                                 <button class="btn btn-light btn-block" type="button" onclick="resetAssignmentForm()">Clear</button>
@@ -339,7 +346,8 @@ $can_manage_transport = transport_is_admin();
 
                             <div class="tab-pane fade" id="transport-settings" role="tabpanel">
                                 <div class="transport-panel">
-                                    <h5 class="font-weight-bold">Tracking Settings</h5>
+                                    <h5 class="font-weight-bold">Advanced Tracking Settings</h5>
+                                    <p class="text-muted">These settings control server usage and GPS quality. The defaults are safe for shared hosting.</p>
                                     <form id="settingsForm" class="form-grid">
                                         <input type="hidden" name="action" value="update_settings">
                                         <div class="form-group"><label>Update interval seconds</label><input type="number" min="15" class="form-control" name="update_interval_seconds" id="update_interval_seconds"></div>
@@ -355,7 +363,6 @@ $can_manage_transport = transport_is_admin();
                                     </form>
                                 </div>
                             </div>
-                        <?php } ?>
                     </div>
                 </div>
             </section>
@@ -369,9 +376,7 @@ $can_manage_transport = transport_is_admin();
     <script src="../dist/js/adminlte.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        const canManageTransport = <?= $can_manage_transport ? 'true' : 'false' ?>;
-        const state = { buses: [], driverBuses: [], routes: [], stops: [], assignments: [], staff: [], students: [], settings: {} };
-        const driverState = { tripId: null, watchId: null, latestPosition: null, sendTimer: null, lastSentAt: 0, lastSentPoint: null };
+        const state = { buses: [], routes: [], stops: [], assignments: [], staff: [], students: [], settings: {} };
         const mapState = { map: null, markers: {}, hasFitBounds: false };
 
         function escapeHtml(value) {
@@ -400,7 +405,7 @@ $can_manage_transport = transport_is_admin();
             $('#liveUpdatedAt').text('Updated ' + new Date().toLocaleTimeString());
             updateStaffMap(rows);
             if (!rows.length) {
-                $('#liveBusTable').html('<div class="empty-state">No bus has been registered yet.</div>');
+                $('#liveBusTable').html('<div class="empty-state">No bus has been registered yet. Start with step 1: add a bus and assign a driver.</div>');
                 return;
             }
 
@@ -412,6 +417,28 @@ $can_manage_transport = transport_is_admin();
             });
             html += '</tbody></table></div>';
             $('#liveBusTable').html(html);
+        }
+
+        function setupStep(done, title, text, tab, buttonText) {
+            return '<div class="setup-step ' + (done ? 'done' : '') + '">' +
+                '<strong>' + (done ? 'Done: ' : 'Next: ') + escapeHtml(title) + '</strong>' +
+                '<p>' + escapeHtml(text) + '</p>' +
+                '<button type="button" class="btn btn-sm ' + (done ? 'btn-light' : 'btn-primary') + '" data-setup-tab="' + tab + '">' + escapeHtml(buttonText) + '</button>' +
+                '</div>';
+        }
+
+        function renderSetupGuide() {
+            const hasBus = state.buses.length > 0;
+            const hasDriver = state.buses.some(bus => Number(bus.driver_staff_id || 0) > 0 || bus.driver_phone);
+            const hasAssignment = state.assignments.length > 0;
+            const hasLocation = Object.values(mapState.markers).length > 0;
+            const html = [
+                setupStep(hasBus, 'Add a bus', 'Create each school bus with its number or plate.', '#transport-buses', hasBus ? 'View buses' : 'Add bus'),
+                setupStep(hasDriver, 'Choose driver', 'Select the staff account that will open the driver tracking page.', '#transport-buses', hasDriver ? 'View drivers' : 'Assign driver'),
+                setupStep(hasAssignment, 'Assign students', 'Connect students to their bus so parents see only the right bus.', '#transport-assignments', hasAssignment ? 'View assignments' : 'Assign students'),
+                setupStep(hasLocation, 'Test tracking', 'Ask the driver to login and start tracking from the Driver Tracking page.', '#transport-live', hasLocation ? 'View live map' : 'Waiting for first location')
+            ].join('');
+            $('#setupGuide').html(html);
         }
 
         function initStaffMap() {
@@ -512,8 +539,6 @@ $can_manage_transport = transport_is_admin();
             $('#assignment_bus_id').html(optionHtml(state.buses, 'bus'));
             $('#stop_route_id, #assignment_route_id').html(optionHtml(state.routes, 'route'));
             $('#assignment_stop_id').html(optionHtml(state.stops, 'stop'));
-            $('#driver_bus_id').html(optionHtml(state.driverBuses, 'bus'));
-            $('#driver_route_id').html(optionHtml(state.routes, 'route'));
         }
 
         function fillSettings() {
@@ -523,26 +548,15 @@ $can_manage_transport = transport_is_admin();
         function refreshTransportData() {
             $.when(
                 postTransport({ action: 'staff_snapshot' }),
-                postTransport({ action: 'driver_context' }),
-                canManageTransport ? postTransport({ action: 'list_transport_options' }) : $.Deferred().resolve([{ status: '1', staff: [], students: [] }]),
-                canManageTransport ? postTransport({ action: 'list_buses' }) : $.Deferred().resolve([{ status: '1', buses: [] }]),
+                postTransport({ action: 'list_transport_options' }),
+                postTransport({ action: 'list_buses' }),
                 postTransport({ action: 'list_routes' }),
-                canManageTransport ? postTransport({ action: 'list_route_stops' }) : $.Deferred().resolve([{ status: '1', stops: [] }]),
-                canManageTransport ? postTransport({ action: 'list_assignments' }) : $.Deferred().resolve([{ status: '1', assignments: [] }]),
-                canManageTransport ? postTransport({ action: 'get_settings' }) : $.Deferred().resolve([{ status: '1', settings: {} }])
-            ).done(function(snapshotResp, driverResp, optionsResp, busesResp, routesResp, stopsResp, assignmentsResp, settingsResp) {
+                postTransport({ action: 'list_route_stops' }),
+                postTransport({ action: 'list_assignments' }),
+                postTransport({ action: 'get_settings' })
+            ).done(function(snapshotResp, optionsResp, busesResp, routesResp, stopsResp, assignmentsResp, settingsResp) {
                 const snapshot = snapshotResp[0] || {};
                 renderLive(snapshot.buses || []);
-                const driver = driverResp[0] || {};
-                state.driverBuses = driver.buses || [];
-                state.settings = driver.settings || state.settings || {};
-
-                if (!canManageTransport) {
-                    state.routes = (routesResp[0] || {}).routes || [];
-                    fillSelects();
-                    hydrateActiveDriverTrip();
-                    return;
-                }
                 const options = optionsResp[0] || {};
                 state.staff = options.staff || [];
                 state.students = options.students || [];
@@ -553,10 +567,10 @@ $can_manage_transport = transport_is_admin();
                 state.settings = (settingsResp[0] || {}).settings || {};
                 fillSelects();
                 fillSettings();
-                hydrateActiveDriverTrip();
                 renderBuses();
                 renderRoutesAndStops();
                 renderAssignments();
+                renderSetupGuide();
             }).fail(function(xhr) {
                 toastr.error((xhr.responseJSON && xhr.responseJSON.err) || 'Unable to load transport data');
             });
@@ -604,180 +618,6 @@ $can_manage_transport = transport_is_admin();
             $('#assignment_status').val(row.status);
         }
 
-        function hydrateActiveDriverTrip() {
-            const active = state.driverBuses.find(bus => bus.active_trip_id);
-            if (!active) return;
-            $('#driver_bus_id').val(active.id);
-            $('#driver_route_id').val(active.active_route_id || '');
-            $('#driver_direction').val(active.active_direction || 'to_home');
-            if (driverState.tripId) return;
-            driverState.tripId = active.active_trip_id;
-            $('#driverTripStatus').text('Active trip #' + driverState.tripId + ' ready');
-            $('#startTripBtn').text('Resume GPS').prop('disabled', false);
-            $('#stopTripBtn').prop('disabled', false);
-            $('#sendLocationNowBtn').prop('disabled', false);
-        }
-
-        function driverDistanceMeters(a, b) {
-            if (!a || !b) return Infinity;
-            const radius = 6371000;
-            const toRad = value => value * Math.PI / 180;
-            const dLat = toRad(b.latitude - a.latitude);
-            const dLng = toRad(b.longitude - a.longitude);
-            const calc = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.latitude)) * Math.cos(toRad(b.latitude)) * Math.sin(dLng / 2) ** 2;
-            return radius * (2 * Math.atan2(Math.sqrt(calc), Math.sqrt(1 - calc)));
-        }
-
-        function startWatchingPosition() {
-            if (!navigator.geolocation) {
-                $('#driverServerStatus').text('GPS not supported');
-                return;
-            }
-            if (driverState.watchId !== null) navigator.geolocation.clearWatch(driverState.watchId);
-            $('#driverServerStatus').text('Waiting for GPS permission');
-            navigator.geolocation.getCurrentPosition(function(position) {
-                updateDriverPosition(position);
-                sendDriverLocation(true);
-            }, function(error) {
-                $('#driverServerStatus').text(error.message || 'GPS permission/location error');
-            }, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
-            driverState.watchId = navigator.geolocation.watchPosition(function(position) {
-                updateDriverPosition(position);
-            }, function(error) {
-                $('#driverServerStatus').text(error.message || 'GPS error');
-            }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 });
-        }
-
-        function updateDriverPosition(position) {
-            driverState.latestPosition = {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                accuracy: position.coords.accuracy,
-                speed: position.coords.speed,
-                heading: position.coords.heading
-            };
-            $('#driverAccuracy').text(Math.round(position.coords.accuracy || 0) + 'm');
-            $('#driverServerStatus').text('GPS fix received');
-        }
-
-        function stopWatchingPosition() {
-            if (driverState.watchId !== null) {
-                navigator.geolocation.clearWatch(driverState.watchId);
-                driverState.watchId = null;
-            }
-            if (driverState.sendTimer) {
-                clearInterval(driverState.sendTimer);
-                driverState.sendTimer = null;
-            }
-            driverState.latestPosition = null;
-            driverState.lastSentPoint = null;
-            driverState.lastSentAt = 0;
-            $('#sendLocationNowBtn').prop('disabled', true);
-        }
-
-        function sendDriverLocation(force = false) {
-            if (!driverState.tripId) return;
-            if (!driverState.latestPosition) {
-                $('#driverServerStatus').text('No GPS fix yet');
-                return;
-            }
-            const now = Date.now();
-            const intervalMs = Math.max(15, Number(state.settings.update_interval_seconds || 20)) * 1000;
-            const minMovement = Math.max(0, Number(state.settings.min_movement_meters || 30));
-            const point = { latitude: driverState.latestPosition.latitude, longitude: driverState.latestPosition.longitude };
-            if (!force && (now - driverState.lastSentAt) < intervalMs) return;
-            if (!force && driverDistanceMeters(driverState.lastSentPoint, point) < minMovement && driverState.lastSentAt > 0) return;
-
-            $('#driverServerStatus').text('Sending location');
-            postTransport({
-                action: 'submit_location',
-                trip_id: driverState.tripId,
-                latitude: driverState.latestPosition.latitude,
-                longitude: driverState.latestPosition.longitude,
-                accuracy_meters: driverState.latestPosition.accuracy || '',
-                speed_mps: driverState.latestPosition.speed || '',
-                heading_degrees: driverState.latestPosition.heading || ''
-            }).done(function(resp) {
-                driverState.lastSentAt = now;
-                if (resp.accepted) {
-                    driverState.lastSentPoint = point;
-                    $('#driverLastSent').text(new Date().toLocaleTimeString());
-                    $('#driverServerStatus').text('Location sent');
-                } else {
-                    $('#driverServerStatus').text(driverSkipMessage(resp));
-                }
-            }).fail(function(xhr) {
-                $('#driverServerStatus').text((xhr.responseJSON && xhr.responseJSON.err) || 'Send failed');
-            });
-        }
-
-        function driverSkipMessage(resp) {
-            if (resp.reason === 'low_accuracy') {
-                const actual = resp.accuracy_meters ? Math.round(Number(resp.accuracy_meters)) + 'm' : 'too low';
-                const max = resp.max_accuracy_meters ? Math.round(Number(resp.max_accuracy_meters)) + 'm' : 'current limit';
-                return 'GPS accuracy ' + actual + '; limit is ' + max;
-            }
-            if (resp.reason === 'throttled') return 'Waiting for update interval';
-            if (resp.reason === 'minimal_movement') return 'Skipped: bus has barely moved';
-            return resp.reason || 'Skipped';
-        }
-
-        $('#driverTripForm').on('submit', function(event) {
-            event.preventDefault();
-            const busId = $('#driver_bus_id').val();
-            if (!busId) return toastr.error('Select a bus');
-            postTransport({
-                action: 'start_trip',
-                bus_id: busId,
-                route_id: $('#driver_route_id').val(),
-                direction: $('#driver_direction').val()
-            }).done(function(resp) {
-                if (resp.status !== '1') return toastr.error(resp.err || 'Unable to start trip');
-                driverState.tripId = resp.trip_id;
-                state.settings = resp.settings || state.settings;
-                $('#driverTripStatus').text('Active trip #' + driverState.tripId);
-                $('#startTripBtn').text('Tracking').prop('disabled', true);
-                $('#stopTripBtn').prop('disabled', false);
-                $('#sendLocationNowBtn').prop('disabled', false);
-                $('#driverServerStatus').text('Tracking started');
-                startWatchingPosition();
-                driverState.sendTimer = setInterval(sendDriverLocation, 3000);
-                toastr.success(resp.msg || 'Trip started');
-            }).fail(function(xhr) {
-                toastr.error((xhr.responseJSON && xhr.responseJSON.err) || 'Unable to start trip');
-            });
-        });
-
-        $('#stopTripBtn').on('click', function() {
-            if (!driverState.tripId) return;
-            postTransport({ action: 'stop_trip', trip_id: driverState.tripId }).done(function(resp) {
-                if (resp.status !== '1') return toastr.error(resp.err || 'Unable to stop trip');
-                stopWatchingPosition();
-                driverState.tripId = null;
-                $('#driverTripStatus').text('Stopped');
-                $('#driverAccuracy').text('Waiting');
-                $('#driverServerStatus').text('Tracking stopped');
-                $('#startTripBtn').text('Start').prop('disabled', false);
-                $('#stopTripBtn').prop('disabled', true);
-                toastr.success(resp.msg || 'Trip stopped');
-                refreshTransportData();
-            }).fail(function(xhr) {
-                toastr.error((xhr.responseJSON && xhr.responseJSON.err) || 'Unable to stop trip');
-            });
-        });
-
-        $('#sendLocationNowBtn').on('click', function() {
-            if (!driverState.tripId) return toastr.error('Start or resume a trip first');
-            if (!navigator.geolocation) return toastr.error('GPS is not supported in this browser');
-            $('#driverServerStatus').text('Requesting current location');
-            navigator.geolocation.getCurrentPosition(function(position) {
-                updateDriverPosition(position);
-                sendDriverLocation(true);
-            }, function(error) {
-                $('#driverServerStatus').text(error.message || 'GPS permission/location error');
-            }, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
-        });
-
         $('#busForm, #routeForm, #stopForm, #assignmentForm, #settingsForm').on('submit', function(event) {
             event.preventDefault();
             const form = $(this);
@@ -791,6 +631,10 @@ $can_manage_transport = transport_is_admin();
             }).fail(function(xhr) {
                 toastr.error((xhr.responseJSON && xhr.responseJSON.err) || 'Unable to save');
             });
+        });
+
+        $(document).on('click', '[data-setup-tab]', function() {
+            $('.transport-toolbar a[href="' + $(this).data('setup-tab') + '"]').tab('show');
         });
 
         $(function() {
