@@ -1209,7 +1209,7 @@ switch ($action) {
                         'grading' => $setting_row['grading']
                     ));
                 }
-                $login_location = (!transport_is_admin() && transport_user_has_assigned_bus()) ? 'bus_driver' : 'dashboard';
+                $login_location = transport_can_open_driver_page() ? 'bus_driver' : 'dashboard';
                 echo json_encode(array('status' => '1', 'location' => $login_location));
                 // echo json_encode(array('status' => '1', 'location' => isset($_SESSION['location']) ? $_SESSION['location'] : 'dashboard'));
             } else {

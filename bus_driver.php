@@ -14,7 +14,7 @@ if (!transport_is_staff_user()) {
     exit();
 }
 
-if (!transport_is_admin() && !transport_user_has_assigned_bus()) {
+if (!transport_can_open_driver_page() && !transport_is_admin()) {
     header("Location: dashboard");
     exit();
 }

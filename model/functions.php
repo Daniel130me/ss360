@@ -547,6 +547,32 @@ function transport_is_admin()
     return in_array((int) $_SESSION['staff_type'], transport_admin_staff_types(), true);
 }
 
+function transport_is_driver_role($staff_type_id = null)
+{
+    $staff_type_id = $staff_type_id === null ? (int) ($_SESSION['staff_type'] ?? 0) : (int) $staff_type_id;
+
+    if ($staff_type_id <= 0) {
+        return false;
+    }
+
+    $row = transport_fetch_one(
+        "SELECT type FROM staff_type WHERE id = ? LIMIT 1",
+        'i',
+        [$staff_type_id]
+    );
+
+    return $row !== null && strtolower(trim($row['type'])) === 'driver';
+}
+
+function transport_can_open_driver_page($staff_id = null, $school_id = null, $staff_type_id = null)
+{
+    if (!transport_is_staff_user() || transport_is_admin()) {
+        return false;
+    }
+
+    return transport_is_driver_role($staff_type_id) || transport_user_has_assigned_bus($staff_id, $school_id);
+}
+
 function transport_user_has_assigned_bus($staff_id = null, $school_id = null)
 {
     if (!transport_is_staff_user()) {
