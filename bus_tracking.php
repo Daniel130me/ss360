@@ -137,6 +137,22 @@ if (!$can_manage_transport) {
             margin-top: 4px;
         }
 
+        .bus-map-label {
+            background: #ffffff;
+            border: 1px solid #d9e2ec;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+            color: #1f2d3d;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            white-space: nowrap;
+        }
+
+        .leaflet-tooltip.bus-map-label::before {
+            display: none;
+        }
+
         #staffBusMap {
             border-radius: 8px;
             height: 420px;
@@ -471,14 +487,24 @@ if (!$can_manage_transport) {
             rows.forEach(row => {
                 if (!row.latitude || !row.longitude) return;
                 const latLng = [Number(row.latitude), Number(row.longitude)];
+                const label = row.bus_number ? row.bus_name + ' - ' + row.bus_number : row.bus_name;
                 const popup = '<strong>' + escapeHtml(row.bus_name) + '</strong><br>' +
                     escapeHtml(row.direction || 'No active trip') + '<br>' +
                     'Last update: ' + escapeHtml(row.recorded_at || 'Unknown');
                 if (mapState.markers[row.bus_id]) {
                     animateMarker(mapState.markers[row.bus_id], latLng);
                     mapState.markers[row.bus_id].setPopupContent(popup);
+                    mapState.markers[row.bus_id].setTooltipContent(escapeHtml(label));
                 } else {
-                    mapState.markers[row.bus_id] = L.marker(latLng).addTo(mapState.map).bindPopup(popup);
+                    mapState.markers[row.bus_id] = L.marker(latLng)
+                        .addTo(mapState.map)
+                        .bindPopup(popup)
+                        .bindTooltip(escapeHtml(label), {
+                            className: 'bus-map-label',
+                            direction: 'top',
+                            offset: [0, -12],
+                            permanent: true
+                        });
                 }
                 bounds.push(latLng);
             });
