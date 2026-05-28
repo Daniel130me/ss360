@@ -49,6 +49,18 @@ while ($row = mysqli_fetch_assoc($select)) {
         .status-pill.good { background: #e8f7ee; color: #1d7a3f; }
         .status-pill.muted { background: #f1f3f5; color: #6c757d; }
         .empty-state { border: 1px dashed #dce3ea; border-radius: 8px; color: #6c757d; padding: 18px; text-align: center; }
+        .bus-map-label {
+            background: #ffffff;
+            border: 1px solid #d9e2ec;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+            color: #1f2d3d;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            white-space: nowrap;
+        }
+        .leaflet-tooltip.bus-map-label::before { display: none; }
     </style>
 </head>
 
@@ -123,7 +135,7 @@ while ($row = mysqli_fetch_assoc($select)) {
     <script src="../dist/js/adminlte.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        const parentMapState = { map: null, marker: null, stopMarker: null, lastLocationId: 0, tripId: null, busId: null, settings: { update_interval_seconds: 20, stale_after_seconds: 90 } };
+        const parentMapState = { map: null, marker: null, stopMarker: null, lastLocationId: 0, tripId: null, busId: null, busLabel: 'Assigned bus', settings: { update_interval_seconds: 20, stale_after_seconds: 90 } };
 
         function escapeHtml(value) {
             return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
@@ -156,12 +168,22 @@ while ($row = mysqli_fetch_assoc($select)) {
             initParentMap();
             if (!parentMapState.map || !bus || !bus.latitude || !bus.longitude) return;
             const latLng = [Number(bus.latitude), Number(bus.longitude)];
-            const popup = '<strong>' + escapeHtml(bus.bus_name) + '</strong><br>Last update: ' + escapeHtml(bus.recorded_at || 'Unknown');
+            const label = bus.bus_number ? bus.bus_name + ' - ' + bus.bus_number : (bus.bus_name || parentMapState.busLabel);
+            const popup = '<strong>' + escapeHtml(label) + '</strong><br>Last update: ' + escapeHtml(bus.recorded_at || 'Unknown');
             if (parentMapState.marker) {
                 animateMarker(parentMapState.marker, latLng);
                 parentMapState.marker.setPopupContent(popup);
+                parentMapState.marker.setTooltipContent(escapeHtml(label));
             } else {
-                parentMapState.marker = L.marker(latLng).addTo(parentMapState.map).bindPopup(popup);
+                parentMapState.marker = L.marker(latLng)
+                    .addTo(parentMapState.map)
+                    .bindPopup(popup)
+                    .bindTooltip(escapeHtml(label), {
+                        className: 'bus-map-label',
+                        direction: 'top',
+                        offset: [0, -12],
+                        permanent: true
+                    });
                 parentMapState.map.setView(latLng, 15);
             }
 
@@ -208,6 +230,9 @@ while ($row = mysqli_fetch_assoc($select)) {
                 if (resp.status !== '1') return toastr.error(resp.err || 'Unable to load bus');
                 parentMapState.settings = resp.settings || parentMapState.settings;
                 renderBusInfo(resp.bus);
+                if (resp.bus) {
+                    parentMapState.busLabel = resp.bus.bus_number ? resp.bus.bus_name + ' - ' + resp.bus.bus_number : (resp.bus.bus_name || 'Assigned bus');
+                }
                 updateBusMarker(resp.bus);
                 if (resp.bus && resp.bus.trip_id && resp.bus.last_location_id) {
                     parentMapState.tripId = resp.bus.trip_id;
@@ -238,7 +263,7 @@ while ($row = mysqli_fetch_assoc($select)) {
                 if (!resp.locations || !resp.locations.length) return loadParentSnapshot();
                 const latest = resp.locations[resp.locations.length - 1];
                 parentMapState.lastLocationId = Number(latest.id);
-                updateBusMarker({ latitude: latest.latitude, longitude: latest.longitude, recorded_at: latest.recorded_at, bus_name: 'Assigned bus' });
+                updateBusMarker({ latitude: latest.latitude, longitude: latest.longitude, recorded_at: latest.recorded_at, bus_name: parentMapState.busLabel });
                 loadParentSnapshot();
             }).fail(loadParentSnapshot);
         }
@@ -247,6 +272,7 @@ while ($row = mysqli_fetch_assoc($select)) {
             parentMapState.lastLocationId = 0;
             parentMapState.tripId = null;
             parentMapState.busId = null;
+            parentMapState.busLabel = 'Assigned bus';
             if (parentMapState.marker) {
                 parentMapState.map.removeLayer(parentMapState.marker);
                 parentMapState.marker = null;
