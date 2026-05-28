@@ -262,6 +262,35 @@ switch ($action) {
         );
         bus_json(['status' => '1', 'msg' => 'Bus created', 'bus_id' => $insert['insert_id']]);
 
+    case 'delete_bus':
+        bus_require_admin();
+        $bus_id = (int) bus_request('bus_id', 0);
+        if ($bus_id <= 0) {
+            bus_json(['status' => '0', 'err' => 'Bus is required'], 422);
+        }
+
+        $usage = bus_fetch_one(
+            "SELECT
+                (SELECT COUNT(*) FROM bus_student_assignments WHERE school_id = ? AND bus_id = ?) AS assignments_count,
+                (SELECT COUNT(*) FROM bus_trips WHERE school_id = ? AND bus_id = ?) AS trips_count,
+                (SELECT COUNT(*) FROM bus_locations WHERE school_id = ? AND bus_id = ?) AS locations_count
+             FROM school_buses
+             WHERE school_id = ? AND id = ?
+             LIMIT 1",
+            'iiiiiiii',
+            [$school_id, $bus_id, $school_id, $bus_id, $school_id, $bus_id, $school_id, $bus_id]
+        );
+
+        if (!$usage) {
+            bus_json(['status' => '0', 'err' => 'Bus not found'], 404);
+        }
+        if ((int) $usage['assignments_count'] > 0 || (int) $usage['trips_count'] > 0 || (int) $usage['locations_count'] > 0) {
+            bus_json(['status' => '0', 'err' => 'This bus already has assignments or tracking history. Set it to inactive instead.'], 409);
+        }
+
+        bus_execute("DELETE FROM school_buses WHERE id = ? AND school_id = ?", 'ii', [$bus_id, $school_id]);
+        bus_json(['status' => '1', 'msg' => 'Bus deleted']);
+
     case 'list_routes':
         bus_require_staff();
         $rows = bus_fetch_all(
@@ -308,6 +337,35 @@ switch ($action) {
             [$school_id, $route_name, $description, $to_school_label, $to_home_label, $route_polyline, $status, $user_id, $date]
         );
         bus_json(['status' => '1', 'msg' => 'Route created', 'route_id' => $insert['insert_id']]);
+
+    case 'delete_route':
+        bus_require_admin();
+        $route_id = (int) bus_request('route_id', 0);
+        if ($route_id <= 0) {
+            bus_json(['status' => '0', 'err' => 'Pickup plan is required'], 422);
+        }
+
+        $usage = bus_fetch_one(
+            "SELECT
+                (SELECT COUNT(*) FROM bus_route_stops WHERE school_id = ? AND route_id = ?) AS stops_count,
+                (SELECT COUNT(*) FROM bus_student_assignments WHERE school_id = ? AND route_id = ?) AS assignments_count,
+                (SELECT COUNT(*) FROM bus_trips WHERE school_id = ? AND route_id = ?) AS trips_count
+             FROM bus_routes
+             WHERE school_id = ? AND id = ?
+             LIMIT 1",
+            'iiiiiiii',
+            [$school_id, $route_id, $school_id, $route_id, $school_id, $route_id, $school_id, $route_id]
+        );
+
+        if (!$usage) {
+            bus_json(['status' => '0', 'err' => 'Pickup plan not found'], 404);
+        }
+        if ((int) $usage['stops_count'] > 0 || (int) $usage['assignments_count'] > 0 || (int) $usage['trips_count'] > 0) {
+            bus_json(['status' => '0', 'err' => 'This pickup plan is already used. Remove its stops/assignments first or set it inactive.'], 409);
+        }
+
+        bus_execute("DELETE FROM bus_routes WHERE id = ? AND school_id = ?", 'ii', [$route_id, $school_id]);
+        bus_json(['status' => '1', 'msg' => 'Pickup plan deleted']);
 
     case 'list_route_stops':
         bus_require_staff();
@@ -356,6 +414,33 @@ switch ($action) {
             [$school_id, $route_id, $stop_name, $latitude, $longitude, $stop_order, $status, $user_id, $date]
         );
         bus_json(['status' => '1', 'msg' => 'Stop created', 'stop_id' => $insert['insert_id']]);
+
+    case 'delete_route_stop':
+        bus_require_admin();
+        $stop_id = (int) bus_request('stop_id', 0);
+        if ($stop_id <= 0) {
+            bus_json(['status' => '0', 'err' => 'Stop is required'], 422);
+        }
+
+        $usage = bus_fetch_one(
+            "SELECT
+                (SELECT COUNT(*) FROM bus_student_assignments WHERE school_id = ? AND stop_id = ?) AS assignments_count
+             FROM bus_route_stops
+             WHERE school_id = ? AND id = ?
+             LIMIT 1",
+            'iiii',
+            [$school_id, $stop_id, $school_id, $stop_id]
+        );
+
+        if (!$usage) {
+            bus_json(['status' => '0', 'err' => 'Stop not found'], 404);
+        }
+        if ((int) $usage['assignments_count'] > 0) {
+            bus_json(['status' => '0', 'err' => 'This stop is assigned to students. Remove those assignments first.'], 409);
+        }
+
+        bus_execute("DELETE FROM bus_route_stops WHERE id = ? AND school_id = ?", 'ii', [$stop_id, $school_id]);
+        bus_json(['status' => '1', 'msg' => 'Stop deleted']);
 
     case 'list_assignments':
         bus_require_staff();
@@ -420,6 +505,25 @@ switch ($action) {
             [$school_id, $bus_id, $route_id, $stop_id, $student_id, $status, $user_id, $date]
         );
         bus_json(['status' => '1', 'msg' => 'Assignment created', 'assignment_id' => $insert['insert_id']]);
+
+    case 'delete_assignment':
+        bus_require_admin();
+        $assignment_id = (int) bus_request('assignment_id', 0);
+        if ($assignment_id <= 0) {
+            bus_json(['status' => '0', 'err' => 'Assignment is required'], 422);
+        }
+
+        $assignment = bus_fetch_one(
+            "SELECT id FROM bus_student_assignments WHERE id = ? AND school_id = ? LIMIT 1",
+            'ii',
+            [$assignment_id, $school_id]
+        );
+        if (!$assignment) {
+            bus_json(['status' => '0', 'err' => 'Assignment not found'], 404);
+        }
+
+        bus_execute("DELETE FROM bus_student_assignments WHERE id = ? AND school_id = ?", 'ii', [$assignment_id, $school_id]);
+        bus_json(['status' => '1', 'msg' => 'Assignment deleted']);
 
     case 'driver_context':
         bus_require_staff();

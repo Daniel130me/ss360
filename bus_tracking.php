@@ -521,7 +521,7 @@ if (!$can_manage_transport) {
             }
             let html = '<div class="table-responsive"><table class="transport-table"><thead><tr><th>Bus</th><th>Driver</th><th>Status</th><th></th></tr></thead><tbody>';
             state.buses.forEach(bus => {
-                html += '<tr><td><strong>' + escapeHtml(bus.bus_name) + '</strong><div class="text-muted small">' + escapeHtml(bus.bus_number || '') + ' ' + escapeHtml(bus.plate_number || '') + '</div></td><td>' + escapeHtml(bus.driver_name || bus.driver_phone || '') + '</td><td>' + statusPill(bus.status) + '</td><td><button class="btn btn-sm btn-light" onclick="editBus(' + bus.id + ')">Edit</button></td></tr>';
+                html += '<tr><td><strong>' + escapeHtml(bus.bus_name) + '</strong><div class="text-muted small">' + escapeHtml(bus.bus_number || '') + ' ' + escapeHtml(bus.plate_number || '') + '</div></td><td>' + escapeHtml(bus.driver_name || bus.driver_phone || '') + '</td><td>' + statusPill(bus.status) + '</td><td class="text-nowrap"><button class="btn btn-sm btn-light mr-1" onclick="editBus(' + bus.id + ')">Edit</button><button class="btn btn-sm btn-outline-danger" onclick="deleteTransportItem(\'delete_bus\', \'bus_id\', ' + bus.id + ', \'this bus\')">Delete</button></td></tr>';
             });
             html += '</tbody></table></div>';
             $('#busTable').html(html);
@@ -539,9 +539,9 @@ if (!$can_manage_transport) {
             }
             let html = '';
             state.routes.forEach(route => {
-                html += '<div class="mb-3"><div class="d-flex justify-content-between"><strong>' + escapeHtml(route.route_name) + '</strong><button class="btn btn-sm btn-light" onclick="editRoute(' + route.id + ')">Edit</button></div>';
+                html += '<div class="mb-3"><div class="d-flex justify-content-between align-items-start"><strong>' + escapeHtml(route.route_name) + '</strong><span class="text-nowrap"><button class="btn btn-sm btn-light mr-1" onclick="editRoute(' + route.id + ')">Edit</button><button class="btn btn-sm btn-outline-danger" onclick="deleteTransportItem(\'delete_route\', \'route_id\', ' + route.id + ', \'this pickup plan\')">Delete</button></span></div>';
                 const stops = stopsByRoute[route.id] || [];
-                html += stops.length ? '<ol class="pl-3 mb-0">' + stops.map(stop => '<li>' + escapeHtml(stop.stop_name) + ' <button class="btn btn-xs btn-link" onclick="editStop(' + stop.id + ')">Edit</button></li>').join('') + '</ol>' : '<p class="text-muted small mb-0">No stops yet.</p>';
+                html += stops.length ? '<ol class="pl-3 mb-0">' + stops.map(stop => '<li>' + escapeHtml(stop.stop_name) + ' <button class="btn btn-xs btn-link" onclick="editStop(' + stop.id + ')">Edit</button><button class="btn btn-xs btn-link text-danger" onclick="deleteTransportItem(\'delete_route_stop\', \'stop_id\', ' + stop.id + ', \'this stop\')">Delete</button></li>').join('') + '</ol>' : '<p class="text-muted small mb-0">No stops yet.</p>';
                 html += '</div>';
             });
             $('#routeStopTable').html(html);
@@ -554,7 +554,7 @@ if (!$can_manage_transport) {
             }
             let html = '<div class="table-responsive"><table class="transport-table"><thead><tr><th>Student</th><th>Bus</th><th>Stop</th><th>Status</th><th></th></tr></thead><tbody>';
             state.assignments.forEach(row => {
-                html += '<tr><td><strong>' + escapeHtml(row.student_name) + '</strong><div class="text-muted small">' + escapeHtml(row.classname || '') + '</div></td><td>' + escapeHtml(row.bus_name) + '</td><td>' + escapeHtml(row.stop_name || '') + '</td><td>' + statusPill(row.status) + '</td><td><button class="btn btn-sm btn-light" onclick="editAssignment(' + row.id + ')">Edit</button></td></tr>';
+                html += '<tr><td><strong>' + escapeHtml(row.student_name) + '</strong><div class="text-muted small">' + escapeHtml(row.classname || '') + '</div></td><td>' + escapeHtml(row.bus_name) + '</td><td>' + escapeHtml(row.stop_name || '') + '</td><td>' + statusPill(row.status) + '</td><td class="text-nowrap"><button class="btn btn-sm btn-light mr-1" onclick="editAssignment(' + row.id + ')">Edit</button><button class="btn btn-sm btn-outline-danger" onclick="deleteTransportItem(\'delete_assignment\', \'assignment_id\', ' + row.id + ', \'this student assignment\')">Delete</button></td></tr>';
             });
             html += '</tbody></table></div>';
             $('#assignmentTable').html(html);
@@ -664,6 +664,22 @@ if (!$can_manage_transport) {
             $('#assignment_route_id').val(row.route_id || '');
             $('#assignment_stop_id').val(row.stop_id || '');
             $('#assignment_status').val(row.status);
+        }
+
+        function deleteTransportItem(action, idKey, idValue, label) {
+            if (!confirm('Delete ' + label + '? This cannot be undone.')) return;
+            const data = { action };
+            data[idKey] = idValue;
+            postTransport(data).done(function(resp) {
+                if (resp.status === '1') {
+                    toastr.success(resp.msg || 'Deleted');
+                    refreshTransportData();
+                } else {
+                    toastr.error(resp.err || 'Unable to delete');
+                }
+            }).fail(function(xhr) {
+                toastr.error((xhr.responseJSON && xhr.responseJSON.err) || 'Unable to delete');
+            });
         }
 
         $('#busForm, #routeForm, #stopForm, #assignmentForm, #settingsForm').on('submit', function(event) {
