@@ -527,7 +527,7 @@ switch ($action) {
         }
         echo json_encode(['success' => true, 'data' => $timeline]);
         break;
-    case 'delete_last_payment_record':
+            case 'delete_last_payment_record':
         $payment_id = isset($_POST['payment_id']) ? intval($_POST['payment_id']) : 0;
         $bill_id = isset($_POST['bill_id']) ? intval($_POST['bill_id']) : 0;
         $student_id = isset($_POST['student_id']) ? intval($_POST['student_id']) : 0;
@@ -1772,6 +1772,54 @@ switch ($action) {
                 break;
             }
 
+            $original_amount_due = isset($bill['amount_due']) ? floatval($bill['amount_due']) : 0;
+            $total_amount_paid = 0;
+            $last_payment_date = null;
+            $payment_summary = [
+                'original_amount_due' => $original_amount_due,
+                'total_amount_paid' => 0,
+                'amount_remaining' => $original_amount_due,
+                'last_payment_date' => null,
+                'payment_status' => 'unpaid'
+            ];
+
+            $student_id_for_payment = isset($bill['student_id']) ? intval($bill['student_id']) : 0;
+            $session_id_for_payment = isset($bill['session_id']) ? intval($bill['session_id']) : 0;
+            $term_id_for_payment = isset($bill['term_id']) ? intval($bill['term_id']) : 0;
+
+            if ($student_id_for_payment && $session_id_for_payment && $term_id_for_payment) {
+                $stmt = $conn->prepare("SELECT COALESCE(SUM(amount_newly_paid), 0) AS total_paid, MAX(date_paid) AS last_payment_date FROM payment_log WHERE bill_id = ? AND student_id = ? AND school_id = ? AND session_id = ? AND term_id = ?");
+                if ($stmt !== false) {
+                    $stmt->bind_param("iiiii", $bill_id, $student_id_for_payment, $school_id, $session_id_for_payment, $term_id_for_payment);
+                    $stmt->execute();
+                    $payment_row = $stmt->get_result()->fetch_assoc();
+                    $stmt->close();
+
+                    $total_amount_paid = isset($payment_row['total_paid']) ? floatval($payment_row['total_paid']) : 0;
+                    $last_payment_date = $payment_row['last_payment_date'] ?? null;
+                }
+            }
+
+            $amount_remaining = $original_amount_due - $total_amount_paid;
+            if ($amount_remaining < 0) {
+                $amount_remaining = 0;
+            }
+
+            $payment_status = 'unpaid';
+            if ($total_amount_paid >= $original_amount_due && $original_amount_due > 0) {
+                $payment_status = 'paid';
+            } elseif ($total_amount_paid > 0) {
+                $payment_status = 'part paid';
+            }
+
+            $payment_summary = [
+                'original_amount_due' => $original_amount_due,
+                'total_amount_paid' => $total_amount_paid,
+                'amount_remaining' => $amount_remaining,
+                'last_payment_date' => $last_payment_date,
+                'payment_status' => $payment_status
+            ];
+
             // Fetch student
             $student = null;
             if (!empty($bill['student_id'])) {
@@ -1827,6 +1875,7 @@ switch ($action) {
                 'student' => $student,
                 'parent' => $parent,
                 'bill_type' => $bill_type,
+                'payment_summary' => $payment_summary,
                 'school_name' => $school_name,
                 'school_logo' => $school_logo,
                 'school_phone' => $school_phone,

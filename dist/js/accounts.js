@@ -404,11 +404,76 @@ $(document).ready(function () {
             toastr.error('Could not determine bill or student for payment record.');
         }
     });
-
-    let lastPaymentToDelete = null;
-
+ let lastPaymentToDelete = null;
     // --- Payment Record Timeline Modal Logic ---
-    window.showPaymentRecordModal = function (billId, studentId) {
+    // window.showPaymentRecordModal = function (billId, studentId) {
+    //     $('#paymentRecordModal').modal('show');
+    //     const $container = $('#paymentTimelineContainer');
+    //     $container.html('<div class="text-center text-muted">Loading payment records...</div>');
+    //     $.ajax({
+    //         url: '../billing_controller.php',
+    //         method: 'POST',
+    //         dataType: 'json',
+    //         data: {
+    //             action: 'get_payment_timeline',
+    //             bill_id: billId,
+    //             student_id: studentId
+    //         },
+    //         success: function (res) {
+    //             if (!res.success || !Array.isArray(res.data) || res.data.length === 0) {
+    //                 $container.html('<div class="alert alert-warning text-center">No payment records found for this bill.</div>');
+    //                 return;
+    //             }
+    //             // Group by date for timeline labels
+    //             let timeline = '<div class="timeline">';
+    //             let lastDate = '';
+    //               res.data.forEach(function (item, idx) {
+    //                 // Format date for label (YYYY-MM-DD to e.g. 21 Jun. 2025)
+    //                 let dateObj = item.date_paid ? new Date(item.date_paid) : (item.datecreated ? new Date(item.datecreated) : null);
+    //                 let dateLabel = dateObj ? dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+    //                 if (dateLabel && dateLabel !== lastDate) {
+    //                     timeline += `<div class="time-label"><span class="bg-info">${dateLabel}</span></div>`;
+    //                     lastDate = dateLabel;
+    //                 }
+    //                 // Icon and color
+    //                 let icon = 'fa-money-bill-wave', bg = 'bg-success', statusText = 'Paid', statusColor = 'text-success';
+    //                 if (item.status == 0) { statusText = 'Pending'; bg = 'bg-warning'; icon = 'fa-hourglass-half'; statusColor = 'text-warning'; }
+    //                 if (item.balance > 0 && item.amount_newly_paid == 0) { statusText = 'Outstanding'; bg = 'bg-danger'; icon = 'fa-exclamation-circle'; statusColor = 'text-danger'; }
+    //                 const canDeleteLastPayment = item.id > 0 && idx === res.data.length - 1;
+    //                 const deleteButton = canDeleteLastPayment
+    //                     ? `<button type="button" class="btn btn-xs btn-danger ml-2 delete-last-payment-record" data-payment_id="${item.id}" data-bill_id="${item.bill_id}" data-student_id="${studentId}"><i class="fas fa-trash"></i> Delete Last Record</button>`
+    //                     : '';
+    //                 // Timeline item
+    //                 timeline += `
+    //                   <div>
+    //                     <i class="fas ${icon} ${bg}"></i>
+    //                     <div class="timeline-item">
+    //                     <div class="float-right d-flex align-items-center">
+    //                       <a href="#paymentReceiptPreviewModal" data-toggle="modal" aria-expanded="false" data-bill_id="${item.bill_id}" data-paymentid="${item.id}" aria-controls="paymentReceiptPreviewModal">Preview Payment Receipt</a>
+    //                       ${deleteButton}
+    //                     </div>
+    //                       <h3 class="timeline-header ${statusColor}">
+    //                         <b>${statusText}</b> - ₦${Number(item.amount_newly_paid).toLocaleString()} paid
+    //                       </h3>
+    //                       <div class="timeline-body">
+    //                         <div><b>Description:</b> ${item.description || 'No description'}</div>
+    //                         <div><b>Payment Method:</b> ${item.payment_method || 'N/A'}</div>
+    //                         <div><b>Total Amount Paid To Date:</b> ₦${Number(item.total_amount_paid).toLocaleString()}</div>
+    //                         <div><b>Balance:</b> <span class="${item.balance > 0 ? 'text-danger' : 'text-success'}">₦${Number(item.balance).toLocaleString()}</span></div>
+    //                       </div>
+    //                     </div>
+    //                   </div>
+    //                 `;
+    //             });
+    //             timeline += '<div><i class="fas fa-flag-checkered bg-gray"></i></div></div>';
+    //             $container.html(timeline);
+    //         },
+    //         error: function () {
+    //             $container.html('<div class="alert alert-danger text-center">Failed to load payment records.</div>');
+    //         }
+    //     });
+    // };
+     window.showPaymentRecordModal = function (billId, studentId) {
         $('#paymentRecordModal').modal('show');
         const $container = $('#paymentTimelineContainer');
         $container.html(`
@@ -508,6 +573,7 @@ $(document).ready(function () {
                                     <div class="payment-record-amount">₦${paidAmount.toLocaleString()}</div>
                                     <div class="payment-record-entry-meta">Recorded ${dateLabel || 'Unknown date'}${timeLabel ? ` at ${timeLabel}` : ''}</div>
                                 </div>
+                                <div>
                                 <div class="payment-record-actions">
                                     <a href="#paymentReceiptPreviewModal" class="btn btn-outline-primary payment-record-btn" data-toggle="modal" aria-expanded="false" data-bill_id="${item.bill_id}" data-paymentid="${item.id}" aria-controls="paymentReceiptPreviewModal">
                                         <i class="fas fa-file-invoice"></i>
@@ -515,6 +581,7 @@ $(document).ready(function () {
                                     </a>
                                     ${deleteButton}
                                 </div>
+                                 </div>  
                           <h3 class="timeline-header ${statusColor}">
                             <b>${statusText}</b> - ₦${Number(item.amount_newly_paid).toLocaleString()} paid
                           </h3>
@@ -536,126 +603,7 @@ $(document).ready(function () {
             }
         });
     };
-
-    // Simple renderer override for the payment record modal.
-    window.showPaymentRecordModal = function (billId, studentId) {
-        $('#paymentRecordModal').modal('show');
-        const $container = $('#paymentTimelineContainer');
-
-        $container.html(`
-            <div class="payment-record-state text-muted">
-                <i class="fas fa-spinner fa-spin"></i>
-                <div>Loading payment records...</div>
-            </div>
-        `);
-
-        $.ajax({
-            url: '../billing_controller.php',
-            method: 'POST',
-            dataType: 'json',
-            data: {
-                action: 'get_payment_timeline',
-                bill_id: billId,
-                student_id: studentId
-            },
-            success: function (res) {
-                if (!res.success || !Array.isArray(res.data) || res.data.length === 0) {
-                    $container.html(`
-                        <div class="payment-record-state text-muted">
-                            <i class="fas fa-folder-open"></i>
-                            <div>No payment records found for this bill.</div>
-                        </div>
-                    `);
-                    return;
-                }
-
-                const latestItem = res.data[res.data.length - 1];
-                const totalEntries = res.data.filter(item => Number(item.id) > 0).length;
-
-                let html = `
-                    <div class="payment-record-summary">
-                        <div class="payment-record-summary-item">
-                            <span class="payment-record-summary-label">Entries</span>
-                            <strong>${Number(totalEntries).toLocaleString()}</strong>
-                        </div>
-                        <div class="payment-record-summary-item">
-                            <span class="payment-record-summary-label">Total Paid</span>
-                            <strong>&#8358;${Number(latestItem.total_amount_paid || 0).toLocaleString()}</strong>
-                        </div>
-                        <div class="payment-record-summary-item">
-                            <span class="payment-record-summary-label">Balance</span>
-                            <strong class="${Number(latestItem.balance || 0) > 0 ? 'text-danger' : 'text-success'}">&#8358;${Number(latestItem.balance || 0).toLocaleString()}</strong>
-                        </div>
-                    </div>
-                    <div class="payment-record-list">
-                `;
-
-                let lastDate = '';
-                res.data.forEach(function (item, idx) {
-                    const dateObj = item.date_paid ? new Date(item.date_paid) : (item.datecreated ? new Date(item.datecreated) : null);
-                    const dateLabel = dateObj ? dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Unknown date';
-                    const timeLabel = dateObj ? dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : 'Time unavailable';
-                    const isLatest = item.id > 0 && idx === res.data.length - 1;
-                    const description = item.description ? escapeHtml(item.description) : 'No description';
-                    const paymentMethod = item.payment_method ? escapeHtml(item.payment_method) : 'N/A';
-                    const paidAmount = Number(item.amount_newly_paid || 0);
-                    const totalPaid = Number(item.total_amount_paid || 0);
-                    const balance = Number(item.balance || 0);
-
-                    let statusText = 'Paid';
-                    let statusClass = 'success';
-                    if (item.status == 0) {
-                        statusText = 'Pending';
-                        statusClass = 'warning';
-                    }
-                    if (balance > 0 && paidAmount == 0) {
-                        statusText = 'Outstanding';
-                        statusClass = 'danger';
-                    }
-
-                    if (dateLabel !== lastDate) {
-                        html += `<div class="payment-record-date">${dateLabel}</div>`;
-                        lastDate = dateLabel;
-                    }
-
-                    html += `
-                        <div class="payment-record-card">
-                            <div class="payment-record-card-top">
-                                <div>
-                                    <div class="payment-record-amount">&#8358;${paidAmount.toLocaleString()}</div>
-                                    <div class="payment-record-meta">${timeLabel}</div>
-                                </div>
-                                <span class="payment-record-badge payment-record-badge-${statusClass}">${statusText}</span>
-                            </div>
-                            <div class="payment-record-details">
-                                <div><span>Description</span><strong>${description}</strong></div>
-                                <div><span>Payment Method</span><strong>${paymentMethod}</strong></div>
-                                <div><span>Total Paid To Date</span><strong>&#8358;${totalPaid.toLocaleString()}</strong></div>
-                                <div><span>Balance</span><strong class="${balance > 0 ? 'text-danger' : 'text-success'}">&#8358;${balance.toLocaleString()}</strong></div>
-                            </div>
-                            <div class="payment-record-actions">
-                                <a href="#paymentReceiptPreviewModal" class="btn btn-sm btn-outline-primary" data-toggle="modal" aria-expanded="false" data-bill_id="${item.bill_id}" data-paymentid="${item.id}" aria-controls="paymentReceiptPreviewModal">Preview Receipt</a>
-                                ${isLatest ? `<button type="button" class="btn btn-sm btn-danger delete-last-payment-record" data-payment_id="${item.id}" data-bill_id="${item.bill_id}" data-student_id="${studentId}">Delete Last Record</button>` : ''}
-                            </div>
-                        </div>
-                    `;
-                });
-
-                html += `</div>`;
-                $container.html(html);
-            },
-            error: function () {
-                $container.html(`
-                    <div class="payment-record-state text-danger">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <div>Failed to load payment records.</div>
-                    </div>
-                `);
-            }
-        });
-    };
-
-    $(document).on('click', '.delete-last-payment-record', function () {
+        $(document).on('click', '.delete-last-payment-record', function () {
         lastPaymentToDelete = {
             payment_id: $(this).data('payment_id'),
             bill_id: $(this).data('bill_id'),
@@ -1030,7 +978,7 @@ $(document).ready(function () {
     //                         $tbody.append(`
     //                                     <tr>
     //                                         <td><input type="text" name="assign_breakdown_description[]" class="form-control" value="${desc}" required></td>
-    //                                         <td><input type="number" name="assign_breakdown_amount[]" class="form-control assign-breakdown-amount" step="0.01" min="0" value="${amt}" required></td>
+    //                                         <td><input type="number" name="assign_breakdown_amount[]" class="form-control assign-breakdown-amount" step="0.01"  value="${amt}" required></td>
     //                                     </tr>
     //                                 `);
     //                     });
@@ -1038,7 +986,7 @@ $(document).ready(function () {
     //                     $tbody.append(`
     //                                 <tr>
     //                                     <td><input type="text" name="assign_breakdown_description[]" class="form-control" placeholder="e.g. Uniform Fee" required></td>
-    //                                     <td><input type="number" name="assign_breakdown_amount[]" class="form-control assign-breakdown-amount" step="0.01" min="0" required></td>
+    //                                     <td><input type="number" name="assign_breakdown_amount[]" class="form-control assign-breakdown-amount" step="0.01"  required></td>
     //                                 </tr>
     //                             `);
     //                 }
@@ -1105,7 +1053,7 @@ $(document).ready(function () {
                             $tbody.append(`
                                         <tr>
                                             <td><input type="text" name="assign_breakdown_description[]" class="form-control" value="${desc}" required></td>
-                                            <td><input type="number" name="assign_breakdown_amount[]" class="form-control assign-breakdown-amount" step="0.01" min="0" value="${amt}" required></td>
+                                            <td><input type="number" name="assign_breakdown_amount[]" class="form-control assign-breakdown-amount" step="0.01"  value="${amt}" required></td>
                                             <td><button type="button" class="btn btn-danger btn-sm remove-assign-breakdown-row" title="Remove"><i class="fas fa-trash"></i></button></td>
                                         </tr>
                                     `);
@@ -1114,7 +1062,7 @@ $(document).ready(function () {
                         $tbody.append(`
                                     <tr>
                                         <td><input type="text" name="assign_breakdown_description[]" class="form-control" placeholder="e.g. Uniform Fee" required></td>
-                                        <td><input type="number" name="assign_breakdown_amount[]" class="form-control assign-breakdown-amount" step="0.01" min="0" required></td>
+                                        <td><input type="number" name="assign_breakdown_amount[]" class="form-control assign-breakdown-amount" step="0.01"  required></td>
                                         <td><button type="button" class="btn btn-danger btn-sm remove-assign-breakdown-row" title="Remove"><i class="fas fa-trash"></i></button></td>
                                     </tr>
                                 `);
@@ -1394,7 +1342,7 @@ $(document).ready(function () {
             $(tableBody).append(`
                         <tr>
                             <td><input type="text" name="${rowClass}_description[]" class="form-control ${rowClass}-description" placeholder="e.g. Tuition Fee" required></td>
-                            <td><input type="number" name="${rowClass}_amount[]" class="form-control ${rowClass}-amount" step="0.01" min="0" required></td>
+                            <td><input type="number" name="${rowClass}_amount[]" class="form-control ${rowClass}-amount" step="0.01"  required></td>
                             <td><button type="button" class="btn btn-danger btn-sm ${removeRowClass}" title="Remove"><i class="fas fa-trash"></i></button></td>
                         </tr>
                     `);
@@ -1974,7 +1922,7 @@ $(document).ready(function () {
                             $tbody.append(`
                                         <tr>
                                             <td><input type="text" name="breakdown_description[]" class="form-control" value="${desc}" required></td>
-                                            <td><input type="number" name="breakdown_amount[]" class="form-control breakdown-amount" step="0.01" min="0" value="${amt}" required></td>
+                                            <td><input type="number" name="breakdown_amount[]" class="form-control breakdown-amount" step="0.01"  value="${amt}" required></td>
                                             <td><button type="button" class="btn btn-danger btn-sm remove-breakdown-row" title="Remove"><i class="fas fa-trash"></i></button></td>
                                         </tr>
                                     `);
@@ -1983,7 +1931,7 @@ $(document).ready(function () {
                         $tbody.append(`
                                     <tr>
                                         <td><input type="text" name="breakdown_description[]" class="form-control" placeholder="e.g. Uniform Fee" required></td>
-                                        <td><input type="number" name="breakdown_amount[]" class="form-control breakdown-amount" step="0.01" min="0" required></td>
+                                        <td><input type="number" name="breakdown_amount[]" class="form-control breakdown-amount" step="0.01"  required></td>
                                         <td><button type="button" class="btn btn-danger btn-sm remove-breakdown-row" title="Remove"><i class="fas fa-trash"></i></button></td>
                                     </tr>
                                 `);
@@ -2809,7 +2757,7 @@ $(document).ready(function () {
                             $tbody.append(`
                                 <tr class="edit-breakdown">
                                     <td><input type="text" name="edit_breakdown_description[]" class="form-control" value="${escapeHtml(desc)}" required></td>
-                                    <td><input type="number" name="edit_breakdown_amount[]" class="form-control edit_breakdown-amount" step="0.01" min="0" value="${amt}" required></td>
+                                    <td><input type="number" name="edit_breakdown_amount[]" class="form-control edit_breakdown-amount" step="0.01"  value="${amt}" required></td>
                                     <td><button type="button" class="btn btn-danger btn-sm remove-edit-breakdown-row" title="Remove"><i class="fas fa-trash"></i></button></td>
                                 </tr>
                             `);
@@ -2818,7 +2766,7 @@ $(document).ready(function () {
                         $tbody.append(`
                             <tr class="edit-breakdown">
                                 <td><input type="text" name="edit_breakdown_description[]" class="form-control" placeholder="e.g. Tuition" required></td>
-                                <td><input type="number" name="edit_breakdown_amount[]" class="form-control edit_breakdown-amount" step="0.01" min="0" required></td>
+                                <td><input type="number" name="edit_breakdown_amount[]" class="form-control edit_breakdown-amount" step="0.01"  required></td>
                                 <td><button type="button" class="btn btn-danger btn-sm remove-edit-breakdown-row" title="Remove"><i class="fas fa-trash"></i></button></td>
                             </tr>
                         `);
@@ -2889,7 +2837,7 @@ $(document).ready(function () {
                             $tbody.append(`
                             <tr class="edit-breakdown">
                                 <td><input type="text" name="edit_breakdown_description[]" class="form-control" value="${escapeHtml(desc)}" required></td>
-                                <td><input type="number" name="edit_breakdown_amount[]" class="form-control edit_breakdown-amount" step="0.01" min="0" value="${amt}" required></td>
+                                <td><input type="number" name="edit_breakdown_amount[]" class="form-control edit_breakdown-amount" step="0.01"  value="${amt}" required></td>
                                 <td><button type="button" class="btn btn-danger btn-sm remove-edit-breakdown-row" title="Remove"><i class="fas fa-trash"></i></button></td>
                             </tr>
                         `);
@@ -2898,7 +2846,7 @@ $(document).ready(function () {
                         $tbody.append(`
                         <tr class="edit-breakdown">
                             <td><input type="text" name="edit_breakdown_description[]" class="form-control" placeholder="e.g. Tuition" required></td>
-                            <td><input type="number" name="edit_breakdown_amount[]" class="form-control edit_breakdown-amount" step="0.01" min="0" required></td>
+                            <td><input type="number" name="edit_breakdown_amount[]" class="form-control edit_breakdown-amount" step="0.01"  required></td>
                             <td><button type="button" class="btn btn-danger btn-sm remove-edit-breakdown-row" title="Remove"><i class="fas fa-trash"></i></button></td>
                         </tr>
                     `);
@@ -3041,7 +2989,68 @@ $(document).ready(function () {
     });
 
     // Setup Edit Bill wizard (stepper) to validate and route to preview
-    (function setupEditWizard() {
+    // (function setupEditWizard() {
+    //     const $modal = $('#editBillModal');
+    //     const $step1 = $('#edit-bill-tab');
+    //     const $step2 = $('#edit-preview-bill-tab');
+    //     const $btn1 = $('#edit-step-btn-1');
+    //     const $btn2 = $('#edit-step-btn-2');
+    //     const $next = $('#edit-wizard-next');
+    //     const $back = $('#edit-wizard-back');
+    //     const $save = $('#edit-save-changes');
+
+    //     function showEditStep(step) {
+    //         $btn1.removeClass('btn-primary').addClass('btn-secondary');
+    //         $btn2.removeClass('btn-primary').addClass('btn-secondary');
+    //         $step1.removeClass('show active');
+    //         $step2.removeClass('show active');
+
+    //         if (step === 1) {
+    //             $btn1.removeClass('btn-secondary').addClass('btn-primary');
+    //             $('#editBillTabs .nav-link').removeClass('active');
+    //             $('#edit-bill-tab-link').addClass('active');
+    //             $('#editBillTabsContent .tab-pane').removeClass('show active').css('display', 'none');
+    //             $('#edit-bill-tab').addClass('show active').css('display', 'block');
+    //             $back.hide(); $next.show(); $save.hide();
+    //         } else if (step === 2) {
+    //             // Generate preview and validate
+    //             if (typeof renderEditPreview === 'function') {
+    //                 const ok = renderEditPreview();
+    //                 if (!ok) return; // validation failed, stay on step 1
+    //             }
+    //             $btn2.removeClass('btn-secondary').addClass('btn-primary');
+    //             $('#editBillTabs .nav-link').removeClass('active');
+    //             $('#edit-preview-bill-tab-link').addClass('active');
+    //             $('#editBillTabsContent .tab-pane').removeClass('show active').css('display', 'none');
+    //             $('#edit-preview-bill-tab').addClass('show active').css('display', 'block');
+    //             $back.show(); $next.hide(); $save.show();
+    //         }
+    //     }
+
+    //     $modal.on('shown.bs.modal', function () { showEditStep(1); });
+    //     $btn1.on('click', function () { showEditStep(1); });
+    //     $btn2.on('click', function () { showEditStep(2); });
+
+    //     // Prevent direct tab clicks
+    //     $('#edit-bill-tab-link, #edit-preview-bill-tab-link').on('click', function (e) {
+    //         e.preventDefault();
+    //         const id = $(this).attr('id');
+    //         if (id === 'edit-bill-tab-link') showEditStep(1);
+    //         else if (id === 'edit-preview-bill-tab-link') showEditStep(2);
+    //     });
+
+    //     $next.on('click', function () {
+    //         // When Next pressed from step 1, attempt to go to preview (showEditStep will validate)
+    //         if ($('#edit-bill-tab').hasClass('active') || $('#edit-bill-tab').hasClass('show')) {
+    //             showEditStep(2);
+    //         }
+    //     });
+
+    //     $back.on('click', function () {
+    //         if ($('#edit-preview-bill-tab').hasClass('active') || $('#edit-preview-bill-tab').hasClass('show')) showEditStep(1);
+    //     });
+    // })();
+   (function setupEditWizard() {
         const $modal = $('#editBillModal');
         const $step1 = $('#edit-bill-tab');
         const $step2 = $('#edit-preview-bill-tab');
@@ -3117,7 +3126,6 @@ $(document).ready(function () {
             $('#editBillForm').trigger('submit');
         });
     })();
-
     // Function to load bill types in edit modal
     function loadBillTypesForEdit(selectedBillType) {
         $.ajax({
@@ -3391,7 +3399,7 @@ $(document).ready(function () {
                             $tbody.append(`
                                 <tr>
                                     <td><input type="text" name="quick_assign_breakdown_description[]" class="form-control quick-assign-breakdown-description" value="${escapeHtml(desc)}" required></td>
-                                    <td><input type="number" name="quick_assign_breakdown_amount[]" class="form-control quick-assign-breakdown-amount" step="0.01" min="0" value="${amt}" required></td>
+                                    <td><input type="number" name="quick_assign_breakdown_amount[]" class="form-control quick-assign-breakdown-amount" step="0.01"  value="${amt}" required></td>
                                     <td><button type="button" class="btn btn-danger btn-sm remove-quick-assign-breakdown-row" title="Remove"><i class="fas fa-trash"></i></button></td>
                                 </tr>
                             `);
@@ -3406,7 +3414,7 @@ $(document).ready(function () {
                         $tbody.append(`
                             <tr>
                                 <td><input type="text" name="quick_assign_breakdown_description[]" class="form-control quick-assign-breakdown-description" placeholder="e.g. Uniform Fee" required></td>
-                                <td><input type="number" name="quick_assign_breakdown_amount[]" class="form-control quick-assign-breakdown-amount" step="0.01" min="0" required></td>
+                                <td><input type="number" name="quick_assign_breakdown_amount[]" class="form-control quick-assign-breakdown-amount" step="0.01"  required></td>
                                 <td><button type="button" class="btn btn-danger btn-sm remove-quick-assign-breakdown-row" title="Remove"><i class="fas fa-trash"></i></button></td>
                             </tr>
                         `);
@@ -3571,6 +3579,7 @@ $(document).on('click', '.preview-invoice-btn', function (e) {
             const parent = d.parent || {};
             const bill = d.bill || {};
             const billType = d.bill_type || {};
+            const paymentSummary = d.payment_summary || {};
             let items = [];
             try { items = bill.bill_items ? JSON.parse(bill.bill_items) : []; } catch (e) { items = []; }
 
@@ -3595,7 +3604,12 @@ $(document).on('click', '.preview-invoice-btn', function (e) {
             const subtotal = bill.amount || 0;
             const deductionPercentage = bill.deduction_percentage || 0;
             const tax = bill.tax || 0;
-            const total = bill.amount_due || 0;
+            const originalAmountDue = paymentSummary.original_amount_due ?? bill.amount_due ?? 0;
+            const totalAmountPaid = paymentSummary.total_amount_paid ?? 0;
+            const amountRemaining = paymentSummary.amount_remaining ?? originalAmountDue;
+            const paymentStatus = paymentSummary.payment_status || 'unpaid';
+            const lastPaymentDate = paymentSummary.last_payment_date || '';
+            const paymentStatusClass = paymentStatus === 'paid' ? 'success' : (paymentStatus === 'part paid' ? 'warning' : 'secondary');
 
             const invoiceHtml = `
                     <div class="card">
@@ -3632,12 +3646,20 @@ $(document).on('click', '.preview-invoice-btn', function (e) {
                             </div>
                             <hr />
                             <div class="d-flex justify-content-end">
-                                <div style="min-width:220px;">
+                                <div style="min-width:280px;">
                                     <div class="d-flex justify-content-between"><small class="text-muted">Subtotal</small><strong>${money(subtotal)}</strong></div>
                                     <div class="d-flex justify-content-between"><small class="text-muted">Deduction</small><strong>${escapeHtml(deductionPercentage || '0')}%</strong></div>
                                     <div class="d-flex justify-content-between"><small class="text-muted">Tax</small><strong>${escapeHtml(tax || '0')}%</strong></div>
                                     <hr class="my-2">
-                                    <div class="d-flex justify-content-between"><small class="text-muted">Total Due</small><strong>${money(total)}</strong></div>
+                                    <div class="d-flex justify-content-between"><small class="text-muted">Original Bill</small><strong>${money(originalAmountDue)}</strong></div>
+                                    <div class="d-flex justify-content-between"><small class="text-muted">Paid to Date</small><strong>${money(totalAmountPaid)}</strong></div>
+                                    <div class="d-flex justify-content-between align-items-center mt-1">
+                                        <small class="text-muted">Status</small>
+                                        <span class="text-uppercase">${escapeHtml(paymentStatus)}</span>
+                                    </div>
+                                    ${lastPaymentDate ? `<div class="d-flex justify-content-between"><small class="text-muted">Last Payment</small><strong>${escapeHtml(lastPaymentDate)}</strong></div>` : ''}
+                                    <hr class="my-2">
+                                    <div class="d-flex justify-content-between h5 mb-0"><span>Amount Remaining</span><strong>${money(amountRemaining)}</strong></div>
                                 </div>
                             </div>
                         </div>

@@ -1,24 +1,21 @@
 <?php
 session_start();
-// if($_SESSION['manage_payment'] == 0) {
-// 
-?>
-<!-- // <script>
-    history.back()
-</script> -->
-// <?php
-    // }
-    if (!isset($_SESSION['userid'])) {
-        header("Location: login");
-        exit();
-    }
-    include_once("model/connect.php");
-    include_once("model/functions.php");
-    $school_id = $_SESSION['school_id'];
-    $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[2];
+if($_SESSION['manage_payment'] == 0) {
+?>    
+<script>history.back()</script>
+<?php
+}
+if (!isset($_SESSION['userid'])) {
+    header("Location: login");
+    exit();
+}
+include_once("model/connect.php");
+include_once("model/functions.php");
+$school_id = $_SESSION['school_id'];
+$_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[2];
 
-    $school_settings = json_decode($_SESSION['skul_settings'], true);
-    ?>
+$school_settings = json_decode($_SESSION['skul_settings'], true);
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -740,8 +737,8 @@ session_start();
 
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
-        <!-- Navbar -->
-        <nav class="main-header navbar border-bottom-0 navbar-expand justify-content-between bg1">
+             <!-- Navbar -->
+    <nav class="main-header navbar border-bottom-0 navbar-expand justify-content-between bg1">
             <!-- <div class=""> -->
 
             <!-- Left navbar links -->
@@ -778,13 +775,13 @@ session_start();
                             <span class="material-symbols-outlined mr-2">lock</span> Change PIN
                         </a>
                         <?php
-                        if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
-                        ?>
-                            <a href="my_payment" class="dropdown-item text-muted d-flex">
-                                <span class="material-symbols-outlined mr-2">payments</span> Billing
-                            </a>
+                            if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
+                            ?>
+                        <a href="my_payment" class="dropdown-item text-muted d-flex">
+                            <span class="material-symbols-outlined mr-2">payments</span> Billing
+                        </a>
                         <?php
-                        } ?>
+                            }?>
                         <a href="logout" class="dropdown-item text-muted d-flex">
                             <span class="material-symbols-outlined mr-2">logout</span> Logout
                         </a>
@@ -793,18 +790,18 @@ session_start();
             </ul>
             <!-- </div> -->
         </nav>
-        <!-- /.navbar -->
+    <!-- /.navbar -->
 
-        <!-- Main Sidebar Container -->
-        <!-- Main Sidebar Container -->
-        <aside class="main-sidebar sidebar-light-primary elevation-4">
+    <!-- Main Sidebar Container -->
+    <!-- Main Sidebar Container -->
+           <aside class="main-sidebar sidebar-light-primary elevation-4">
             <!-- Brand Logo -->
             <a href="" class="brand-link">
                 <img src="../uploads/<?= $_SESSION['logo'] ?>" alt="<?= $_SESSION['school_name'] ?>" class="brand-image" style="opacity: .8">
                 <span class="brand-text font-weight-light" style="visibility: hidden;">Rus</span>
             </a>
-
-
+           
+            
             <!-- <div href="" class="px-15 pt-15 border-bottom" style="padding-bottom: 30px;">
                 <img src="../uploads/<= $_SESSION['logo'] ?>" style="height: 200px; object-fit:cover;" alt="Logo"
                     class="brand-image img-circle elevation-5 w-100">
@@ -874,8 +871,8 @@ session_start();
                                 </p>
                             </a>
                         </li>
-
-
+                        
+                        
                         <li class="nav-item">
                             <a href="post_scores" class="nav-link">
                                 <p class="d-flex">
@@ -909,24 +906,24 @@ session_start();
                             </a>
                         </li>
                         <?php if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4 || $_SESSION['staff_type'] == 5) { ?>
-                            <li class="nav-item">
-                                <a href="staff_attendance" class="nav-link">
-                                    <p class="d-flex">
-                                        <i class="material-symbols-outlined pr-2">add_chart</i>
-                                        Staff Attendance
-                                    </p>
-                                </a>
-                            </li>
+                        <li class="nav-item">
+                            <a href="staff_attendance" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">add_chart</i>
+                                   Staff Attendance
+                                </p>
+                            </a>
+                        </li>
                         <?php } ?>
-                        <?php if ($_SESSION['school_id'] == 27 || $_SESSION['school_id'] == 13) {  ?>
-                            <li class="nav-item">
-                                <a href="lesson_note" class="nav-link">
-                                    <p class="d-flex">
-                                        <i class="material-symbols-outlined pr-2">list</i>
-                                        Lesson Note
-                                    </p>
-                                </a>
-                            </li>
+                        <?php if($_SESSION['school_id'] == 27 || $_SESSION['school_id']==13){  ?>
+                        <li class="nav-item">
+                            <a href="lesson_note" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">list</i>
+                                    Lesson Note
+                                </p>
+                            </a>
+                        </li>
                         <?php } ?>
                         <li class="nav-item">
                             <a href="assessment" class="nav-link">
@@ -937,16 +934,16 @@ session_start();
                             </a>
                         </li>
                         <?php
-                        if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4 || $_SESSION['staff_type'] == 7) {
-                        ?>
-                            <li class="nav-item">
-                                <a href="payments" class="nav-link active">
-                                    <p class="d-flex">
-                                        <i class="material-symbols-outlined pr-2">payments</i>
-                                        Payments
-                                    </p>
-                                </a>
-                            </li>
+                         if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4 || $_SESSION['staff_type'] == 7) {
+                             ?>
+                        <li class="nav-item">
+                            <a href="payments" class="nav-link active">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">payments</i>
+                                    Payments
+                                </p>
+                            </a>
+                        </li>
                         <?php } ?>
                         <li class="nav-item">
                             <a href="time_table" class="nav-link">
@@ -996,11 +993,11 @@ session_start();
                                         <li class="breadcrumb-item font-14">
                                             <a href="dashboard" class="d-flex align-items-center accent"
                                                 style="margin-left: -2px;">
-                                                <input type="hidden" name="student_id" id="edit_student_id" value="">
-                                                <input type="hidden" name="session_id" id="edit_session_id" value="">
-                                                <input type="hidden" name="term_id" id="edit_term_id" value="">
-                                                <a href="dashboard" class="d-flex align-items-center accent" style="margin-left: -2px;">
-                                                    <i class="material-symbols-outlined mr-1" style="font-size: 19px;">dashboard</i>Dashboard</a>
+                                    <input type="hidden" name="student_id" id="edit_student_id" value="">
+                                    <input type="hidden" name="session_id" id="edit_session_id" value="">
+                                    <input type="hidden" name="term_id" id="edit_term_id" value="">
+                                           <a href="dashboard" class="d-flex align-items-center accent" style="margin-left: -2px;">
+                                                <i class="material-symbols-outlined mr-1" style="font-size: 19px;">dashboard</i>Dashboard</a>
                                         </li>
                                         <li class="breadcrumb-item active font-14">Payments</li>
                                     </ol>
@@ -1015,7 +1012,7 @@ session_start();
                                             data-target="#createAssignBillModal">
                                             Assign Bill
                                         </button>
-
+    
                                     </div>
                                     <div class="row">
                                         <div class="col-12" id="bill_type_selector_container">
@@ -1136,10 +1133,10 @@ session_start();
                                                                 <h4 id="students-unpaid-class"
                                                                     class="font-weight-bold mb-0">–</h4>
                                                             </div>
-                                                            <div class="">
-                                                                <small class="text-muted">Students Assigned</small>
-                                                                <h4 id="students-assigned-class" class="font-weight-bold mb-0">–</h4>
-                                                            </div>
+                                                                <div class="">
+                                                                    <small class="text-muted">Students Assigned</small>
+                                                                    <h4 id="students-assigned-class" class="font-weight-bold mb-0">–</h4>
+                                                                </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1194,10 +1191,10 @@ session_start();
                                                                     class="font-weight-bold mb-0">–
                                                                 </h4>
                                                             </div>
-                                                            <div class="">
-                                                                <small class="text-muted">Students Assigned</small>
-                                                                <h4 id="students-assigned-all" class="font-weight-bold mb-0">–</h4>
-                                                            </div>
+                                                                <div class="">
+                                                                    <small class="text-muted">Students Assigned</small>
+                                                                    <h4 id="students-assigned-all" class="font-weight-bold mb-0">–</h4>
+                                                                </div>
                                                         </div>
 
                                                     </div>
@@ -1207,31 +1204,31 @@ session_start();
                                         <!-- Student record filters -->
                                     </div>
                                 </div>
-                                <div id="student-record-filters" class="mb-3 menu-scrollbar" style="display:none; overflow: auto; white-space: nowrap; width:100%; column-gap: 40px;">
-                                    <div class="btn-group" role="group" aria-label="Student record filters">
-                                        <button type="button" class="btn btn-sm btn-secondary select_btn filter-btn active" data-filter="all">All</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary select_btn filter-btn" data-filter="assigned">Assigned</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary select_btn filter-btn" data-filter="unassigned">Unassigned</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary select_btn filter-btn" data-filter="partly_paid">Partly Paid</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary select_btn filter-btn" data-filter="unpaid">Unpaid</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary select_btn filter-btn" data-filter="paid">Paid</button>
-                                    </div>
-                                </div>
-                                <table id="student_payment_recordTable" class="display"
-                                    style="width:100%; display:none;">
-                                    <thead>
-                                        <tr>
-                                            <th>Student Name</th>
-                                            <th>Bill Type</th>
-                                            <th>Amount Due</th>
-                                            <th>Amount Paid</th>
-                                            <th>Balance</th>
-                                            <th>Status</th>
-                                            <th>Last Payment</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                </table>
+                                        <div id="student-record-filters" class="mb-3 menu-scrollbar" style="display:none; overflow: auto; white-space: nowrap; width:100%; column-gap: 40px;">
+                                            <div class="btn-group" role="group" aria-label="Student record filters">
+                                                <button type="button" class="btn btn-sm btn-secondary select_btn filter-btn active" data-filter="all">All</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary select_btn filter-btn" data-filter="assigned">Assigned</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary select_btn filter-btn" data-filter="unassigned">Unassigned</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary select_btn filter-btn" data-filter="partly_paid">Partly Paid</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary select_btn filter-btn" data-filter="unpaid">Unpaid</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary select_btn filter-btn" data-filter="paid">Paid</button>
+                                            </div>
+                                        </div>
+                                    <table id="student_payment_recordTable" class="display"
+                                        style="width:100%; display:none;">
+                                        <thead>
+                                            <tr>
+                                                <th>Student Name</th>
+                                                <th>Bill Type</th>
+                                                <th>Amount Due</th>
+                                                <th>Amount Paid</th>
+                                                <th>Balance</th>
+                                                <th>Status</th>
+                                                <th>Last Payment</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
 
                             </div>
                         </div>
@@ -1323,13 +1320,13 @@ session_start();
                                     </div>
                                     <div class="col-md-6 form-group">
                                         <label for="editDeductionPercentage">Deduction Percentage (%)</label>
-                                        <input type="number" min="0" max="100" step="0.01" class="form-control" id="editDeductionPercentage" name="edit_deduction_percentage" value="0">
+                                        <input type="number"  max="100" step="0.01" class="form-control" id="editDeductionPercentage" name="edit_deduction_percentage" value="0">
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-4 form-group">
                                         <label for="editTaxPercentage">Tax (%)</label>
-                                        <input type="number" min="0" max="100" step="0.01" class="form-control" id="editTaxPercentage" name="edit_tax" value="0">
+                                        <input type="number"  max="100" step="0.01" class="form-control" id="editTaxPercentage" name="edit_tax" value="0">
                                     </div>
                                     <div class="col-md-4 form-group">
                                         <label for="editTotalAmount">Total Amount</label>
@@ -1359,6 +1356,7 @@ session_start();
                         <button type="button" class="btn btn-secondary mr-2" id="edit-wizard-back" style="display: none;">Back</button>
                         <button type="button" class="btn btn-primary mr-2" id="edit-wizard-next">Next</button>
                         <button type="button" class="btn btn-success" id="edit-save-changes" style="display: none;">Save Changes</button>
+
                         <button type="button" class="btn btn-secondary ml-2" data-dismiss="modal">Cancel</button>
                     </div>
                 </div>
@@ -1366,173 +1364,173 @@ session_start();
         </div>
     </div>
     <!-- Create/Assign Bill Modal -->
-    <div class="modal fade" id="createAssignBillModal" tabindex="-1" role="dialog"
-        aria-labelledby="createAssignBillModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createAssignBillModalLabel">Assign Bill to Students</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="assignBillForm">
-                        <!-- Stepper Navigation -->
-                        <div class="d-flex justify-content-between mb-4">
-                            <div class="text-center">
-                                <button type="button" class="btn btn-primary rounded-circle" id="step-btn-1">1</button>
-                                <p>Bill Details</p>
-                            </div>
-                            <div style="width: 30%; border-bottom: 2px solid #ccc; margin-bottom: 25px;"></div>
-                            <div class="text-center">
-                                <button type="button" class="btn btn-secondary rounded-circle" id="step-btn-2">2</button>
-                                <p>Select Students</p>
-                            </div>
-                            <div style="width: 30%; border-bottom: 2px solid #ccc; margin-bottom: 25px;"></div>
-                            <div class="text-center">
-                                <button type="button" class="btn btn-secondary rounded-circle" id="step-btn-3">3</button>
-                                <p>Preview & Confirm</p>
+<div class="modal fade" id="createAssignBillModal" tabindex="-1" role="dialog"
+    aria-labelledby="createAssignBillModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createAssignBillModalLabel">Assign Bill to Students</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="assignBillForm">
+                    <!-- Stepper Navigation -->
+                    <div class="d-flex justify-content-between mb-4">
+                        <div class="text-center">
+                            <button type="button" class="btn btn-primary rounded-circle" id="step-btn-1">1</button>
+                            <p>Bill Details</p>
+                        </div>
+                        <div style="width: 30%; border-bottom: 2px solid #ccc; margin-bottom: 25px;"></div>
+                        <div class="text-center">
+                            <button type="button" class="btn btn-secondary rounded-circle" id="step-btn-2">2</button>
+                            <p>Select Students</p>
+                        </div>
+                        <div style="width: 30%; border-bottom: 2px solid #ccc; margin-bottom: 25px;"></div>
+                        <div class="text-center">
+                            <button type="button" class="btn btn-secondary rounded-circle" id="step-btn-3">3</button>
+                            <p>Preview & Confirm</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Bill Details -->
+                    <div id="step-1">
+                        <div class="card card-body mb-3">
+                            <div class="form-group">
+                                <label for="selectBillTypeModal">Select Bill Type</label>
+                                <select class="form-control select2" id="selectBillTypeModal" name="bill_type_id"
+                                    style="width: 100%;" title="Select Bill Type" required>
+                                    <option value="" selected disabled>Loading bill types...</option>
+                                    <!-- Options will be loaded by AJAX -->
+                                </select>
                             </div>
                         </div>
-
-                        <!-- Step 1: Bill Details -->
-                        <div id="step-1">
-                            <div class="card card-body mb-3">
-                                <div class="form-group">
-                                    <label for="selectBillTypeModal">Select Bill Type</label>
-                                    <select class="form-control select2" id="selectBillTypeModal" name="bill_type_id"
-                                        style="width: 100%;" title="Select Bill Type" required>
-                                        <option value="" selected disabled>Loading bill types...</option>
-                                        <!-- Options will be loaded by AJAX -->
-                                    </select>
+                        <div class="card card-body mb-3">
+                            <h5>Bill Breakdown</h5>
+                            <table class="table table-bordered" id="assignInvoiceBreakdownTableAssign">
+                                <thead>
+                                    <tr>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="text" name="assign_breakdown_description[]"
+                                                class="form-control" placeholder="e.g. Uniform Fee" required></td>
+                                        <td><input type="number" name="assign_breakdown_amount[]"
+                                                class="form-control assign-breakdown-amount" step="0.01" 
+                                                required></td>
+                                        <td><button type="button"
+                                                class="btn btn-danger btn-sm remove-assign-breakdown-row"
+                                                title="Remove"><i class="fas fa-trash"></i></button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-primary btn-sm" id="addAssignBreakdownRow">Add
+                                Item</button>
+                        </div>
+                        <div class="card card-body">
+                            <h5>Adjustments & Totals</h5>
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label for="assignSubtotal">Subtotal</label>
+                                    <input type="number" step="0.01" class="form-control" id="assignSubtotal"
+                                        name="assign_subtotal" readonly>
                                 </div>
                             </div>
-                            <div class="card card-body mb-3">
-                                <h5>Bill Breakdown</h5>
-                                <table class="table table-bordered" id="assignInvoiceBreakdownTableAssign">
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label for="assignDeductionPurpose">Deduction Purpose</label>
+                                    <input type="text" class="form-control" id="assignDeductionPurpose"
+                                        name="assign_deduction_purpose" placeholder="e.g. Scholarship or Discount">
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label for="assignDeductionPercentage">Deduction Percentage (%)</label>
+                                    <input type="number"  max="100" step="0.01" class="form-control"
+                                        id="assignDeductionPercentage" name="assign_deduction_percentage" value="0">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label for="assignTaxPercentage">Tax (%)</label>
+                                    <input type="number" max="100" step="0.01" class="form-control"
+                                        id="assignTaxPercentage" name="assign_tax" value="0">
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label for="assignTotalAmount">Total Amount</label>
+                                    <input type="number" step="0.01" class="form-control" id="assignTotalAmount"
+                                        name="assign_total_amount" readonly required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="assignNotes">Notes</label>
+                                <textarea class="form-control" id="assignNotes" name="assign_notes" rows="2"
+                                    placeholder="Additional notes..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="assignTerms">Terms</label>
+                                <textarea class="form-control" id="assignTerms" name="assign_terms" rows="2"
+                                    placeholder="Payment terms..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Select Students -->
+                    <div id="step-2" style="display: none;">
+                        <div class="card card-body">
+                            <div class="form-group">
+                                <label for="filterClassModal">Filter Students by Class</label>
+                                <select class="form-control select2" id="filterClassModal" name="filter_class_id"
+                                    style="width: 100%;">
+                                    <option value="" selected disabled>Select a class to load students...</option>
+                                    <!-- Class options will be loaded by AJAX -->
+                                </select>
+                            </div>
+                            <label>Select Students</label>
+                            <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                                <table class="table table-sm table-bordered" id="studentListTableModal">
                                     <thead>
                                         <tr>
-                                            <th>Description</th>
-                                            <th>Amount</th>
-                                            <th></th>
+                                            <th><input type="checkbox" id="selectAllStudentsCheckbox"></th>
+                                            <th>Student Name</th>
+                                            <th>Admission No</th>
+                                            <th>Class</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="studentListTableBodyModal">
                                         <tr>
-                                            <td><input type="text" name="assign_breakdown_description[]"
-                                                    class="form-control" placeholder="e.g. Uniform Fee" required></td>
-                                            <td><input type="number" name="assign_breakdown_amount[]"
-                                                    class="form-control assign-breakdown-amount" step="0.01" min="0"
-                                                    required></td>
-                                            <td><button type="button"
-                                                    class="btn btn-danger btn-sm remove-assign-breakdown-row"
-                                                    title="Remove"><i class="fas fa-trash"></i></button></td>
+                                            <td colspan="4" class="text-center text-muted">Select a class to view
+                                                students.</td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                <button type="button" class="btn btn-primary btn-sm" id="addAssignBreakdownRow">Add
-                                    Item</button>
                             </div>
-                            <div class="card card-body">
-                                <h5>Adjustments & Totals</h5>
-                                <div class="row">
-                                    <div class="col-md-6 form-group">
-                                        <label for="assignSubtotal">Subtotal</label>
-                                        <input type="number" step="0.01" class="form-control" id="assignSubtotal"
-                                            name="assign_subtotal" readonly>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6 form-group">
-                                        <label for="assignDeductionPurpose">Deduction Purpose</label>
-                                        <input type="text" class="form-control" id="assignDeductionPurpose"
-                                            name="assign_deduction_purpose" placeholder="e.g. Scholarship or Discount">
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <label for="assignDeductionPercentage">Deduction Percentage (%)</label>
-                                        <input type="number" min="0" max="100" step="0.01" class="form-control"
-                                            id="assignDeductionPercentage" name="assign_deduction_percentage" value="0">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6 form-group">
-                                        <label for="assignTaxPercentage">Tax (%)</label>
-                                        <input type="number" min="0" max="100" step="0.01" class="form-control"
-                                            id="assignTaxPercentage" name="assign_tax" value="0">
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <label for="assignTotalAmount">Total Amount</label>
-                                        <input type="number" step="0.01" class="form-control" id="assignTotalAmount"
-                                            name="assign_total_amount" readonly required>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="assignNotes">Notes</label>
-                                    <textarea class="form-control" id="assignNotes" name="assign_notes" rows="2"
-                                        placeholder="Additional notes..."></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="assignTerms">Terms</label>
-                                    <textarea class="form-control" id="assignTerms" name="assign_terms" rows="2"
-                                        placeholder="Payment terms..."></textarea>
-                                </div>
-                            </div>
+                            <small class="text-muted">You can select students from multiple classes. Selected students
+                                will be remembered.</small>
                         </div>
+                    </div>
 
-                        <!-- Step 2: Select Students -->
-                        <div id="step-2" style="display: none;">
-                            <div class="card card-body">
-                                <div class="form-group">
-                                    <label for="filterClassModal">Filter Students by Class</label>
-                                    <select class="form-control select2" id="filterClassModal" name="filter_class_id"
-                                        style="width: 100%;">
-                                        <option value="" selected disabled>Select a class to load students...</option>
-                                        <!-- Class options will be loaded by AJAX -->
-                                    </select>
-                                </div>
-                                <label>Select Students</label>
-                                <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
-                                    <table class="table table-sm table-bordered" id="studentListTableModal">
-                                        <thead>
-                                            <tr>
-                                                <th><input type="checkbox" id="selectAllStudentsCheckbox"></th>
-                                                <th>Student Name</th>
-                                                <th>Admission No</th>
-                                                <th>Class</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="studentListTableBodyModal">
-                                            <tr>
-                                                <td colspan="4" class="text-center text-muted">Select a class to view
-                                                    students.</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <small class="text-muted">You can select students from multiple classes. Selected students
-                                    will be remembered.</small>
-                            </div>
+                    <!-- Step 3: Preview & Confirm -->
+                    <div id="step-3" style="display: none;">
+                        <div id="previewBillContent">
+                            <p class="text-muted text-center">Preview of the bill will be shown here.</p>
                         </div>
-
-                        <!-- Step 3: Preview & Confirm -->
-                        <div id="step-3" style="display: none;">
-                            <div id="previewBillContent">
-                                <p class="text-muted text-center">Preview of the bill will be shown here.</p>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-light" id="wizard-back-btn" style="display: none;">Back</button>
-                    <button type="button" class="btn btn-primary" id="wizard-next-btn">Next</button>
-                    <button type="button" class="btn btn-success" id="assignNowButton"
-                        style="display: none;">Assign Now</button>
-                </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-light" id="wizard-back-btn" style="display: none;">Back</button>
+                <button type="button" class="btn btn-primary" id="wizard-next-btn">Next</button>
+                <button type="button" class="btn btn-success" id="assignNowButton"
+                    style="display: none;">Assign Now</button>
             </div>
         </div>
     </div>
+</div>
     <!-- End Create/Assign Bill Modal -->
 
     <!-- Add Edit Bill Type Modal (Similar to Create Modal) -->
@@ -1570,7 +1568,7 @@ session_start();
                                         <td><input type="text" name="breakdown_description[]" class="form-control"
                                                 placeholder="e.g. Uniform Fee" required></td>
                                         <td><input type="number" name="breakdown_amount[]"
-                                                class="form-control breakdown-amount" step="0.01" min="0" required></td>
+                                                class="form-control breakdown-amount" step="0.01" required></td>
                                         <td><button type="button" class="btn btn-danger btn-sm remove-breakdown-row"
                                                 title="Remove"><i class="fas fa-trash"></i></button></td>
                                     </tr>
@@ -1594,14 +1592,14 @@ session_start();
                             </div>
                             <div class="col-md-6 form-group">
                                 <label for="deductionPercentage">Deduction Percentage (%)</label>
-                                <input type="number" min="0" max="100" step="0.01" class="form-control"
+                                <input type="number"  max="100" step="0.01" class="form-control"
                                     id="deduction_percentage" name="deduction_percentage" value="0">
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 form-group">
                                 <label for="editBillTaxPercentage">Tax (%)</label>
-                                <input type="number" min="0" max="100" step="0.01" class="form-control"
+                                <input type="number"  max="100" step="0.01" class="form-control"
                                     id="editBillTaxPercentage" name="taxPercentage" value="0">
                             </div>
                             <div class="col-md-6 form-group">
@@ -1727,7 +1725,7 @@ session_start();
                                                         placeholder="e.g. Uniform Fee" required></td>
                                                 <td><input type="number" name="quick_assign_breakdown_amount[]"
                                                         class="form-control quick-assign-breakdown-amount" step="0.01"
-                                                        min="0" required></td>
+                                                         required></td>
                                                 <td><button type="button"
                                                         class="btn btn-danger btn-sm remove-quick-assign-breakdown-row"
                                                         title="Remove"><i class="fas fa-trash"></i></button></td>
@@ -1753,7 +1751,7 @@ session_start();
                                     </div>
                                     <div class="col-md-6 form-group">
                                         <label for="quick_assign_deduction_percentage">Deduction Percentage (%)</label>
-                                        <input type="number" min="0" max="100" step="0.01" class="form-control"
+                                        <input type="number" max="100" step="0.01" class="form-control"
                                             id="quick_assign_deduction_percentage"
                                             name="quick_assign_deduction_percentage" value="0">
                                     </div>
@@ -1761,7 +1759,7 @@ session_start();
                                 <div class="row">
                                     <div class="col-md-6 form-group">
                                         <label for="quick_assign_tax">Tax (%)</label>
-                                        <input type="number" min="0" max="100" step="0.01" class="form-control"
+                                        <input type="number" max="100" step="0.01" class="form-control"
                                             id="quick_assign_tax" name="quick_assign_tax" value="0">
                                     </div>
                                     <div class="col-md-6 form-group">
@@ -1838,7 +1836,7 @@ session_start();
                                         <td><input type="text" name="create_breakdown_description[]"
                                                 class="form-control" placeholder="e.g. Tuition Fee" required></td>
                                         <td><input type="number" name="create_breakdown_amount[]"
-                                                class="form-control create-breakdown-amount" step="0.01" min="0"
+                                                class="form-control create-breakdown-amount" step="0.01"
                                                 required></td>
                                         <td><button type="button"
                                                 class="btn btn-danger btn-sm remove-create-breakdown-row"
@@ -1865,7 +1863,7 @@ session_start();
                             </div>
                             <div class="col-md-6 form-group">
                                 <label for="deductionPercentage">Deduction Percentage (%)</label>
-                                <input type="number" min="0" max="100" step="0.01" class="form-control"
+                                <input type="number" max="100" step="0.01" class="form-control"
                                     id="create_deduction_percentage" name="deduction_percentage" value="0">
                             </div>
                         </div>
@@ -1916,12 +1914,12 @@ session_start();
                     <div class="modal-body">
                         <input type="hidden" id="payment_student_id" name="student_id">
                         <input type="hidden" id="payment_bill_id" name="bill_id">
-
+                        
                         <div class="form-group">
                             <label for="payment_amount">Amount Paid</label>
                             <input type="number" class="form-control" id="payment_amount" name="amount_newly_paid"
-                                min="0" step="0.01" data-current_balance="" oninput="recalculate_balance(this)" required>
-                            <div class="d-flex justify-content-start flex-wrap" style="column-gap: 10px;">
+                                 step="0.01" data-current_balance="" oninput="recalculate_balance(this)" required>
+                                <div class="d-flex justify-content-start flex-wrap" style="column-gap: 10px;">
                                 <p class="small">Amount due = <span id="amount_due_record_payment"></span></p>
                                 <p class="small text-orange" id="balance_calculate">Balance = <span id="amount_balance_record_payment"></span></p>
                             </div>
@@ -1972,31 +1970,20 @@ session_start();
     <div class="modal fade" id="paymentRecordModal" tabindex="-1" role="dialog"
         aria-labelledby="paymentRecordModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
-            <div class="modal-content payment-record-modal-content">
-                <div class="modal-header payment-record-modal-header text-white">
-                    <div class="payment-record-modal-title">
-                        <span class="payment-record-modal-icon">
-                            <i class="fas fa-receipt"></i>
-                        </span>
-                        <div>
-                            <span class="payment-record-modal-kicker">Billing Activity</span>
-                            <h5 class="modal-title" id="paymentRecordModalLabel">Payment Record Timeline</h5>
-                            <p class="payment-record-modal-subtitle">Review each payment entry, balance movement, and latest receipt actions.</p>
-                        </div>
-                    </div>
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="paymentRecordModalLabel"><i class="fas fa-receipt"></i> Payment Record
+                        Timeline</h5>
                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body payment-record-modal-body">
+                <div class="modal-body">
                     <div id="paymentTimelineContainer">
-                        <div class="payment-record-loading text-muted">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <div>Loading payment records...</div>
-                        </div>
+                        <div class="text-center text-muted">Loading payment records...</div>
                     </div>
                 </div>
-                <div class="modal-footer payment-record-modal-footer">
+                <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <!--<button type="button" class="btn btn-info" id="generateLastReceiptButton"><i-->
                     <!--        class="fas fa-file-invoice"></i> Generate Last Receipt</button>-->
@@ -2004,7 +1991,7 @@ session_start();
             </div>
         </div>
     </div>
-    <div class="modal fade" id="confirmDeletePaymentModal" tabindex="-1" role="dialog"
+     <div class="modal fade" id="confirmDeletePaymentModal" tabindex="-1" role="dialog"
         aria-labelledby="confirmDeletePaymentModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -2026,7 +2013,7 @@ session_start();
         </div>
     </div>
     <!-- Payment Receipt Preview Modal -->
-    <div class="modal fade" id="paymentReceiptPreviewModal" tabindex="-1" role="dialog"
+        <div class="modal fade" id="paymentReceiptPreviewModal" tabindex="-1" role="dialog"
         aria-labelledby="paymentReceiptPreviewModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
             <div class="modal-content">
@@ -2058,7 +2045,7 @@ session_start();
             </div>
         </div>
     </div>
-    <!-- Invoice Preview Modal (for Preview Payment Invoice) -->
+        <!-- Invoice Preview Modal (for Preview Payment Invoice) -->
     <div class="modal fade" id="invoicePreviewModal" tabindex="-1" role="dialog" aria-labelledby="invoicePreviewModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
             <div class="modal-content">
@@ -2081,7 +2068,7 @@ session_start();
             </div>
         </div>
     </div>
-    <!-- Delete Bill Confirmation Modal -->
+     <!-- Delete Bill Confirmation Modal -->
     <div class="modal fade" id="confirmDeleteBillModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteBillModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
             <div class="modal-content">
