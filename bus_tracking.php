@@ -378,6 +378,7 @@ if (!$can_manage_transport) {
     <script>
         const state = { buses: [], routes: [], stops: [], assignments: [], staff: [], students: [], settings: {} };
         const mapState = { map: null, markers: {}, hasFitBounds: false };
+        let liveRefreshTimer = null;
 
         function escapeHtml(value) {
             return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
@@ -545,6 +546,26 @@ if (!$can_manage_transport) {
             Object.keys(state.settings || {}).forEach(key => $('#' + key).val(state.settings[key]));
         }
 
+        function refreshLiveData() {
+            postTransport({ action: 'staff_snapshot' }).done(function(resp) {
+                renderLive(resp.buses || []);
+                if (resp.settings) {
+                    state.settings = resp.settings;
+                }
+                renderSetupGuide();
+            }).fail(function(xhr) {
+                toastr.error((xhr.responseJSON && xhr.responseJSON.err) || 'Unable to refresh live buses');
+            });
+        }
+
+        function scheduleLiveRefresh() {
+            if (liveRefreshTimer) {
+                clearInterval(liveRefreshTimer);
+            }
+            const intervalMs = Math.max(15, Number(state.settings.update_interval_seconds || 20)) * 1000;
+            liveRefreshTimer = setInterval(refreshLiveData, intervalMs);
+        }
+
         function refreshTransportData() {
             $.when(
                 postTransport({ action: 'staff_snapshot' }),
@@ -571,6 +592,7 @@ if (!$can_manage_transport) {
                 renderRoutesAndStops();
                 renderAssignments();
                 renderSetupGuide();
+                scheduleLiveRefresh();
             }).fail(function(xhr) {
                 toastr.error((xhr.responseJSON && xhr.responseJSON.err) || 'Unable to load transport data');
             });
@@ -639,7 +661,6 @@ if (!$can_manage_transport) {
 
         $(function() {
             refreshTransportData();
-            setInterval(refreshTransportData, Math.max(15, Number(state.settings.update_interval_seconds || 20)) * 1000);
         });
     </script>
 </body>
