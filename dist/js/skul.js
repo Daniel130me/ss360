@@ -10170,6 +10170,47 @@ function normalizeScoreValue(value) {
     return value === undefined || value === null || value === '' ? '' : String(Number(value));
 }
 
+const scoreTotalFieldMap = {
+    ca1: { totalField: 'ca1Total', totalClass: 'ca1total' },
+    ca2: { totalField: 'ca2Total', totalClass: 'ca2total' },
+    ca3: { totalField: 'ca3Total', totalClass: 'ca3total' },
+    practical: { totalField: 'practicalTotal', totalClass: 'pratotal' },
+    exam: { totalField: 'examTotal', totalClass: 'exatotal' }
+};
+
+function syncHiddenTotalForScoreInput(input) {
+    const $input = $(input);
+    const mapping = scoreTotalFieldMap[$input.attr('data-score-field')];
+
+    if (!mapping) return;
+
+    const $row = $input.closest('tr');
+    const rowSubjectOrNameId = String($row.find('.assess_subject').attr('data-id') || '');
+
+    if (rowSubjectOrNameId === 'NAN') return;
+
+    const $totalRow = $('#post_score_table_by_student tbody tr').filter(function () {
+        return String($(this).find('.assess_subject').attr('data-id') || '') === 'NAN';
+    }).first();
+    const $sourceTotal = $totalRow.find(`input.${mapping.totalClass}`).first();
+    const $rowTotal = $row.find(`input[data-score-field="${mapping.totalField}"]`).first();
+
+    if (!$sourceTotal.length || !$rowTotal.length || $sourceTotal.val() === '') return;
+
+    // Keep the hidden obtainable score in step with the top total row when a score is edited.
+    if (normalizeScoreValue($rowTotal.val()) !== normalizeScoreValue($sourceTotal.val())) {
+        $rowTotal.val($sourceTotal.val()).trigger('change');
+    }
+}
+
+function bindScoreTotalAutoSync() {
+    $('#post_score_table_by_student')
+        .off('input.scoreTotalAutoSync change.scoreTotalAutoSync', 'input[type="number"][data-score-field]')
+        .on('input.scoreTotalAutoSync change.scoreTotalAutoSync', 'input[type="number"][data-score-field]', function () {
+            syncHiddenTotalForScoreInput(this);
+        });
+}
+
 function initializeScoreChangeTracking() {
     const fields = getActiveScoreFields();
 
@@ -10184,6 +10225,8 @@ function initializeScoreChangeTracking() {
                 .removeClass('border border-warning');
         });
     });
+
+    bindScoreTotalAutoSync();
 }
 
 function markScoreConflicts(conflicts) {
