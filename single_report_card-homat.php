@@ -2,6 +2,7 @@
 session_start();
 include_once("model/connect.php");
 include_once("model/functions.php");
+include_once("model/report_card_renderer.php");
 
 $school_id = $_SESSION['school_id'];
 $student_id = $_POST['student_id'];
@@ -9,6 +10,7 @@ $class_id = $_POST['class_id'];
 $session_id = $_POST['session_id'];
 $term_id = $_POST['term_id'];
 $sessionOrTerm = $_POST['sessionOrTerm'];
+$class_id = resolve_student_report_class_id($student_id, $session_id, $term_id, $class_id, $school_id);
 // $data = json_encode($_POST['data']);
 // $settingsData = json_encode($_POST['settingsData']);
 // var_dump($settingsData);
@@ -20,6 +22,9 @@ $school_row = mysqli_fetch_array($select_school);
 
 $select_biodata = mysqli_query($conn, "SELECT * FROM students WHERE id='$student_id' AND school_id='$school_id'");
 $biorow = mysqli_fetch_array($select_biodata);
+if ($biorow) {
+    $biorow['class_id'] = $class_id;
+}
 
 $exact_term_id = $term_id == 'cum' ? 3 : $term_id;
 // echo "SELECT first,second,third, ca1, ca2, ca3, practical, exam, grading,school_open FROM skul_settings WHERE session_id='$session_id' and term_id='$exact_term_id' and school_id='$school_id'";
@@ -123,6 +128,7 @@ $total_obtainable = get_total_obtainables_homat($student_id, $term_id, $session_
 // echo $total_obtainable;
 $total_percent = $total_obtainable == 0 ? 0 : round((($total_score / $total_obtainable) * 100), 1);
 $grade = get_grade($total_percent, $grading_system);
+$fallback_score_rows = get_report_card_score_rows_for_table($student_id, $class_id, $session_id, $exact_term_id, $school_id);
 if ($term_id == 1) {
     $term_Note = "FIRST";
     $next_term = $setrow['second'];
@@ -384,8 +390,8 @@ if ($term_id == 1) {
                 <td>ADM. NO: <?= strtoupper($biorow['admission_no']) ?></td>
             </tr>
             <tr>
-                <td>CLASS: <?= get_class_by_classid($biorow['class_id']) ?></td>
-                <td>NO IN CLASS: <?= get_total_student_in_class($biorow['class_id']) ?></td>
+                <td>CLASS: <?= get_class_by_classid($class_id) ?></td>
+                <td>NO IN CLASS: <?= get_total_students_with_scores_in_class($class_id, $session_id, $term_id, $school_id) ?></td>
             </tr>
             <tr>
                 <td>NO OF TIMES SCHOOL OPEN: <?= $setrow['school_open'] ?></td>
@@ -414,7 +420,9 @@ if ($term_id == 1) {
     </section>
 
     <section class="grades" style="">
-        <div id="table_visuals_display_report"></div>
+        <div id="table_visuals_display_report">
+            <?= render_report_card_score_table_fallback($fallback_score_rows, $setrow, $grading_system) ?>
+        </div>
     </section>
     <section class="grades d-flex nowrap student_behaviour_skills"" style=" column-gap: 10px;">
         <div class="w-100">

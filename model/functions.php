@@ -34,6 +34,81 @@ function get_class_id_by_student_id($student_id) {
         return null; // Or handle the case where no class is found for the student
     }
 }
+
+function resolve_student_report_class_id($student_id, $session_id, $term_id, $requested_class_id, $school_id = null)
+{
+    global $conn;
+
+    $student_id = (int)$student_id;
+    $session_id = (int)$session_id;
+    $requested_class_id = (int)$requested_class_id;
+    $school_id = $school_id === null ? (int)($_SESSION['school_id'] ?? 0) : (int)$school_id;
+    $term_id = (string)$term_id;
+    $exact_term_id = $term_id === 'cum' ? '3' : (int)$term_id;
+    $has_term_filter = $term_id === 'cum' || (ctype_digit($term_id) && (int)$term_id > 0);
+
+    if ($student_id <= 0 || $session_id <= 0 || $school_id <= 0) {
+        return $requested_class_id;
+    }
+
+    if ($requested_class_id > 0) {
+        $requested_check = mysqli_query($conn, "SELECT id FROM skulscores
+            WHERE school_id='$school_id' AND student_id='$student_id' AND session_id='$session_id'
+            AND class_id='$requested_class_id'" . (!$has_term_filter || $term_id === 'cum' ? "" : " AND term_id='$exact_term_id'") . "
+            LIMIT 1");
+
+        if ($requested_check && mysqli_num_rows($requested_check) > 0) {
+            return $requested_class_id;
+        }
+    }
+
+    // If the student's current class has no score rows for this report period,
+    // use the class stored on the historical score rows for the selected session/term.
+    $resolve_query = "SELECT class_id, COUNT(*) AS score_rows
+        FROM skulscores
+        WHERE school_id='$school_id' AND student_id='$student_id' AND session_id='$session_id'";
+
+    if ($has_term_filter && $term_id !== 'cum') {
+        $resolve_query .= " AND term_id='$exact_term_id'";
+    }
+
+    $resolve_query .= " GROUP BY class_id ORDER BY score_rows DESC, class_id DESC LIMIT 1";
+    $resolved = mysqli_query($conn, $resolve_query);
+
+    if ($resolved && $row = mysqli_fetch_assoc($resolved)) {
+        return (int)$row['class_id'];
+    }
+
+    return $requested_class_id;
+}
+
+function get_total_students_with_scores_in_class($class_id, $session_id, $term_id, $school_id = null)
+{
+    global $conn;
+
+    $class_id = (int)$class_id;
+    $session_id = (int)$session_id;
+    $school_id = $school_id === null ? (int)($_SESSION['school_id'] ?? 0) : (int)$school_id;
+    $term_id = (string)$term_id;
+    $exact_term_id = $term_id === 'cum' ? '3' : (int)$term_id;
+
+    if ($class_id <= 0 || $session_id <= 0 || $school_id <= 0) {
+        return 0;
+    }
+
+    $query = "SELECT COUNT(DISTINCT student_id) AS total_student
+        FROM skulscores
+        WHERE school_id='$school_id' AND class_id='$class_id' AND session_id='$session_id'";
+
+    if ($term_id !== 'cum') {
+        $query .= " AND term_id='$exact_term_id'";
+    }
+
+    $select = mysqli_query($conn, $query);
+    $row = mysqli_fetch_assoc($select);
+
+    return (int)($row['total_student'] ?? 0);
+}
 function get_lateness_time()
 {
     global $conn;

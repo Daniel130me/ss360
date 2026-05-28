@@ -20,6 +20,7 @@ $report_context = build_report_card_context([
     'session_or_term' => $sessionOrTerm,
     'report_id' => $report_id,
 ]);
+$class_id = $report_context['class_id'];
 
 $hidden_skills = $report_context['hidden_skills'];
 $school_row = $report_context['school_row'];
@@ -211,10 +212,10 @@ $report_title = render_report_template_text(
             <?php if (report_card_template_field_enabled($template, 'class') || report_card_template_field_enabled($template, 'no_in_class')): ?>
                 <tr>
                     <?php if (report_card_template_field_enabled($template, 'class')): ?>
-                        <td><?= htmlspecialchars(report_card_template_label($template, 'fields', 'class', 'CLASS')) ?>: <?= get_class_by_classid($biorow['class_id']) . $department ?></td>
+                        <td><?= htmlspecialchars(report_card_template_label($template, 'fields', 'class', 'CLASS')) ?>: <?= get_class_by_classid($class_id) . $department ?></td>
                     <?php endif; ?>
                     <?php if (report_card_template_field_enabled($template, 'no_in_class')): ?>
-                        <td><?= htmlspecialchars(report_card_template_label($template, 'fields', 'no_in_class', 'NO IN CLASS')) ?>: <?= get_total_student_in_class($biorow['class_id']) ?></td>
+                        <td><?= htmlspecialchars(report_card_template_label($template, 'fields', 'no_in_class', 'NO IN CLASS')) ?>: <?= get_total_students_with_scores_in_class($class_id, $session_id, $term_id, $school_id) ?></td>
                     <?php endif; ?>
                 </tr>
             <?php endif; ?>

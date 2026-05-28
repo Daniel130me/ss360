@@ -9,6 +9,7 @@ $class_id = $_POST['class_id'];
 $session_id = $_POST['session_id'];
 $term_id = $_POST['term_id'];
 $sessionOrTerm = $_POST['sessionOrTerm'];
+$class_id = resolve_student_report_class_id($student_id, $session_id, $term_id, $class_id, $school_id);
 // $hidden_skill=$_SESSION['hidden_row'];
 // print_r($_SESSION['hidden_row']);
 // print_r($hidden_skill);
@@ -32,6 +33,9 @@ $school_row = mysqli_fetch_array($select_school);
 
 $select_biodata = mysqli_query($conn, "SELECT * FROM students WHERE id='$student_id' AND school_id='$school_id'");
 $biorow = mysqli_fetch_array($select_biodata);
+if ($biorow) {
+    $biorow['class_id'] = $class_id;
+}
 $exact_term_id = $term_id == 'cum' ? 3 : $term_id;
 // echo "SELECT first,second,third, ca1, ca2, ca3, practical, exam, grading,school_open FROM skul_settings WHERE session_id='$session_id' and term_id='$exact_term_id' and school_id='$school_id'";
 $select_settings = mysqli_query($conn, "SELECT first,second,third, ca1, ca2, ca3, practical, exam, grading,school_open FROM skul_settings WHERE session_id='$session_id' and term_id='$exact_term_id' and school_id='$school_id'");
@@ -89,9 +93,13 @@ if ($select_status && mysqli_num_rows($select_status) > 0) {
     $student_result_is_published = true;
 }
 
+$is_historical_report_session = isset($_SESSION['session_id']) && (string)$session_id !== (string)$_SESSION['session_id'];
 $show_report_private_sections = $has_enabled_component &&
     $all_enabled_components_approved &&
     $student_result_is_published;
+if ($is_historical_report_session && $student_result_is_published) {
+    $show_report_private_sections = true;
+}
 $grading_system = [];
 try {
     // Parse the grading string directly as JSON
@@ -115,11 +123,16 @@ $total_percent = $total_obtainable == 0 ? 0 : round((($total_score / $total_obta
 // echo "llkn";
 // exit;
 $grade = get_grade($total_percent, $grading_system);
+$fallback_score_rows = get_report_card_score_rows_for_table($student_id, $class_id, $session_id, $exact_term_id, $school_id);
+if ($is_historical_report_session && !empty($fallback_score_rows)) {
+    $show_report_private_sections = true;
+}
 if (!$show_report_private_sections) {
     $total_score = 0;
     $total_obtainable = 0;
     $total_percent = 0;
     $grade = 'Poor';
+    $fallback_score_rows = [];
 }
 if ($sessionOrTerm == 'session') {
     $term_Note = "THIRD";
@@ -429,10 +442,10 @@ $report_title = render_report_template_text(
             <?php if (report_card_template_field_enabled($template, 'class') || report_card_template_field_enabled($template, 'no_in_class')): ?>
                 <tr>
                     <?php if (report_card_template_field_enabled($template, 'class')): ?>
-                        <td><?= htmlspecialchars(report_card_template_label($template, 'fields', 'class', 'CLASS')) ?>: <?= get_class_by_classid($biorow['class_id']) . $department ?></td>
+                        <td><?= htmlspecialchars(report_card_template_label($template, 'fields', 'class', 'CLASS')) ?>: <?= get_class_by_classid($class_id) . $department ?></td>
                     <?php endif; ?>
                     <?php if (report_card_template_field_enabled($template, 'no_in_class')): ?>
-                        <td><?= htmlspecialchars(report_card_template_label($template, 'fields', 'no_in_class', 'NO IN CLASS')) ?>: <?= get_total_student_in_class($biorow['class_id']) ?></td>
+                        <td><?= htmlspecialchars(report_card_template_label($template, 'fields', 'no_in_class', 'NO IN CLASS')) ?>: <?= get_total_students_with_scores_in_class($class_id, $session_id, $term_id, $school_id) ?></td>
                     <?php endif; ?>
                 </tr>
             <?php endif; ?>
@@ -480,7 +493,9 @@ $report_title = render_report_template_text(
 
     <?php if (report_card_template_section_enabled($template, 'score_table')): ?>
     <section class="grades" style="">
-        <div id="table_visuals_display_report"></div>
+        <div id="table_visuals_display_report">
+            <?= render_report_card_score_table_fallback($fallback_score_rows, $settings_row, $grading_system) ?>
+        </div>
     </section>
     <?php endif; ?>
     <?php if ($show_report_private_sections && (report_card_template_section_enabled($template, 'behaviour_skills') || report_card_template_section_enabled($template, 'psychomotor_skills'))): ?>

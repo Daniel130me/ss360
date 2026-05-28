@@ -529,11 +529,12 @@ function send_subject_info_to_modal(subjectId, sessionId) {
     $('#singleSessionValue').select2();
 }
 
-function check_result_toggle() {
+function check_result_toggle(classIdOverride = null) {
+    const activeClassId = classIdOverride || window.currentReportClassId || $("#select_class_field").val();
     if ($("#table_visual_Score_toggle").hasClass("visuals")) {
-        display_visual_score(student_score_data, $(".term.select_btn.active").attr("data-name"), $("#select_session_field").val(), $("#select_class_field").val())
+        display_visual_score(student_score_data, $(".term.select_btn.active").attr("data-name"), $("#select_session_field").val(), activeClassId)
     } else {
-        format_student_table(student_score_data, $(".term.select_btn.active").attr("data-name"), $("#select_session_field").val(), $("#select_class_field").val())
+        format_student_table(student_score_data, $(".term.select_btn.active").attr("data-name"), $("#select_session_field").val(), activeClassId)
     }
 }
 function table_visual_Score_toggle(event) {
@@ -1008,6 +1009,9 @@ function get_score_data() {
             // if(data.length == 0){
             // }
             student_score_data = JSON.parse(data)
+            const responseMeta = student_score_data[0] || {};
+            const reportClassId = responseMeta.effective_class_id || class_id;
+            window.currentReportClassId = reportClassId;
             if (student_score_data.length <= 1) {
                 $(".data_overlay").html(`
                         <p class="font-weight-bold">No score record for this student</p>
@@ -1024,7 +1028,7 @@ function get_score_data() {
             // format_student_table(student_score_data,term_id,session_id,class_id)
             let totals = calculate_Percentages_and_totals(student_score_data);
             // display_session_charts(totals.term1Percentage, totals.term2Percentage, totals.term3Percentage, totals.sessionPercentage)
-            check_result_toggle()
+            check_result_toggle(reportClassId)
 
 
             // get_teacher_comment(term_id, session_id, student_id, class_id, 'view')
@@ -14488,6 +14492,7 @@ async function preview_custom_report_card(report_id) {
         // Set globals for other functions
         student_score_data = scoreResponse.score_data;
         student_comparison_data = scoreResponse.comparison_data || {};
+        const resolvedClassId = scoreResponse.effective_class_id || activeClassId;
 
         if (!scoreResponse.settingsData || !scoreResponse.settingsData[0]) {
             console.error("Missing settingsData in scoreResponse:", scoreResponse);
@@ -14510,7 +14515,7 @@ async function preview_custom_report_card(report_id) {
             type: "POST",
             data: {
                 student_id: activeStudentId,
-                class_id: activeClassId,
+                class_id: resolvedClassId,
                 session_id: session_id,
                 term_id: term_id,
                 report_id: report_id,
@@ -14526,7 +14531,7 @@ async function preview_custom_report_card(report_id) {
             student_score_data,
             term_id,
             session_id,
-            activeClassId,
+            resolvedClassId,
             grading,
             tableContainer,
             customAssessments
@@ -14540,7 +14545,7 @@ async function preview_custom_report_card(report_id) {
             term_id,
             session_id,
             activeStudentId,
-            activeClassId,
+            resolvedClassId,
             'term',
             previewContent
         );
@@ -14730,7 +14735,6 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
         term_id = $("#select_term_field").val();
         if (term_id == "cum") {
             sessionOrTerm = "session";
-            term_id = 3;
         }
         class_id = $("#select_class_field_report").val();
     } else if (page_type == "student_page") {
@@ -14769,6 +14773,8 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
             settingsData = gradingPayload.settingsData[0];
             student_score_data = gradingPayload.score_data;
             student_comparison_data = gradingPayload.comparison_data || {};
+            const reportClassId = gradingPayload.effective_class_id || class_id;
+            const commentTermId = term_id == "cum" ? 3 : term_id;
 
             // Then get the report card HTML
             let myschl = null;
@@ -14778,7 +14784,7 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
                         ? "../single_report_card-homat.php"
                         : "../single_report_card.php",
                 type: "POST",
-                data: { student_id, class_id, session_id, term_id, sessionOrTerm },
+                data: { student_id, class_id: reportClassId, session_id, term_id, sessionOrTerm },
             });
 
             // Create a container for this specific report
@@ -14793,10 +14799,10 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
                     ? window.getReportTemplateTableMode(reportCardElement, term_id, sessionOrTerm)
                     : "standard";
             await set_behaviour_comment_report(
-                term_id,
+                commentTermId,
                 session_id,
                 student_id,
-                class_id,
+                reportClassId,
                 "view",
                 commentContainer
             );
@@ -14807,7 +14813,7 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
                         student_score_data,
                         student_id,
                         session_id,
-                        class_id,
+                        reportClassId,
                         settingsData.grade,
                         tableContainer
                     );
@@ -14816,7 +14822,7 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
                         student_score_data,
                         student_id,
                         session_id,
-                        class_id,
+                        reportClassId,
                         settingsData.grade,
                         tableContainer
                     );
@@ -14825,7 +14831,7 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
                         student_score_data,
                         term_id,
                         session_id,
-                        class_id,
+                        reportClassId,
                         settingsData.grade,
                         tableContainer
                     );
@@ -14836,7 +14842,7 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
                         student_score_data,
                         student_id,
                         session_id,
-                        class_id,
+                        reportClassId,
                         settingsData.grade,
                         tableContainer
                     );
@@ -14845,7 +14851,7 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
                         student_score_data,
                         student_id,
                         session_id,
-                        class_id,
+                        reportClassId,
                         settingsData.grade,
                         tableContainer
                     );
@@ -14854,7 +14860,7 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
                         student_score_data,
                         term_id,
                         session_id,
-                        class_id,
+                        reportClassId,
                         settingsData.grade,
                         tableContainer
                     );

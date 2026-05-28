@@ -1179,18 +1179,23 @@ $date = date("Y:m:d H:i:s");
         $student_id = test_input($_POST['student_id']);
         $class_id = test_input($_POST['class_id']);
         $term_id = test_input($_POST['term_id']);
+        $requested_class_id = $class_id;
+        $class_id = resolve_student_report_class_id($student_id, $session_id, $term_id, $class_id, $school_id);
+        $is_historical_report_session = isset($_SESSION['session_id']) && (string)$session_id !== (string)$_SESSION['session_id'];
+        $should_mask_unapproved_scores = !empty($_SESSION['report']) && !$is_historical_report_session;
         $score_data = array();
         $comparison_data = array('term' => array(), 'cumulative' => array());
+        $settings_term_id = $term_id == 'cum' ? 3 : $term_id;
         $template_context = get_report_template_by_context($school_id, $session_id, $term_id == 'cum' ? 'cumulative' : $term_id);
         $template_columns = get_report_card_template_score_columns($template_context['template_json'] ?? array());
         $needs_comparison_data = in_array('class_average', $template_columns, true) || in_array('position', $template_columns, true);
         // echo $sql = "SELECT b.subject as subjectname, s.*, t.firstname,t.lastname FROM skulscores s, subjects b, students t WHERE t.id=s.student_id AND b.id=s.subject_id AND s.session_id='$session_id' AND s.class_id='$class_id' AND s.student_id='$student_id' AND s.school_id='$school_id'");
         $select = mysqli_query($conn, "SELECT b.subject as subjectname, s.*, t.firstname,t.lastname FROM skulscores s, subjects b, students t WHERE t.id=s.student_id AND b.id=s.subject_id AND s.session_id='$session_id' AND s.class_id='$class_id' AND s.student_id='$student_id' AND s.school_id='$school_id'");        // $select = mysqli_query($conn, "SELECT * FROM skulscores WHERE session_id='$session_id' AND class_id='$class_id' AND student_id='$student_id' AND session_id='$session_id' AND term_id='$term_id'");
         while ($row = mysqli_fetch_array($select)) {
-             if ($_SESSION['report']) {
+            if ($should_mask_unapproved_scores) {
                 // echo 'p';
                 $select_approval = mysqli_query($conn, "SELECT ca1,ca2,ca3,practical,exam 
-                FROM approval WHERE session_id='$session_id' 
+                FROM approval WHERE school_id='$school_id' AND session_id='$session_id' 
                 AND term_id='{$row['term_id']}' AND class_id='$class_id'");
                 $approval_row = mysqli_fetch_array($select_approval);
                 if (mysqli_num_rows($select_approval) == 0) {
@@ -1209,17 +1214,17 @@ $date = date("Y:m:d H:i:s");
                     'class_id' => $row['class_id'],
                     'subject_id' => $row['subject_id'],
                     'subject' => $row['subjectname'],
-                    'CA1' => $_SESSION['report'] == true ? ($approval_row['ca1'] == 1 && $row['status'] == 1 ? $row['ca1'] : '0') : $row['ca1'],
+                    'CA1' => $should_mask_unapproved_scores ? ($approval_row['ca1'] == 1 && $row['status'] == 1 ? $row['ca1'] : '0') : $row['ca1'],
                     'ca1Total' => $row['ca1Total'],
-                    'CA2' => $_SESSION['report'] == true ? ($approval_row['ca2'] == 1 && $row['status'] == 1 ? $row['ca2'] : '0') : $row['ca2'],
+                    'CA2' => $should_mask_unapproved_scores ? ($approval_row['ca2'] == 1 && $row['status'] == 1 ? $row['ca2'] : '0') : $row['ca2'],
                     'ca2Total' => $row['ca2Total'],
-                    'CA3' => $_SESSION['report'] == true ? ($approval_row['ca3'] == 1 && $row['status'] == 1 ? $row['ca3'] : '0') : $row['ca3'],
+                    'CA3' => $should_mask_unapproved_scores ? ($approval_row['ca3'] == 1 && $row['status'] == 1 ? $row['ca3'] : '0') : $row['ca3'],
                     'ca3Total' => $row['ca3Total'],
-                    'Practical' => $_SESSION['report'] == true ? ($approval_row['practical'] == 1 && $row['status'] == 1 ? $row['pra'] : '0') : $row['pra'],
+                    'Practical' => $should_mask_unapproved_scores ? ($approval_row['practical'] == 1 && $row['status'] == 1 ? $row['pra'] : '0') : $row['pra'],
                     'praTotal' => $row['praTotal'],
-                    'Exam' => $_SESSION['report'] == true ? ($approval_row['exam'] == 1 && $row['status'] == 1 ? $row['exam'] : '0') : $row['exam'],
+                    'Exam' => $should_mask_unapproved_scores ? ($approval_row['exam'] == 1 && $row['status'] == 1 ? $row['exam'] : '0') : $row['exam'],
                     'exaTotal' => $row['examTotal'],
-                    'Total' => $_SESSION['report'] ? ($approval_row['ca1'] == 1 && $row['status'] == 1 ? $row['ca1'] : '0') + ($approval_row['ca2'] == 1 && $row['status'] == 1 ? $row['ca2'] : '0')  + ($approval_row['ca3'] == 1 && $row['status'] == 1 ? $row['ca3'] : '0') + ($approval_row['practical'] == 1 && $row['status'] == 1 ? $row['pra'] : '0') + ($approval_row['exam'] == 1 && $row['status'] == 1 ? $row['exam'] : '0') : $row['total'],
+                    'Total' => $should_mask_unapproved_scores ? ($approval_row['ca1'] == 1 && $row['status'] == 1 ? $row['ca1'] : '0') + ($approval_row['ca2'] == 1 && $row['status'] == 1 ? $row['ca2'] : '0')  + ($approval_row['ca3'] == 1 && $row['status'] == 1 ? $row['ca3'] : '0') + ($approval_row['practical'] == 1 && $row['status'] == 1 ? $row['pra'] : '0') + ($approval_row['exam'] == 1 && $row['status'] == 1 ? $row['exam'] : '0') : $row['total'],
                     'Term' => $row['term_id']
                 ];
             // $score_data[] = [
@@ -1252,7 +1257,7 @@ $date = date("Y:m:d H:i:s");
             }
             $comparison_data = build_report_score_comparison_data($comparison_rows, $student_id);
         }
-        $select = mysqli_query($conn, "SELECT * FROM skul_settings WHERE school_id='$school_id' AND term_id='$term_id' AND session_id='$session_id'");
+        $select = mysqli_query($conn, "SELECT * FROM skul_settings WHERE school_id='$school_id' AND term_id='$settings_term_id' AND session_id='$session_id'");
         $settingsData = array();
         if ($row = mysqli_fetch_array($select)) {
             $settingsData[] = array(
@@ -1271,7 +1276,10 @@ $date = date("Y:m:d H:i:s");
         echo json_encode(array(
             'settingsData' => $settingsData,
             'score_data' => $score_data,
-            'comparison_data' => $comparison_data
+            'comparison_data' => $comparison_data,
+            'effective_class_id' => (string)$class_id,
+            'requested_class_id' => (string)$requested_class_id,
+            'is_historical_session' => $is_historical_report_session
         ));
         exit;
     }
@@ -1334,7 +1342,15 @@ $date = date("Y:m:d H:i:s");
         $student_id = test_input($_POST['student_id']);
         $class_id = test_input($_POST['class_id']);
         $term_id = test_input($_POST['term_id']);
-        $data[] = array();
+        $requested_class_id = $class_id;
+        $class_id = resolve_student_report_class_id($student_id, $session_id, $term_id, $class_id, $school_id);
+        $is_historical_report_session = isset($_SESSION['session_id']) && (string)$session_id !== (string)$_SESSION['session_id'];
+        $should_mask_unapproved_scores = !empty($_SESSION['report']) && !$is_historical_report_session;
+        $data[] = array(
+            'effective_class_id' => (string)$class_id,
+            'requested_class_id' => (string)$requested_class_id,
+            'is_historical_session' => $is_historical_report_session
+        );
         // echo $appca2 = 0;
 
         // exit;
@@ -1353,10 +1369,10 @@ $date = date("Y:m:d H:i:s");
             echo mysqli_error($conn);
         }
         while ($row = mysqli_fetch_array($select)) {
-            if ($_SESSION['report']) {
+            if ($should_mask_unapproved_scores) {
                 // echo 'p';
                 $select_approval = mysqli_query($conn, "SELECT ca1,ca2,ca3,practical,exam 
-                FROM approval WHERE session_id='$session_id' 
+                FROM approval WHERE school_id='$school_id' AND session_id='$session_id' 
                 AND term_id='{$row['term_id']}' AND class_id='$class_id'");
                 $approval_row = mysqli_fetch_array($select_approval);
                 if (mysqli_num_rows($select_approval) == 0) {
@@ -1374,17 +1390,17 @@ $date = date("Y:m:d H:i:s");
                 'class_id' => $row['class_id'],
                 'subject_id' => $row['subject_id'],
                 'subject' => $row['subjectname'],
-                'CA1' => $_SESSION['report'] == true ? ($approval_row['ca1'] == 1 && $row['status'] == 1 ? $row['ca1'] : '0') : $row['ca1'],
+                'CA1' => $should_mask_unapproved_scores ? ($approval_row['ca1'] == 1 && $row['status'] == 1 ? $row['ca1'] : '0') : $row['ca1'],
                 'ca1Total' => $row['ca1Total'],
-                'CA2' => $_SESSION['report'] == true ? ($approval_row['ca2'] == 1 && $row['status'] == 1 ? $row['ca2'] : '0') : $row['ca2'],
+                'CA2' => $should_mask_unapproved_scores ? ($approval_row['ca2'] == 1 && $row['status'] == 1 ? $row['ca2'] : '0') : $row['ca2'],
                 'ca2Total' => $row['ca2Total'],
-                'CA3' => $_SESSION['report'] == true ? ($approval_row['ca3'] == 1 && $row['status'] == 1 ? $row['ca3'] : '0') : $row['ca3'],
+                'CA3' => $should_mask_unapproved_scores ? ($approval_row['ca3'] == 1 && $row['status'] == 1 ? $row['ca3'] : '0') : $row['ca3'],
                 'ca3Total' => $row['ca3Total'],
-                'Practical' => $_SESSION['report'] == true ? ($approval_row['practical'] == 1 && $row['status'] == 1 ? $row['pra'] : '0') : $row['pra'],
+                'Practical' => $should_mask_unapproved_scores ? ($approval_row['practical'] == 1 && $row['status'] == 1 ? $row['pra'] : '0') : $row['pra'],
                 'praTotal' => $row['praTotal'],
-                'Exam' => $_SESSION['report'] == true ? ($approval_row['exam'] == 1 && $row['status'] == 1 ? $row['exam'] : '0') : $row['exam'],
+                'Exam' => $should_mask_unapproved_scores ? ($approval_row['exam'] == 1 && $row['status'] == 1 ? $row['exam'] : '0') : $row['exam'],
                 'exaTotal' => $row['examTotal'],
-                'Total' => $_SESSION['report'] ? ($approval_row['ca1'] == 1 && $row['status'] == 1 ? $row['ca1'] : '0') + ($approval_row['ca2'] == 1 && $row['status'] == 1 ? $row['ca2'] : '0')  + ($approval_row['ca3'] == 1 && $row['status'] == 1 ? $row['ca3'] : '0') + ($approval_row['practical'] == 1 && $row['status'] == 1 ? $row['pra'] : '0') + ($approval_row['exam'] == 1 && $row['status'] == 1 ? $row['exam'] : '0') : $row['total'],
+                'Total' => $should_mask_unapproved_scores ? ($approval_row['ca1'] == 1 && $row['status'] == 1 ? $row['ca1'] : '0') + ($approval_row['ca2'] == 1 && $row['status'] == 1 ? $row['ca2'] : '0')  + ($approval_row['ca3'] == 1 && $row['status'] == 1 ? $row['ca3'] : '0') + ($approval_row['practical'] == 1 && $row['status'] == 1 ? $row['pra'] : '0') + ($approval_row['exam'] == 1 && $row['status'] == 1 ? $row['exam'] : '0') : $row['total'],
                 'Term' => $row['term_id']
             ];
         }

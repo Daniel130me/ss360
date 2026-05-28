@@ -73,6 +73,78 @@ function get_report_card_template_config($report_context)
     return normalize_report_template_config($template);
 }
 
+function get_report_card_score_rows_for_table($student_id, $class_id, $session_id, $term_id, $school_id)
+{
+    global $conn;
+
+    $student_id = (int)$student_id;
+    $class_id = (int)$class_id;
+    $session_id = (int)$session_id;
+    $term_id = (int)$term_id;
+    $school_id = (int)$school_id;
+
+    $rows = [];
+    $select = mysqli_query($conn, "SELECT b.subject AS subjectname, s.*
+        FROM skulscores s
+        INNER JOIN subjects b ON b.id=s.subject_id
+        WHERE s.school_id='$school_id' AND s.student_id='$student_id'
+        AND s.session_id='$session_id' AND s.term_id='$term_id'
+        AND s.class_id='$class_id' AND s.total > 0
+        ORDER BY b.subject ASC");
+
+    while ($select && $row = mysqli_fetch_assoc($select)) {
+        $rows[] = $row;
+    }
+
+    return $rows;
+}
+
+function render_report_card_score_table_fallback($score_rows, $settings_row, $grading_system)
+{
+    if (empty($score_rows)) {
+        return '<p class="mb-0">No score data available for this report period.</p>';
+    }
+
+    ob_start();
+    ?>
+    <table id="view_student_score_table" class="display nowrap" style="width:100%;">
+        <thead>
+            <tr>
+                <th>Subjects</th>
+                <?php if (($settings_row['ca1'] ?? '0') != '0'): ?><th>CA1</th><?php endif; ?>
+                <?php if (($settings_row['ca2'] ?? '0') != '0'): ?><th>CA2</th><?php endif; ?>
+                <?php if (($settings_row['ca3'] ?? '0') != '0'): ?><th>CA3</th><?php endif; ?>
+                <?php if (($settings_row['practical'] ?? '0') != '0'): ?><th>Practical</th><?php endif; ?>
+                <?php if (($settings_row['exam'] ?? '0') != '0'): ?><th>Exam</th><?php endif; ?>
+                <th>Total</th>
+                <th>Total(%)</th>
+                <th>Grade</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($score_rows as $row): ?>
+                <?php
+                $obtainable = (float)$row['ca1Total'] + (float)$row['ca2Total'] + (float)$row['ca3Total'] + (float)$row['praTotal'] + (float)$row['examTotal'];
+                $percentage = $obtainable > 0 ? round(((float)$row['total'] / $obtainable) * 100) : 0;
+                ?>
+                <tr>
+                    <td><?= htmlspecialchars($row['subjectname']) ?></td>
+                    <?php if (($settings_row['ca1'] ?? '0') != '0'): ?><td><?= (float)$row['ca1Total'] > 0 ? htmlspecialchars($row['ca1']) : '-' ?></td><?php endif; ?>
+                    <?php if (($settings_row['ca2'] ?? '0') != '0'): ?><td><?= (float)$row['ca2Total'] > 0 ? htmlspecialchars($row['ca2']) : '-' ?></td><?php endif; ?>
+                    <?php if (($settings_row['ca3'] ?? '0') != '0'): ?><td><?= (float)$row['ca3Total'] > 0 ? htmlspecialchars($row['ca3']) : '-' ?></td><?php endif; ?>
+                    <?php if (($settings_row['practical'] ?? '0') != '0'): ?><td><?= (float)$row['praTotal'] > 0 ? htmlspecialchars($row['pra']) : '-' ?></td><?php endif; ?>
+                    <?php if (($settings_row['exam'] ?? '0') != '0'): ?><td><?= (float)$row['examTotal'] > 0 ? htmlspecialchars($row['exam']) : '-' ?></td><?php endif; ?>
+                    <td><?= htmlspecialchars($row['total']) ?></td>
+                    <td><?= $percentage ?></td>
+                    <td><?= htmlspecialchars(get_grade($percentage, $grading_system)) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <?php
+    return ob_get_clean();
+}
+
 function report_card_template_section_enabled($template, $section_key)
 {
     foreach (($template['sections'] ?? []) as $section) {
@@ -102,12 +174,16 @@ function build_report_card_context($params)
     $report_id = $params['report_id'] ?? null;
 
     $exact_term_id = $term_id === 'cum' ? '3' : $term_id;
+    $class_id = resolve_student_report_class_id($student_id, $session_id, $term_id, $class_id, $school_id);
 
     $select_school = mysqli_query($conn, "SELECT session_id,term_id, school_name, address, city, state, country, logo,phone2,phone1,email,stamp_pic FROM school WHERE id='$school_id'");
     $school_row = mysqli_fetch_array($select_school);
 
     $select_biodata = mysqli_query($conn, "SELECT * FROM students WHERE id='$student_id' AND school_id='$school_id'");
     $student_row = mysqli_fetch_array($select_biodata);
+    if ($student_row) {
+        $student_row['class_id'] = $class_id;
+    }
 
     $select_settings = mysqli_query($conn, "SELECT first,second,third, ca1, ca2, ca3, practical, exam, grading,school_open FROM skul_settings WHERE session_id='$session_id' and term_id='$exact_term_id' and school_id='$school_id'");
     $settings_row = mysqli_fetch_array($select_settings);
