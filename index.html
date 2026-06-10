@@ -3,743 +3,475 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <!-- OG Meta Tags to improve the way the post looks when you share the page on LinkedIn, Facebook, Google+ -->
-<meta property="og:site_name" content="SchoolSuite360" /> <!-- website name -->
-<meta property="og:site" content="https://schoolsuite360.com" /> <!-- website link -->
-<meta property="og:title" content="SchoolSuite360 – Modern School Management Solution" /> <!-- title shown in the actual shared post -->
-<meta property="og:description" content="Empowering schools with smart tools for communication, scheduling, and student management. Discover the future of education with SchoolSuite360." /> <!-- description shown in the actual shared post -->
-<meta property="og:image" content="https://schoolsuite360.com/images/og-image.jpg" /> <!-- image link, make sure it's jpg -->
-<meta property="og:url" content="https://schoolsuite360.com/index.html" /> <!-- where do you want your post to link to -->
-<meta property="og:type" content="article" />
-    <title>SchoolSuite360 - Modern School Management Solution</title>
-    <!-- Load Tailwind CSS for utility classes -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Font Awesome for feature and social icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMD/CD+QCNI5f7HofT0T6W5h4vR8t/M9eK79l1fC3p70t5N5p5D5r0Vf5C5T5E5Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        /* Configure Tailwind to use Inter font and custom colors */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-
-        /* Custom Variables for a sleek, light aesthetic with vibrant gradients */
-        :root {
-            --color-primary-light: #FFFFFF; /* Main background - White */
-            --color-secondary-light: #F9FAFB; /* Near-white background for subtle contrast */
-            --color-text-dark: #1F2937; /* Dark text for light backgrounds */
-            --color-anchor-dark: #374151;
-            
-            /* Primary Gradient Colors (NEW: Blue/Indigo) */
-            --color-gradient-start: #3B82F6; /* Blue-500 */
-            --color-gradient-end: #4F46E5; /* Indigo-600 */
-            
-            /* Secondary Accent Colors (Purple, Orange, Green) */
-            --color-purple: #8B5CF6; /* Violet */
-            --color-orange: #F97316; /* Orange */
-            --color-green: #10B981; /* Emerald */
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--color-primary-light);
-            color: var(--color-text-dark);
-            transition: background-color 0.3s, color 0.3s;
-            scroll-behavior: smooth;
-        }
-
-        /* --- Sticky Navbar Styling (LIGHT transparent background) --- */
-        .sticky-nav {
-            backdrop-filter: blur(10px);
-            background-color: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease-in-out;
-        }
-        
-        /* Desktop Menu Link Colors */
-        .nav-link-dark {
-             color: var(--color-anchor-dark);
-             transition: color 0.2s ease-in-out;
-        }
-        .nav-link-dark:hover {
-             color: var(--color-gradient-end); /* New Indigo hover */
-        }
-
-        /* --- Custom Primary Button Style (Blue/Indigo Gradient) --- */
-        .btn-primary {
-            background: linear-gradient(90deg, var(--color-gradient-start), var(--color-gradient-end));
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            /* Using a blue/indigo shadow now */
-            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3); 
-            border-radius: 9999px;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.5); 
-        }
-
-        /* --- Card/Feature Hover Effect for LIGHT sections --- */
-        .feature-card-light {
-            background-color: var(--color-card-bg-light);
-            transition: all 0.3s ease-in-out;
-            border: 1px solid #E5E7EB;
-        }
-
-        .feature-card-light:hover {
-            transform: translateY(-5px);
-            /* Updated shadow color */
-            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.15); 
-            border-color: var(--color-gradient-end);
-        }
-        
-        /* --- Base Gradient Border Utility (used on Why Us cards) --- */
-        .gradient-border-base {
-            position: relative;
-            z-index: 1;
-            background-color: var(--color-card-bg-light); 
-            border-radius: 0.75rem;
-            transition: all 0.3s ease-in-out;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-        }
-        /* Define the common mask for the gradient border effect */
-        .gradient-border-base::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-radius: 0.75rem;
-            padding: 2px;
-            -webkit-mask: 
-                linear-gradient(#fff 0 0) content-box, 
-                linear-gradient(#fff 0 0);
-            mask: 
-                linear-gradient(#fff 0 0) content-box, 
-                linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            z-index: -1;
-            opacity: 0.5;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-        /* Hover effects */
-        .gradient-border-base:hover::before {
-            opacity: 1;
-            transform: translateY(-3px);
-        }
-        .gradient-border-base:hover {
-             transform: translateY(-3px);
-             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* 1. Primary Blue/Indigo Gradient (Default) */
-        .gradient-border-blue-indigo::before {
-            background: linear-gradient(to right, var(--color-gradient-start), var(--color-gradient-end));
-        }
-
-        /* 2. Purple/Orange Gradient (Existing Accent) */
-        .gradient-border-purple-orange::before {
-            background: linear-gradient(to right, var(--color-purple), var(--color-orange));
-        }
-
-        /* 3. Green/Indigo Gradient (Green blending with New Blue) */
-        .gradient-border-green-indigo::before {
-            background: linear-gradient(to right, var(--color-green), var(--color-gradient-end));
-        }
-
-        /* Utility Classes for secondary accent colors */
-        .text-purple { color: var(--color-purple); }
-        .text-orange { color: var(--color-orange); }
-        .text-green { color: var(--color-green); }
-
-
-        /* Input styles focus color updated to new blue */
-        .input-light {
-            background-color: #F3F4F6;
-            color: var(--color-text-dark);
-            border-color: #D1D5DB;
-            transition: all 0.15s ease-in-out;
-        }
-        .input-light:focus {
-            border-color: var(--color-gradient-end) !important;
-            box-shadow: 0 0 0 1px var(--color-gradient-end) !important;
-        }
-
-        /* --- Scroll Animation States (Intersection Observer) --- */
-        .scroll-animate {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        .scroll-animate.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* --- Mobile Menu Styles --- */
-        .mobile-menu-open {
-            display: flex;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            background-color: white; 
-            flex-direction: column;
-            padding: 1rem 0;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-        .mobile-menu-open .nav-link-dark {
-             padding: 0.75rem 1rem;
-             color: var(--color-text-dark);
-        }
-        .mobile-menu-open .nav-link-dark:hover {
-             background-color: #F3F4F6;
-             color: var(--color-gradient-end); /* New Indigo hover */
-        }
-
-        /* Carousel Styles */
-        .carousel-item {
-            display: none;
-            width: 100%;
-            height: auto; 
-            max-height: 600px;
-            object-fit: cover; 
-            transition: opacity 0.5s ease-in-out;
-        }
-        .carousel-item.active { display: block; opacity: 1; }
-        .carousel-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: #D1D5DB;
-            transition: background-color 0.3s, transform 0.3s;
-            cursor: pointer;
-            border: 1px solid #9CA3AF;
-        }
-        .carousel-dot.active {
-            background-color: var(--color-gradient-end);
-            border-color: var(--color-gradient-end);
-            transform: scale(1.2);
-        }
-    </style>
+    <meta name="description" content="SchoolSuite360 helps schools automate results, assessments, payments, attendance, parent communication, and academic analysis from one secure platform.">
+    <meta property="og:site_name" content="SchoolSuite360">
+    <meta property="og:site" content="https://schoolsuite360.com">
+    <meta property="og:title" content="SchoolSuite360 - The complete school management platform">
+    <meta property="og:description" content="Reduce teacher workload, improve academic monitoring, strengthen parent confidence, automate assessments, track payments, and manage your school from one secure platform.">
+    <meta property="og:image" content="https://schoolsuite360.com/ss3601.png">
+    <meta property="og:url" content="https://schoolsuite360.com/index.html">
+    <meta property="og:type" content="website">
+    <title>SchoolSuite360 - Complete School Management Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preload" href="ss3601.png" as="image">
+    <link rel="stylesheet" href="css/landing.css">
 </head>
 <body>
-    <!-- Sticky Navigation Bar -->
-    <header id="navbar" class="fixed top-0 left-0 w-full z-50 transition-all duration-300">
-        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <!-- Logo/Title - Uses the primary gradient accent (Blue/Indigo) -->
-            <a href="#home" class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg p-1">
-                SS360
-            </a>
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <header class="site-header" data-header>
+        <a class="brand" href="#home" aria-label="SchoolSuite360 home">
+            <img src="company_logo.png" alt="" class="brand__mark">
+            <span>SchoolSuite360</span>
+        </a>
 
-            <!-- Desktop Menu -->
-            <div class="hidden lg:flex space-x-8 items-center" id="desktop-menu">
-                <a href="#home" class="nav-link-dark font-medium">Home</a>
-                <a href="#features" class="nav-link-dark font-medium">Features</a>
-                <a href="#why-us" class="nav-link-dark font-medium">Why Us</a>
-                <a href="#screenshots" class="nav-link-dark font-medium">Screenshots</a>
-                <a href="#contact" class="nav-link-dark font-medium">Contact</a>
-                <a href="#contact" class="btn-primary text-white font-semibold px-6 py-2">
-                    Get Started
-                </a>
-            </div>
+        <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" data-nav-toggle>
+            <span></span>
+            <span></span>
+        </button>
 
-            <!-- Mobile Menu Toggle -->
-            <button id="menu-toggle" class="lg:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                <svg id="menu-icon-open" class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-                <svg id="menu-icon-close" class="w-6 h-6 text-gray-800 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
+        <nav class="site-nav" data-nav>
+            <a href="#why">Why SS360</a>
+            <a href="#features">Features</a>
+            <a href="#customize">Customize</a>
+            <a href="#faq">FAQ</a>
+            <a class="nav-cta" href="#demo">Request Demo</a>
         </nav>
-
-        <!-- Mobile Menu (Hidden by default) -->
-        <div id="mobile-menu" class="hidden lg:hidden mobile-menu-open w-full">
-            <a href="#home" class="nav-link-dark block">Home</a>
-            <a href="#features" class="nav-link-dark block">Features</a>
-            <a href="#why-us" class="nav-link-dark block">Why Us</a>
-            <a href="#screenshots" class="nav-link-dark block">Screenshots</a>
-            <a href="#contact" class="nav-link-dark block">Contact</a>
-            <div class="p-4">
-                <a href="#contact" class="btn-primary text-white font-semibold w-full block text-center px-6 py-2">
-                    Get Started
-                </a>
-            </div>
-        </div>
     </header>
-    <main>
-        <!-- 1. Home Section (Hero - LIGHT, vibrant accents) -->
-        <section id="home" class="container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 text-center min-h-[85vh] flex items-center justify-center bg-white">
-            <div class="max-w-4xl scroll-animate">
-                <h1 class="text-5xl sm:text-7xl lg:text-8xl font-extrabold leading-tight mb-6 text-gray-900">
-                    <!-- Updated gradient to Blue/Indigo -->
-                    Simplified
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-600">School Management</span>
-                    <br> Solution
-                </h1>
-                <p class="text-xl sm:text-2xl text-gray-600 mb-10">
-                    Simplify administration, enhance learning, and connect your entire educational ecosystem with a single, powerful solution.
+
+    <main id="home">
+        <section class="hero section-dark">
+            <div class="hero__copy reveal">
+                <p class="eyebrow" data-reveal-text>Complete school management platform</p>
+                <h1 data-reveal-text>Run Your School, Stress-Free</h1>
+                <p class="hero__lead" data-reveal-text>
+                    Reduce teacher workload, improve academic monitoring, strengthen parent confidence,
+                    automate assessments, track payments, and manage your entire school from one secure platform.
                 </p>
-                <a href="#contact" class="btn-primary text-white font-bold text-lg px-10 py-4 inline-block">
-                    Request a Demo Today
-                </a>
+                <div class="hero__actions">
+                    <a class="button button-primary" href="#demo">Request a Demo</a>
+                    <a class="button button-ghost" href="#contact">Talk to Our Team</a>
+                </div>
+            </div>
+
+            <div class="hero__visual" aria-label="SchoolSuite360 dashboard preview">
+                <div class="ambient-orb ambient-orb-one" data-parallax="0.12" data-parallax-x="-0.08"></div>
+                <div class="ambient-orb ambient-orb-two" data-parallax="-0.08" data-parallax-x="0.14"></div>
+                
+                <div class="hero-illustration" data-parallax="0.18" data-parallax-x="-0.1" aria-hidden="true">
+                    <svg viewBox="0 0 400 300" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" stop-color="#6366f1" stop-opacity="0.25"/>
+                                <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
+                            </radialGradient>
+                            <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#6366f1" stop-opacity="0.1"/>
+                                <stop offset="50%" stop-color="#6366f1" stop-opacity="0.4"/>
+                                <stop offset="100%" stop-color="#6366f1" stop-opacity="0.1"/>
+                            </linearGradient>
+                        </defs>
+                        <!-- Connected grid-style paths -->
+                        <path d="M 100,150 L 300,150" stroke="url(#lineGrad)" stroke-width="2" />
+                        <path d="M 100,150 Q 200,60 300,150" stroke="url(#lineGrad)" stroke-width="1.5" stroke-dasharray="4,4" />
+                        <path d="M 100,150 Q 200,240 300,150" stroke="url(#lineGrad)" stroke-width="1.5" stroke-dasharray="4,4" />
+                        <path d="M 70,80 L 100,150 L 90,220" stroke="url(#lineGrad)" stroke-width="1.5" />
+                        <path d="M 330,80 L 300,150 L 310,220" stroke="url(#lineGrad)" stroke-width="1.5" />
+                        
+                        <!-- Glows -->
+                        <circle cx="100" cy="150" r="50" fill="url(#nodeGlow)" />
+                        <circle cx="300" cy="150" r="50" fill="url(#nodeGlow)" />
+                        
+                        <!-- Interactive node styling -->
+                        <circle cx="100" cy="150" r="10" fill="#ffffff" stroke="#6366f1" stroke-width="2" />
+                        <circle cx="300" cy="150" r="8" fill="#ffffff" stroke="#6366f1" stroke-width="2" />
+                        <circle cx="200" cy="95" r="5" fill="#6366f1" />
+                        <circle cx="200" cy="205" r="5" fill="#6366f1" />
+                        <circle cx="70" cy="80" r="4" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.5" />
+                        <circle cx="90" cy="220" r="4" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.5" />
+                        <circle cx="330" cy="80" r="4" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.5" />
+                        <circle cx="310" cy="220" r="4" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.5" />
+                    </svg>
+                </div>
+
+                <figure class="screen-stack screen-stack-main" data-parallax="-0.18" data-parallax-x="0.04" data-tilt>
+                    <img src="ss3601.png" alt="SchoolSuite360 dashboard overview">
+                </figure>
+                <figure class="floating-card floating-card-top" data-parallax="0.26" data-parallax-x="-0.12" data-tilt>
+                    <img src="ss3602.png" alt="SchoolSuite360 staff and student tools">
+                    <figcaption>Automated results</figcaption>
+                </figure>
+                <figure class="floating-card floating-card-bottom" data-parallax="-0.3" data-parallax-x="0.16" data-tilt>
+                    <img src="ss3603.png" alt="SchoolSuite360 parent portal preview">
+                    <figcaption>Parent visibility</figcaption>
+                </figure>
+                <div class="glass-stat glass-stat-one" data-parallax="0.34" data-parallax-x="0.2">
+                    <strong>AI</strong>
+                    <span>Academic risk alerts</span>
+                </div>
+                <div class="glass-stat glass-stat-two" data-parallax="-0.22" data-parallax-x="-0.18">
+                    <strong>360</strong>
+                    <span>Connected school operations</span>
+                </div>
+            </div>
+
+            <div class="hero__trust reveal">
+                <span>Trusted by forward-thinking schools</span>
+                <span>Academic monitoring</span>
+                <span>Payment control</span>
+                <span>Student security</span>
             </div>
         </section>
 
-        <!-- 2. Features Section (Subtle Light Background) - Uses all new colors -->
-        <section id="features" class="py-20 lg:py-32 bg-gray-50">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="max-w-2xl mx-auto text-center mb-16 scroll-animate">
-                    <!-- Accent text updated to a solid blue -->
-                    <span class="text-lg font-semibold text-indigo-600 uppercase tracking-wider">Core Capabilities</span>
-                    <h2 class="text-4xl sm:text-5xl font-bold mt-2 text-gray-900">Everything You Need in One Place</h2>
+        <section class="platform section-light" id="why">
+            <div class="platform__header reveal">
+                <p class="eyebrow" data-reveal-text>Everything your school needs in one platform</p>
+                <h2 data-reveal-text>One connected workspace for academics, finance, communication, safety, and support.</h2>
+                <p>
+                    From assessments and reports to payments, attendance, parent engagement, and school bus
+                    visibility, SchoolSuite360 gives every team the right tools to operate efficiently.
+                </p>
+            </div>
+
+            <div class="platform-grid">
+                <article class="platform-card platform-card-large reveal" data-parallax="0.08" data-parallax-x="-0.04">
+                    <div class="platform-card__icon platform-illustration" aria-hidden="true">
+                        <svg viewBox="0 0 120 120" role="img">
+                            <circle cx="60" cy="60" r="42"></circle>
+                            <path d="M31 68c16-21 30 12 47-13 5-7 8-14 11-22"></path>
+                            <path d="M34 84h52"></path>
+                            <circle cx="79" cy="55" r="6"></circle>
+                            <circle cx="43" cy="69" r="4"></circle>
+                        </svg>
+                    </div>
+                    <span>Academic intelligence</span>
+                    <h3>AI Academic Analysis</h3>
+                    <p>Turn student records into actionable insight across performance trends, weak subjects, strengths, missing scores, and intervention needs.</p>
+                </article>
+                <article class="platform-card reveal" data-parallax="-0.06" data-parallax-x="0.05">
+                    <div class="platform-card__icon platform-illustration" aria-hidden="true">
+                        <svg viewBox="0 0 120 120" role="img">
+                            <rect x="30" y="22" width="60" height="76" rx="10"></rect>
+                            <path d="M43 40h29M43 52h20M43 67h9M60 67h19M43 82h9M60 82h24"></path>
+                            <path d="m43 67 3 3 7-8"></path>
+                        </svg>
+                    </div>
+                    <span>Assessments</span>
+                    <h3>Computer-Based Assessments</h3>
+                    <p>Conduct assignments, tests, mock examinations, and term examinations from school or home.</p>
+                </article>
+                <article class="platform-card reveal" data-parallax="0.1" data-parallax-x="-0.06">
+                    <div class="platform-card__icon platform-illustration" aria-hidden="true">
+                        <svg viewBox="0 0 120 120" role="img">
+                            <path d="M60 22v15M60 83v15M33 33l11 11M76 76l11 11M22 60h15M83 60h15M33 87l11-11M76 44l11-11"></path>
+                            <rect x="42" y="42" width="36" height="36" rx="12"></rect>
+                            <path d="M54 56c2-5 12-5 12 2 0 6-7 6-7 12"></path>
+                            <path d="M59 76h2"></path>
+                        </svg>
+                    </div>
+                    <span>Teacher tools</span>
+                    <h3>AI Question Generation</h3>
+                    <p>Create curriculum-aligned questions in seconds and reduce preparation time.</p>
+                </article>
+                <article class="platform-card reveal" data-parallax="-0.08" data-parallax-x="0.06">
+                    <div class="platform-card__icon platform-illustration" aria-hidden="true">
+                        <svg viewBox="0 0 120 120" role="img">
+                            <path d="M32 26h42c8 0 14 6 14 14v54H40c-5 0-8-3-8-8V26Z"></path>
+                            <path d="M40 38h35M40 51h28M40 64h35"></path>
+                            <path d="M88 40h-8c-5 0-8-3-8-8v-6"></path>
+                        </svg>
+                    </div>
+                    <span>Exam resources</span>
+                    <h3>WAEC &amp; JAMB Question Bank</h3>
+                    <p>Select organized questions by topic or examination body and build assessments faster.</p>
+                </article>
+                <article class="platform-card platform-card-wide reveal" data-parallax="0.07" data-parallax-x="-0.05">
+                    <div class="platform-card__icon platform-illustration" aria-hidden="true">
+                        <svg viewBox="0 0 120 120" role="img">
+                            <rect x="28" y="22" width="64" height="76" rx="10"></rect>
+                            <path d="M42 40h36M42 54h26M42 72h10M59 72h10M76 72h10M42 84h10M59 84h10M76 84h10"></path>
+                            <path d="M77 22v18l-8-5-8 5V22"></path>
+                        </svg>
+                    </div>
+                    <span>Reports</span>
+                    <h3>Academic Reports &amp; Report Cards</h3>
+                    <p>Generate mid-term reports, termly reports, cumulative reports, and customized report cards that match your school's preferred format.</p>
+                    <ul>
+                        <li>Mid-term reports</li>
+                        <li>Term reports</li>
+                        <li>Cumulative reports</li>
+                    </ul>
+                </article>
+                <article class="platform-card platform-card-wide reveal" data-parallax="-0.07" data-parallax-x="0.05">
+                    <div class="platform-card__icon platform-illustration" aria-hidden="true">
+                        <svg viewBox="0 0 120 120" role="img">
+                            <rect x="28" y="24" width="64" height="72" rx="16"></rect>
+                            <circle cx="48" cy="52" r="9"></circle>
+                            <circle cx="72" cy="52" r="9"></circle>
+                            <path d="M38 76c4-10 16-10 20 0M62 76c4-10 16-10 20 0"></path>
+                            <path d="M44 32h32"></path>
+                        </svg>
+                    </div>
+                    <span>Parent engagement</span>
+                    <h3>Parent &amp; Student Portals</h3>
+                    <p>Give parents and students secure access to academic records, attendance information, report cards, notifications, class updates, and important school resources.</p>
+                    <ul>
+                        <li>Academic records</li>
+                        <li>Attendance records</li>
+                        <li>Reports and notifications</li>
+                        <li>Student dashboard</li>
+                    </ul>
+                </article>
+            </div>
+
+            <!-- <div class="capability-strip reveal" aria-label="Additional SchoolSuite360 capabilities">
+                <span>Student Management</span>
+                <span>Attendance Management</span>
+                <span>Arrival &amp; Departure Notifications</span>
+                <span>School Bus Tracking</span>
+                <span>Payment Management</span>
+                <span>Receipts &amp; Invoices</span>
+                <span>Staff Management</span>
+                <span>Roles &amp; Permissions</span>
+                <span>Smart Timetable</span>
+                <span>Lesson Notes</span>
+                <span>Student Portal</span>
+                <span>Announcements</span>
+                <span>School Branding</span>
+                <span>Secure Cloud Access</span>
+                <span>Training &amp; Support</span>
+            </div> -->
+        </section>
+
+        <section class="marquee" aria-label="SchoolSuite360 capabilities">
+            <div class="marquee__track">
+                <span>Automated result processing</span>
+                <span>AI academic analysis</span>
+                <span>Computer-based tests</span>
+                <span>Parent notifications</span>
+                <span>Payment management</span>
+                <span>Custom report cards</span>
+            </div>
+        </section>
+
+        <section class="outcomes section-dark">
+            <div class="section-kicker reveal">
+                <p class="eyebrow" data-reveal-text>Why SchoolSuite360?</p>
+                <h2 data-reveal-text>Less repetitive work. Better academic decisions. Stronger parent trust.</h2>
+            </div>
+
+            <div class="outcome-grid">
+                <article class="outcome-card reveal">
+                    <span class="card-number">01</span>
+                    <h3>Reduce teacher workload</h3>
+                    <p>Give teachers more time to teach by automating repetitive academic tasks.</p>
+                    <ul>
+                        <li>Automatic score computation</li>
+                        <li>Objective question marking</li>
+                        <li>AI-assisted question generation</li>
+                        <li>Reusable WAEC and JAMB resources</li>
+                    </ul>
+                </article>
+                <article class="outcome-card reveal">
+                    <span class="card-number">02</span>
+                    <h3>Make better academic decisions</h3>
+                    <p>Spot risks before they become bigger through AI-powered academic insight.</p>
+                    <ul>
+                        <li>Weak and strong subject detection</li>
+                        <li>Performance trends</li>
+                        <li>Missing score alerts</li>
+                        <li>Intervention signals</li>
+                    </ul>
+                </article>
+                <article class="outcome-card reveal">
+                    <span class="card-number">03</span>
+                    <h3>Improve parent confidence</h3>
+                    <p>Keep parents informed with access to attendance, reports, announcements, and updates.</p>
+                    <ul>
+                        <li>Attendance notifications</li>
+                        <li>Report access</li>
+                        <li>School announcements</li>
+                        <li>Optional bus tracking</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <section class="intelligence-lab section-blue">
+            <div class="lab-copy reveal">
+                <p class="eyebrow" data-reveal-text>Academic intelligence layer</p>
+                <h2 data-reveal-text>Beautiful insight screens for decisions that cannot wait.</h2>
+                <p>
+                    The platform turns scores, attendance, payments, and parent activity into a clear
+                    picture of what needs attention, before small gaps grow into larger concerns.
+                </p>
+            </div>
+            <div class="lab-visual" data-parallax="-0.14" data-parallax-x="0.08" aria-hidden="true">
+                <div class="lab-orbit"></div>
+                <div class="lab-card lab-card-main" data-tilt>
+                    <div class="lab-card__header">
+                        <span>Student performance</span>
+                        <span class="badge badge-success">+8.2% this term</span>
+                    </div>
+                    <strong class="lab-value">82%</strong>
+                    <div class="lab-chart-container">
+                        <svg viewBox="0 0 240 100" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Graph Grid lines -->
+                            <line x1="0" y1="20" x2="240" y2="20" stroke="rgba(9,9,11,0.06)" stroke-width="1" />
+                            <line x1="0" y1="50" x2="240" y2="50" stroke="rgba(9,9,11,0.06)" stroke-width="1" />
+                            <line x1="0" y1="80" x2="240" y2="80" stroke="rgba(9,9,11,0.06)" stroke-width="1" />
+                            
+                            <!-- Graph curve -->
+                            <path d="M 0,90 Q 40,75 80,45 T 160,35 T 240,15" stroke="#6366f1" stroke-width="3" stroke-linecap="round" />
+                            <path d="M 0,90 Q 40,75 80,45 T 160,35 T 240,15 L 240,100 L 0,100 Z" fill="rgba(99, 102, 241, 0.06)" />
+                            
+                            <!-- Pulsing highlight node -->
+                            <circle cx="160" cy="35" r="5" fill="#4f46e5" stroke="#ffffff" stroke-width="2" />
+                        </svg>
+                    </div>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Feature Card 1: New Blue Accent -->
-                    <div class="feature-card-light p-8 rounded-xl scroll-animate">
-                        <i class="fas fa-users text-4xl text-indigo-600 mb-4"></i>
-                        <h3 class="text-xl font-semibold mb-3 text-gray-900">Student Management</h3>
-                        <p class="text-gray-600">Streamline admissions, enrollments, and academic records with easy-to-use digital profiles.</p>
+                <div class="lab-card lab-card-top" data-parallax="0.22" data-parallax-x="-0.12">
+                    <div class="lab-card__header">
+                        <span>Missing scores</span>
+                        <svg class="alert-icon" viewBox="0 0 24 24" width="16" height="16" stroke="#f87171" stroke-width="2" fill="none">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
                     </div>
-
-                    <!-- Feature Card 2: Purple Accent -->
-                    <div class="feature-card-light p-8 rounded-xl scroll-animate">
-                        <i class="fas fa-chalkboard-teacher text-4xl text-purple mb-4"></i>
-                        <h3 class="text-xl font-semibold mb-3 text-gray-900">Staff Management</h3>
-                        <p class="text-gray-600">Manage teacher schedules, performance reviews, and administrative access securely and efficiently.</p>
+                    <strong>12</strong>
+                </div>
+                <div class="lab-card lab-card-bottom" data-parallax="-0.18" data-parallax-x="0.16">
+                    <div class="lab-card__header">
+                        <span>Parent updates</span>
+                        <span class="status-pulse"></span>
                     </div>
-
-                    <!-- Feature Card 3: Orange Accent -->
-                    <div class="feature-card-light p-8 rounded-xl scroll-animate">
-                        <i class="fas fa-calendar-check text-4xl text-orange mb-4"></i>
-                        <h3 class="text-xl font-semibold mb-3 text-gray-900">Attendance Tracking</h3>
-                        <p class="text-gray-600">Automated, real-time attendance logging with parent notifications and comprehensive reporting.</p>
-                    </div>
-
-                    <!-- Feature Card 4: Green Accent -->
-                    <div class="feature-card-light p-8 rounded-xl scroll-animate">
-                        <i class="fas fa-clipboard-list text-4xl text-green mb-4"></i>
-                        <h3 class="text-xl font-semibold mb-3 text-gray-900">Assessment Management</h3>
-                        <p class="text-gray-600">Design, administer, and analyze student assessments digitally, instantly calculating results.</p>
-                    </div>
-
-                    <!-- Feature Card 5: New Blue Accent -->
-                    <div class="feature-card-light p-8 rounded-xl scroll-animate">
-                        <i class="fas fa-comments text-4xl text-indigo-600 mb-4"></i>
-                        <h3 class="text-xl font-semibold mb-3 text-gray-900">Parent Portal & Comms</h3>
-                        <p class="text-gray-600">Foster transparent communication with a dedicated parent portal for grades, attendance, and announcements.</p>
-                    </div>
-
-                    <!-- Feature Card 6: New Blue Accent -->
-                    <div class="feature-card-light p-8 rounded-xl scroll-animate">
-                        <i class="fas fa-graduation-cap text-4xl text-indigo-600 mb-4"></i>
-                        <h3 class="text-xl font-semibold mb-3 text-gray-900">Customizable Grading</h3>
-                        <p class="text-gray-600">Flexible system to accommodate various curriculum and grading scales, tailored to your institution.</p>
-                    </div>
+                    <strong>Live</strong>
                 </div>
             </div>
         </section>
 
-        <!-- 3. Why Us Section (LIGHT/WHITE with varied Gradient Accents) -->
-        <section id="why-us" class="py-20 lg:py-32 bg-white text-gray-900">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="max-w-2xl mx-auto text-center mb-16 scroll-animate">
-                    <!-- Accent text updated to a solid blue -->
-                    <span class="text-lg font-semibold text-indigo-600 uppercase tracking-wider">Our Commitment</span>
-                    <h2 class="text-4xl sm:text-5xl font-bold mt-2 text-gray-900">Why SchoolSuite360 Stands Out</h2>
-                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                    <!-- Why Us Item 1: Primary Blue/Indigo Gradient Border -->
-                    <div class="flex items-start gradient-border-base gradient-border-blue-indigo p-6 rounded-xl scroll-animate">
-                        <div class="text-5xl text-indigo-600 mr-6 flex-shrink-0">
-                            <i class="fas fa-lightbulb"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-semibold mb-2">Simplicity</h3>
-                            <p class="text-gray-600">An incredibly intuitive interface ensures minimal training time and maximum user adoption among all staff, students, and parents.</p>
-                        </div>
-                    </div>
+        <section class="operations-suite section-light">
+            <div class="section-kicker reveal">
+                <p class="eyebrow" data-reveal-text>Built for the whole school</p>
+                <h2 data-reveal-text>Every department gets a cleaner way to work.</h2>
+            </div>
 
-                    <!-- Why Us Item 2: Purple/Orange Gradient Border -->
-                    <div class="flex items-start gradient-border-base gradient-border-purple-orange p-6 rounded-xl scroll-animate">
-                        <div class="text-5xl text-purple mr-6 flex-shrink-0">
-                            <i class="fas fa-cogs"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-semibold mb-2">Flexibility</h3>
-                            <p class="text-gray-600">Highly customizable modules adapt to the unique needs of primary schools, high schools, and specialized academies alike.</p>
-                        </div>
-                    </div>
-
-                    <!-- Why Us Item 3: Green/Indigo Gradient Border -->
-                    <div class="flex items-start gradient-border-base gradient-border-green-indigo p-6 rounded-xl scroll-animate">
-                        <div class="text-5xl text-green mr-6 flex-shrink-0">
-                            <i class="fas fa-dollar-sign"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-semibold mb-2">Affordability</h3>
-                            <p class="text-gray-600">We offer competitive, transparent pricing models without hidden fees, providing the best value in school management.</p>
-                        </div>
-                    </div>
-
-                    <!-- Why Us Item 4: Primary Blue/Indigo Gradient Border -->
-                    <div class="flex items-start gradient-border-base gradient-border-blue-indigo p-6 rounded-xl scroll-animate">
-                        <div class="text-5xl text-indigo-600 mr-6 flex-shrink-0">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-semibold mb-2">Security</h3>
-                            <p class="text-gray-600">Top-tier data encryption and compliance measures ensure all sensitive student and staff information is fully protected.</p>
-                        </div>
-                    </div>
-                </div>
+            <div class="operations-grid">
+                <article class="operation-card reveal" data-parallax="0.04" data-parallax-x="-0.03">
+                    <span>Students</span>
+                    <h3>Student Management</h3>
+                    <p>Maintain academic performance, attendance history, payment records, guardian information, and session history in one secure location.</p>
+                </article>
+                <article class="operation-card reveal" data-parallax="-0.05" data-parallax-x="0.04">
+                    <span>Attendance</span>
+                    <h3>Attendance Management</h3>
+                    <p>Support QR attendance, manual recording, geolocation verification, and detailed attendance reporting.</p>
+                </article>
+                <article class="operation-card reveal" data-parallax="0.06" data-parallax-x="-0.02">
+                    <span>Security</span>
+                    <h3>Arrival &amp; Departure Notifications</h3>
+                    <p>Notify parents instantly when their child arrives at school and when they leave school.</p>
+                </article>
+                <article class="operation-card reveal" data-parallax="-0.04" data-parallax-x="0.03">
+                    <span>Transport</span>
+                    <h3>School Bus Tracking</h3>
+                    <p>Give parents live map visibility into school bus movement throughout the journey.</p>
+                </article>
+                <article class="operation-card reveal" data-parallax="0.05" data-parallax-x="-0.04">
+                    <span>Finance</span>
+                    <h3>Payments, Receipts &amp; Invoices</h3>
+                    <p>Track income, outstanding balances, payment collections, student history, billing categories, receipts, and invoices.</p>
+                </article>
+                <article class="operation-card reveal" data-parallax="-0.06" data-parallax-x="0.02">
+                    <span>Team</span>
+                    <h3>Staff, Roles &amp; Permissions</h3>
+                    <p>Manage teaching and non-teaching staff, assign responsibilities, control access, and define what users can view or approve.</p>
+                </article>
+                <article class="operation-card reveal" data-parallax="0.04" data-parallax-x="-0.02">
+                    <span>Planning</span>
+                    <h3>Timetables &amp; Lesson Notes</h3>
+                    <p>Create drag-and-drop timetables, manage weekly lesson plans, and improve instructional consistency.</p>
+                </article>
+                <article class="operation-card reveal" data-parallax="-0.05" data-parallax-x="0.04">
+                    <span>Communication</span>
+                    <h3>Announcements, Branding &amp; Support</h3>
+                    <p>Send updates, customize school portals and reports, access securely from the cloud, and get onboarding support.</p>
+                </article>
             </div>
         </section>
 
-        <!-- 4. Screenshots Section (Standard Light Background) -->
-        <section id="screenshots" class="py-20 lg:py-32 bg-gray-50">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="max-w-2xl mx-auto text-center mb-16 scroll-animate">
-                    <!-- Accent text updated to a solid blue -->
-                    <span class="text-lg font-semibold text-indigo-600 uppercase tracking-wider">See It In Action</span>
-                    <h2 class="text-4xl sm:text-5xl font-bold mt-2 text-gray-900">Platform Screenshots</h2>
-                </div>
+      
 
-                <div id="carousel-container" class="relative max-w-5xl mx-auto shadow-2xl rounded-xl overflow-hidden border border-gray-300 scroll-animate">
-                    <div id="screenshot-carousel">
-                        <!-- Placeholder Screenshots -->
-                        <img class="carousel-item active w-full" src="ss601.png" alt="SchoolSuite360 Dashboard" loading="lazy">
-                        <img class="carousel-item w-full" src="ss3602.png" alt="Staff Management Interface" loading="lazy">
-                        <img class="carousel-item w-full" src="ss3603.png" alt="Parent Portal Interface" loading="lazy">
-                        <img class="carousel-item w-full" src="ss3602.png" alt="Attendance Tracking Interface" loading="lazy">
-                    </div>
+      
 
-                    <!-- Carousel Controls -->
-                    <button onclick="changeSlide(-1)" class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-gray-900 bg-opacity-30 text-white p-3 rounded-full hover:bg-opacity-50 transition focus:outline-none" aria-label="Previous slide">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button onclick="changeSlide(1)" class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-gray-900 bg-opacity-30 text-white p-3 rounded-full hover:bg-opacity-50 transition focus:outline-none" aria-label="Next slide">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-
-                    <!-- Carousel Dots Indicator -->
-                    <div id="carousel-dots" class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
-                        <!-- Dots will be generated by JS -->
-                    </div>
-                </div>
+        <section class="demo section-dark" id="demo">
+            <div class="demo__copy reveal">
+                <p class="eyebrow" data-reveal-text>See SchoolSuite360 in action</p>
+                <h2 data-reveal-text>Schedule a personalized demonstration.</h2>
+                <p>
+                    The best way to experience SchoolSuite360 is through a walkthrough shaped around
+                    your school's needs, workflows, and implementation questions.
+                </p>
+            </div>
+            <div class="demo__steps reveal">
+                <span>Understand your school's needs</span>
+                <span>Demonstrate relevant features</span>
+                <span>Answer your questions</span>
+                <span>Recommend an implementation approach</span>
             </div>
         </section>
 
-        <!-- 5. Contact Section (Form - Subtle Gray Background) -->
-        <section id="contact" class="py-20 lg:py-32 bg-white text-gray-900">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="max-w-2xl mx-auto text-center mb-16 scroll-animate">
-                    <!-- Accent text updated to a solid blue -->
-                    <span class="text-lg font-semibold text-indigo-600 uppercase tracking-wider">Get In Touch</span>
-                    <h2 class="text-4xl sm:text-5xl font-bold mt-2 text-gray-900">Request a Personalized Demo</h2>
-                </div>
+        <section class="faq section-light" id="faq">
+            <div class="section-kicker reveal">
+                <p class="eyebrow" data-reveal-text>Frequently asked questions</p>
+                <h2 data-reveal-text>Questions schools ask before they start.</h2>
+            </div>
 
-                <!-- Contact Form Container (White BG, Shadow) -->
-                <div class="max-w-3xl mx-auto bg-gray-50 p-8 md:p-12 rounded-xl shadow-2xl scroll-animate border border-gray-200">
-                    <form id="contact-form" class="space-y-6" novalidate>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Name Field -->
-                            <div>
-                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
-                                <input type="text" id="name" name="name" required class="w-full px-4 py-3 border rounded-lg input-light placeholder-gray-500 focus:ring-indigo-500 focus:border-indigo-500">
-                                <p id="name-error" class="text-sm text-red-600 mt-1 hidden">Please enter your name.</p>
-                            </div>
+            <div class="faq-list reveal">
+                <details open>
+                    <summary>Is SchoolSuite360 suitable for primary and secondary schools?</summary>
+                    <p>Yes. The platform supports both primary and secondary educational institutions.</p>
+                </details>
+                <details>
+                    <summary>Can report cards be customized?</summary>
+                    <p>Yes. Schools can customize report layouts, grading systems, and reporting structures.</p>
+                </details>
+                <details>
+                    <summary>Can students take assessments from home?</summary>
+                    <p>Yes. Schools decide where and how assessments are conducted.</p>
+                </details>
+                <details>
+                    <summary>Do parents receive notifications?</summary>
+                    <p>Yes. Parents can receive notifications relating to attendance and other approved school activities.</p>
+                </details>
+                <details>
+                    <summary>Is training provided?</summary>
+                    <p>Yes. Training and onboarding support are provided to ensure successful implementation.</p>
+                </details>
+            </div>
+        </section>
 
-                            <!-- Email Field -->
-                            <div>
-                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
-                                <input type="email" id="email" name="email" required class="w-full px-4 py-3 border rounded-lg input-light placeholder-gray-500 focus:ring-indigo-500 focus:border-indigo-500">
-                                <p id="email-error" class="text-sm text-red-600 mt-1 hidden">Please enter a valid email address.</p>
-                            </div>
-                        </div>
-
-                        <!-- Phone Number Field -->
-                        <div>
-                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number (Optional)</label>
-                            <input type="tel" id="phone" name="phone" class="w-full px-4 py-3 border rounded-lg input-light placeholder-gray-500 focus:ring-indigo-500 focus:border-indigo-500">
-                            <p id="phone-error" class="text-sm text-red-600 mt-1 hidden">Please enter a valid phone number (e.g., +1 555 123 4567).</p>
-                        </div>
-
-                        <!-- Message Field -->
-                        <div>
-                            <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Your Message</label>
-                            <textarea id="message" name="message" rows="4" class="w-full px-4 py-3 border rounded-lg input-light placeholder-gray-500 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
-                        </div>
-
-                        <button type="submit" class="btn-primary text-white font-bold text-lg w-full px-6 py-3">
-                            Send Request
-                        </button>
-
-                        <!-- Custom Message Box for success/error -->
-                        <div id="form-message" class="mt-4 p-4 rounded-lg hidden text-center" role="alert"></div>
-                    </form>
-
-                    <!-- Company Contact Info -->
-                    <div class="mt-10 pt-6 border-t border-gray-300 text-center">
-                        <p class="text-gray-600 text-lg font-semibold mb-2">Our Contact Details</p>
-                        <p class="text-gray-800 mb-1"><i class="fas fa-envelope mr-2 text-indigo-600"></i> Email: <a href="mailto:schoolsuite360@gmail.com" class="text-indigo-600 hover:text-indigo-800 transition duration-200">schoolsuite360@gmail.com</a></p>
-                        <p class="text-gray-800"><i class="fas fa-phone mr-2 text-indigo-600"></i> Phone: <a href="tel:+2348063244568" class="text-indigo-600 hover:text-indigo-800 transition duration-200">+234-806-3244-568</a></p>
-                    </div>
-                </div>
+        <section class="final-cta section-dark" id="contact">
+            <p class="eyebrow reveal" data-reveal-text>Ready to transform your school operations?</p>
+            <h2 class="reveal" data-reveal-text>Reduce workload. Improve accountability. Make better academic decisions.</h2>
+            <div class="hero__actions reveal">
+                <a class="button button-primary" href="mailto:schoolsuite360@gmail.com?subject=SchoolSuite360%20Demo%20Request">Request Demo</a>
+                <a class="button button-ghost" href="mailto:schoolsuite360@gmail.com">Contact Us</a>
             </div>
         </section>
     </main>
 
-    <!-- 6. Footer (Dark background for contrast anchor) -->
-    <footer class="bg-gray-800 py-10">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <!-- Quick Links -->
-            <nav class="flex flex-wrap justify-center space-x-6 mb-6 text-gray-400">
-                <a href="#home" class="hover:text-indigo-400 transition duration-200">Home</a>
-                <a href="#features" class="hover:text-indigo-400 transition duration-200">Features</a>
-                <a href="#why-us" class="hover:text-indigo-400 transition duration-200">Why Us</a>
-                <a href="#contact" class="hover:text-indigo-400 transition duration-200">Contact</a>
-            </nav>
-
-            <!-- Social Media Icons -->
-            <div class="flex justify-center space-x-6 text-2xl mb-6">
-                <a href="#" aria-label="LinkedIn" class="text-gray-400 hover:text-indigo-400 transition duration-200"><i class="fab fa-linkedin"></i></a>
-                <a href="#" aria-label="Twitter" class="text-gray-400 hover:text-indigo-400 transition duration-200"><i class="fab fa-twitter-square"></i></a>
-                <a href="#" aria-label="Facebook" class="text-gray-400 hover:text-indigo-400 transition duration-200"><i class="fab fa-facebook-square"></i></a>
-            </div>
-
-            <!-- Copyright -->
-            <a class="text-gray-500" href="terms.html">Terms of service</a>
-            <p class="text-gray-500 text-sm">
-                &copy; <span id="current-year"></span> SchoolSuite360. All rights reserved.
-            </p>
-        </div>
+    <footer class="site-footer">
+        <a class="brand" href="#home" aria-label="SchoolSuite360 home">
+            <img src="company_logo.png" alt="" class="brand__mark">
+            <span>SchoolSuite360</span>
+        </a>
+        <p>&copy; <span data-year></span> SchoolSuite360. All rights reserved.</p>
     </footer>
 
-    <!-- JavaScript Section -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set current year in footer
-            document.getElementById('current-year').textContent = new Date().getFullYear();
-
-            // --- 1. Responsive Navbar Toggle ---
-            const menuToggle = document.getElementById('menu-toggle');
-            const mobileMenu = document.getElementById('mobile-menu');
-            const menuIconOpen = document.getElementById('menu-icon-open');
-            const menuIconClose = document.getElementById('menu-icon-close');
-            const navLinks = document.querySelectorAll('.nav-link-dark');
-
-            function toggleMobileMenu() {
-                const isExpanded = mobileMenu.classList.contains('mobile-menu-open');
-                mobileMenu.classList.toggle('mobile-menu-open', !isExpanded);
-                mobileMenu.classList.toggle('hidden', isExpanded);
-                menuIconOpen.classList.toggle('hidden', !isExpanded);
-                menuIconClose.classList.toggle('hidden', isExpanded);
-            }
-
-            menuToggle.addEventListener('click', toggleMobileMenu);
-
-            // Close mobile menu when a link is clicked
-            navLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    if (window.innerWidth < 1024 && !mobileMenu.classList.contains('hidden')) { 
-                        toggleMobileMenu();
-                    }
-                });
-            });
-
-
-            // --- 2. Sticky Navbar Class Trigger ---
-            const navbar = document.getElementById('navbar');
-            let isSticky = false;
-
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 50) {
-                    if (!isSticky) {
-                        navbar.classList.add('sticky-nav');
-                        isSticky = true;
-                    }
-                } else {
-                    if (isSticky) {
-                        navbar.classList.remove('sticky-nav');
-                        isSticky = false;
-                    }
-                }
-            });
-
-
-            // --- 3. Image Carousel for Screenshots ---
-            let currentSlide = 0;
-            const carousel = document.getElementById('screenshot-carousel');
-            const items = carousel ? carousel.querySelectorAll('.carousel-item') : [];
-            const dotsContainer = document.getElementById('carousel-dots');
-
-            // Initialize carousel dots
-            if (items.length > 0) {
-                items.forEach((item, index) => {
-                    const dot = document.createElement('div');
-                    dot.classList.add('carousel-dot');
-                    if (index === 0) dot.classList.add('active');
-                    dot.setAttribute('data-index', index);
-                    dot.onclick = () => showSlide(index);
-                    dotsContainer.appendChild(dot);
-                });
-            }
-
-            function showSlide(index) {
-                items.forEach(item => item.classList.remove('active'));
-                const dots = dotsContainer.querySelectorAll('.carousel-dot');
-                dots.forEach(dot => dot.classList.remove('active'));
-
-                if (items[index]) {
-                    items[index].classList.add('active');
-                }
-                if (dots[index]) {
-                    dots[index].classList.add('active');
-                }
-
-                currentSlide = index;
-            }
-
-            // Function to change slide by a step (1 for next, -1 for prev)
-            window.changeSlide = function(step) {
-                let newIndex = currentSlide + step;
-                if (newIndex >= items.length) {
-                    newIndex = 0;
-                } else if (newIndex < 0) {
-                    newIndex = items.length - 1;
-                }
-                showSlide(newIndex);
-            }
-
-            // Start auto-slide functionality
-            let slideInterval = setInterval(() => changeSlide(1), 5000); 
-
-
-            // --- 4. Form Validation for Contact Page ---
-            const contactForm = document.getElementById('contact-form');
-            const formMessage = document.getElementById('form-message');
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            const phoneRegex = /^\+?(\d[\s\-]?)?(\(?\d{3}\)?[\s\-]?)?[\d\s\-]{7,15}$/; 
-
-            function displayMessage(message, isSuccess) {
-                formMessage.textContent = message;
-                formMessage.classList.remove('hidden', 'bg-red-900', 'bg-indigo-900', 'text-red-300', 'text-indigo-300', 'bg-red-100', 'text-red-800', 'bg-indigo-100', 'text-indigo-800');
-                if (isSuccess) {
-                    formMessage.classList.add('bg-indigo-100', 'text-indigo-800');
-                } else {
-                    formMessage.classList.add('bg-red-100', 'text-red-800');
-                }
-            }
-            
-            function toggleError(field, errorElement, condition, errorMessage) {
-                if (condition) {
-                    errorElement.textContent = errorMessage;
-                    errorElement.classList.remove('hidden');
-                    field.classList.add('border-red-500');
-                    return false;
-                } else {
-                    errorElement.classList.add('hidden');
-                    field.classList.remove('border-red-500');
-                    return true;
-                }
-            }
-
-
-            contactForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                let isValid = true;
-                formMessage.classList.add('hidden'); 
-
-                const nameField = document.getElementById('name');
-                const emailField = document.getElementById('email');
-                const phoneField = document.getElementById('phone');
-                
-                // Validate Name (Required)
-                isValid = toggleError(nameField, document.getElementById('name-error'), 
-                                     nameField.value.trim() === '', 
-                                     'Please enter your full name.') && isValid;
-
-                // Validate Email (Required)
-                isValid = toggleError(emailField, document.getElementById('email-error'), 
-                                     !emailRegex.test(emailField.value.trim()), 
-                                     'Please enter a valid email address.') && isValid;
-
-                // Validate Phone (Optional but validates format if filled)
-                const phoneValue = phoneField.value.trim();
-                if (phoneValue !== '') {
-                    isValid = toggleError(phoneField, document.getElementById('phone-error'), 
-                                         !phoneRegex.test(phoneValue), 
-                                         'Please enter a valid phone number.') && isValid;
-                } else {
-                    document.getElementById('phone-error').classList.add('hidden');
-                    phoneField.classList.remove('border-red-500');
-                }
-
-                if (isValid) {
-                    // Simulate form submission
-                    console.log('Form Data Submitted:', {
-                        name: nameField.value,
-                        email: emailField.value,
-                        phone: phoneField.value,
-                        message: document.getElementById('message').value
-                    });
-
-                    displayMessage('Thank you! Your demo request has been sent. We will be in touch shortly.', true);
-                    contactForm.reset();
-                } else {
-                    displayMessage('Please correct the highlighted errors in the form before submitting.', false);
-                }
-            });
-
-
-            // --- 5. Scroll-Triggered Animations (Intersection Observer) ---
-            const observer = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, {
-                rootMargin: '0px',
-                threshold: 0.1
-            });
-
-            document.querySelectorAll('.scroll-animate').forEach(element => {
-                if (element.closest('#home')) {
-                     element.classList.add('is-visible');
-                } else {
-                     observer.observe(element);
-                }
-            });
-
-
-            // --- 6. Smooth Scroll Behavior for Anchor Links ---
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    if (this.getAttribute('href').startsWith('mailto') || this.getAttribute('href').startsWith('tel')) {
-                        return;
-                    }
-                    
-                    e.preventDefault();
-
-                    const targetId = this.getAttribute('href');
-                    const targetElement = document.querySelector(targetId);
-
-                    if (targetElement) {
-                        const headerHeight = document.getElementById('navbar').offsetHeight || 80; 
-
-                        window.scrollTo({
-                            top: targetElement.offsetTop - headerHeight,
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            });
-
-        });
-    </script>
+    <script src="js/landing.js"></script>
 </body>
 </html>
