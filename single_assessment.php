@@ -326,6 +326,14 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="question_bank" class="nav-link">
+                                <p class="d-flex">
+                                    <i class="material-symbols-outlined pr-2">library_books</i>
+                                    Question Bank
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="payments" class="nav-link">
                                 <p class="d-flex">
                                     <i class="material-symbols-outlined pr-2">payments</i>
