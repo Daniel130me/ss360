@@ -4,195 +4,355 @@ if (!isset($_SESSION['userid'])) {
     echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
     exit();
 }
+
 include_once("model/connect.php");
 
-$action = isset($_POST['action']) ? $_POST['action'] : '';
-$school_id = $_SESSION['school_id'];
+$action = $_POST['action'] ?? '';
+$school_id = (int)($_SESSION['school_id'] ?? 0);
 
-if ($action == 'get_import_filters') {
+function iq_json($payload)
+{
+    echo json_encode($payload);
+    exit();
+}
+
+function iq_table_has_column($conn, $table, $column)
+{
+    $table = mysqli_real_escape_string($conn, $table);
+    $column = mysqli_real_escape_string($conn, $column);
+    $result = mysqli_query($conn, "SHOW COLUMNS FROM `$table` LIKE '$column'");
+    return $result && mysqli_num_rows($result) > 0;
+}
+
+function iq_ensure_bank_columns($conn)
+{
+    $columns = [
+        'recommended_class' => "ALTER TABLE question_bank ADD recommended_class VARCHAR(100) NULL",
+        'term_tag' => "ALTER TABLE question_bank ADD term_tag VARCHAR(50) NULL",
+        'question_category' => "ALTER TABLE question_bank ADD question_category VARCHAR(100) NULL",
+        'explanation' => "ALTER TABLE question_bank ADD explanation TEXT NULL",
+        'review_status' => "ALTER TABLE question_bank ADD review_status VARCHAR(20) NOT NULL DEFAULT 'approved'",
+        'quality_score' => "ALTER TABLE question_bank ADD quality_score INT NOT NULL DEFAULT 0",
+        'times_used' => "ALTER TABLE question_bank ADD times_used INT NOT NULL DEFAULT 0",
+        'school_id' => "ALTER TABLE question_bank ADD school_id INT NOT NULL DEFAULT 0",
+        'deleted' => "ALTER TABLE question_bank ADD deleted TINYINT(1) NOT NULL DEFAULT 0",
+    ];
+
+    foreach ($columns as $column => $sql) {
+        if (!iq_table_has_column($conn, 'question_bank', $column)) {
+            mysqli_query($conn, $sql);
+        }
+    }
+
+    if (!iq_table_has_column($conn, 'question_bank_options', 'deleted')) {
+        mysqli_query($conn, "ALTER TABLE question_bank_options ADD deleted TINYINT(1) NOT NULL DEFAULT 0");
+    }
+}
+
+function iq_clean_text($value, $max_length = 100)
+{
+    return substr(trim(strip_tags((string)$value)), 0, $max_length);
+}
+
+function iq_bind_params($stmt, $types, $params)
+{
+    if ($params) {
+        $stmt->bind_param($types, ...$params);
+    }
+}
+
+function iq_fetch_options($conn, $question_ids, $source_type)
+{
+    if (!$question_ids) {
+        return [];
+    }
+
+    $ids = implode(',', array_map('intval', $question_ids));
+    $table = $source_type === 'Local' ? 'options' : 'question_bank_options';
+    $sql = "SELECT question_id, options, answer FROM $table WHERE question_id IN ($ids) AND deleted = 0 ORDER BY id ASC";
+    $result = mysqli_query($conn, $sql);
+    $options = [];
+
+    while ($result && $row = mysqli_fetch_assoc($result)) {
+        $options[(int)$row['question_id']][] = [
+            'options' => $row['options'],
+            'answer' => $row['answer'],
+        ];
+    }
+
+    return $options;
+}
+
+iq_ensure_bank_columns($conn);
+
+if ($action === 'get_import_filters') {
     $response = [
         'subjects' => [],
         'classes' => [],
         'exam_bodies' => [],
-        'topics' => []
+        'topics' => [],
     ];
 
-    // Subjects
-    $sql = "SELECT id, subject FROM subjects ORDER BY subject ASC";
-    $res = mysqli_query($conn, $sql);
-    while($row = mysqli_fetch_assoc($res)) {
+    $result = mysqli_query($conn, "SELECT id, subject FROM subjects ORDER BY subject ASC");
+    while ($result && $row = mysqli_fetch_assoc($result)) {
         $response['subjects'][] = $row;
     }
 
-    // Classes
-    $sql = "SELECT id, classname FROM class WHERE id > 0 AND school_id = ? ORDER BY id ASC";
-    $stmt = $conn->prepare($sql);
+    $stmt = $conn->prepare("SELECT id, classname FROM class WHERE id > 0 AND school_id = ? ORDER BY id ASC");
     $stmt->bind_param("i", $school_id);
     $stmt->execute();
-    $res = $stmt->get_result();
-    while($row = $res->fetch_assoc()) {
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
         $response['classes'][] = $row;
     }
 
-    // Exam Bodies
-    $sql = "SELECT id, name FROM exam_bodies ORDER BY name ASC";
-    $res = mysqli_query($conn, $sql);
-    while($row = mysqli_fetch_assoc($res)) {
+    $result = mysqli_query($conn, "SELECT id, name FROM exam_bodies ORDER BY name ASC");
+    while ($result && $row = mysqli_fetch_assoc($result)) {
         $response['exam_bodies'][] = $row;
     }
 
-    // Topics
-    $sql = "SELECT id, topic_name, subject_id, class_id FROM topics ORDER BY topic_name ASC";
-    $res = mysqli_query($conn, $sql);
-    while($row = mysqli_fetch_assoc($res)) {
+    $result = mysqli_query($conn, "SELECT id, topic_name, subject_id, class_id FROM topics ORDER BY topic_name ASC");
+    while ($result && $row = mysqli_fetch_assoc($result)) {
         $response['topics'][] = $row;
     }
 
-    echo json_encode(['status' => 'success', 'data' => $response]);
-    exit();
+    iq_json(['status' => 'success', 'data' => $response]);
 }
 
-if ($action == 'fetch_bank_questions') {
-    $subject_id = isset($_POST['subject_id']) ? (int)$_POST['subject_id'] : 0;
-    $class_id = isset($_POST['class_id']) ? (int)$_POST['class_id'] : 0;
-    $source_type = isset($_POST['source_type']) ? $_POST['source_type'] : '';
-    $exam_body_id = isset($_POST['exam_body_id']) ? (int)$_POST['exam_body_id'] : 0;
-    $topic_id = isset($_POST['topic_id']) ? (int)$_POST['topic_id'] : 0;
-    
-    $page = isset($_POST['page']) ? max(1, (int)$_POST['page']) : 1;
-    $per_page = isset($_POST['per_page']) ? max(1, (int)$_POST['per_page']) : 5;
+if ($action === 'fetch_bank_questions') {
+    $subject_id = (int)($_POST['subject_id'] ?? 0);
+    $class_id = (int)($_POST['class_id'] ?? 0);
+    $source_type = $_POST['source_type'] ?? '';
+    $exam_body_id = (int)($_POST['exam_body_id'] ?? 0);
+    $topic_id = (int)($_POST['topic_id'] ?? 0);
+    $topic_ids = json_decode($_POST['topic_ids'] ?? '[]', true);
+    $topic_ids = array_values(array_filter(array_map('intval', is_array($topic_ids) ? $topic_ids : [])));
+    if (!$topic_ids && $topic_id > 0) {
+        $topic_ids = [$topic_id];
+    }
+    $difficulty = $_POST['difficulty'] ?? '';
+    $term_tag = iq_clean_text($_POST['term_tag'] ?? '', 50);
+    $question_category = iq_clean_text($_POST['question_category'] ?? '', 100);
+    $recommended_class = iq_clean_text($_POST['recommended_class'] ?? '', 100);
+    $page = max(1, (int)($_POST['page'] ?? 1));
+    $per_page = min(25, max(1, (int)($_POST['per_page'] ?? 5)));
     $offset = ($page - 1) * $per_page;
 
     $questions = [];
     $total_count = 0;
 
-    if ($source_type == 'Local') {
-        $stmt = $conn->prepare("SELECT SQL_CALC_FOUND_ROWS q.id, q.question FROM questions q JOIN assessment a ON q.ass_id = a.id WHERE a.school_id = ? AND a.subject_id = ? AND FIND_IN_SET(?, a.class_ids) > 0 AND q.deleted = 0 LIMIT ?, ?");
-        $stmt->bind_param("iiiii", $school_id, $subject_id, $class_id, $offset, $per_page);
+    if ($source_type === 'Local') {
+        if ($subject_id <= 0 || $class_id <= 0) {
+            iq_json(['status' => 'success', 'data' => [], 'pagination' => ['page' => $page, 'total_pages' => 1, 'total_count' => 0]]);
+        }
+
+        $where = "a.school_id = ? AND a.subject_id = ? AND FIND_IN_SET(?, a.class_ids) > 0 AND q.deleted = 0";
+        $count_stmt = $conn->prepare("SELECT COUNT(*) AS total FROM questions q JOIN assessment a ON q.ass_id = a.id WHERE $where");
+        $count_stmt->bind_param("iii", $school_id, $subject_id, $class_id);
+        $count_stmt->execute();
+        $total_count = (int)$count_stmt->get_result()->fetch_assoc()['total'];
+
+        $stmt = $conn->prepare("SELECT q.id, q.question FROM questions q JOIN assessment a ON q.ass_id = a.id WHERE $where ORDER BY q.id DESC LIMIT ? OFFSET ?");
+        $stmt->bind_param("iiiii", $school_id, $subject_id, $class_id, $per_page, $offset);
         $stmt->execute();
-        $res = $stmt->get_result();
-        while($row = $res->fetch_assoc()) {
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
             $questions[] = $row;
         }
-        $count_res = mysqli_query($conn, "SELECT FOUND_ROWS() as cnt");
-        $total_count = mysqli_fetch_assoc($count_res)['cnt'];
+    } else {
+        $where = ["q.deleted = 0", "q.review_status = 'approved'", "(q.school_id = 0 OR q.school_id = ?)"];
+        $params = [$school_id];
+        $types = 'i';
 
-    } else if ($source_type == 'Exam bodies') {
-        $stmt = $conn->prepare("SELECT SQL_CALC_FOUND_ROWS id, question FROM question_bank WHERE subject_id = ? AND source_type = 'exam_body' AND exam_body_id = ? LIMIT ?, ?");
-        $stmt->bind_param("iiii", $subject_id, $exam_body_id, $offset, $per_page);
-        $stmt->execute();
-        $res = $stmt->get_result();
-        while($row = $res->fetch_assoc()) {
-            $questions[] = $row;
+        if ($subject_id > 0) {
+            $where[] = "q.subject_id = ?";
+            $params[] = $subject_id;
+            $types .= 'i';
         }
-        $count_res = mysqli_query($conn, "SELECT FOUND_ROWS() as cnt");
-        $total_count = mysqli_fetch_assoc($count_res)['cnt'];
 
-    } else if ($source_type == 'Topics') {
-        $stmt = $conn->prepare("SELECT SQL_CALC_FOUND_ROWS id, question FROM question_bank WHERE subject_id = ? AND source_type = 'topic' AND topic_id = ? LIMIT ?, ?");
-        $stmt->bind_param("iiii", $subject_id, $topic_id, $offset, $per_page);
-        $stmt->execute();
-        $res = $stmt->get_result();
-        while($row = $res->fetch_assoc()) {
-            $questions[] = $row;
-        }
-        $count_res = mysqli_query($conn, "SELECT FOUND_ROWS() as cnt");
-        $total_count = mysqli_fetch_assoc($count_res)['cnt'];
-    }
-
-    $total_pages = ceil($total_count / $per_page);
-
-    if (!empty($questions)) {
-        $q_ids = array_column($questions, 'id');
-        $ids_str = implode(',', $q_ids);
-        
-        $options_map = [];
-        if ($source_type == 'Local') {
-            $o_sql = "SELECT question_id, options, answer FROM options WHERE question_id IN ($ids_str) AND deleted = 0";
+        if ($source_type === 'Exam bodies') {
+            $where[] = "q.source_type = 'exam_body'";
+            if ($exam_body_id > 0) {
+                $where[] = "q.exam_body_id = ?";
+                $params[] = $exam_body_id;
+                $types .= 'i';
+            }
         } else {
-            $o_sql = "SELECT question_id, options, answer FROM question_bank_options WHERE question_id IN ($ids_str)";
-        }
-        
-        $o_res = mysqli_query($conn, $o_sql);
-        if ($o_res) {
-            while ($o_row = mysqli_fetch_assoc($o_res)) {
-                $options_map[$o_row['question_id']][] = [
-                    'options' => $o_row['options'],
-                    'answer' => $o_row['answer']
-                ];
+            $where[] = "q.source_type = 'topic'";
+            if ($topic_ids) {
+                $where[] = "q.topic_id IN (" . implode(',', $topic_ids) . ")";
             }
         }
-        
-        foreach ($questions as &$q) {
-            $q['options'] = isset($options_map[$q['id']]) ? $options_map[$q['id']] : [];
+
+        if (in_array($difficulty, ['Easy', 'Medium', 'Hard'], true)) {
+            $where[] = "q.difficulty = ?";
+            $params[] = $difficulty;
+            $types .= 's';
+        }
+
+        if ($question_category !== '') {
+            $where[] = "q.question_category LIKE ?";
+            $params[] = '%' . $question_category . '%';
+            $types .= 's';
+        }
+
+        $class_boost = '';
+        if ($recommended_class === '' && $class_id > 0) {
+            $class_stmt = $conn->prepare("SELECT classname FROM class WHERE id = ? AND school_id = ? LIMIT 1");
+            $class_stmt->bind_param("ii", $class_id, $school_id);
+            $class_stmt->execute();
+            $class_row = $class_stmt->get_result()->fetch_assoc();
+            $recommended_class = $class_row['classname'] ?? '';
+        }
+        if ($recommended_class !== '') {
+            $class_boost = "CASE WHEN q.recommended_class LIKE ? THEN 1 ELSE 0 END DESC,";
+            $params[] = '%' . $recommended_class . '%';
+            $types .= 's';
+        }
+
+        $term_boost = '';
+        if ($term_tag !== '') {
+            $term_boost = "CASE WHEN q.term_tag LIKE ? THEN 1 ELSE 0 END DESC,";
+            $params[] = '%' . $term_tag . '%';
+            $types .= 's';
+        }
+
+        $where_sql = implode(' AND ', $where);
+        $count_params = array_slice($params, 0, count($params) - (($recommended_class !== '' ? 1 : 0) + ($term_tag !== '' ? 1 : 0)));
+        $count_types = substr($types, 0, strlen($types) - (($recommended_class !== '' ? 1 : 0) + ($term_tag !== '' ? 1 : 0)));
+        $count_stmt = $conn->prepare("SELECT COUNT(*) AS total FROM question_bank q WHERE $where_sql");
+        iq_bind_params($count_stmt, $count_types, $count_params);
+        $count_stmt->execute();
+        $total_count = (int)$count_stmt->get_result()->fetch_assoc()['total'];
+
+        $params[] = $per_page;
+        $params[] = $offset;
+        $types .= 'ii';
+        $sql = "SELECT q.id, q.question, q.difficulty, q.recommended_class, q.term_tag, q.question_category, q.quality_score, q.times_used
+                FROM question_bank q
+                WHERE $where_sql
+                ORDER BY $class_boost $term_boost q.quality_score DESC, q.times_used DESC, q.id DESC
+                LIMIT ? OFFSET ?";
+        $stmt = $conn->prepare($sql);
+        iq_bind_params($stmt, $types, $params);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
+            $questions[] = $row;
         }
     }
 
-    echo json_encode([
-        'status' => 'success', 
-        'data' => $questions, 
+    $options_map = iq_fetch_options($conn, array_column($questions, 'id'), $source_type);
+    foreach ($questions as &$question) {
+        $question['options'] = $options_map[(int)$question['id']] ?? [];
+    }
+
+    iq_json([
+        'status' => 'success',
+        'data' => $questions,
         'pagination' => [
             'page' => $page,
-            'total_pages' => max(1, $total_pages),
-            'total_count' => $total_count
-        ]
+            'total_pages' => max(1, (int)ceil($total_count / $per_page)),
+            'total_count' => $total_count,
+        ],
     ]);
-    exit();
 }
 
-if ($action == 'get_questions_details') {
-    $question_ids = isset($_POST['question_ids']) ? $_POST['question_ids'] : [];
-    $source_type = isset($_POST['source_type']) ? $_POST['source_type'] : '';
+if ($action === 'get_questions_details') {
+    $question_ids = $_POST['question_ids'] ?? [];
+    $source_type = $_POST['source_type'] ?? '';
 
-    if (empty($question_ids)) {
-        echo json_encode(['status' => 'success', 'data' => []]);
-        exit();
+    if (!$question_ids) {
+        iq_json(['status' => 'success', 'data' => []]);
     }
 
-    // sanitize ids
-    $ids = array_map('intval', $question_ids);
-    $ids_str = implode(',', $ids);
+    $ids = array_values(array_filter(array_map('intval', $question_ids)));
+    if (!$ids) {
+        iq_json(['status' => 'success', 'data' => []]);
+    }
 
+    $ids_str = implode(',', $ids);
     $results = [];
 
-    if ($source_type == 'Local') {
-        $q_sql = "SELECT * FROM questions WHERE id IN ($ids_str)";
-        $q_res = mysqli_query($conn, $q_sql);
-        while ($q_row = mysqli_fetch_assoc($q_res)) {
-            $options = [];
-            $o_sql = "SELECT * FROM options WHERE question_id = '{$q_row['id']}' AND deleted = 0";
-            $o_res = mysqli_query($conn, $o_sql);
-            while ($o_row = mysqli_fetch_assoc($o_res)) {
-                $options[] = $o_row;
-            }
+    if ($source_type === 'Local') {
+        $result = mysqli_query($conn, "SELECT id, question FROM questions WHERE id IN ($ids_str) AND deleted = 0");
+        $options_map = iq_fetch_options($conn, $ids, 'Local');
+        while ($result && $row = mysqli_fetch_assoc($result)) {
             $results[] = [
-                'question' => $q_row['question'],
-                'options' => $options
+                'question' => $row['question'],
+                'bank_question_id' => 0,
+                'options' => $options_map[(int)$row['id']] ?? [],
             ];
         }
     } else {
-        // Exam body or Topic
-        $q_sql = "SELECT * FROM question_bank WHERE id IN ($ids_str)";
-        $q_res = mysqli_query($conn, $q_sql);
-        while ($q_row = mysqli_fetch_assoc($q_res)) {
-            $options = [];
-            $o_sql = "SELECT * FROM question_bank_options WHERE question_id = '{$q_row['id']}'";
-            $o_res = mysqli_query($conn, $o_sql);
-            while ($o_row = mysqli_fetch_assoc($o_res)) {
-                $options[] = [
-                    'options' => $o_row['options'],
-                    'answer' => $o_row['answer']
-                ];
-            }
+        $result = mysqli_query($conn, "SELECT id, question FROM question_bank WHERE id IN ($ids_str) AND deleted = 0 AND review_status = 'approved'");
+        $options_map = iq_fetch_options($conn, $ids, $source_type);
+        $used_ids = [];
+        while ($result && $row = mysqli_fetch_assoc($result)) {
+            $used_ids[] = (int)$row['id'];
             $results[] = [
-                'question' => $q_row['question'],
-                'options' => $options
+                'question' => $row['question'],
+                'bank_question_id' => (int)$row['id'],
+                'options' => $options_map[(int)$row['id']] ?? [],
             ];
+        }
+
+        if ($used_ids) {
+            $used_str = implode(',', $used_ids);
+            mysqli_query($conn, "UPDATE question_bank SET times_used = times_used + 1, quality_score = quality_score + 1 WHERE id IN ($used_str)");
         }
     }
 
-    echo json_encode(['status' => 'success', 'data' => $results]);
-    exit();
+    iq_json(['status' => 'success', 'data' => $results]);
 }
 
-?>
+if ($action === 'build_from_bank') {
+    $subject_id = (int)($_POST['subject_id'] ?? 0);
+    $topic_ids = json_decode($_POST['topic_ids'] ?? '[]', true);
+    $topic_ids = array_values(array_filter(array_map('intval', is_array($topic_ids) ? $topic_ids : [])));
+    $easy_count = max(0, (int)($_POST['easy_count'] ?? 0));
+    $medium_count = max(0, (int)($_POST['medium_count'] ?? 0));
+    $hard_count = max(0, (int)($_POST['hard_count'] ?? 0));
+
+    if ($subject_id <= 0 || !$topic_ids || ($easy_count + $medium_count + $hard_count) <= 0) {
+        iq_json(['status' => 'error', 'message' => 'Select subject, at least one topic, and a question mix.']);
+    }
+
+    $topic_sql = implode(',', $topic_ids);
+    $requested = ['Easy' => $easy_count, 'Medium' => $medium_count, 'Hard' => $hard_count];
+    $questions = [];
+
+    foreach ($requested as $difficulty => $limit) {
+        if ($limit <= 0) {
+            continue;
+        }
+        $stmt = $conn->prepare("SELECT id, question FROM question_bank
+            WHERE deleted = 0 AND review_status = 'approved' AND source_type = 'topic'
+              AND (school_id = 0 OR school_id = ?) AND subject_id = ? AND topic_id IN ($topic_sql) AND difficulty = ?
+            ORDER BY quality_score DESC, times_used ASC, id DESC
+            LIMIT ?");
+        $stmt->bind_param("iisi", $school_id, $subject_id, $difficulty, $limit);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
+            $questions[] = $row;
+        }
+    }
+
+    $options_map = iq_fetch_options($conn, array_column($questions, 'id'), 'Topics');
+    $used_ids = [];
+    foreach ($questions as &$question) {
+        $used_ids[] = (int)$question['id'];
+        $question['bank_question_id'] = (int)$question['id'];
+        $question['options'] = $options_map[(int)$question['id']] ?? [];
+    }
+
+    if ($used_ids) {
+        $used_str = implode(',', $used_ids);
+        mysqli_query($conn, "UPDATE question_bank SET times_used = times_used + 1, quality_score = quality_score + 1 WHERE id IN ($used_str)");
+    }
+
+    iq_json(['status' => 'success', 'data' => $questions]);
+}
+
+iq_json(['status' => 'error', 'message' => 'Invalid action.']);
