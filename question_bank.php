@@ -358,7 +358,7 @@ $is_ss360_admin = ((int)($_SESSION['school_id'] ?? -1) === 0)
                                 <button type="button" class="btn btn-outline-success" id="generate-bank-btn">
                                     <i class="fas fa-magic mr-1"></i> Generate Drafts
                                 </button>
-                                <small class="d-block text-muted mt-2">Generated questions are saved as drafts for review before teachers can import them.</small>
+                                <small class="d-block text-muted mt-2">Uses the selected Source above. Generated questions are saved as drafts for review before teachers can import them.</small>
                             </div>
                         </div>
 
@@ -824,11 +824,23 @@ $is_ss360_admin = ((int)($_SESSION['school_id'] ?? -1) === 0)
             }
 
             const subjectName = $('#subject_id option:selected').text();
+            const sourceType = $('#source_type').val();
             const topicName = $('#topic_id option:selected').text();
+            const examBodyName = $('#exam_body_id option:selected').text();
             const $btn = $('#generate-bank-btn');
 
-            if (!$('#subject_id').val() || !$('#topic_id').val()) {
-                toastr.warning('Select a subject and topic before generating bank questions.');
+            if (!$('#subject_id').val()) {
+                toastr.warning('Select a subject before generating bank questions.');
+                return;
+            }
+
+            if (sourceType === 'topic' && !$('#topic_id').val()) {
+                toastr.warning('Select a topic before generating topic-based bank questions.');
+                return;
+            }
+
+            if (sourceType === 'exam_body' && !$('#exam_body_id').val()) {
+                toastr.warning('Select an exam body before generating exam-body bank questions.');
                 return;
             }
 
@@ -836,9 +848,12 @@ $is_ss360_admin = ((int)($_SESSION['school_id'] ?? -1) === 0)
             $.post(controllerUrl, {
                 action: 'generate_bank_questions',
                 subject_id: $('#subject_id').val(),
+                source_type: sourceType,
                 topic_id: $('#topic_id').val(),
+                exam_body_id: $('#exam_body_id').val(),
                 subject_name: subjectName,
                 topic_name: topicName,
+                exam_body_name: examBodyName,
                 difficulty: $('#ai_bank_difficulty').val(),
                 num_questions: $('#ai_bank_count').val(),
                 recommended_class: $('#recommended_class').val(),
@@ -853,6 +868,7 @@ $is_ss360_admin = ((int)($_SESSION['school_id'] ?? -1) === 0)
                 }
 
                 toastr.success(response.message);
+                $('#source_filter').val(sourceType);
                 $('#review_status_filter').val('draft');
                 currentPage = 1;
                 loadQuestions();
