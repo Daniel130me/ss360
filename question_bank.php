@@ -10,10 +10,44 @@ include_once("model/functions.php");
 
 $school_settings = json_decode($_SESSION['skul_settings'] ?? '{}', true);
 $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_bank';
+
+function qb_page_ensure_platform_admin_schema($conn)
+{
+    mysqli_query($conn, "CREATE TABLE IF NOT EXISTS ss360_platform_admins (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        staff_id INT NOT NULL,
+        school_id INT NOT NULL,
+        status TINYINT(1) NOT NULL DEFAULT 1,
+        datecreated DATETIME NULL,
+        UNIQUE KEY uniq_ss360_platform_admin (staff_id, school_id),
+        KEY idx_ss360_platform_admin_status (status)
+    )");
+}
+
+function qb_page_is_platform_admin($conn)
+{
+    if ((int)($_SESSION['school_id'] ?? -1) === 0 || !empty($_SESSION['is_ss360_admin']) || !empty($_SESSION['platform_admin']) || !empty($_SESSION['super_admin'])) {
+        return true;
+    }
+
+    qb_page_ensure_platform_admin_schema($conn);
+    $staff_id = (int)($_SESSION['userid'] ?? 0);
+    $school_id = (int)($_SESSION['school_id'] ?? 0);
+    if ($staff_id <= 0 || $school_id <= 0) {
+        return false;
+    }
+
+    $stmt = $conn->prepare("SELECT id FROM ss360_platform_admins WHERE staff_id = ? AND school_id = ? AND status = 1 LIMIT 1");
+    $stmt->bind_param("ii", $staff_id, $school_id);
+    $stmt->execute();
+    return $stmt->get_result()->num_rows > 0;
+}
+
 $is_ss360_admin = ((int)($_SESSION['school_id'] ?? -1) === 0)
     || !empty($_SESSION['is_ss360_admin'])
     || !empty($_SESSION['platform_admin'])
-    || !empty($_SESSION['super_admin']);
+    || !empty($_SESSION['super_admin'])
+    || qb_page_is_platform_admin($conn);
 ?>
 
 <!DOCTYPE html>
