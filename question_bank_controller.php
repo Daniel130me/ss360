@@ -197,15 +197,23 @@ function qb_normalize_question($value)
     return preg_replace('/[^a-z0-9 ]/', '', $plain);
 }
 
-function qb_question_duplicate_exists($conn, $question_id, $question, $subject_id, $topic_id, $difficulty)
+function qb_question_duplicate_exists($conn, $question_id, $question, $subject_id, $source_type, $topic_id, $exam_body_id, $difficulty)
 {
     $normalized = qb_normalize_question($question);
     if ($normalized === '') {
         return false;
     }
 
-    $stmt = $conn->prepare("SELECT id, question FROM question_bank WHERE deleted = 0 AND id <> ? AND subject_id = ? AND topic_id = ? AND difficulty = ?");
-    $stmt->bind_param("iiis", $question_id, $subject_id, $topic_id, $difficulty);
+    $stmt = $conn->prepare("SELECT id, question
+        FROM question_bank
+        WHERE deleted = 0
+          AND id <> ?
+          AND subject_id = ?
+          AND source_type = ?
+          AND topic_id = ?
+          AND exam_body_id = ?
+          AND difficulty = ?");
+    $stmt->bind_param("iisiis", $question_id, $subject_id, $source_type, $topic_id, $exam_body_id, $difficulty);
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_assoc()) {
@@ -447,8 +455,8 @@ if ($action === 'save_question') {
         qb_json(['status' => 'error', 'message' => 'Add at least two options and select exactly one correct answer.']);
     }
 
-    if (qb_question_duplicate_exists($conn, $question_id, $question, $subject_id, $topic_id, $difficulty)) {
-        qb_json(['status' => 'error', 'message' => 'A similar question already exists for this subject, topic, and difficulty.']);
+    if (qb_question_duplicate_exists($conn, $question_id, $question, $subject_id, $source_type, $topic_id, $exam_body_id, $difficulty)) {
+        qb_json(['status' => 'error', 'message' => 'A similar question already exists for this subject, source, and difficulty.']);
     }
 
     if ($question_id > 0) {
@@ -550,8 +558,11 @@ if ($action === 'generate_bank_questions') {
 
     $subject_name = qb_clean_text($_POST['subject_name'] ?? '', 150);
     $topic_name = qb_clean_text($_POST['topic_name'] ?? '', 150);
+    $exam_body_name = qb_clean_text($_POST['exam_body_name'] ?? '', 150);
     $subject_id = (int)($_POST['subject_id'] ?? 0);
-    $topic_id = (int)($_POST['topic_id'] ?? 0);
+    $source_type = in_array($_POST['source_type'] ?? 'topic', ['topic', 'exam_body'], true) ? $_POST['source_type'] : 'topic';
+    $topic_id = $source_type === 'topic' ? (int)($_POST['topic_id'] ?? 0) : 0;
+    $exam_body_id = $source_type === 'exam_body' ? (int)($_POST['exam_body_id'] ?? 0) : 0;
     $difficulty = in_array($_POST['difficulty'] ?? 'Medium', ['Easy', 'Medium', 'Hard', 'Mixed'], true) ? $_POST['difficulty'] : 'Medium';
     $num_questions = min(25, max(1, (int)($_POST['num_questions'] ?? 5)));
     $recommended_class = qb_clean_text($_POST['recommended_class'] ?? '', 100);
@@ -559,9 +570,20 @@ if ($action === 'generate_bank_questions') {
     $question_category = qb_clean_text($_POST['question_category'] ?? '', 100);
     $curriculum_context = qb_clean_text($_POST['curriculum_context'] ?? '', 500);
 
-    if ($subject_id <= 0 || $topic_id <= 0 || $subject_name === '' || $topic_name === '') {
-        qb_json(['status' => 'error', 'message' => 'Subject and topic are required for bank generation.']);
+    if ($subject_id <= 0 || $subject_name === '') {
+        qb_json(['status' => 'error', 'message' => 'Subject is required for bank generation.']);
     }
+
+    if ($source_type === 'topic' && ($topic_id <= 0 || $topic_name === '')) {
+        qb_json(['status' => 'error', 'message' => 'Select a topic before generating topic-based bank questions.']);
+    }
+
+    if ($source_type === 'exam_body' && ($exam_body_id <= 0 || $exam_body_name === '')) {
+        qb_json(['status' => 'error', 'message' => 'Select an exam body before generating exam-body bank questions.']);
+    }
+
+    $source_label = $source_type === 'exam_body' ? 'Exam body' : 'Topic';
+    $source_name = $source_type === 'exam_body' ? $exam_body_name : $topic_name;
 
     $usage = ss360_ai_usage_can_consume($conn, $userid, $num_questions);
     if (!$usage['allowed']) {
@@ -593,11 +615,13 @@ Rules:
 - Each question must have exactly 4 options.
 - Exactly one option must be correct.
 - Avoid curriculum-order assumptions; class and term are only optional guidance.
+- If an exam body is provided, create original questions suitable for that exam style. Do not copy real past questions verbatim.
 - Do not include markdown outside the JSON.";
 
     $user_prompt = "Generate $num_questions multiple-choice questions.
 Subject: $subject_name
-Topic: $topic_name
+Source type: $source_label
+$source_label: $source_name
 Difficulty: $difficulty
 Recommended class/level: " . ($recommended_class !== '' ? $recommended_class : 'Not specified') . "
 Term tag: " . ($term_tag !== '' ? $term_tag : 'Not specified') . "
@@ -643,18 +667,17 @@ Curriculum/context: " . ($curriculum_context !== '' ? $curriculum_context : 'Use
             $item_options[] = ['text' => $option_text, 'is_correct' => $is_correct];
         }
 
-        if ($item_question === '' || count($item_options) !== 4 || $correct_count !== 1 || qb_question_duplicate_exists($conn, 0, $item_question, $subject_id, $topic_id, $item_difficulty)) {
+        if ($item_question === '' || count($item_options) !== 4 || $correct_count !== 1 || qb_question_duplicate_exists($conn, 0, $item_question, $subject_id, $source_type, $topic_id, $exam_body_id, $item_difficulty)) {
             $skipped++;
             continue;
         }
 
-        $source_type = 'topic';
         $review_status = 'draft';
         $stmt = $conn->prepare("INSERT INTO question_bank
             (question, subject_id, class_id, source_type, exam_body_id, topic_id, difficulty, recommended_class, term_tag,
              question_category, explanation, review_status, school_id, createdby, datecreated)
-            VALUES (?, ?, 0, ?, 0, ?, ?, ?, ?, ?, ?, ?, 0, ?, NOW())");
-        $stmt->bind_param("sisissssssi", $item_question, $subject_id, $source_type, $topic_id, $item_difficulty, $recommended_class, $term_tag, $item_category, $item_explanation, $review_status, $userid);
+            VALUES (?, ?, 0, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, NOW())");
+        $stmt->bind_param("sisiissssssi", $item_question, $subject_id, $source_type, $exam_body_id, $topic_id, $item_difficulty, $recommended_class, $term_tag, $item_category, $item_explanation, $review_status, $userid);
         if (!$stmt->execute()) {
             $skipped++;
             continue;
