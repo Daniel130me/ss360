@@ -33,9 +33,42 @@ function qb_is_ss360_admin()
     return (int)($_SESSION['school_id'] ?? -1) === 0;
 }
 
+function qb_ensure_platform_admin_schema($conn)
+{
+    mysqli_query($conn, "CREATE TABLE IF NOT EXISTS ss360_platform_admins (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        staff_id INT NOT NULL,
+        school_id INT NOT NULL,
+        status TINYINT(1) NOT NULL DEFAULT 1,
+        datecreated DATETIME NULL,
+        UNIQUE KEY uniq_ss360_platform_admin (staff_id, school_id),
+        KEY idx_ss360_platform_admin_status (status)
+    )");
+}
+
+function qb_is_allowed_platform_admin($conn)
+{
+    if (qb_is_ss360_admin()) {
+        return true;
+    }
+
+    qb_ensure_platform_admin_schema($conn);
+    $staff_id = (int)($_SESSION['userid'] ?? 0);
+    $school_id = (int)($_SESSION['school_id'] ?? 0);
+    if ($staff_id <= 0 || $school_id <= 0) {
+        return false;
+    }
+
+    $stmt = $conn->prepare("SELECT id FROM ss360_platform_admins WHERE staff_id = ? AND school_id = ? AND status = 1 LIMIT 1");
+    $stmt->bind_param("ii", $staff_id, $school_id);
+    $stmt->execute();
+    return $stmt->get_result()->num_rows > 0;
+}
+
 function qb_require_ss360_admin()
 {
-    if (!qb_is_ss360_admin()) {
+    global $conn;
+    if (!qb_is_allowed_platform_admin($conn)) {
         qb_json(['status' => 'error', 'message' => 'Only SchoolSuite360 admins can manage the global question bank.']);
     }
 }
@@ -65,6 +98,8 @@ function qb_add_index_if_missing($conn, $table, $index, $sql)
 
 function qb_ensure_schema($conn)
 {
+    qb_ensure_platform_admin_schema($conn);
+
     mysqli_query($conn, "CREATE TABLE IF NOT EXISTS question_bank (
         id INT AUTO_INCREMENT PRIMARY KEY,
         question TEXT NOT NULL,
