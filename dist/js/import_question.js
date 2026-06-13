@@ -193,7 +193,7 @@ function fetchBankQuestions() {
     });
 }
 
-function renderImportedQuestionsList(questions, sourceType) {
+function renderImportedQuestionsList(questions, sourceType, checkedByDefault = false) {
     let html = '';
     if (questions.length === 0) {
         html = '<div class="alert alert-info">No questions found matching the selected filters.</div>';
@@ -239,7 +239,7 @@ function renderImportedQuestionsList(questions, sourceType) {
                     <div class="card-body">
                         <div class="d-flex align-items-start">
                             <div class="icheck-primary mr-3 mt-1">
-                                <input type="checkbox" id="import_q_${q.id}" class="import-question-checkbox" value="${q.id}">
+                                <input type="checkbox" id="import_q_${q.id}" class="import-question-checkbox" value="${q.id}" ${checkedByDefault ? 'checked' : ''}>
                                 <label for="import_q_${q.id}"></label>
                             </div>
                             <div style="flex-grow: 1; max-height: 250px; overflow-y: auto;">
@@ -371,9 +371,10 @@ function buildFromBank() {
                 toastr.error(res.message || 'Unable to build from bank.');
                 return;
             }
-            res.data.forEach(qData => addImportedQuestionToDOM(qData));
-            $('#importQuestionModal').modal('hide');
-            toastr.success(`Built ${res.data.length} question(s) from the bank.`);
+            renderImportedQuestionsList(res.data, 'Topics', true);
+            renderImportPagination({ page: 1, total_pages: 1, total_count: res.data.length });
+            $('#import-questions-list')[0]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            toastr.success(`Prepared ${res.data.length} question(s). Review them, then click Import Selected Questions.`);
         } catch (e) {
             toastr.error('Unable to parse bank builder response.');
         }
