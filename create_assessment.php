@@ -540,6 +540,7 @@ if ($assessment_id) {
                                                         </div>
                                                         <!-- <button type="button" class="btn btn-success btn-sm mt-2 mr-2" onclick="saveQuestion(this.closest('.question-block'))">Save Question</button> -->
                                                         <button type="button" class="btn btn-danger btn-sm mt-2" onclick="deleteQuestion(<?= $qdata['question']['id'] ?>)">Delete Question</button>
+                                                        <button type="button" class="btn btn-outline-success btn-sm mt-2 ml-2 regenerate-question-btn" onclick="openRegenerateQuestionModal(this)">Regenerate with AI</button>
                                                     </div>
                                                 <?php endforeach; ?>
                                             </div>
@@ -789,6 +790,44 @@ if ($assessment_id) {
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             <button type="button" class="btn btn-success" id="ai-generate-btn" onclick="generateQuestionsWithAI()">Generate</button>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Regenerate Single Question Modal -->
+        <div class="modal fade" id="aiRegenerateQuestionModal" tabindex="-1" role="dialog" aria-labelledby="aiRegenerateQuestionModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title" id="aiRegenerateQuestionModalLabel">Regenerate Question with AI</h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body bg-light">
+                        <div class="form-group border bg-white p-2 rounded">
+                            <label>Rewrite Context</label>
+                            <textarea class="form-control ai-summernote" id="ai_regenerate_context" rows="6" placeholder="Describe how you want this question rewritten."></textarea>
+                        </div>
+                        <div class="form-group border bg-white p-2 rounded">
+                            <label>Level of Difficulty</label>
+                            <select class="form-control" id="ai_regenerate_difficulty">
+                                <option value="Easy">Easy</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="Hard">Hard</option>
+                            </select>
+                        </div>
+                        <div id="ai-regenerate-loading-indicator" style="display:none; text-align:center; padding:10px;">
+                            <div class="spinner-border text-success" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <p class="mt-2 mb-0">Regenerating this question with AI...</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-success" id="ai-regenerate-btn" onclick="regenerateCurrentQuestionWithAI()">Regenerate</button>
                     </div>
                 </div>
             </div>

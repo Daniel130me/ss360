@@ -1399,6 +1399,7 @@ switch ($action) {
             $html .= "    </div>"; // .row
             $html .= "  </div>"; // .options-container
             $html .= "  <button type=\"button\" class=\"btn btn-danger btn-sm mt-2\" onclick=\"deleteQuestion($qid)\">Delete Question</button>";
+            $html .= "  <button type=\"button\" class=\"btn btn-outline-success btn-sm mt-2 ml-2 regenerate-question-btn\" onclick=\"openRegenerateQuestionModal(this)\">Regenerate with AI</button>";
             $html .= "</div>"; // .question-block
             $i++;
         }
