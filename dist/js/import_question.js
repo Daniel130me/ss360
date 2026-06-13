@@ -120,7 +120,7 @@ function bindImportFilterEvents() {
         fetchBankQuestions();
     });
 
-    $('#import_class_filter, #import_exam_body, #import_topic, #import_difficulty, #import_term_tag, #import_question_category')
+    $('#import_class_filter, #import_exam_body, #import_topic, #import_difficulty, #import_term_tag, #import_question_category, #import_search')
         .off('input change')
         .on('input change', function () {
             currentImportPage = 1;
@@ -173,6 +173,7 @@ function fetchBankQuestions() {
             difficulty: $('#import_difficulty').val(),
             term_tag: $('#import_term_tag').val(),
             question_category: $('#import_question_category').val(),
+            search: $('#import_search').val(),
             recommended_class: source_type === 'Topics' ? selectedClassName() : '',
             page: currentImportPage,
             per_page: 5

@@ -721,6 +721,11 @@ if ($assessment_id) {
                             <small class="text-muted d-block mt-2">Uses approved topic questions first, sorted by quality and usage balance.</small>
                         </div>
 
+                        <div class="form-group border bg-white p-2 rounded">
+                            <label>Search Questions / Options</label>
+                            <input type="search" class="form-control" id="import_search" placeholder="Search question text or option text">
+                        </div>
+
                         <hr>
                         <h6 class="font-weight-bold">Questions</h6>
                         <div id="import-questions-list" style="max-height: 400px; overflow-y:auto;" class="mb-3">
