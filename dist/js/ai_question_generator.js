@@ -60,42 +60,67 @@ function updateAIUsageBadge(usage, limit, remaining) {
 
 let aiRegenerateTargetBlock = null;
 
-function getQuestionBlockHtml($block) {
-    const $questionTextarea = $block.find('.question-textarea').first();
+function getRichTextareaHtml($textarea) {
     try {
-        if ($questionTextarea.next('.note-editor').length) {
-            return $questionTextarea.summernote('code');
+        if ($textarea.next('.note-editor').length) {
+            return $textarea.summernote('code');
         }
     } catch (e) {
         // Fall back to the raw textarea value when Summernote is not active.
     }
-    return $questionTextarea.val() || '';
+    return $textarea.val() || '';
 }
 
-function setQuestionBlockHtml($block, html) {
-    const $questionTextarea = $block.find('.question-textarea').first();
+function setRichTextareaHtml($textarea, html) {
     try {
-        if ($questionTextarea.next('.note-editor').length) {
-            $questionTextarea.summernote('code', html);
+        if ($textarea.next('.note-editor').length) {
+            $textarea.summernote('code', html);
             return;
         }
     } catch (e) {
         // Fall back to direct textarea assignment when Summernote is not active.
     }
-    $questionTextarea.val(html);
+    $textarea.val(html);
+}
+
+function getQuestionBlockHtml($block) {
+    return getRichTextareaHtml($block.find('.question-textarea').first());
+}
+
+function setQuestionBlockHtml($block, html) {
+    setRichTextareaHtml($block.find('.question-textarea').first(), html);
+}
+
+function getAssessmentSubjectLabel() {
+    const $subjectField = $('#select_subject_field');
+    if ($subjectField.is('select')) {
+        const selectedText = $subjectField.find('option:selected').text().trim();
+        if (selectedText && selectedText.toLowerCase() !== 'select subject') {
+            return selectedText;
+        }
+    }
+
+    const importSubjectText = $('#import_subject_filter option:selected').text().trim();
+    if (importSubjectText && importSubjectText.toLowerCase() !== 'select subject') {
+        return importSubjectText;
+    }
+
+    return '';
 }
 
 function collectRegenerateContext($block) {
     const questionHtml = getQuestionBlockHtml($block);
+    const subjectLabel = getAssessmentSubjectLabel();
     const optionLines = [];
     $block.find('.option-group').each(function (index) {
         const letter = String.fromCharCode(65 + index);
-        const optionText = $(this).find('.option-textarea').val() || '';
+        const optionHtml = getRichTextareaHtml($(this).find('.option-textarea').first());
+        const optionText = $('<div>').html(optionHtml).text().trim() || optionHtml;
         const isCorrect = $(this).find('input[type="radio"]').is(':checked') ? ' (correct)' : '';
         optionLines.push(`${letter}. ${optionText}${isCorrect}`);
     });
 
-    return `Current question:\n${$('<div>').html(questionHtml).text().trim() || questionHtml}\n\nCurrent options:\n${optionLines.join('\n')}\n\nRewrite instruction:\nRegenerate this question while keeping the same general assessment purpose.`;
+    return `Assessment subject: ${subjectLabel || 'Use the current assessment subject'}\n\nCurrent question:\n${$('<div>').html(questionHtml).text().trim() || questionHtml}\n\nCurrent options:\n${optionLines.join('\n')}\n\nRewrite instruction:\nRegenerate this question while keeping the same subject and general assessment purpose.`;
 }
 
 function openRegenerateQuestionModal(button) {
@@ -240,7 +265,8 @@ function regenerateCurrentQuestionWithAI() {
         data: {
             action: 'regenerate_question',
             context: turndownService.turndown(contextHTML),
-            difficulty: $('#ai_regenerate_difficulty').val()
+            difficulty: $('#ai_regenerate_difficulty').val(),
+            subject_id: $('#select_subject_field').val() || $('#import_subject_filter').val() || ''
         },
         success: function (response) {
             $('#ai-regenerate-loading-indicator').hide();
@@ -284,7 +310,7 @@ function replaceQuestionBlockWithAI($block, qData) {
         const $radio = $group.find('input[type="radio"]');
         $radio.attr('id', radioId).prop('checked', !!isCorrect);
         $group.find('label').first().attr('for', radioId);
-        $group.find('.option-textarea').val(optionText);
+        setRichTextareaHtml($group.find('.option-textarea').first(), optionText);
     });
 
     $block.addClass('border border-success');
