@@ -2690,7 +2690,7 @@ WHERE NOT EXISTS (SELECT 1 FROM question_bank_options WHERE question_id = @quest
 SET @source_marker := 'WAEC 2025 English - Item 131 - Question 131';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @english_subject_id AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: WAEC 2025 English - Item 131 - Question 131</small></p><p><strong>WAEC 2025 English - Question 131</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/ɔɪ/</strong></p>', @english_subject_id, 0, 'exam_body', @waec_exam_body_id, 0, 'Medium', 'SSS3', '', 'Phonetics', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: WAEC 2025 English - Item 131 - Question 131</small></p><p><strong>WAEC 2025 English - Question 131</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/&#596;&#618;/</strong></p>', @english_subject_id, 0, 'exam_body', @waec_exam_body_id, 0, 'Medium', 'SSS3', '', 'Phonetics', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 INSERT INTO question_bank_options (question_id, options, answer, deleted)
@@ -2710,7 +2710,7 @@ WHERE NOT EXISTS (SELECT 1 FROM question_bank_options WHERE question_id = @quest
 SET @source_marker := 'WAEC 2025 English - Item 132 - Question 132';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @english_subject_id AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: WAEC 2025 English - Item 132 - Question 132</small></p><p><strong>WAEC 2025 English - Question 132</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/ɜː/</strong></p>', @english_subject_id, 0, 'exam_body', @waec_exam_body_id, 0, 'Medium', 'SSS3', '', 'Phonetics', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: WAEC 2025 English - Item 132 - Question 132</small></p><p><strong>WAEC 2025 English - Question 132</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/&#604;&#720;/</strong></p>', @english_subject_id, 0, 'exam_body', @waec_exam_body_id, 0, 'Medium', 'SSS3', '', 'Phonetics', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 INSERT INTO question_bank_options (question_id, options, answer, deleted)
@@ -2730,7 +2730,7 @@ WHERE NOT EXISTS (SELECT 1 FROM question_bank_options WHERE question_id = @quest
 SET @source_marker := 'WAEC 2025 English - Item 133 - Question 133';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @english_subject_id AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: WAEC 2025 English - Item 133 - Question 133</small></p><p><strong>WAEC 2025 English - Question 133</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/ʃ/</strong></p>', @english_subject_id, 0, 'exam_body', @waec_exam_body_id, 0, 'Medium', 'SSS3', '', 'Phonetics', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: WAEC 2025 English - Item 133 - Question 133</small></p><p><strong>WAEC 2025 English - Question 133</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/&#643;/</strong></p>', @english_subject_id, 0, 'exam_body', @waec_exam_body_id, 0, 'Medium', 'SSS3', '', 'Phonetics', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 INSERT INTO question_bank_options (question_id, options, answer, deleted)
@@ -2750,7 +2750,7 @@ WHERE NOT EXISTS (SELECT 1 FROM question_bank_options WHERE question_id = @quest
 SET @source_marker := 'WAEC 2025 English - Item 134 - Question 134';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @english_subject_id AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: WAEC 2025 English - Item 134 - Question 134</small></p><p><strong>WAEC 2025 English - Question 134</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/ʊ/</strong></p>', @english_subject_id, 0, 'exam_body', @waec_exam_body_id, 0, 'Medium', 'SSS3', '', 'Phonetics', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: WAEC 2025 English - Item 134 - Question 134</small></p><p><strong>WAEC 2025 English - Question 134</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/&#650;/</strong></p>', @english_subject_id, 0, 'exam_body', @waec_exam_body_id, 0, 'Medium', 'SSS3', '', 'Phonetics', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 INSERT INTO question_bank_options (question_id, options, answer, deleted)
@@ -2770,7 +2770,7 @@ WHERE NOT EXISTS (SELECT 1 FROM question_bank_options WHERE question_id = @quest
 SET @source_marker := 'WAEC 2025 English - Item 135 - Question 135';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @english_subject_id AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: WAEC 2025 English - Item 135 - Question 135</small></p><p><strong>WAEC 2025 English - Question 135</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/æ/</strong></p>', @english_subject_id, 0, 'exam_body', @waec_exam_body_id, 0, 'Medium', 'SSS3', '', 'Phonetics', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: WAEC 2025 English - Item 135 - Question 135</small></p><p><strong>WAEC 2025 English - Question 135</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/&#230;/</strong></p>', @english_subject_id, 0, 'exam_body', @waec_exam_body_id, 0, 'Medium', 'SSS3', '', 'Phonetics', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 INSERT INTO question_bank_options (question_id, options, answer, deleted)
@@ -2790,7 +2790,7 @@ WHERE NOT EXISTS (SELECT 1 FROM question_bank_options WHERE question_id = @quest
 SET @source_marker := 'WAEC 2025 English - Item 136 - Question 136';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @english_subject_id AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: WAEC 2025 English - Item 136 - Question 136</small></p><p><strong>WAEC 2025 English - Question 136</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/dʒ/</strong></p>', @english_subject_id, 0, 'exam_body', @waec_exam_body_id, 0, 'Medium', 'SSS3', '', 'Phonetics', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: WAEC 2025 English - Item 136 - Question 136</small></p><p><strong>WAEC 2025 English - Question 136</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/d&#658;/</strong></p>', @english_subject_id, 0, 'exam_body', @waec_exam_body_id, 0, 'Medium', 'SSS3', '', 'Phonetics', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 INSERT INTO question_bank_options (question_id, options, answer, deleted)
@@ -2810,7 +2810,7 @@ WHERE NOT EXISTS (SELECT 1 FROM question_bank_options WHERE question_id = @quest
 SET @source_marker := 'WAEC 2025 English - Item 137 - Question 137';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @english_subject_id AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: WAEC 2025 English - Item 137 - Question 137</small></p><p><strong>WAEC 2025 English - Question 137</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/ŋ/</strong></p>', @english_subject_id, 0, 'exam_body', @waec_exam_body_id, 0, 'Medium', 'SSS3', '', 'Phonetics', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: WAEC 2025 English - Item 137 - Question 137</small></p><p><strong>WAEC 2025 English - Question 137</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/&#331;/</strong></p>', @english_subject_id, 0, 'exam_body', @waec_exam_body_id, 0, 'Medium', 'SSS3', '', 'Phonetics', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 INSERT INTO question_bank_options (question_id, options, answer, deleted)
@@ -2830,7 +2830,7 @@ WHERE NOT EXISTS (SELECT 1 FROM question_bank_options WHERE question_id = @quest
 SET @source_marker := 'WAEC 2025 English - Item 138 - Question 138';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @english_subject_id AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: WAEC 2025 English - Item 138 - Question 138</small></p><p><strong>WAEC 2025 English - Question 138</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/θ/</strong></p>', @english_subject_id, 0, 'exam_body', @waec_exam_body_id, 0, 'Medium', 'SSS3', '', 'Phonetics', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: WAEC 2025 English - Item 138 - Question 138</small></p><p><strong>WAEC 2025 English - Question 138</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/&#952;/</strong></p>', @english_subject_id, 0, 'exam_body', @waec_exam_body_id, 0, 'Medium', 'SSS3', '', 'Phonetics', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 INSERT INTO question_bank_options (question_id, options, answer, deleted)
@@ -2850,7 +2850,7 @@ WHERE NOT EXISTS (SELECT 1 FROM question_bank_options WHERE question_id = @quest
 SET @source_marker := 'WAEC 2025 English - Item 139 - Question 139';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @english_subject_id AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: WAEC 2025 English - Item 139 - Question 139</small></p><p><strong>WAEC 2025 English - Question 139</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/eɪ/</strong></p>', @english_subject_id, 0, 'exam_body', @waec_exam_body_id, 0, 'Medium', 'SSS3', '', 'Phonetics', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: WAEC 2025 English - Item 139 - Question 139</small></p><p><strong>WAEC 2025 English - Question 139</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/e&#618;/</strong></p>', @english_subject_id, 0, 'exam_body', @waec_exam_body_id, 0, 'Medium', 'SSS3', '', 'Phonetics', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 INSERT INTO question_bank_options (question_id, options, answer, deleted)
@@ -2885,6 +2885,44 @@ WHERE NOT EXISTS (SELECT 1 FROM question_bank_options WHERE question_id = @quest
 INSERT INTO question_bank_options (question_id, options, answer, deleted)
 SELECT @question_id, 'haste', 0, 0
 WHERE NOT EXISTS (SELECT 1 FROM question_bank_options WHERE question_id = @question_id AND options = 'haste' AND deleted = 0);
+
+-- Repair already-imported phonetic-symbol rows if a client converted the
+-- original UTF-8 symbols to question marks while running this migration.
+UPDATE question_bank
+SET question = '<p><small>Source: WAEC 2025 English - Item 131 - Question 131</small></p><p><strong>WAEC 2025 English - Question 131</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/&#596;&#618;/</strong></p>'
+WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @english_subject_id AND question LIKE '%WAEC 2025 English - Item 131 - Question 131%';
+
+UPDATE question_bank
+SET question = '<p><small>Source: WAEC 2025 English - Item 132 - Question 132</small></p><p><strong>WAEC 2025 English - Question 132</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/&#604;&#720;/</strong></p>'
+WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @english_subject_id AND question LIKE '%WAEC 2025 English - Item 132 - Question 132%';
+
+UPDATE question_bank
+SET question = '<p><small>Source: WAEC 2025 English - Item 133 - Question 133</small></p><p><strong>WAEC 2025 English - Question 133</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/&#643;/</strong></p>'
+WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @english_subject_id AND question LIKE '%WAEC 2025 English - Item 133 - Question 133%';
+
+UPDATE question_bank
+SET question = '<p><small>Source: WAEC 2025 English - Item 134 - Question 134</small></p><p><strong>WAEC 2025 English - Question 134</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/&#650;/</strong></p>'
+WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @english_subject_id AND question LIKE '%WAEC 2025 English - Item 134 - Question 134%';
+
+UPDATE question_bank
+SET question = '<p><small>Source: WAEC 2025 English - Item 135 - Question 135</small></p><p><strong>WAEC 2025 English - Question 135</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/&#230;/</strong></p>'
+WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @english_subject_id AND question LIKE '%WAEC 2025 English - Item 135 - Question 135%';
+
+UPDATE question_bank
+SET question = '<p><small>Source: WAEC 2025 English - Item 136 - Question 136</small></p><p><strong>WAEC 2025 English - Question 136</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/d&#658;/</strong></p>'
+WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @english_subject_id AND question LIKE '%WAEC 2025 English - Item 136 - Question 136%';
+
+UPDATE question_bank
+SET question = '<p><small>Source: WAEC 2025 English - Item 137 - Question 137</small></p><p><strong>WAEC 2025 English - Question 137</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/&#331;/</strong></p>'
+WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @english_subject_id AND question LIKE '%WAEC 2025 English - Item 137 - Question 137%';
+
+UPDATE question_bank
+SET question = '<p><small>Source: WAEC 2025 English - Item 138 - Question 138</small></p><p><strong>WAEC 2025 English - Question 138</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/&#952;/</strong></p>'
+WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @english_subject_id AND question LIKE '%WAEC 2025 English - Item 138 - Question 138%';
+
+UPDATE question_bank
+SET question = '<p><small>Source: WAEC 2025 English - Item 139 - Question 139</small></p><p><strong>WAEC 2025 English - Question 139</strong></p><p><em>Choose the word that contains the sound represented by the given phonetic symbol.</em></p><p><strong>/e&#618;/</strong></p>'
+WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @english_subject_id AND question LIKE '%WAEC 2025 English - Item 139 - Question 139%';
 
 COMMIT;
 
