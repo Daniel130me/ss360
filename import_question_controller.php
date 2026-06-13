@@ -134,6 +134,7 @@ if ($action === 'fetch_bank_questions') {
     $term_tag = iq_clean_text($_POST['term_tag'] ?? '', 50);
     $question_category = iq_clean_text($_POST['question_category'] ?? '', 100);
     $recommended_class = iq_clean_text($_POST['recommended_class'] ?? '', 100);
+    $search = iq_clean_text($_POST['search'] ?? '', 150);
     $page = max(1, (int)($_POST['page'] ?? 1));
     $per_page = min(25, max(1, (int)($_POST['per_page'] ?? 5)));
     $offset = ($page - 1) * $per_page;
@@ -146,14 +147,31 @@ if ($action === 'fetch_bank_questions') {
             iq_json(['status' => 'success', 'data' => [], 'pagination' => ['page' => $page, 'total_pages' => 1, 'total_count' => 0]]);
         }
 
-        $where = "a.school_id = ? AND a.subject_id = ? AND FIND_IN_SET(?, a.class_ids) > 0 AND q.deleted = 0";
-        $count_stmt = $conn->prepare("SELECT COUNT(*) AS total FROM questions q JOIN assessment a ON q.ass_id = a.id WHERE $where");
-        $count_stmt->bind_param("iii", $school_id, $subject_id, $class_id);
+        $where = ["a.school_id = ?", "a.subject_id = ?", "FIND_IN_SET(?, a.class_ids) > 0", "q.deleted = 0"];
+        $params = [$school_id, $subject_id, $class_id];
+        $types = 'iii';
+
+        if ($search !== '') {
+            $where[] = "(q.question LIKE ? OR EXISTS (
+                SELECT 1 FROM options o
+                WHERE o.question_id = q.id AND o.deleted = 0 AND o.options LIKE ?
+            ))";
+            $params[] = '%' . $search . '%';
+            $params[] = '%' . $search . '%';
+            $types .= 'ss';
+        }
+
+        $where_sql = implode(' AND ', $where);
+        $count_stmt = $conn->prepare("SELECT COUNT(*) AS total FROM questions q JOIN assessment a ON q.ass_id = a.id WHERE $where_sql");
+        iq_bind_params($count_stmt, $types, $params);
         $count_stmt->execute();
         $total_count = (int)$count_stmt->get_result()->fetch_assoc()['total'];
 
-        $stmt = $conn->prepare("SELECT q.id, q.question FROM questions q JOIN assessment a ON q.ass_id = a.id WHERE $where ORDER BY q.id DESC LIMIT ? OFFSET ?");
-        $stmt->bind_param("iiiii", $school_id, $subject_id, $class_id, $per_page, $offset);
+        $params[] = $per_page;
+        $params[] = $offset;
+        $types .= 'ii';
+        $stmt = $conn->prepare("SELECT q.id, q.question FROM questions q JOIN assessment a ON q.ass_id = a.id WHERE $where_sql ORDER BY q.id DESC LIMIT ? OFFSET ?");
+        iq_bind_params($stmt, $types, $params);
         $stmt->execute();
         $result = $stmt->get_result();
         while ($row = $result->fetch_assoc()) {
@@ -194,6 +212,16 @@ if ($action === 'fetch_bank_questions') {
             $where[] = "q.question_category LIKE ?";
             $params[] = '%' . $question_category . '%';
             $types .= 's';
+        }
+
+        if ($search !== '') {
+            $where[] = "(q.question LIKE ? OR EXISTS (
+                SELECT 1 FROM question_bank_options o
+                WHERE o.question_id = q.id AND o.deleted = 0 AND o.options LIKE ?
+            ))";
+            $params[] = '%' . $search . '%';
+            $params[] = '%' . $search . '%';
+            $types .= 'ss';
         }
 
         $class_boost = '';
