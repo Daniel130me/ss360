@@ -666,10 +666,59 @@ if ($assessment_id) {
                                     <select class="form-control" id="import_exam_body"></select>
                                 </div>
                                 <div class="form-group border bg-white p-2 rounded" id="import_topic_container" style="display:none;">
-                                    <label>Topic</label>
-                                    <select class="form-control" id="import_topic"></select>
+                                    <label>Topic(s)</label>
+                                    <select class="form-control" id="import_topic" multiple size="5"></select>
+                                    <small class="text-muted">Select one or more topics. Hold Ctrl to select multiple topics.</small>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="row" id="import_soft_filter_container" style="display:none;">
+                            <div class="col-md-4">
+                                <div class="form-group border bg-white p-2 rounded">
+                                    <label>Difficulty</label>
+                                    <select class="form-control" id="import_difficulty">
+                                        <option value="">All</option>
+                                        <option value="Easy">Easy</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="Hard">Hard</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group border bg-white p-2 rounded">
+                                    <label>Term Tag</label>
+                                    <input type="text" class="form-control" id="import_term_tag" placeholder="Optional">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group border bg-white p-2 rounded">
+                                    <label>Category</label>
+                                    <input type="text" class="form-control" id="import_question_category" placeholder="Optional">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border rounded p-3 mb-3" id="bank-builder-container" style="display:none;">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="font-weight-bold mb-0">Build from Bank</h6>
+                                <button type="button" class="btn btn-sm btn-info" id="build-bank-btn">Build Questions</button>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Easy</label>
+                                    <input type="number" min="0" max="50" value="4" class="form-control" id="build_easy_count">
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Medium</label>
+                                    <input type="number" min="0" max="50" value="4" class="form-control" id="build_medium_count">
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Hard</label>
+                                    <input type="number" min="0" max="50" value="2" class="form-control" id="build_hard_count">
+                                </div>
+                            </div>
+                            <small class="text-muted d-block mt-2">Uses approved topic questions first, sorted by quality and usage balance.</small>
                         </div>
 
                         <hr>
