@@ -368,16 +368,9 @@ if ($action === 'build_from_bank') {
     }
 
     $options_map = iq_fetch_options($conn, array_column($questions, 'id'), 'Topics');
-    $used_ids = [];
     foreach ($questions as &$question) {
-        $used_ids[] = (int)$question['id'];
         $question['bank_question_id'] = (int)$question['id'];
         $question['options'] = $options_map[(int)$question['id']] ?? [];
-    }
-
-    if ($used_ids) {
-        $used_str = implode(',', $used_ids);
-        mysqli_query($conn, "UPDATE question_bank SET times_used = times_used + 1, quality_score = quality_score + 1 WHERE id IN ($used_str)");
     }
 
     iq_json(['status' => 'success', 'data' => $questions]);
