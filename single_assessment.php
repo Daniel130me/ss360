@@ -609,8 +609,8 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                             <button type="button" class="btn btn-secondary" id="next-page-btn">Next</button>
                             <!-- Add New Question: only visible on last page or when there is a single page -->
                             <button type="button" class="btn btn-primary" id="add-question-btn" <?= ($page != $total_pages) ? 'style="display:none"' : '' ?>>Add New Question</button>
-                            <button type="button" class="btn btn-info" id="import-question-btn" onclick="openImportQuestionModal()" <?= ($page != $total_pages) ? 'style="display:none"' : '' ?>>Import Question</button>
-                            <button type="button" class="btn btn-success" id="ai-question-btn" onclick="openAIGeneratorModal()" <?= ($page != $total_pages) ? 'style="display:none"' : '' ?>>Generate Question with AI</button>
+                            <button type="button" class="btn btn-info" id="import-question-btn">Import Question</button>
+                            <button type="button" class="btn btn-success" id="ai-question-btn">Generate Question with AI</button>
                             <!-- <button type="button" class="btn btn-success ml-auto" id="save-page-btn">Save Page</button> -->
                             <button type="button" class="btn btn-primary d-block" id="save-all-btn">Save Assessment</button>
                         </div>
@@ -997,6 +997,11 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                         $('#total-pages').text(totalPages);
                         if (currentPage === totalPages) $('#add-question-btn').show();
                         else $('#add-question-btn').hide();
+                        if (typeof pendingAfterNavigation === 'function') {
+                            var afterNavigation = pendingAfterNavigation;
+                            pendingAfterNavigation = null;
+                            afterNavigation();
+                        }
                     }
                     // Hide spinner, show questions
                     $('#questions-loading-spinner').hide();
@@ -1111,6 +1116,7 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
 
         // Intercept navigation: attempt to navigate to newPage via loadPage(newPage)
         var pendingPage = null;
+        var pendingAfterNavigation = null;
 
         function handleNavigationRequest(newPage) {
             if (isDirty) {
@@ -1119,6 +1125,16 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
             } else {
                 loadPage(newPage);
             }
+        }
+
+        function runOnLastPage(action) {
+            if (currentPage === totalPages) {
+                action();
+                return;
+            }
+
+            pendingAfterNavigation = action;
+            handleNavigationRequest(totalPages);
         }
 
         $('#next-page-btn').off('click').on('click', function() {
@@ -1153,8 +1169,21 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
             }
         });
 
+        $('#cancel-continue-btn').off('click').on('click', function() {
+            pendingPage = null;
+            pendingAfterNavigation = null;
+        });
+
         $('#save-all-btn').click(function() {
             saveEntireAssessment();
+        });
+
+        $('#import-question-btn').off('click').on('click', function() {
+            runOnLastPage(openImportQuestionModal);
+        });
+
+        $('#ai-question-btn').off('click').on('click', function() {
+            runOnLastPage(openAIGeneratorModal);
         });
 
         // show/hide add-question on initial load
