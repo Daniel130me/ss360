@@ -772,15 +772,15 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                         <div class="row">
                             <div class="col-md-4">
                                 <label>Easy</label>
-                                <input type="number" min="0" max="50" value="4" class="form-control" id="build_easy_count">
+                                <input type="number" min="0" max="50" value="0" class="form-control" id="build_easy_count">
                             </div>
                             <div class="col-md-4">
                                 <label>Medium</label>
-                                <input type="number" min="0" max="50" value="4" class="form-control" id="build_medium_count">
+                                <input type="number" min="0" max="50" value="0" class="form-control" id="build_medium_count">
                             </div>
                             <div class="col-md-4">
                                 <label>Hard</label>
-                                <input type="number" min="0" max="50" value="2" class="form-control" id="build_hard_count">
+                                <input type="number" min="0" max="50" value="0" class="form-control" id="build_hard_count">
                             </div>
                         </div>
                         <small class="text-muted d-block mt-2">Uses approved topic questions first, sorted by quality and usage balance.</small>
