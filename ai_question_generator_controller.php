@@ -145,6 +145,7 @@ Provide NO OTHER TEXT, NO EXPLANATIONS, AND NO INTRODUCTIONS. Output ONLY valid 
     } else if ($action === 'regenerate_question') {
         $context = trim((string)($_POST['context'] ?? ''));
         $difficulty = $_POST['difficulty'] ?? 'Medium';
+        $subject_id = (int)($_POST['subject_id'] ?? 0);
 
         if ($context === '') {
             echo json_encode(['status' => 'error', 'message' => 'Rewrite context is required.']);
@@ -153,6 +154,20 @@ Provide NO OTHER TEXT, NO EXPLANATIONS, AND NO INTRODUCTIONS. Output ONLY valid 
 
         if (!in_array($difficulty, ['Easy', 'Medium', 'Hard'], true)) {
             $difficulty = 'Medium';
+        }
+
+        $subject_name = '';
+        if ($subject_id > 0) {
+            $subject_stmt = $conn->prepare("SELECT subject FROM subjects WHERE id = ? LIMIT 1");
+            if ($subject_stmt) {
+                $subject_stmt->bind_param('i', $subject_id);
+                $subject_stmt->execute();
+                $subject_result = $subject_stmt->get_result();
+                if ($subject_row = $subject_result->fetch_assoc()) {
+                    $subject_name = trim((string)$subject_row['subject']);
+                }
+                $subject_stmt->close();
+            }
         }
 
         $usage = ss360_ai_usage_can_consume($conn, $userid, 1);
@@ -182,12 +197,16 @@ Rules:
 - Generate exactly one question.
 - Generate exactly four options.
 - Exactly one option must be correct.
+- Keep the regenerated question inside the assessment subject when one is provided.
+- If the assessment subject is English or English Language, generate only English/literacy content; do not generate mathematics, equations, algebra, science, or unrelated subject content unless the teacher explicitly asks for a cross-subject item.
+- If the teacher context conflicts with the assessment subject, keep the assessment subject and satisfy the teacher's style/request within that subject.
 - Respect the teacher's rewrite context and requested difficulty.
 - Preserve useful formatting where needed.
 - If you use math, use standard LaTeX inside \$...\$ or \$\$...\$\$.
 - Do not include explanations, markdown fences, or extra text.";
 
-        $user_prompt = "Rewrite/regenerate this assessment question at a \"$difficulty\" level using the teacher's context below.\n\nTeacher context:\n$context";
+        $subject_line = $subject_name !== '' ? $subject_name : 'Not specified';
+        $user_prompt = "Assessment subject: $subject_line\nDifficulty: \"$difficulty\"\n\nRewrite/regenerate this assessment question using the teacher's context below.\n\nTeacher context:\n$context";
 
         $ai_result = ss360_ai_chat_json($conn, [
             ['role' => 'system', 'content' => $system_prompt],
