@@ -58,6 +58,75 @@ function updateAIUsageBadge(usage, limit, remaining) {
     $('#ai-usage-remaining').text(safeRemaining);
 }
 
+let aiRegenerateTargetBlock = null;
+
+function getQuestionBlockHtml($block) {
+    const $questionTextarea = $block.find('.question-textarea').first();
+    try {
+        if ($questionTextarea.next('.note-editor').length) {
+            return $questionTextarea.summernote('code');
+        }
+    } catch (e) {
+        // Fall back to the raw textarea value when Summernote is not active.
+    }
+    return $questionTextarea.val() || '';
+}
+
+function setQuestionBlockHtml($block, html) {
+    const $questionTextarea = $block.find('.question-textarea').first();
+    try {
+        if ($questionTextarea.next('.note-editor').length) {
+            $questionTextarea.summernote('code', html);
+            return;
+        }
+    } catch (e) {
+        // Fall back to direct textarea assignment when Summernote is not active.
+    }
+    $questionTextarea.val(html);
+}
+
+function collectRegenerateContext($block) {
+    const questionHtml = getQuestionBlockHtml($block);
+    const optionLines = [];
+    $block.find('.option-group').each(function (index) {
+        const letter = String.fromCharCode(65 + index);
+        const optionText = $(this).find('.option-textarea').val() || '';
+        const isCorrect = $(this).find('input[type="radio"]').is(':checked') ? ' (correct)' : '';
+        optionLines.push(`${letter}. ${optionText}${isCorrect}`);
+    });
+
+    return `Current question:\n${$('<div>').html(questionHtml).text().trim() || questionHtml}\n\nCurrent options:\n${optionLines.join('\n')}\n\nRewrite instruction:\nRegenerate this question while keeping the same general assessment purpose.`;
+}
+
+function openRegenerateQuestionModal(button) {
+    aiRegenerateTargetBlock = $(button).closest('.question-block');
+    if (!aiRegenerateTargetBlock.length) {
+        toastr.error('Could not find the question to regenerate.');
+        return;
+    }
+
+    if (!$('#ai_regenerate_context').data('summernote-initialized')) {
+        $('#ai_regenerate_context').summernote({
+            height: 180,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'underline', 'italic', 'superscript', 'subscript']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['insert', ['link', 'picture', 'mathquill']],
+                ['view', ['fullscreen', 'codeview']]
+            ],
+            buttons: typeof _mathquill_loader !== 'undefined' && _mathquill_loader.initialized ? { mathquill: 'mathquill' } : {}
+        });
+        $('#ai_regenerate_context').data('summernote-initialized', true);
+    }
+
+    $('#ai_regenerate_context').summernote('code', $('<div>').text(collectRegenerateContext(aiRegenerateTargetBlock)).html().replace(/\n/g, '<br>'));
+    $('#ai_regenerate_difficulty').val('Medium');
+    $('#ai-regenerate-loading-indicator').hide();
+    $('#ai-regenerate-btn').prop('disabled', false).text('Regenerate');
+    $('#aiRegenerateQuestionModal').modal('show');
+}
+
 function generateQuestionsWithAI() {
     // Get the HTML content from Summernote
     const topicHTML = $('#ai_topic').summernote('code').trim();
@@ -139,6 +208,91 @@ function generateQuestionsWithAI() {
     });
 }
 
+function regenerateCurrentQuestionWithAI() {
+    if (!aiRegenerateTargetBlock || !aiRegenerateTargetBlock.length) {
+        toastr.error('Select a question to regenerate.');
+        return;
+    }
+
+    const contextHTML = $('#ai_regenerate_context').summernote('code').trim();
+    const plainTextContext = $('<div>').html(contextHTML).text().trim();
+    if (!plainTextContext && contextHTML.indexOf('<img') === -1 && contextHTML.indexOf('math-editor-rendered') === -1) {
+        toastr.warning('Please enter rewrite context for this question.');
+        return;
+    }
+
+    const turndownService = new TurndownService();
+    turndownService.addRule('mathquill', {
+        filter: function (node) {
+            return node.nodeName === 'SPAN' && node.className.indexOf('math-editor-rendered') !== -1;
+        },
+        replacement: function (content, node) {
+            return node.outerHTML;
+        }
+    });
+
+    $('#ai-regenerate-loading-indicator').show();
+    $('#ai-regenerate-btn').prop('disabled', true).text('Regenerating...');
+
+    $.ajax({
+        url: '../ai_question_generator_controller.php',
+        type: 'POST',
+        data: {
+            action: 'regenerate_question',
+            context: turndownService.turndown(contextHTML),
+            difficulty: $('#ai_regenerate_difficulty').val()
+        },
+        success: function (response) {
+            $('#ai-regenerate-loading-indicator').hide();
+            $('#ai-regenerate-btn').prop('disabled', false).text('Regenerate');
+            try {
+                const res = typeof response === 'string' ? JSON.parse(response) : response;
+                if (res.status !== 'success') {
+                    toastr.error(res.message || 'Failed to regenerate question.');
+                    return;
+                }
+
+                replaceQuestionBlockWithAI(aiRegenerateTargetBlock, res.data);
+                if (res.usage !== undefined) {
+                    updateAIUsageBadge(res.usage, res.limit, res.remaining);
+                }
+                $('#aiRegenerateQuestionModal').modal('hide');
+                toastr.success('Question regenerated. Review it before saving.');
+            } catch (e) {
+                console.error('Error parsing regenerate response', e);
+                toastr.error('An error occurred while parsing the regenerated question.');
+            }
+        },
+        error: function () {
+            $('#ai-regenerate-loading-indicator').hide();
+            $('#ai-regenerate-btn').prop('disabled', false).text('Regenerate');
+            toastr.error('Server error while regenerating the question.');
+        }
+    });
+}
+
+function replaceQuestionBlockWithAI($block, qData) {
+    setQuestionBlockHtml($block, qData.question || '');
+    const randomId = Math.floor(Math.random() * 1000000);
+
+    $block.find('.option-group').each(function (index) {
+        const option = qData.options && qData.options[index] ? qData.options[index] : null;
+        const optionText = option ? (option.text || option.options || '') : '';
+        const isCorrect = option && (option.is_correct === true || option.is_correct === 'true' || option.answer == 1);
+        const radioId = `radio_regen_${randomId}_${index}`;
+        const $group = $(this);
+        const $radio = $group.find('input[type="radio"]');
+        $radio.attr('id', radioId).prop('checked', !!isCorrect);
+        $group.find('label').first().attr('for', radioId);
+        $group.find('.option-textarea').val(optionText);
+    });
+
+    $block.addClass('border border-success');
+    if (typeof markDirty === 'function') {
+        markDirty();
+    }
+}
+
 function addAIGeneratedQuestionToDOM(qData) {
     let maxNum = 0;
     $('#questions-container .question-block').each(function () {
@@ -190,6 +344,7 @@ function addAIGeneratedQuestionToDOM(qData) {
                 </div>
             </div>
             <button type="button" class="btn btn-danger btn-sm mt-2" onclick="$(this).closest('.question-block').remove()">Delete Question</button>
+            <button type="button" class="btn btn-outline-success btn-sm mt-2 ml-2 regenerate-question-btn" onclick="openRegenerateQuestionModal(this)">Regenerate with AI</button>
         </div>
     `;
 
