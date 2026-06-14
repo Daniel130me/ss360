@@ -30,6 +30,7 @@ function iq_ensure_bank_columns($conn)
         'recommended_class' => "ALTER TABLE question_bank ADD recommended_class VARCHAR(100) NULL",
         'term_tag' => "ALTER TABLE question_bank ADD term_tag VARCHAR(50) NULL",
         'question_category' => "ALTER TABLE question_bank ADD question_category VARCHAR(100) NULL",
+        'exam_year' => "ALTER TABLE question_bank ADD exam_year INT NOT NULL DEFAULT 0",
         'explanation' => "ALTER TABLE question_bank ADD explanation TEXT NULL",
         'review_status' => "ALTER TABLE question_bank ADD review_status VARCHAR(20) NOT NULL DEFAULT 'approved'",
         'quality_score' => "ALTER TABLE question_bank ADD quality_score INT NOT NULL DEFAULT 0",
@@ -47,6 +48,10 @@ function iq_ensure_bank_columns($conn)
     if (!iq_table_has_column($conn, 'question_bank_options', 'deleted')) {
         mysqli_query($conn, "ALTER TABLE question_bank_options ADD deleted TINYINT(1) NOT NULL DEFAULT 0");
     }
+
+    mysqli_query($conn, "UPDATE question_bank SET exam_year = 2024 WHERE source_type = 'exam_body' AND exam_year = 0 AND question LIKE '%BECE 2024 English Language - Item%'");
+    mysqli_query($conn, "UPDATE question_bank SET exam_year = 2025 WHERE source_type = 'exam_body' AND exam_year = 0 AND question LIKE '%BECE 2025 English Language - Item%'");
+    mysqli_query($conn, "UPDATE question_bank SET exam_year = 2025 WHERE source_type = 'exam_body' AND exam_year = 0 AND question LIKE '%WAEC 2025 English - Item%'");
 }
 
 function iq_clean_text($value, $max_length = 100)
@@ -90,6 +95,7 @@ if ($action === 'get_import_filters') {
         'subjects' => [],
         'classes' => [],
         'exam_bodies' => [],
+        'exam_years' => [],
         'topics' => [],
     ];
 
@@ -111,6 +117,14 @@ if ($action === 'get_import_filters') {
         $response['exam_bodies'][] = $row;
     }
 
+    $result = mysqli_query($conn, "SELECT exam_body_id, exam_year FROM question_bank WHERE source_type = 'exam_body' AND exam_year > 0 AND deleted = 0 GROUP BY exam_body_id, exam_year ORDER BY exam_year DESC");
+    while ($result && $row = mysqli_fetch_assoc($result)) {
+        $response['exam_years'][] = [
+            'exam_body_id' => (int)$row['exam_body_id'],
+            'exam_year' => (int)$row['exam_year'],
+        ];
+    }
+
     $result = mysqli_query($conn, "SELECT id, topic_name, subject_id, class_id FROM topics ORDER BY topic_name ASC");
     while ($result && $row = mysqli_fetch_assoc($result)) {
         $response['topics'][] = $row;
@@ -124,6 +138,7 @@ if ($action === 'fetch_bank_questions') {
     $class_id = (int)($_POST['class_id'] ?? 0);
     $source_type = $_POST['source_type'] ?? '';
     $exam_body_id = (int)($_POST['exam_body_id'] ?? 0);
+    $exam_year = (int)($_POST['exam_year'] ?? 0);
     $topic_id = (int)($_POST['topic_id'] ?? 0);
     $topic_ids = json_decode($_POST['topic_ids'] ?? '[]', true);
     $topic_ids = array_values(array_filter(array_map('intval', is_array($topic_ids) ? $topic_ids : [])));
@@ -195,6 +210,11 @@ if ($action === 'fetch_bank_questions') {
                 $params[] = $exam_body_id;
                 $types .= 'i';
             }
+            if ($exam_year > 0) {
+                $where[] = "q.exam_year = ?";
+                $params[] = $exam_year;
+                $types .= 'i';
+            }
         } else {
             $where[] = "q.source_type = 'topic'";
             if ($topic_ids) {
@@ -256,7 +276,7 @@ if ($action === 'fetch_bank_questions') {
         $params[] = $per_page;
         $params[] = $offset;
         $types .= 'ii';
-        $sql = "SELECT q.id, q.question, q.difficulty, q.recommended_class, q.term_tag, q.question_category, q.quality_score, q.times_used
+        $sql = "SELECT q.id, q.question, q.difficulty, q.recommended_class, q.term_tag, q.question_category, q.exam_year, q.quality_score, q.times_used
                 FROM question_bank q
                 WHERE $where_sql
                 ORDER BY $class_boost $term_boost q.quality_score DESC, q.times_used DESC, q.id DESC

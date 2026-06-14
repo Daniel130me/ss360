@@ -266,9 +266,19 @@ $is_ss360_admin = ((int)($_SESSION['school_id'] ?? -1) === 0)
                                         <select id="topic_id" class="form-control"></select>
                                     </div>
 
-                                    <div class="form-group d-none" id="exam-body-field">
-                                        <label>Exam Body</label>
-                                        <select id="exam_body_id" class="form-control"></select>
+                                    <div class="row d-none" id="exam-body-field">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Exam Body</label>
+                                                <select id="exam_body_id" class="form-control"></select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Exam Year</label>
+                                                <input type="number" id="exam_year" class="form-control" min="1900" max="2100" placeholder="Optional, e.g. 2025">
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div class="row">
@@ -383,6 +393,12 @@ $is_ss360_admin = ((int)($_SESSION['school_id'] ?? -1) === 0)
                                             <option value="">All</option>
                                             <option value="topic">Topic</option>
                                             <option value="exam_body">Exam Body</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group mb-0">
+                                        <label>Year</label>
+                                        <select id="exam_year_filter" class="form-control">
+                                            <option value="">All</option>
                                         </select>
                                     </div>
                                     <div class="form-group mb-0">
@@ -559,6 +575,7 @@ $is_ss360_admin = ((int)($_SESSION['school_id'] ?? -1) === 0)
             setEditorCode($('#explanation'), '');
             $('#difficulty').val('Medium');
             $('#recommended_class').val('');
+            $('#exam_year').val('');
             $('#term_tag').val('');
             $('#question_category').val('');
             $('#review_status').val('draft');
@@ -585,9 +602,19 @@ $is_ss360_admin = ((int)($_SESSION['school_id'] ?? -1) === 0)
                 fillSelect($('#subject_id'), questionBankMeta.subjects, 'id', 'subject', 'Select Subject');
                 fillSelect($('#subject_filter'), questionBankMeta.subjects, 'id', 'subject', 'All Subjects');
                 fillSelect($('#exam_body_id'), questionBankMeta.exam_bodies, 'id', 'name', 'Select Exam Body');
+                refreshExamYearFilterOptions();
                 refreshTopicOptions();
                 refreshTopicFilterOptions();
             }, 'json');
+        }
+
+        function refreshExamYearFilterOptions() {
+            const years = [...new Set((questionBankMeta.exam_years || []).map(item => parseInt(item.exam_year, 10)).filter(Boolean))].sort((a, b) => b - a);
+            let html = '<option value="">All</option>';
+            years.forEach(year => {
+                html += `<option value="${year}">${year}</option>`;
+            });
+            $('#exam_year_filter').html(html);
         }
 
         function loadQuestions() {
@@ -601,6 +628,7 @@ $is_ss360_admin = ((int)($_SESSION['school_id'] ?? -1) === 0)
                 subject_id: $('#subject_filter').val(),
                 topic_id: $('#topic_filter').val(),
                 source_type: $('#source_filter').val(),
+                exam_year: $('#exam_year_filter').val(),
                 difficulty: $('#difficulty_filter').val(),
                 review_status: $('#review_status_filter').val(),
                 recommended_class: $('#recommended_class_filter').val(),
@@ -634,9 +662,10 @@ $is_ss360_admin = ((int)($_SESSION['school_id'] ?? -1) === 0)
                 `).join('');
 
                 const sourceLabel = question.source_type === 'exam_body'
-                    ? `Exam Body${question.exam_body_name ? ': ' + escapeHtml(question.exam_body_name) : ''}`
+                    ? `Exam Body${question.exam_body_name ? ': ' + escapeHtml(question.exam_body_name) : ''}${question.exam_year > 0 ? ' ' + escapeHtml(question.exam_year) : ''}`
                     : `Topic${question.topic_name ? ': ' + escapeHtml(question.topic_name) : ''}`;
                 const softTags = [
+                    question.exam_year > 0 ? `Year: ${escapeHtml(question.exam_year)}` : '',
                     question.recommended_class ? `Class: ${escapeHtml(question.recommended_class)}` : '',
                     question.term_tag ? `Term: ${escapeHtml(question.term_tag)}` : '',
                     question.question_category ? `Category: ${escapeHtml(question.question_category)}` : '',
@@ -725,6 +754,7 @@ $is_ss360_admin = ((int)($_SESSION['school_id'] ?? -1) === 0)
                 source_type: $('#source_type').val(),
                 topic_id: $('#topic_id').val(),
                 exam_body_id: $('#exam_body_id').val(),
+                exam_year: $('#exam_year').val(),
                 difficulty: $('#difficulty').val(),
                 recommended_class: $('#recommended_class').val(),
                 term_tag: $('#term_tag').val(),
@@ -762,6 +792,7 @@ $is_ss360_admin = ((int)($_SESSION['school_id'] ?? -1) === 0)
             refreshTopicOptions();
             $('#topic_id').val(question.topic_id || '');
             $('#exam_body_id').val(question.exam_body_id || '');
+            $('#exam_year').val(question.exam_year > 0 ? question.exam_year : '');
             $('#options-container').empty();
 
             (question.options || []).forEach(option => addOptionRow(option.options, Number(option.answer) === 1));
@@ -851,6 +882,7 @@ $is_ss360_admin = ((int)($_SESSION['school_id'] ?? -1) === 0)
                 source_type: sourceType,
                 topic_id: $('#topic_id').val(),
                 exam_body_id: $('#exam_body_id').val(),
+                exam_year: $('#exam_year').val(),
                 subject_name: subjectName,
                 topic_name: topicName,
                 exam_body_name: examBodyName,
@@ -962,7 +994,7 @@ $is_ss360_admin = ((int)($_SESSION['school_id'] ?? -1) === 0)
                 $(this).closest('.option-row').remove();
             });
 
-            $('#search_filter, #topic_filter, #source_filter, #difficulty_filter, #review_status_filter, #recommended_class_filter, #term_tag_filter, #category_filter').on('input change', function () {
+            $('#search_filter, #topic_filter, #source_filter, #exam_year_filter, #difficulty_filter, #review_status_filter, #recommended_class_filter, #term_tag_filter, #category_filter').on('input change', function () {
                 currentPage = 1;
                 loadQuestions();
             });

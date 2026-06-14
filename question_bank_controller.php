@@ -107,6 +107,7 @@ function qb_ensure_schema($conn)
         class_id INT NOT NULL DEFAULT 0,
         source_type VARCHAR(30) NOT NULL DEFAULT 'topic',
         exam_body_id INT NOT NULL DEFAULT 0,
+        exam_year INT NOT NULL DEFAULT 0,
         topic_id INT NOT NULL DEFAULT 0,
         difficulty VARCHAR(20) NOT NULL DEFAULT 'Medium',
         recommended_class VARCHAR(100) NULL,
@@ -139,6 +140,7 @@ function qb_ensure_schema($conn)
     $columns = [
         'class_id' => "ALTER TABLE question_bank ADD class_id INT NOT NULL DEFAULT 0",
         'difficulty' => "ALTER TABLE question_bank ADD difficulty VARCHAR(20) NOT NULL DEFAULT 'Medium'",
+        'exam_year' => "ALTER TABLE question_bank ADD exam_year INT NOT NULL DEFAULT 0",
         'recommended_class' => "ALTER TABLE question_bank ADD recommended_class VARCHAR(100) NULL",
         'term_tag' => "ALTER TABLE question_bank ADD term_tag VARCHAR(50) NULL",
         'question_category' => "ALTER TABLE question_bank ADD question_category VARCHAR(100) NULL",
@@ -164,8 +166,14 @@ function qb_ensure_schema($conn)
     }
 
     qb_add_index_if_missing($conn, 'question_bank', 'idx_qb_global_lookup', "ALTER TABLE question_bank ADD INDEX idx_qb_global_lookup (school_id, deleted, review_status, subject_id, topic_id, difficulty)");
+    qb_add_index_if_missing($conn, 'question_bank', 'idx_qb_exam_year_lookup', "ALTER TABLE question_bank ADD INDEX idx_qb_exam_year_lookup (source_type, exam_body_id, exam_year, subject_id, review_status, deleted)");
     qb_add_index_if_missing($conn, 'question_bank', 'idx_qb_soft_filters', "ALTER TABLE question_bank ADD INDEX idx_qb_soft_filters (recommended_class, term_tag, question_category)");
     qb_add_index_if_missing($conn, 'question_bank', 'idx_qb_quality', "ALTER TABLE question_bank ADD INDEX idx_qb_quality (quality_score, times_used)");
+
+    // Backfill imported exam-body papers from their stable source markers.
+    mysqli_query($conn, "UPDATE question_bank SET exam_year = 2024 WHERE source_type = 'exam_body' AND exam_year = 0 AND question LIKE '%BECE 2024 English Language - Item%'");
+    mysqli_query($conn, "UPDATE question_bank SET exam_year = 2025 WHERE source_type = 'exam_body' AND exam_year = 0 AND question LIKE '%BECE 2025 English Language - Item%'");
+    mysqli_query($conn, "UPDATE question_bank SET exam_year = 2025 WHERE source_type = 'exam_body' AND exam_year = 0 AND question LIKE '%WAEC 2025 English - Item%'");
 
     mysqli_query($conn, "CREATE TABLE IF NOT EXISTS question_bank_feedback (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -197,7 +205,7 @@ function qb_normalize_question($value)
     return preg_replace('/[^a-z0-9 ]/', '', $plain);
 }
 
-function qb_question_duplicate_exists($conn, $question_id, $question, $subject_id, $source_type, $topic_id, $exam_body_id, $difficulty)
+function qb_question_duplicate_exists($conn, $question_id, $question, $subject_id, $source_type, $topic_id, $exam_body_id, $exam_year, $difficulty)
 {
     $normalized = qb_normalize_question($question);
     if ($normalized === '') {
@@ -212,8 +220,9 @@ function qb_question_duplicate_exists($conn, $question_id, $question, $subject_i
           AND source_type = ?
           AND topic_id = ?
           AND exam_body_id = ?
+          AND exam_year = ?
           AND difficulty = ?");
-    $stmt->bind_param("iisiis", $question_id, $subject_id, $source_type, $topic_id, $exam_body_id, $difficulty);
+    $stmt->bind_param("iisiiis", $question_id, $subject_id, $source_type, $topic_id, $exam_body_id, $exam_year, $difficulty);
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_assoc()) {
@@ -248,6 +257,7 @@ if ($action === 'get_meta') {
     $subjects = [];
     $topics = [];
     $exam_bodies = [];
+    $exam_years = [];
     $classes = [];
 
     $subject_result = mysqli_query($conn, "SELECT id, subject FROM subjects ORDER BY subject ASC");
@@ -265,6 +275,14 @@ if ($action === 'get_meta') {
         $exam_bodies[] = $row;
     }
 
+    $year_result = mysqli_query($conn, "SELECT exam_body_id, exam_year FROM question_bank WHERE source_type = 'exam_body' AND exam_year > 0 AND deleted = 0 GROUP BY exam_body_id, exam_year ORDER BY exam_year DESC");
+    while ($year_result && $row = mysqli_fetch_assoc($year_result)) {
+        $exam_years[] = [
+            'exam_body_id' => (int)$row['exam_body_id'],
+            'exam_year' => (int)$row['exam_year'],
+        ];
+    }
+
     $class_stmt = $conn->prepare("SELECT id, classname FROM class WHERE school_id = ? ORDER BY id ASC");
     $class_stmt->bind_param("i", $school_id);
     $class_stmt->execute();
@@ -279,6 +297,7 @@ if ($action === 'get_meta') {
             'subjects' => $subjects,
             'topics' => $topics,
             'exam_bodies' => $exam_bodies,
+            'exam_years' => $exam_years,
             'classes' => $classes,
         ],
     ]);
@@ -291,6 +310,7 @@ if ($action === 'list_questions') {
     $search = trim((string)($_POST['search'] ?? ''));
     $subject_id = (int)($_POST['subject_id'] ?? 0);
     $source_type = trim((string)($_POST['source_type'] ?? ''));
+    $exam_year = (int)($_POST['exam_year'] ?? 0);
     $topic_id = (int)($_POST['topic_id'] ?? 0);
     $difficulty = trim((string)($_POST['difficulty'] ?? ''));
     $review_status = trim((string)($_POST['review_status'] ?? ''));
@@ -323,6 +343,12 @@ if ($action === 'list_questions') {
     if ($topic_id > 0) {
         $where[] = "q.topic_id = ?";
         $params[] = $topic_id;
+        $types .= 'i';
+    }
+
+    if ($exam_year > 0) {
+        $where[] = "q.exam_year = ?";
+        $params[] = $exam_year;
         $types .= 'i';
     }
 
@@ -365,7 +391,7 @@ if ($action === 'list_questions') {
     $count_stmt->execute();
     $total = (int)$count_stmt->get_result()->fetch_assoc()['total'];
 
-    $sql = "SELECT q.id, q.question, q.subject_id, q.class_id, q.source_type, q.exam_body_id, q.topic_id, q.difficulty,
+    $sql = "SELECT q.id, q.question, q.subject_id, q.class_id, q.source_type, q.exam_body_id, q.exam_year, q.topic_id, q.difficulty,
                    q.recommended_class, q.term_tag, q.question_category, q.explanation, q.review_status, q.quality_score, q.times_used,
                    s.subject, c.classname, eb.name AS exam_body_name, t.topic_name
             FROM question_bank q
@@ -419,6 +445,7 @@ if ($action === 'save_question') {
     $source_type = in_array($_POST['source_type'] ?? 'topic', ['topic', 'exam_body'], true) ? $_POST['source_type'] : 'topic';
     $topic_id = $source_type === 'topic' ? (int)($_POST['topic_id'] ?? 0) : 0;
     $exam_body_id = $source_type === 'exam_body' ? (int)($_POST['exam_body_id'] ?? 0) : 0;
+    $exam_year = $source_type === 'exam_body' ? max(0, (int)($_POST['exam_year'] ?? 0)) : 0;
     $difficulty = in_array($_POST['difficulty'] ?? 'Medium', ['Easy', 'Medium', 'Hard'], true) ? $_POST['difficulty'] : 'Medium';
     $recommended_class = qb_clean_text($_POST['recommended_class'] ?? '', 100);
     $term_tag = qb_clean_text($_POST['term_tag'] ?? '', 50);
@@ -455,23 +482,23 @@ if ($action === 'save_question') {
         qb_json(['status' => 'error', 'message' => 'Add at least two options and select exactly one correct answer.']);
     }
 
-    if (qb_question_duplicate_exists($conn, $question_id, $question, $subject_id, $source_type, $topic_id, $exam_body_id, $difficulty)) {
+    if (qb_question_duplicate_exists($conn, $question_id, $question, $subject_id, $source_type, $topic_id, $exam_body_id, $exam_year, $difficulty)) {
         qb_json(['status' => 'error', 'message' => 'A similar question already exists for this subject, source, and difficulty.']);
     }
 
     if ($question_id > 0) {
         $stmt = $conn->prepare("UPDATE question_bank
-            SET question = ?, subject_id = ?, class_id = ?, source_type = ?, exam_body_id = ?, topic_id = ?, difficulty = ?,
+            SET question = ?, subject_id = ?, class_id = ?, source_type = ?, exam_body_id = ?, exam_year = ?, topic_id = ?, difficulty = ?,
                 recommended_class = ?, term_tag = ?, question_category = ?, explanation = ?, review_status = ?, dateupdated = NOW()
             WHERE id = ? AND deleted = 0");
-        $stmt->bind_param("siisiissssssi", $question, $subject_id, $class_id, $source_type, $exam_body_id, $topic_id, $difficulty, $recommended_class, $term_tag, $question_category, $explanation, $review_status, $question_id);
+        $stmt->bind_param("siisiiissssssi", $question, $subject_id, $class_id, $source_type, $exam_body_id, $exam_year, $topic_id, $difficulty, $recommended_class, $term_tag, $question_category, $explanation, $review_status, $question_id);
         $saved = $stmt->execute();
     } else {
         $stmt = $conn->prepare("INSERT INTO question_bank
-            (question, subject_id, class_id, source_type, exam_body_id, topic_id, difficulty, recommended_class, term_tag,
+            (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag,
              question_category, explanation, review_status, school_id, createdby, datecreated)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, NOW())");
-        $stmt->bind_param("siisiissssssi", $question, $subject_id, $class_id, $source_type, $exam_body_id, $topic_id, $difficulty, $recommended_class, $term_tag, $question_category, $explanation, $review_status, $userid);
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, NOW())");
+        $stmt->bind_param("siisiiissssssi", $question, $subject_id, $class_id, $source_type, $exam_body_id, $exam_year, $topic_id, $difficulty, $recommended_class, $term_tag, $question_category, $explanation, $review_status, $userid);
         $saved = $stmt->execute();
         $question_id = (int)$conn->insert_id;
     }
@@ -563,6 +590,7 @@ if ($action === 'generate_bank_questions') {
     $source_type = in_array($_POST['source_type'] ?? 'topic', ['topic', 'exam_body'], true) ? $_POST['source_type'] : 'topic';
     $topic_id = $source_type === 'topic' ? (int)($_POST['topic_id'] ?? 0) : 0;
     $exam_body_id = $source_type === 'exam_body' ? (int)($_POST['exam_body_id'] ?? 0) : 0;
+    $exam_year = $source_type === 'exam_body' ? max(0, (int)($_POST['exam_year'] ?? 0)) : 0;
     $difficulty = in_array($_POST['difficulty'] ?? 'Medium', ['Easy', 'Medium', 'Hard', 'Mixed'], true) ? $_POST['difficulty'] : 'Medium';
     $num_questions = min(25, max(1, (int)($_POST['num_questions'] ?? 5)));
     $recommended_class = qb_clean_text($_POST['recommended_class'] ?? '', 100);
@@ -622,6 +650,7 @@ Rules:
 Subject: $subject_name
 Source type: $source_label
 $source_label: $source_name
+Exam year: " . ($exam_year > 0 ? $exam_year : 'Not specified') . "
 Difficulty: $difficulty
 Recommended class/level: " . ($recommended_class !== '' ? $recommended_class : 'Not specified') . "
 Term tag: " . ($term_tag !== '' ? $term_tag : 'Not specified') . "
@@ -667,17 +696,17 @@ Curriculum/context: " . ($curriculum_context !== '' ? $curriculum_context : 'Use
             $item_options[] = ['text' => $option_text, 'is_correct' => $is_correct];
         }
 
-        if ($item_question === '' || count($item_options) !== 4 || $correct_count !== 1 || qb_question_duplicate_exists($conn, 0, $item_question, $subject_id, $source_type, $topic_id, $exam_body_id, $item_difficulty)) {
+        if ($item_question === '' || count($item_options) !== 4 || $correct_count !== 1 || qb_question_duplicate_exists($conn, 0, $item_question, $subject_id, $source_type, $topic_id, $exam_body_id, $exam_year, $item_difficulty)) {
             $skipped++;
             continue;
         }
 
         $review_status = 'draft';
         $stmt = $conn->prepare("INSERT INTO question_bank
-            (question, subject_id, class_id, source_type, exam_body_id, topic_id, difficulty, recommended_class, term_tag,
+            (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag,
              question_category, explanation, review_status, school_id, createdby, datecreated)
-            VALUES (?, ?, 0, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, NOW())");
-        $stmt->bind_param("sisiissssssi", $item_question, $subject_id, $source_type, $exam_body_id, $topic_id, $item_difficulty, $recommended_class, $term_tag, $item_category, $item_explanation, $review_status, $userid);
+            VALUES (?, ?, 0, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, NOW())");
+        $stmt->bind_param("sisiiissssssi", $item_question, $subject_id, $source_type, $exam_body_id, $exam_year, $topic_id, $item_difficulty, $recommended_class, $term_tag, $item_category, $item_explanation, $review_status, $userid);
         if (!$stmt->execute()) {
             $skipped++;
             continue;
