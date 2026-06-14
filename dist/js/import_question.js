@@ -1,7 +1,7 @@
 /* Import Question Feature JavaScript */
 
 let currentImportPage = 1;
-let importFilterData = { subjects: [], classes: [], exam_bodies: [], topics: [] };
+let importFilterData = { subjects: [], classes: [], exam_bodies: [], exam_years: [], topics: [] };
 
 function escapeImportHtml(value) {
     return String(value || '').replace(/[&<>"']/g, function (char) {
@@ -68,6 +68,22 @@ function fillImportFilters() {
         examBodyHtml += `<option value="${e.id}">${escapeImportHtml(e.name)}</option>`;
     });
     $('#import_exam_body').html(examBodyHtml);
+    refreshImportExamYearOptions();
+}
+
+function refreshImportExamYearOptions() {
+    const examBodyId = $('#import_exam_body').val();
+    const years = [...new Set((importFilterData.exam_years || [])
+        .filter(item => !examBodyId || String(item.exam_body_id) === String(examBodyId))
+        .map(item => parseInt(item.exam_year, 10))
+        .filter(Boolean))]
+        .sort((a, b) => b - a);
+
+    let yearHtml = '<option value="">All Years</option>';
+    years.forEach(year => {
+        yearHtml += `<option value="${year}">${year}</option>`;
+    });
+    $('#import_exam_year').html(yearHtml);
 }
 
 function refreshImportTopicOptions() {
@@ -88,6 +104,7 @@ function bindImportFilterEvents() {
         const type = $(this).val();
         $('#import_dynamic_filter_container').hide();
         $('#import_exam_body_container').hide();
+        $('#import_exam_year_container').hide();
         $('#import_topic_container').hide();
         $('#import_soft_filter_container').hide();
         $('#bank-builder-container').hide();
@@ -98,7 +115,9 @@ function bindImportFilterEvents() {
             $classFilterCol.hide();
             $('#import_dynamic_filter_container').show();
             $('#import_exam_body_container').show();
+            $('#import_exam_year_container').show();
             $('#import_soft_filter_container').show();
+            refreshImportExamYearOptions();
         } else if (type === 'Topics') {
             $classFilterCol.show();
             refreshImportTopicOptions();
@@ -120,7 +139,13 @@ function bindImportFilterEvents() {
         fetchBankQuestions();
     });
 
-    $('#import_class_filter, #import_exam_body, #import_topic, #import_difficulty, #import_term_tag, #import_question_category, #import_search')
+    $('#import_exam_body').off('change').on('change', function () {
+        refreshImportExamYearOptions();
+        currentImportPage = 1;
+        fetchBankQuestions();
+    });
+
+    $('#import_class_filter, #import_exam_year, #import_topic, #import_difficulty, #import_term_tag, #import_question_category, #import_search')
         .off('input change')
         .on('input change', function () {
             currentImportPage = 1;
@@ -168,6 +193,7 @@ function fetchBankQuestions() {
             class_id: class_id,
             source_type: source_type,
             exam_body_id: exam_body_id,
+            exam_year: $('#import_exam_year').val(),
             topic_id: topicIds[0] || '',
             topic_ids: JSON.stringify(topicIds),
             difficulty: $('#import_difficulty').val(),
@@ -219,6 +245,7 @@ function renderImportedQuestionsList(questions, sourceType, checkedByDefault = f
             const meta = [
                 q.difficulty ? escapeImportHtml(q.difficulty) : '',
                 q.recommended_class ? `Class: ${escapeImportHtml(q.recommended_class)}` : '',
+                q.exam_year > 0 ? `Year: ${escapeImportHtml(q.exam_year)}` : '',
                 q.term_tag ? `Term: ${escapeImportHtml(q.term_tag)}` : '',
                 q.question_category ? `Category: ${escapeImportHtml(q.question_category)}` : '',
                 q.quality_score !== undefined ? `Quality: ${parseInt(q.quality_score, 10) || 0}` : ''

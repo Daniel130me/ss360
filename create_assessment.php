@@ -661,15 +661,23 @@ if ($assessment_id) {
                             </div>
                         </div>
                         <div class="row" id="import_dynamic_filter_container" style="display:none;">
-                            <div class="col-md-12">
-                                <div class="form-group border bg-white p-2 rounded" id="import_exam_body_container" style="display:none;">
-                                    <label>Exam Body</label>
-                                    <select class="form-control" id="import_exam_body"></select>
+                                <div class="col-md-6">
+                                    <div class="form-group border bg-white p-2 rounded" id="import_exam_body_container" style="display:none;">
+                                        <label>Exam Body</label>
+                                        <select class="form-control" id="import_exam_body"></select>
+                                    </div>
+                                    <div class="form-group border bg-white p-2 rounded" id="import_exam_year_container" style="display:none;">
+                                        <label>Exam Year</label>
+                                        <select class="form-control" id="import_exam_year">
+                                            <option value="">All Years</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="form-group border bg-white p-2 rounded" id="import_topic_container" style="display:none;">
-                                    <label>Topic(s)</label>
-                                    <select class="form-control" id="import_topic" multiple size="5"></select>
-                                    <small class="text-muted">Select one or more topics. Hold Ctrl to select multiple topics.</small>
+                                <div class="col-md-6">
+                                    <div class="form-group border bg-white p-2 rounded" id="import_topic_container" style="display:none;">
+                                        <label>Topic(s)</label>
+                                        <select class="form-control" id="import_topic" multiple size="5"></select>
+                                        <small class="text-muted">Select one or more topics. Hold Ctrl to select multiple topics.</small>
                                 </div>
                             </div>
                         </div>
