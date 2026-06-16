@@ -1,0 +1,41 @@
+question_no,correct_option,source_page,needs_math_review,needs_diagram_review,review_note
+1,,5,no,no,
+2,,5,yes,no,normalize math notation to MathQuill span or safe HTML
+3,,5,no,no,
+4,,5,yes,no,normalize math notation to MathQuill span or safe HTML
+5,,5,no,no,
+6,,5,yes,no,normalize math notation to MathQuill span or safe HTML
+7,,5,yes,no,normalize math notation to MathQuill span or safe HTML
+8,,5,no,no,
+9,,5,no,no,
+10,,6,yes,no,normalize math notation to MathQuill span or safe HTML
+11,,6,no,no,
+12,,6,no,no,
+13,,6,no,no,
+14,,6,yes,no,normalize math notation to MathQuill span or safe HTML
+15,,6,no,no,
+16,,6,no,no,
+17,,6,yes,no,normalize math notation to MathQuill span or safe HTML
+18,,6,no,no,
+19,,6,yes,no,normalize math notation to MathQuill span or safe HTML
+20,,6,yes,yes,normalize math notation to MathQuill span or safe HTML; verify/crop diagram or table from PDF visual page
+21,,6,yes,no,normalize math notation to MathQuill span or safe HTML
+22,,6,yes,no,normalize math notation to MathQuill span or safe HTML
+23,,7,yes,no,normalize math notation to MathQuill span or safe HTML
+24,,7,no,no,
+25,,7,yes,no,normalize math notation to MathQuill span or safe HTML
+26,,7,no,no,
+27,,7,no,no,
+28,,7,yes,yes,normalize math notation to MathQuill span or safe HTML; verify/crop diagram or table from PDF visual page
+29,,7,yes,no,normalize math notation to MathQuill span or safe HTML
+30,,7,yes,no,normalize math notation to MathQuill span or safe HTML
+31,,7,yes,no,normalize math notation to MathQuill span or safe HTML
+32,,7,no,yes,verify/crop diagram or table from PDF visual page
+33,,8,yes,no,normalize math notation to MathQuill span or safe HTML
+34,,8,yes,no,normalize math notation to MathQuill span or safe HTML
+35,,8,yes,yes,normalize math notation to MathQuill span or safe HTML; verify/crop diagram or table from PDF visual page
+36,,8,yes,no,normalize math notation to MathQuill span or safe HTML
+37,,8,yes,no,normalize math notation to MathQuill span or safe HTML
+38,,8,no,no,
+39,,9,yes,no,normalize math notation to MathQuill span or safe HTML
+40,,9,no,yes,verify/crop diagram or table from PDF visual page
