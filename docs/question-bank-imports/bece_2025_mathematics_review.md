@@ -21,6 +21,14 @@ This file is a review source, not a runnable migration. Use it to verify math no
 - Questions needing diagram/table visual review: 5
 - Answer key status: missing from PDF; fill `bece_2025_mathematics_answer_key_template.csv` before generating the SQL migration.
 
+
+## Provisional Answer Review
+
+- Provisional answers have been filled for 38 of 40 questions.
+- Questions 7 and 16 have source/options mismatches and are not migration-ready.
+- Question 32 has a source diagram split across pages and should be redrawn or carefully combined before migration.
+- Final SQL should stay draft-only until these review issues are resolved or explicitly accepted.
+
 ## Notation Policy
 
 - Convert stacked fractions, square roots, vectors, and formulas into `<span class="math-editor-rendered" data-latex="..."></span>`.
@@ -39,7 +47,7 @@ List the members of the set Q = {prime factors of 30}
 - C. {3,5,15}
 - D. {3, 6, 10}
 
-Answer: TODO
+Answer: A
 
 ### Question 2 (PDF page 5; math review)
 
@@ -50,7 +58,7 @@ Find the place value of 7 in 274,345,685?
 - C. 70,000,000
 - D. 700,000,000
 
-Answer: TODO
+Answer: C
 Review note: normalize math notation to MathQuill span or safe HTML
 
 ### Question 3 (PDF page 5; plain text review)
@@ -62,7 +70,7 @@ Find the Highest Common Factor of 18, 42 and 90.
 - C. 9
 - D. 6
 
-Answer: TODO
+Answer: D
 
 ### Question 4 (PDF page 5; math review)
 
@@ -73,7 +81,7 @@ Find the value of √6 1 4
 - C. 2.5
 - D. 2.4
 
-Answer: TODO
+Answer: C
 Review note: normalize math notation to MathQuill span or safe HTML
 
 ### Question 5 (PDF page 5; plain text review)
@@ -85,7 +93,7 @@ If 𝑝 × 𝑞 × 𝑟 = 1197, 𝑎𝑛𝑑  𝑝 = 19, 𝑞 = 3, 𝑓𝑖𝑛�
 - C. 57
 - D. 61
 
-Answer: TODO
+Answer: A
 
 ### Question 6 (PDF page 5; math review)
 
@@ -96,7 +104,7 @@ How many integers are within the interval −5 < 𝑥 < 7?
 - C. 12.
 - D. 13.
 
-Answer: TODO
+Answer: B
 Review note: normalize math notation to MathQuill span or safe HTML
 
 ### Question 7 (PDF page 5; math review)
@@ -108,8 +116,10 @@ Simplify 1 3 (2 2 4 + 5 6 )
 - C. 13 / 18
 - D. 31 / 18
 
-Answer: TODO
+Answer: TODO - source/options mismatch
 Review note: normalize math notation to MathQuill span or safe HTML
+Review note: Source/options mismatch: computed value does not appear in A-D. Keep out of migration until verified.
+
 
 ### Question 8 (PDF page 5; plain text review)
 
@@ -120,7 +130,7 @@ Find the sum of the factors of 72.
 - C. 180
 - D. 195
 
-Answer: TODO
+Answer: D
 
 ### Question 9 (PDF page 5; plain text review)
 
@@ -131,7 +141,7 @@ Simplify 2𝑎𝑏2  × 3𝑎2𝑏
 - C. 6𝑎3𝑏3
 - D. 6𝑎2𝑏2
 
-Answer: TODO
+Answer: C
 
 ### Question 10 (PDF page 6; math review)
 
@@ -142,7 +152,7 @@ What is the value of 𝑥 if 10𝑥 = 1000?
 - C. 3
 - D. 4
 
-Answer: TODO
+Answer: C
 Review note: normalize math notation to MathQuill span or safe HTML
 
 ### Question 11 (PDF page 6; plain text review)
@@ -154,7 +164,7 @@ Subtract 125.47 from 203.90.
 - C. -121.57
 - D. -122.38
 
-Answer: TODO
+Answer: B
 
 ### Question 12 (PDF page 6; plain text review)
 
@@ -165,7 +175,7 @@ Evaluate 0.00494 0.041
 - C. 1.2
 - D. 12.0
 
-Answer: TODO
+Answer: B
 
 ### Question 13 (PDF page 6; plain text review)
 
@@ -176,7 +186,7 @@ Remove the brackets 𝑎 − 2(𝑏 − 3𝑐).
 - C. 𝑎 − 2𝑏 + 6𝑐
 - D. 𝑎 − 3𝑏 + 3𝑏
 
-Answer: TODO
+Answer: C
 
 ### Question 14 (PDF page 6; math review)
 
@@ -187,7 +197,7 @@ Three baskets contain 95 oranges, 𝑥 oranges 2𝑥 oranges. How many oranges a
 - C. 95 + 2𝑥2
 - D. 98𝑥
 
-Answer: TODO
+Answer: B
 Review note: normalize math notation to MathQuill span or safe HTML
 
 ### Question 15 (PDF page 6; plain text review)
@@ -199,7 +209,7 @@ If 𝑎2 − 𝑏2=(a + b)( a- b), evaluate 9.322 − 0.682.
 - C. 74.65
 - D. 10.0
 
-Answer: TODO
+Answer: B
 
 ### Question 16 (PDF page 6; plain text review)
 
@@ -210,7 +220,9 @@ Factorize 𝑎𝑥 +  3𝑥 + 𝑎 + 3
 - C. (𝑥 + 5)(𝑦 + 2)
 - D. (𝑥 + 2)(𝑦 + 5)
 
-Answer: TODO
+Answer: TODO - source/options mismatch
+Review note: Source/options mismatch: factorization appears to have no matching option. Keep out of migration until verified.
+
 
 ### Question 17 (PDF page 6; math review)
 
@@ -221,7 +233,7 @@ If 3 15  is equivalent to 45 𝑎  , find a.
 - C. 252
 - D. 126
 
-Answer: TODO
+Answer: A
 Review note: normalize math notation to MathQuill span or safe HTML
 
 ### Question 18 (PDF page 6; plain text review)
@@ -233,7 +245,7 @@ Add the following numbers 2.4, 0.042, 1.12 and 0.342
 - C. 4.282
 - D. 5.200
 
-Answer: TODO
+Answer: B
 
 ### Question 19 (PDF page 6; math review)
 
@@ -244,10 +256,12 @@ Find 12 1 2  % 0𝑓 𝐺𝐻Ȼ80.00.
 - C. GHȻ12..50
 - D. GHȻ12.00
 
-Answer: TODO
+Answer: B
 Review note: normalize math notation to MathQuill span or safe HTML
 
 ### Question 20 (PDF page 6; math review, diagram/table review)
+
+![Question 20 visual](assets/bece_2025_mathematics/q20_pyramid.png)
 
 What is the name of the figure above?
 
@@ -256,8 +270,10 @@ What is the name of the figure above?
 - C. Triangle
 - D. Pyramid
 
-Answer: TODO
+Answer: D
 Review note: normalize math notation to MathQuill span or safe HTML; verify/crop diagram or table from PDF visual page
+Review note: Visual asset prepared: assets/bece_2025_mathematics/q20_pyramid.png.
+
 
 ### Question 21 (PDF page 6; math review)
 
@@ -268,7 +284,7 @@ A printing machine print 600 books in 3 hours. How many books will the machine p
 - C. 1800 books
 - D. 3000 books
 
-Answer: TODO
+Answer: B
 Review note: normalize math notation to MathQuill span or safe HTML
 
 ### Question 22 (PDF page 6; math review)
@@ -280,7 +296,7 @@ A car uses 150 litres of petrol in 45 minutes. How many litres of petrol will it
 - C. 225 litres
 - D. 200 litres
 
-Answer: TODO
+Answer: D
 Review note: normalize math notation to MathQuill span or safe HTML
 
 ### Question 23 (PDF page 7; math review)
@@ -292,7 +308,7 @@ How many lines of symmetry has an isosceles triangle?
 - C. 3
 - D. 4
 
-Answer: TODO
+Answer: A
 Review note: normalize math notation to MathQuill span or safe HTML
 
 ### Question 24 (PDF page 7; plain text review)
@@ -304,7 +320,7 @@ The volume of is 27𝑐𝑚3. Find the area of one of its faces.
 - C. 9𝑐𝑚2
 - D. 18𝑐𝑚2
 
-Answer: TODO
+Answer: C
 
 ### Question 25 (PDF page 7; math review)
 
@@ -315,7 +331,7 @@ Which of the following best describes the statement: ‘the locus of a point whi
 - C. Circle
 - D. Two parallel lines
 
-Answer: TODO
+Answer: B
 Review note: normalize math notation to MathQuill span or safe HTML
 
 ### Question 26 (PDF page 7; plain text review)
@@ -327,7 +343,7 @@ The interior angle of a regular polygon is135𝑜. How many sides has the polygo
 - C. 9
 - D. 12
 
-Answer: TODO
+Answer: B
 
 ### Question 27 (PDF page 7; plain text review)
 
@@ -338,7 +354,7 @@ If 𝑎 ∗ 𝑏 = 2𝑎 − 𝑏, evaluate 4 ∗ 3.
 - C. 4
 - D. 5
 
-Answer: TODO
+Answer: D
 
 ### Question 28 (PDF page 7; math review, diagram/table review)
 
@@ -349,10 +365,12 @@ Arrange the following numbers in ascending order: 0.5, 3, -5, 0.
 - C. -5,0, 0.5, 3
 - D. -5, 0.5, 0, 3 / Use the mapping below to answer / questions 29 and 30 / 23 → 8 / 22 → 4 / 21 → 2 / 20 → 𝑎 / 2−1 → 𝑏
 
-Answer: TODO
+Answer: C
 Review note: normalize math notation to MathQuill span or safe HTML; verify/crop diagram or table from PDF visual page
 
 ### Question 29 (PDF page 7; math review)
+
+![Question 29 visual](assets/bece_2025_mathematics/q29_q30_mapping.png)
 
 What is the value of a?
 
@@ -361,10 +379,14 @@ What is the value of a?
 - C. 1
 - D. 2
 
-Answer: TODO
+Answer: C
 Review note: normalize math notation to MathQuill span or safe HTML
+Review note: Visual asset prepared: assets/bece_2025_mathematics/q29_q30_mapping.png.
+
 
 ### Question 30 (PDF page 7; math review)
+
+![Question 30 visual](assets/bece_2025_mathematics/q29_q30_mapping.png)
 
 What is value of b?
 
@@ -373,8 +395,10 @@ What is value of b?
 - C. 1 / 4
 - D. 1
 
-Answer: TODO
+Answer: B
 Review note: normalize math notation to MathQuill span or safe HTML
+Review note: Visual asset prepared: assets/bece_2025_mathematics/q29_q30_mapping.png.
+
 
 ### Question 31 (PDF page 7; math review)
 
@@ -385,10 +409,12 @@ Given the points S (5,-2) and T (3, 2), calculate the gradient of the line ST.
 - C. 1 / 2
 - D. 2
 
-Answer: TODO
+Answer: A
 Review note: normalize math notation to MathQuill span or safe HTML
 
 ### Question 32 (PDF page 7; diagram/table review)
+
+![Question 32 visual](assets/bece_2025_mathematics/q32_bearing.png)
 
 The diagram below, calculate the bearing of points X from Y.                                       North                                                  450 X
 
@@ -397,8 +423,10 @@ The diagram below, calculate the bearing of points X from Y.                    
 - C. 0450
 - D. 2250
 
-Answer: TODO
+Answer: D
 Review note: verify/crop diagram or table from PDF visual page
+Review note: Visual asset prepared but source label is split across pages: assets/bece_2025_mathematics/q32_bearing.png. Review/redraw before final migration.
+
 
 ### Question 33 (PDF page 8; math review)
 
@@ -409,7 +437,7 @@ IF r = (3 1) and s = (−2 1 ), calculate 6(r +2s).
 - C. (7 / 3)
 - D. (−6 / 18)
 
-Answer: TODO
+Answer: D
 Review note: normalize math notation to MathQuill span or safe HTML
 
 ### Question 34 (PDF page 8; math review)
@@ -421,7 +449,7 @@ Two sides of a rectangle are 10 cm and 6 cm, calculate the area of a square with
 - C. 60𝑐𝑚2
 - D. 64𝑐𝑚2
 
-Answer: TODO
+Answer: D
 Review note: normalize math notation to MathQuill span or safe HTML
 
 ### Question 35 (PDF page 8; math review, diagram/table review)
@@ -433,10 +461,12 @@ There are 15 girls in a group. If the ratio of the girls to boys is 3: 2, how ma
 - C. 22
 - D. 25 / The table below gives the ages of members of a juvenile club. Use it to answer questions 36 and 37. / Age in years 8 9 10 11 / frequency 5 10 6 9
 
-Answer: TODO
+Answer: D
 Review note: normalize math notation to MathQuill span or safe HTML; verify/crop diagram or table from PDF visual page
 
 ### Question 36 (PDF page 8; math review)
+
+![Question 36 visual](assets/bece_2025_mathematics/q36_q37_table.png)
 
 How many people are in the club?
 
@@ -445,10 +475,14 @@ How many people are in the club?
 - C. 30
 - D. 38
 
-Answer: TODO
+Answer: C
 Review note: normalize math notation to MathQuill span or safe HTML
+Review note: Visual asset prepared: assets/bece_2025_mathematics/q36_q37_table.png.
+
 
 ### Question 37 (PDF page 8; math review)
+
+![Question 37 visual](assets/bece_2025_mathematics/q36_q37_table.png)
 
 What is the modal age of the members of the club?
 
@@ -457,8 +491,10 @@ What is the modal age of the members of the club?
 - C. 10 years
 - D. 11 years
 
-Answer: TODO
+Answer: B
 Review note: normalize math notation to MathQuill span or safe HTML
+Review note: Visual asset prepared: assets/bece_2025_mathematics/q36_q37_table.png.
+
 
 ### Question 38 (PDF page 8; plain text review)
 
@@ -469,7 +505,7 @@ Find the simple interest on GHȻ120,000.00 for 5 months at 12% per annum.
 - C. GHȻ50,000.00
 - D. GHȻ72,000.00
 
-Answer: TODO
+Answer: A
 
 ### Question 39 (PDF page 9; math review)
 
@@ -480,10 +516,12 @@ If S= {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, find the probability that a number select
 - C. 1 / 2
 - D. 5 / 8
 
-Answer: TODO
+Answer: C
 Review note: normalize math notation to MathQuill span or safe HTML
 
 ### Question 40 (PDF page 9; diagram/table review)
+
+![Question 40 visual](assets/bece_2025_mathematics/q40_triangle.png)
 
 In the diagram, UVW is an isosceles triangle, |UV| = |UW| and angle VUW = 70°. Find angle UVW
 
@@ -492,5 +530,6 @@ In the diagram, UVW is an isosceles triangle, |UV| = |UW| and angle VUW = 70°. 
 - C. 55°
 - D. 35°
 
-Answer: TODO
+Answer: C
 Review note: verify/crop diagram or table from PDF visual page
+Review note: Visual asset prepared: assets/bece_2025_mathematics/q40_triangle.png.
