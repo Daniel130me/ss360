@@ -9,6 +9,30 @@ function escapeImportHtml(value) {
     });
 }
 
+function renderImportMathContent($scope) {
+    if (!$scope || !$scope.length) return;
+
+    if (typeof loadMathQuillResources === 'function' && typeof renderEquationsIn === 'function') {
+        loadMathQuillResources(function () {
+            try {
+                renderEquationsIn($scope);
+            } catch (e) {
+                console.warn('Unable to render imported question math.', e);
+            }
+        });
+        return;
+    }
+
+    // Fallback for pages where the editor helpers are unavailable: show the raw LaTeX
+    // instead of leaving formula-only options visually blank.
+    $scope.find('span.math-editor-rendered').each(function () {
+        const latex = $(this).attr('data-latex') || '';
+        if (!$(this).text().trim() && latex) {
+            $(this).text(latex);
+        }
+    });
+}
+
 function openImportQuestionModal() {
     $('#importQuestionModal').modal('show');
     loadImportFilters();
@@ -281,6 +305,7 @@ function renderImportedQuestionsList(questions, sourceType, checkedByDefault = f
         });
     }
     $('#import-questions-list').html(html);
+    renderImportMathContent($('#import-questions-list'));
     $('.bank-feedback-btn').off('click').on('click', function () {
         recordBankFeedback($(this).data('id'), $(this).data('feedback'));
     });
