@@ -1,0 +1,51 @@
+question_number,correct_option,category,has_diagram
+1,C,Number and Logarithms,no
+2,B,Sets,no
+3,C,Sequences and Series,no
+4,C,Logarithms,no
+5,A,Algebra,no
+6,B,Surds,no
+7,D,Commercial Mathematics,no
+8,D,Logarithms,no
+9,B,Commercial Mathematics,no
+10,A,Approximation and Percentage,no
+11,B,Geometry,no
+12,C,Algebraic Fractions,no
+13,C,Variation,no
+14,C,Mensuration,no
+15,A,Change of Subject,no
+16,A,Logic,no
+17,D,Algebra,no
+18,B,Ratio,no
+19,C,Quadratic Equations,no
+20,A,Mensuration,no
+21,A,Geometry,yes
+22,D,Trigonometry,no
+23,A,Circle Geometry,yes
+24,C,Commercial Mathematics,no
+25,B,Bearings,no
+26,B,Mensuration,no
+27,A,Number Bases,no
+28,A,Algebra,no
+29,C,Linear Inequalities,no
+30,C,Circle Geometry,yes
+31,B,Circle Geometry,yes
+32,B,Mensuration,no
+33,C,Trigonometry,yes
+34,C,Coordinate Geometry,no
+35,C,Angles and Parallel Lines,yes
+36,D,Algebra,no
+37,D,Polygons,no
+38,C,Geometry,yes
+39,B,Statistics,no
+40,A,Statistics,no
+41,B,Algebra,no
+42,A,Probability,no
+43,B,Mensuration,no
+44,A,Trigonometry,no
+45,A,Circle Geometry,yes
+46,B,Probability,no
+47,B,Coordinate Geometry,no
+48,B,Statistics,no
+49,B,Sequences and Series,no
+50,C,Algebraic Fractions,no
