@@ -321,7 +321,7 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
     <script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="../plugins/toastr/toastr.min.js"></script>
     <script>
-        const controllerUrl = 'student_practice_controller.php';
+        const controllerUrl = '../student_practice_controller.php';
         const practiceState = {
             subjects: [],
             topics: [],
