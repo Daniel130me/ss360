@@ -102,6 +102,30 @@ function practice_ensure_schema($conn)
         'idx_sps_student_status',
         "ALTER TABLE student_practice_sessions ADD INDEX idx_sps_student_status (student_id, status)"
     );
+    practice_add_index_if_missing(
+        $conn,
+        'student_practice_sessions',
+        'idx_sps_school_class',
+        "ALTER TABLE student_practice_sessions ADD INDEX idx_sps_school_class (school_id, class_id)"
+    );
+    practice_add_index_if_missing(
+        $conn,
+        'student_practice_sessions',
+        'idx_sps_subject_topic',
+        "ALTER TABLE student_practice_sessions ADD INDEX idx_sps_subject_topic (subject_id, topic_id)"
+    );
+    practice_add_index_if_missing(
+        $conn,
+        'student_practice_answers',
+        'idx_spa_student',
+        "ALTER TABLE student_practice_answers ADD INDEX idx_spa_student (student_id)"
+    );
+    practice_add_index_if_missing(
+        $conn,
+        'student_practice_answers',
+        'idx_spa_question',
+        "ALTER TABLE student_practice_answers ADD INDEX idx_spa_question (question_id)"
+    );
 }
 
 function practice_bind_params($stmt, $types, $params)
