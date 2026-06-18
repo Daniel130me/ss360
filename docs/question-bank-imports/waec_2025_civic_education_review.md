@@ -24,9 +24,11 @@ This file records the WAEC 2025 Civic Education objective-question import review
 
 ## Image Notes
 
-- The source marks questions 4, 5, 30, 31 as containing images, but no image asset files were supplied with the Markdown.
-- The migration keeps those questions but adds a visible missing-diagram note to avoid confusing teachers and students.
-- If the image assets are later supplied, update those four question bodies to replace the note with the proper `<img>` tag.
+- The source marks questions 4, 5, 30, 31 as containing images.
+- Image assets were supplied separately from the Markdown in `C:\Users\HP\Documents\kimi\workspace`.
+- Questions 4 and 5 share `Q4_Q5_shared_diagram.png`.
+- Questions 30 and 31 share `Q30_Q31_shared_diagram.png`.
+- Bank-ready copies are stored in `uploads/question_bank/waec_2025_civic_education`.
 
 ## Option Notes
 
