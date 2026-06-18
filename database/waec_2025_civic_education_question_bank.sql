@@ -134,8 +134,8 @@ INSERT INTO question_bank_options (question_id, options, answer, deleted) VALUES
 SET @source_marker := 'WAEC 2025 Civic Education - Item 4 - Question 4';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @civic_subject_id AND exam_year = 2025 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: WAEC 2025 Civic Education - Item 4 - Question 4</small></p><p><strong>WAEC 2025 Civic Education - Question 4</strong></p><p>Use the diagram above to answer this question
-The marked pedestrian crossing shown in the diagram is</p><p><em>Diagram reference: image was marked present in the source file, but no image asset was supplied.</em></p>', @civic_subject_id, 0, 'exam_body', @waec_exam_body_id, 2025, 0, 'Medium', 'SSS3', '', 'Road Safety', 'The marked pedestrian crossing showing is zebra crossing.', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: WAEC 2025 Civic Education - Item 4 - Question 4</small></p><p><strong>WAEC 2025 Civic Education - Question 4</strong></p><p><img src="../uploads/question_bank/waec_2025_civic_education/Q4_Q5_shared_diagram.png" alt="Diagram for WAEC 2025 Civic Education Questions 4 and 5" style="max-width:100%;height:auto;"></p><p>Use the diagram above to answer this question
+The marked pedestrian crossing shown in the diagram is</p>', @civic_subject_id, 0, 'exam_body', @waec_exam_body_id, 2025, 0, 'Medium', 'SSS3', '', 'Road Safety', 'The marked pedestrian crossing showing is zebra crossing.', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 DELETE FROM question_bank_options WHERE question_id = @question_id;
@@ -149,8 +149,8 @@ INSERT INTO question_bank_options (question_id, options, answer, deleted) VALUES
 SET @source_marker := 'WAEC 2025 Civic Education - Item 5 - Question 5';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @civic_subject_id AND exam_year = 2025 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: WAEC 2025 Civic Education - Item 5 - Question 5</small></p><p><strong>WAEC 2025 Civic Education - Question 5</strong></p><p>Use the diagram above to answer this question
-In the above diagram, all vehicles stopped mainly because</p><p><em>Diagram reference: image was marked present in the source file, but no image asset was supplied.</em></p>', @civic_subject_id, 0, 'exam_body', @waec_exam_body_id, 2025, 0, 'Medium', 'SSS3', '', 'Road Safety', 'Vehicle stopped mainly because the pedestrians have already stepped on the line as shown in the diagram', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: WAEC 2025 Civic Education - Item 5 - Question 5</small></p><p><strong>WAEC 2025 Civic Education - Question 5</strong></p><p><img src="../uploads/question_bank/waec_2025_civic_education/Q4_Q5_shared_diagram.png" alt="Diagram for WAEC 2025 Civic Education Questions 4 and 5" style="max-width:100%;height:auto;"></p><p>Use the diagram above to answer this question
+In the above diagram, all vehicles stopped mainly because</p>', @civic_subject_id, 0, 'exam_body', @waec_exam_body_id, 2025, 0, 'Medium', 'SSS3', '', 'Road Safety', 'Vehicle stopped mainly because the pedestrians have already stepped on the line as shown in the diagram', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 DELETE FROM question_bank_options WHERE question_id = @question_id;
@@ -543,7 +543,7 @@ INSERT INTO question_bank_options (question_id, options, answer, deleted) VALUES
 SET @source_marker := 'WAEC 2025 Civic Education - Item 30 - Question 30';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @civic_subject_id AND exam_year = 2025 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: WAEC 2025 Civic Education - Item 30 - Question 30</small></p><p><strong>WAEC 2025 Civic Education - Question 30</strong></p><p>The drunkard as depicted in the picture will not likely perform his parental role because</p><p><em>Diagram reference: image was marked present in the source file, but no image asset was supplied.</em></p>', @civic_subject_id, 0, 'exam_body', @waec_exam_body_id, 2025, 0, 'Medium', 'SSS3', '', 'Responsible Parenthood', 'The drunkard as depicted in the picture will not likely perform his parental role because his action constitutes bad
+SELECT '<p><small>Source: WAEC 2025 Civic Education - Item 30 - Question 30</small></p><p><strong>WAEC 2025 Civic Education - Question 30</strong></p><p><img src="../uploads/question_bank/waec_2025_civic_education/Q30_Q31_shared_diagram.png" alt="Diagram for WAEC 2025 Civic Education Questions 30 and 31" style="max-width:100%;height:auto;"></p><p>The drunkard as depicted in the picture will not likely perform his parental role because</p>', @civic_subject_id, 0, 'exam_body', @waec_exam_body_id, 2025, 0, 'Medium', 'SSS3', '', 'Responsible Parenthood', 'The drunkard as depicted in the picture will not likely perform his parental role because his action constitutes bad
 influence', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
@@ -558,7 +558,7 @@ INSERT INTO question_bank_options (question_id, options, answer, deleted) VALUES
 SET @source_marker := 'WAEC 2025 Civic Education - Item 31 - Question 31';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @waec_exam_body_id AND subject_id = @civic_subject_id AND exam_year = 2025 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: WAEC 2025 Civic Education - Item 31 - Question 31</small></p><p><strong>WAEC 2025 Civic Education - Question 31</strong></p><p>The above picture portrays drunkenness mainly as</p><p><em>Diagram reference: image was marked present in the source file, but no image asset was supplied.</em></p>', @civic_subject_id, 0, 'exam_body', @waec_exam_body_id, 2025, 0, 'Medium', 'SSS3', '', 'Responsible Parenthood', 'The picture portrays drunkenness mainly as an environmental nuisance.', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: WAEC 2025 Civic Education - Item 31 - Question 31</small></p><p><strong>WAEC 2025 Civic Education - Question 31</strong></p><p><img src="../uploads/question_bank/waec_2025_civic_education/Q30_Q31_shared_diagram.png" alt="Diagram for WAEC 2025 Civic Education Questions 30 and 31" style="max-width:100%;height:auto;"></p><p>The above picture portrays drunkenness mainly as</p>', @civic_subject_id, 0, 'exam_body', @waec_exam_body_id, 2025, 0, 'Medium', 'SSS3', '', 'Responsible Parenthood', 'The picture portrays drunkenness mainly as an environmental nuisance.', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 DELETE FROM question_bank_options WHERE question_id = @question_id;
@@ -889,6 +889,40 @@ INSERT INTO question_bank_options (question_id, options, answer, deleted) VALUES
 (@question_id, 'engaging in constructive criticisms.', 0, 0);
 
 COMMIT;
+
+UPDATE question_bank
+SET question = '<p><small>Source: WAEC 2025 Civic Education - Item 4 - Question 4</small></p><p><strong>WAEC 2025 Civic Education - Question 4</strong></p><p><img src="../uploads/question_bank/waec_2025_civic_education/Q4_Q5_shared_diagram.png" alt="Diagram for WAEC 2025 Civic Education Questions 4 and 5" style="max-width:100%;height:auto;"></p><p>Use the diagram above to answer this question
+The marked pedestrian crossing shown in the diagram is</p>'
+WHERE source_type = 'exam_body'
+  AND exam_body_id = @waec_exam_body_id
+  AND subject_id = @civic_subject_id
+  AND exam_year = 2025
+  AND question LIKE '%WAEC 2025 Civic Education - Item 4 - Question 4%';
+
+UPDATE question_bank
+SET question = '<p><small>Source: WAEC 2025 Civic Education - Item 5 - Question 5</small></p><p><strong>WAEC 2025 Civic Education - Question 5</strong></p><p><img src="../uploads/question_bank/waec_2025_civic_education/Q4_Q5_shared_diagram.png" alt="Diagram for WAEC 2025 Civic Education Questions 4 and 5" style="max-width:100%;height:auto;"></p><p>Use the diagram above to answer this question
+In the above diagram, all vehicles stopped mainly because</p>'
+WHERE source_type = 'exam_body'
+  AND exam_body_id = @waec_exam_body_id
+  AND subject_id = @civic_subject_id
+  AND exam_year = 2025
+  AND question LIKE '%WAEC 2025 Civic Education - Item 5 - Question 5%';
+
+UPDATE question_bank
+SET question = '<p><small>Source: WAEC 2025 Civic Education - Item 30 - Question 30</small></p><p><strong>WAEC 2025 Civic Education - Question 30</strong></p><p><img src="../uploads/question_bank/waec_2025_civic_education/Q30_Q31_shared_diagram.png" alt="Diagram for WAEC 2025 Civic Education Questions 30 and 31" style="max-width:100%;height:auto;"></p><p>The drunkard as depicted in the picture will not likely perform his parental role because</p>'
+WHERE source_type = 'exam_body'
+  AND exam_body_id = @waec_exam_body_id
+  AND subject_id = @civic_subject_id
+  AND exam_year = 2025
+  AND question LIKE '%WAEC 2025 Civic Education - Item 30 - Question 30%';
+
+UPDATE question_bank
+SET question = '<p><small>Source: WAEC 2025 Civic Education - Item 31 - Question 31</small></p><p><strong>WAEC 2025 Civic Education - Question 31</strong></p><p><img src="../uploads/question_bank/waec_2025_civic_education/Q30_Q31_shared_diagram.png" alt="Diagram for WAEC 2025 Civic Education Questions 30 and 31" style="max-width:100%;height:auto;"></p><p>The above picture portrays drunkenness mainly as</p>'
+WHERE source_type = 'exam_body'
+  AND exam_body_id = @waec_exam_body_id
+  AND subject_id = @civic_subject_id
+  AND exam_year = 2025
+  AND question LIKE '%WAEC 2025 Civic Education - Item 31 - Question 31%';
 
 SELECT COUNT(*) AS imported_questions
 FROM question_bank
