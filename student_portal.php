@@ -195,6 +195,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <a href="student_practice" class="portal-card-link">Start Practice &rarr;</a>
                     </div>
                     <div class="portal-card">
+                        <span class="text-white bg-primary material-symbols-outlined">insights</span>
+                        <div class="portal-card-title">My Learning Progress</div>
+                        <div style="text-align: center; margin-bottom: 10px; color: #64748b; font-size: 0.98rem;">See your practice score and topics to improve.</div>
+                        <a href="student_learning_progress" class="portal-card-link">View Progress &rarr;</a>
+                    </div>
+                    <div class="portal-card">
                         <span class="text-white bg-primary material-symbols-outlined">person</span>
                         <div class="portal-card-title">My Profile</div>
                         <div style="text-align: center; margin-bottom: 10px; color: #64748b; font-size: 0.98rem;">Update your personal information and settings.</div>
