@@ -321,6 +321,19 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
     <script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="../plugins/toastr/toastr.min.js"></script>
     <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: {
+                typeset: false
+            }
+        };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" onload="renderPendingPracticeMath()"></script>
+    <script>
         const controllerUrl = '../student_practice_controller.php';
         const practiceState = {
             subjects: [],
@@ -333,6 +346,7 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
             timerHandle: null,
             answers: {}
         };
+        const pendingMathRoots = [];
 
         function escapeHtml(value) {
             return $('<div>').text(value || '').html();
@@ -347,17 +361,112 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
             return $(container).find('.choice-button.active').data('value');
         }
 
-        function renderMathFallback($root) {
+        function cleanLatex(value) {
+            return String(value || '')
+                .replace(/&nbsp;/g, ' ')
+                .replace(/\u200B/g, '')
+                .trim();
+        }
+
+        function normalizeStoredMathSpans($root) {
             $root.find('.math-editor-rendered').each(function () {
-                const latex = $(this).attr('data-latex') || '';
-                if (!$(this).text().trim() && latex) {
-                    $(this).text(latex).css({
-                        display: 'inline-block',
-                        padding: '2px 4px',
-                        background: '#f3f4f6',
-                        borderRadius: '4px'
-                    });
+                const latex = cleanLatex($(this).attr('data-latex') || $(this).text());
+                if (!latex) {
+                    return;
                 }
+
+                $(this)
+                    .removeAttr('style')
+                    .addClass('practice-math-source')
+                    .text(`\\(${latex}\\)`);
+            });
+        }
+
+        function wrapRawLatexText(rootElement) {
+            if (!rootElement || !document.createTreeWalker) {
+                return;
+            }
+
+            const latexPattern = /\\(?:frac|sqrt|sum|prod|int|lim|sin|cos|tan|log|ln|left|right|times|div|cdot|pm|mp|leq|geq|neq|approx|pi|theta|alpha|beta|gamma|Delta|angle|overline|underline|hat|bar|vec|begin|end)(?:\s*\{[^{}]*\}){0,4}/g;
+            const walker = document.createTreeWalker(rootElement, NodeFilter.SHOW_TEXT, {
+                acceptNode(node) {
+                    const parent = node.parentElement;
+                    if (!parent || parent.closest('script, style, textarea, code, pre, mjx-container')) {
+                        return NodeFilter.FILTER_REJECT;
+                    }
+                    if (parent.classList.contains('practice-math-source')) {
+                        return NodeFilter.FILTER_REJECT;
+                    }
+                    latexPattern.lastIndex = 0;
+                    return latexPattern.test(node.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+                }
+            });
+
+            const nodes = [];
+            while (walker.nextNode()) {
+                nodes.push(walker.currentNode);
+            }
+
+            nodes.forEach(function (node) {
+                const text = node.nodeValue;
+                const fragment = document.createDocumentFragment();
+                let lastIndex = 0;
+
+                latexPattern.lastIndex = 0;
+                text.replace(latexPattern, function (match, offset) {
+                    if (offset > lastIndex) {
+                        fragment.appendChild(document.createTextNode(text.slice(lastIndex, offset)));
+                    }
+
+                    const span = document.createElement('span');
+                    span.className = 'practice-math-source';
+                    span.textContent = `\\(${cleanLatex(match)}\\)`;
+                    fragment.appendChild(span);
+                    lastIndex = offset + match.length;
+                    return match;
+                });
+
+                if (lastIndex < text.length) {
+                    fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+                }
+
+                node.parentNode.replaceChild(fragment, node);
+            });
+        }
+
+        function renderPracticeMath($root) {
+            normalizeStoredMathSpans($root);
+            $root.each(function () {
+                wrapRawLatexText(this);
+            });
+
+            if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
+                window.MathJax.typesetPromise($root.toArray()).catch(function () {
+                    console.warn('Math rendering failed for this question.');
+                });
+            } else if (window.MathJax && window.MathJax.startup && window.MathJax.startup.promise) {
+                window.MathJax.startup.promise.then(function () {
+                    return window.MathJax.typesetPromise($root.toArray());
+                }).catch(function () {
+                    console.warn('Math rendering failed for this question.');
+                });
+            } else {
+                $root.each(function () {
+                    if (!pendingMathRoots.includes(this)) {
+                        pendingMathRoots.push(this);
+                    }
+                });
+            }
+        }
+
+        function renderPendingPracticeMath() {
+            if (!window.MathJax || typeof window.MathJax.typesetPromise !== 'function' || pendingMathRoots.length === 0) {
+                return;
+            }
+
+            const roots = pendingMathRoots.splice(0, pendingMathRoots.length);
+            window.MathJax.typesetPromise(roots).catch(function () {
+                console.warn('Math rendering failed for pending question content.');
             });
         }
 
@@ -545,7 +654,7 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
                 $options.append($button);
             });
 
-            renderMathFallback($('#questionText, #answerOptions'));
+            renderPracticeMath($('#questionText, #answerOptions'));
             $('#previousBtn').prop('disabled', data.position === 1);
             $('#nextBtn').toggle(data.position < data.total_questions);
             $('#finishBtn').toggle(data.position === data.total_questions);
@@ -613,7 +722,7 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
                 `);
             });
 
-            renderMathFallback($review);
+            renderPracticeMath($review);
         }
 
         $('#subjectSelect').on('change', renderTopicOptions);
