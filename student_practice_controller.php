@@ -20,6 +20,10 @@ const PRACTICE_DEFAULT_TIMER_MINUTES = 15;
 const PRACTICE_MIN_TIMER_MINUTES = 5;
 const PRACTICE_MAX_TIMER_MINUTES = 120;
 const PRACTICE_CANDIDATE_LIMIT = 300;
+const PRACTICE_SOURCE_ALL = 'all';
+const PRACTICE_SOURCE_TOPIC = 'topic';
+const PRACTICE_SOURCE_EXAM_PREFIX = 'exam:';
+const PRACTICE_JUNIOR_EXAM_BODY_KEYWORDS = ['BECE', 'JSCE', 'JSSCE'];
 
 function practice_json($payload)
 {
@@ -182,15 +186,75 @@ function practice_fetch_one($conn, $sql, $types = '', $params = [])
     return $rows[0] ?? null;
 }
 
-function practice_get_student_class_id($conn, $student_id, $school_id)
+function practice_get_student_context($conn, $student_id, $school_id)
 {
     $row = practice_fetch_one(
         $conn,
-        "SELECT class_id FROM students WHERE id = ? AND school_id = ? LIMIT 1",
+        "SELECT s.class_id, c.classname
+            FROM students s
+            LEFT JOIN class c ON c.id = s.class_id
+            WHERE s.id = ? AND s.school_id = ?
+            LIMIT 1",
         "ii",
         [$student_id, $school_id]
     );
-    return (int)($row['class_id'] ?? 0);
+    return [
+        'class_id' => (int)($row['class_id'] ?? 0),
+        'class_name' => trim((string)($row['classname'] ?? '')),
+    ];
+}
+
+function practice_is_junior_class($class_name)
+{
+    $compact_name = strtoupper(preg_replace('/[^A-Z0-9]/', '', $class_name));
+    return strpos($compact_name, 'JSS') !== false
+        || strpos($compact_name, 'JUNIOR') !== false
+        || preg_match('/(BASIC|GRADE)[789]/', $compact_name) === 1;
+}
+
+function practice_source_label($source)
+{
+    $source = trim((string)$source);
+    return $source === '' ? PRACTICE_SOURCE_ALL : $source;
+}
+
+function practice_apply_source_filter($where, $types, $params, $source_filter, $class_name)
+{
+    $source_filter = practice_source_label($source_filter);
+
+    if ($source_filter === PRACTICE_SOURCE_TOPIC) {
+        $where .= " AND q.source_type = 'topic'";
+        return [$where, $types, $params];
+    }
+
+    if (strpos($source_filter, PRACTICE_SOURCE_EXAM_PREFIX) === 0) {
+        $exam_body_id = (int)substr($source_filter, strlen(PRACTICE_SOURCE_EXAM_PREFIX));
+        if ($exam_body_id > 0) {
+            $where .= " AND q.source_type = 'exam_body' AND q.exam_body_id = ?";
+            $types .= "i";
+            $params[] = $exam_body_id;
+        }
+        return [$where, $types, $params];
+    }
+
+    if (practice_is_junior_class($class_name)) {
+        $keyword_clauses = array_fill(0, count(PRACTICE_JUNIOR_EXAM_BODY_KEYWORDS), "UPPER(eb.name) LIKE ?");
+        $where .= " AND (
+            q.source_type <> 'exam_body'
+            OR EXISTS (
+                SELECT 1
+                FROM exam_bodies eb
+                WHERE eb.id = q.exam_body_id
+                  AND (" . implode(' OR ', $keyword_clauses) . ")
+            )
+        )";
+        foreach (PRACTICE_JUNIOR_EXAM_BODY_KEYWORDS as $keyword) {
+            $types .= "s";
+            $params[] = '%' . strtoupper($keyword) . '%';
+        }
+    }
+
+    return [$where, $types, $params];
 }
 
 function practice_base_where($school_id, $class_id)
@@ -205,9 +269,10 @@ function practice_base_where($school_id, $class_id)
     ];
 }
 
-function practice_filtered_where($school_id, $class_id, $scope, $subject_id, $topic_id, $difficulty)
+function practice_filtered_where($school_id, $class_id, $class_name, $scope, $subject_id, $topic_id, $difficulty, $source_filter)
 {
     [$where, $types, $params] = practice_base_where($school_id, $class_id);
+    [$where, $types, $params] = practice_apply_source_filter($where, $types, $params, $source_filter, $class_name);
 
     if ($scope !== 'mixed_subject' && $subject_id > 0) {
         $where .= " AND q.subject_id = ?";
@@ -253,7 +318,9 @@ practice_ensure_schema($conn);
 
 $student_id = (int)$_SESSION['userid'];
 $school_id = (int)($_SESSION['school_id'] ?? 0);
-$class_id = practice_get_student_class_id($conn, $student_id, $school_id);
+$student_context = practice_get_student_context($conn, $student_id, $school_id);
+$class_id = $student_context['class_id'];
+$class_name = $student_context['class_name'];
 $action = $_POST['action'] ?? '';
 
 if ($action === 'get_filters') {
@@ -294,12 +361,33 @@ if ($action === 'get_filters') {
         $params
     );
 
+    $sources = practice_fetch_all(
+        $conn,
+        "SELECT
+                CASE WHEN q.source_type = 'exam_body' THEN 'exam_body' ELSE 'topic' END AS source_type,
+                CASE WHEN q.source_type = 'exam_body' THEN q.exam_body_id ELSE 0 END AS exam_body_id,
+                COALESCE(eb.name, 'Topic Questions') AS source_name,
+                COUNT(*) AS question_count
+            FROM question_bank q
+            LEFT JOIN exam_bodies eb ON eb.id = q.exam_body_id
+            WHERE $where AND (q.source_type <> 'exam_body' OR q.exam_body_id > 0)
+            GROUP BY
+                CASE WHEN q.source_type = 'exam_body' THEN 'exam_body' ELSE 'topic' END,
+                CASE WHEN q.source_type = 'exam_body' THEN q.exam_body_id ELSE 0 END,
+                COALESCE(eb.name, 'Topic Questions')
+            ORDER BY CASE WHEN q.source_type = 'exam_body' THEN 1 ELSE 0 END, source_name ASC",
+        $types,
+        $params
+    );
+
     practice_json([
         'status' => 'success',
         'data' => [
             'subjects' => $subjects,
             'topics' => $topics,
             'difficulties' => $difficulties,
+            'sources' => $sources,
+            'source_default_label' => practice_is_junior_class($class_name) ? 'All suitable sources' : 'All sources',
             'counts' => PRACTICE_ALLOWED_COUNTS,
             'timer_minutes' => PRACTICE_DEFAULT_TIMER_MINUTES,
         ],
@@ -311,6 +399,7 @@ if ($action === 'start_session') {
     $subject_id = (int)($_POST['subject_id'] ?? 0);
     $topic_id = (int)($_POST['topic_id'] ?? 0);
     $difficulty = $_POST['difficulty'] ?? 'Mixed';
+    $source_filter = practice_source_label($_POST['source_filter'] ?? PRACTICE_SOURCE_ALL);
     $requested_count = (int)($_POST['question_count'] ?? 10);
     $timed = (int)($_POST['timed'] ?? 0) === 1 ? 1 : 0;
     $duration_minutes = $timed ? practice_timer_minutes_from_request($_POST['duration_minutes'] ?? 0) : 0;
@@ -331,7 +420,7 @@ if ($action === 'start_session') {
         practice_json(['status' => 'error', 'message' => 'Please choose a topic first.']);
     }
 
-    [$where, $types, $params] = practice_filtered_where($school_id, $class_id, $scope, $subject_id, $topic_id, $difficulty);
+    [$where, $types, $params] = practice_filtered_where($school_id, $class_id, $class_name, $scope, $subject_id, $topic_id, $difficulty, $source_filter);
     $available = practice_fetch_one($conn, "SELECT COUNT(*) AS total FROM question_bank q WHERE $where", $types, $params);
     $available_count = (int)($available['total'] ?? 0);
 
