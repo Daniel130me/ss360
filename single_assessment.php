@@ -517,32 +517,32 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                                 <div class="form-group mb-0 col-12 col-sm-4">
                                     <label for="" class="mb-0">Which assessment is this score for?</label>
                                     <div class="d-flex" style="flex-wrap: wrap; gap: 15px;">
-                                        <?php if ($school_settings['ca1'] == 1): ?>
+                                        <?php if (($school_settings['ca1'] ?? 0) == 1): ?>
                                             <div class="input-group d-flex align-items-center icheck-gray-dark" style="width: auto;">
                                                 <input type="radio" name="ca" id="ca_1" value="1" <?= $assessment_data['score_destination'] == '1' ? 'checked' : '' ?>>
                                                 <label for="ca_1" class="mb-0">CA1</label>
                                             </div>
                                         <?php endif; ?>
-                                        <?php if ($school_settings['ca2'] == 1): ?>
+                                        <?php if (($school_settings['ca2'] ?? 0) == 1): ?>
                                             <div class="input-group d-flex align-items-center icheck-gray-dark" style="width: auto;">
                                                 <input type="radio" name="ca" id="ca_2" value="2" <?= $assessment_data['score_destination'] == '2' ? 'checked' : '' ?>>
                                                 <label for="ca_2" class="mb-0">CA2</label>
                                             </div>
                                         <?php endif; ?>
-                                        <?php if ($school_settings['ca3'] == 1): ?>
+                                        <?php if (($school_settings['ca3'] ?? 0) == 1): ?>
                                             <div class="input-group d-flex align-items-center icheck-gray-dark" style="width: auto;">
                                                 <input type="radio" name="ca" id="ca_3" value="3" <?= $assessment_data['score_destination'] == '3' ? 'checked' : '' ?>>
                                                 <label for="ca_3" class="mb-0">CA3</label>
                                             </div>
                                         <?php endif; ?>
-                                        <?php if ($school_settings['practical'] == 1): ?>
+                                        <?php if (($school_settings['practical'] ?? 0) == 1): ?>
                                             <div class="input-group d-flex align-items-center icheck-gray-dark" style="width: auto;">
                                                 <input type="radio" name="ca" id="practical" value="4" <?= $assessment_data['score_destination'] == '4' ? 'checked' : '' ?>>
                                                 <label for="practical" class="mb-0">Practical</label>
                                             </div>
                                         <?php endif; ?>
                                         <!-- exam -->
-                                        <?php if ($school_settings['exa'] == 1): ?>
+                                        <?php if (($school_settings['exa'] ?? 0) == 1): ?>
                                             <div class="input-group d-flex align-items-center icheck-gray-dark" style="width: auto;">
                                                 <input type="radio" name="ca" id="exam" value="5" <?= $assessment_data['score_destination'] == '5' ? 'checked' : '' ?>>
                                                 <label for="exam" class="mb-0">Exam</label>
