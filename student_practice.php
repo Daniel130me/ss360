@@ -135,6 +135,32 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
             margin-bottom: 0;
         }
 
+        .practice-answer-row {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .practice-answer-row input {
+            margin-left: 12px;
+            margin-top: 19px;
+        }
+
+        .practice-answer-row label {
+            cursor: pointer;
+            margin-bottom: 0;
+            margin-left: 10px;
+            padding: 15px 12px;
+            width: calc(100% - 34px);
+        }
+
+        .practice-answer-row.selected {
+            background: var(--practice-soft);
+            border-color: var(--practice-primary);
+        }
+
         .question-card {
             background: #ffffff;
             border: 1px solid var(--practice-border);
@@ -177,6 +203,101 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
             padding: 8px 14px;
         }
 
+        .practice-exam-navbar {
+            background: #ffffff;
+            border: 1px solid var(--practice-border);
+            border-radius: 10px 10px 0 0;
+            padding: 12px 16px;
+        }
+
+        .practice-exam-navbar .navbar-brand {
+            color: var(--practice-dark);
+            font-size: 1.1rem;
+        }
+
+        .practice-exam-navbar .practice-timer {
+            background: transparent;
+            border-radius: 0;
+            color: #000000;
+            font-size: 1.35rem;
+            padding: 0;
+        }
+
+        .practice-exam-content {
+            background: #f4f7fa;
+            border: 1px solid var(--practice-border);
+            border-top: 0;
+            border-radius: 0 0 10px 10px;
+            padding: 18px;
+        }
+
+        .practice-exam-card {
+            background: #ffffff;
+            border: 1px solid var(--practice-border);
+            border-radius: 8px;
+            padding: 18px;
+        }
+
+        .practice-question-nav {
+            display: grid;
+            gap: 6px;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+        }
+
+        .practice-question-nav button {
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            color: var(--practice-dark);
+            height: 40px;
+            width: 40px;
+        }
+
+        .practice-question-nav .answered {
+            background: #343a40;
+            border-color: #343a40;
+            color: #ffffff;
+        }
+
+        .practice-question-nav .current {
+            border: 2px solid #007bff;
+        }
+
+        .practice-question-nav .flagged {
+            background: #ffc107;
+            border-color: #ffc107;
+            color: #000000;
+        }
+
+        .practice-legend {
+            color: var(--practice-muted);
+            font-size: 0.9rem;
+        }
+
+        .practice-legend span {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 12px;
+            margin-top: 6px;
+        }
+
+        .practice-legend i {
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            display: inline-block;
+            height: 14px;
+            margin-right: 5px;
+            width: 14px;
+        }
+
+        .practice-legend .answered-key {
+            background: #343a40;
+        }
+
+        .practice-legend .flagged-key {
+            background: #ffc107;
+        }
+
         .summary-score {
             color: var(--practice-primary);
             font-size: 3rem;
@@ -202,12 +323,25 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
 
             .practice-panel,
             .question-card,
+            .practice-exam-card,
             .practice-header {
                 padding: 14px;
             }
 
+            .practice-exam-content {
+                padding: 12px;
+            }
+
             .choice-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .practice-exam-navbar {
+                border-radius: 0;
+            }
+
+            .practice-exam-content {
+                border-radius: 0;
             }
         }
     </style>
@@ -215,7 +349,7 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
 
 <body>
     <main class="practice-shell">
-        <div class="practice-header">
+        <div class="practice-header" id="practiceHeader">
             <div class="d-flex flex-wrap justify-content-between align-items-center">
                 <div>
                     <div class="practice-title">Practice Questions</div>
@@ -280,24 +414,51 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
         </section>
 
         <section id="practiceScreen" class="hidden">
-            <div class="question-card">
-                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
-                    <div>
-                        <strong id="questionCounter">Question 1 of 10</strong>
-                        <div id="questionTopic" class="question-meta"></div>
+            <div class="wrapper">
+                <nav class="navbar navbar-expand navbar-white practice-exam-navbar">
+                    <div class="container px-0">
+                        <span class="navbar-brand font-weight-bold" id="practiceSubjectLabel">Practice Questions</span>
+                        <div class="ml-auto d-flex align-items-center">
+                            <div id="timerDisplay" class="practice-timer">15:00</div>
+                        </div>
                     </div>
-                    <div id="timerDisplay" class="practice-timer">15:00</div>
-                </div>
-                <div class="practice-progress mb-3">
-                    <div id="progressBar" class="practice-progress-bar"></div>
-                </div>
-                <div id="questionText" class="question-text">Loading question...</div>
-                <div id="answerOptions"></div>
-                <div class="d-flex flex-wrap justify-content-between mt-4">
-                    <button type="button" id="previousBtn" class="btn btn-outline-secondary mb-2">Previous</button>
-                    <div>
-                        <button type="button" id="nextBtn" class="btn btn-primary mb-2">Next</button>
-                        <button type="button" id="finishBtn" class="btn btn-success mb-2">Finish</button>
+                </nav>
+                <div class="content-wrapper ml-0 practice-exam-content">
+                    <div class="container px-0">
+                        <div class="practice-exam-card">
+                            <div class="d-flex flex-wrap justify-content-between align-items-start mb-3">
+                                <div>
+                                    <strong id="questionCounter">Question 1 of 10</strong>
+                                    <div id="questionTopic" class="question-meta"></div>
+                                </div>
+                            </div>
+                            <div class="practice-progress mb-3">
+                                <div id="progressBar" class="practice-progress-bar"></div>
+                            </div>
+                            <div id="questionText" class="question-text">Loading question...</div>
+                            <div id="answerOptions" class="options"></div>
+                            <hr>
+                            <div class="d-flex flex-wrap justify-content-between">
+                                <button type="button" id="previousBtn" class="btn btn-secondary mb-2">Previous</button>
+                                <div>
+                                    <button type="button" id="nextBtn" class="btn btn-primary mb-2">Next</button>
+                                    <button type="button" id="finishBtn" class="btn btn-success mb-2">Finish Practice</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <div id="questionNav" class="practice-question-nav"></div>
+                            <div class="practice-legend">
+                                <span><i></i>Not answered</span>
+                                <span><i class="answered-key"></i>Answered</span>
+                                <span><i class="flagged-key"></i>Flagged</span>
+                            </div>
+                            <hr>
+                            <div class="text-center">
+                                <button type="button" class="btn btn-warning" id="flagBtn">Flag Question</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -344,7 +505,9 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
             timed: false,
             secondsLeft: 0,
             timerHandle: null,
-            answers: {}
+            answers: {},
+            flaggedQuestions: [],
+            questionIdsByPosition: {}
         };
         const pendingMathRoots = [];
 
@@ -473,6 +636,7 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
         function showScreen(screenId) {
             $('#setupScreen, #practiceScreen, #summaryScreen').addClass('hidden');
             $(screenId).removeClass('hidden');
+            $('#practiceHeader').toggle(screenId !== '#practiceScreen');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -564,6 +728,8 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
                 practiceState.timed = Number(response.data.timed) === 1;
                 practiceState.secondsLeft = Number(response.data.duration_seconds || 0);
                 practiceState.answers = {};
+                practiceState.flaggedQuestions = [];
+                practiceState.questionIdsByPosition = {};
 
                 if (response.message) {
                     toastr.info(response.message);
@@ -614,6 +780,7 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
             practiceState.currentPosition = position;
             $('#questionText').html('Loading question...');
             $('#answerOptions').empty();
+            updateQuestionNav();
 
             $.post(controllerUrl, {
                 action: 'get_question',
@@ -634,7 +801,9 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
         function renderQuestion(data) {
             const question = data.question;
             practiceState.answers[question.id] = Number(data.selected_option_id || 0);
+            practiceState.questionIdsByPosition[data.position] = question.id;
 
+            $('#practiceSubjectLabel').text(question.subject || 'Practice Questions');
             $('#questionCounter').text(`Question ${data.position} of ${data.total_questions}`);
             $('#questionTopic').text([question.subject, question.topic_name, question.difficulty].filter(Boolean).join(' - '));
             $('#progressBar').css('width', `${(data.position / data.total_questions) * 100}%`);
@@ -643,27 +812,33 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
             const $options = $('#answerOptions').empty();
             data.options.forEach(function (option) {
                 const selected = Number(option.id) === Number(data.selected_option_id);
-                const $button = $(`
-                    <button type="button" class="answer-option ${selected ? 'active' : ''}" data-option-id="${option.id}">
-                        ${option.text}
-                    </button>
+                const optionInputId = `practiceOption${option.id}`;
+                const $option = $(`
+                    <div class="icheck-gray-dark practice-answer-row ${selected ? 'selected' : ''}">
+                        <input type="radio" id="${optionInputId}" class="form-check-input"
+                            name="practiceAnswer" value="${option.id}" ${selected ? 'checked' : ''}>
+                        <label for="${optionInputId}" class="form-check-label">${option.text}</label>
+                    </div>
                 `);
-                $button.on('click', function () {
+                $option.find('input').on('change', function () {
                     chooseAnswer(question.id, option.id);
                 });
-                $options.append($button);
+                $options.append($option);
             });
 
             renderPracticeMath($('#questionText, #answerOptions'));
             $('#previousBtn').prop('disabled', data.position === 1);
             $('#nextBtn').toggle(data.position < data.total_questions);
-            $('#finishBtn').toggle(data.position === data.total_questions);
+            $('#finishBtn').show();
+            updateFlagButton();
+            updateQuestionNav();
         }
 
         function chooseAnswer(questionId, optionId) {
-            $('.answer-option').removeClass('active');
-            $(`.answer-option[data-option-id="${optionId}"]`).addClass('active');
+            $('.practice-answer-row').removeClass('selected');
+            $(`input[name="practiceAnswer"][value="${optionId}"]`).prop('checked', true).closest('.practice-answer-row').addClass('selected');
             practiceState.answers[questionId] = Number(optionId);
+            updateQuestionNav();
 
             $.post(controllerUrl, {
                 action: 'save_answer',
@@ -697,8 +872,52 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
             }, 'json').fail(function () {
                 toastr.error('Network error while finishing practice.');
             }).always(function () {
-                $('#finishBtn').prop('disabled', false).text('Finish');
+                $('#finishBtn').prop('disabled', false).text('Finish Practice');
             });
+        }
+
+        function updateQuestionNav() {
+            const $nav = $('#questionNav').empty();
+
+            for (let position = 1; position <= practiceState.totalQuestions; position += 1) {
+                const questionId = practiceState.questionIdsByPosition[position];
+                const isAnswered = questionId && Number(practiceState.answers[questionId] || 0) > 0;
+                const isCurrent = position === practiceState.currentPosition;
+                const isFlagged = practiceState.flaggedQuestions.includes(position);
+
+                const $button = $('<button type="button"></button>')
+                    .text(position)
+                    .toggleClass('answered', Boolean(isAnswered))
+                    .toggleClass('current', isCurrent)
+                    .toggleClass('flagged', isFlagged)
+                    .attr('aria-label', `Go to question ${position}`)
+                    .on('click', function () {
+                        loadQuestion(position);
+                    });
+
+                $nav.append($button);
+            }
+        }
+
+        function updateFlagButton() {
+            const flagged = practiceState.flaggedQuestions.includes(practiceState.currentPosition);
+            $('#flagBtn')
+                .toggleClass('flagged', flagged)
+                .text(flagged ? 'Unflag Question' : 'Flag Question');
+        }
+
+        function toggleCurrentQuestionFlag() {
+            const position = practiceState.currentPosition;
+            const index = practiceState.flaggedQuestions.indexOf(position);
+
+            if (index === -1) {
+                practiceState.flaggedQuestions.push(position);
+            } else {
+                practiceState.flaggedQuestions.splice(index, 1);
+            }
+
+            updateFlagButton();
+            updateQuestionNav();
         }
 
         function renderSummary(data) {
@@ -737,6 +956,7 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
             loadQuestion(practiceState.currentPosition + 1);
         });
         $('#finishBtn').on('click', finishPractice);
+        $('#flagBtn').on('click', toggleCurrentQuestionFlag);
         $('#tryAgainBtn').on('click', function () {
             showScreen('#setupScreen');
         });
