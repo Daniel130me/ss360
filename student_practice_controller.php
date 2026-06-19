@@ -17,6 +17,8 @@ const PRACTICE_ALLOWED_COUNTS = [10, 20, 50, 100];
 const PRACTICE_ALLOWED_DIFFICULTIES = ['Easy', 'Medium', 'Hard', 'Mixed'];
 const PRACTICE_ALLOWED_SCOPES = ['subject', 'topic', 'mixed_topic', 'mixed_subject'];
 const PRACTICE_DEFAULT_TIMER_MINUTES = 15;
+const PRACTICE_MIN_TIMER_MINUTES = 5;
+const PRACTICE_MAX_TIMER_MINUTES = 120;
 const PRACTICE_CANDIDATE_LIMIT = 300;
 
 function practice_json($payload)
@@ -41,6 +43,17 @@ function practice_add_index_if_missing($conn, $table, $index, $sql)
     if (!$result || mysqli_num_rows($result) === 0) {
         mysqli_query($conn, $sql);
     }
+}
+
+function practice_timer_minutes_from_request($value)
+{
+    $minutes = (int)$value;
+
+    if ($minutes <= 0) {
+        return PRACTICE_DEFAULT_TIMER_MINUTES;
+    }
+
+    return max(PRACTICE_MIN_TIMER_MINUTES, min(PRACTICE_MAX_TIMER_MINUTES, $minutes));
 }
 
 function practice_ensure_schema($conn)
@@ -300,7 +313,7 @@ if ($action === 'start_session') {
     $difficulty = $_POST['difficulty'] ?? 'Mixed';
     $requested_count = (int)($_POST['question_count'] ?? 10);
     $timed = (int)($_POST['timed'] ?? 0) === 1 ? 1 : 0;
-    $duration_minutes = $timed ? PRACTICE_DEFAULT_TIMER_MINUTES : 0;
+    $duration_minutes = $timed ? practice_timer_minutes_from_request($_POST['duration_minutes'] ?? 0) : 0;
 
     if (!in_array($scope, PRACTICE_ALLOWED_SCOPES, true)) {
         $scope = 'subject';

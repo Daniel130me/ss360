@@ -5,6 +5,10 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
     header("Location: login");
     exit();
 }
+
+const PRACTICE_TIMER_DEFAULT_MINUTES = 15;
+const PRACTICE_TIMER_MIN_MINUTES = 5;
+const PRACTICE_TIMER_MAX_MINUTES = 120;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -101,6 +105,19 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
             gap: 10px;
+        }
+
+        .timer-duration-panel {
+            background: #f8fbff;
+            border: 1px solid var(--practice-border);
+            border-radius: 8px;
+            margin-top: 12px;
+            padding: 12px;
+        }
+
+        .custom-time-field {
+            margin-top: 12px;
+            max-width: 240px;
         }
 
         .choice-button,
@@ -404,6 +421,22 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
                     <button type="button" class="choice-button active" data-value="0">No timer</button>
                     <button type="button" class="choice-button" data-value="1">Use timer</button>
                 </div>
+                <div id="timerDurationPanel" class="timer-duration-panel hidden">
+                    <span class="step-label mb-2">Choose your practice time</span>
+                    <p class="help-text">Pick a quick time, or type your own minutes.</p>
+                    <div class="choice-grid" id="durationButtons">
+                        <button type="button" class="choice-button" data-value="10">10 minutes</button>
+                        <button type="button" class="choice-button active" data-value="15">15 minutes</button>
+                        <button type="button" class="choice-button" data-value="30">30 minutes</button>
+                        <button type="button" class="choice-button" data-value="60">60 minutes</button>
+                    </div>
+                    <div class="custom-time-field">
+                        <label for="customDurationInput" class="sr-only">Custom practice minutes</label>
+                        <input type="number" id="customDurationInput" class="form-control large-select"
+                            min="<?= PRACTICE_TIMER_MIN_MINUTES ?>" max="<?= PRACTICE_TIMER_MAX_MINUTES ?>" step="1" placeholder="Custom minutes">
+                        <p class="help-text mb-0 mt-2">Allowed time: <?= PRACTICE_TIMER_MIN_MINUTES ?> to <?= PRACTICE_TIMER_MAX_MINUTES ?> minutes.</p>
+                    </div>
+                </div>
             </div>
 
             <div class="mt-4">
@@ -496,6 +529,9 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
     <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" onload="renderPendingPracticeMath()"></script>
     <script>
         const controllerUrl = '../student_practice_controller.php';
+        const PRACTICE_TIMER_DEFAULT_MINUTES = <?= PRACTICE_TIMER_DEFAULT_MINUTES ?>;
+        const PRACTICE_TIMER_MIN_MINUTES = <?= PRACTICE_TIMER_MIN_MINUTES ?>;
+        const PRACTICE_TIMER_MAX_MINUTES = <?= PRACTICE_TIMER_MAX_MINUTES ?>;
         const practiceState = {
             subjects: [],
             topics: [],
@@ -522,6 +558,24 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
 
         function selectedChoice(container) {
             return $(container).find('.choice-button.active').data('value');
+        }
+
+        function timerIsEnabled() {
+            return Number(selectedChoice('#timerButtons')) === 1;
+        }
+
+        function selectedDurationMinutes() {
+            const customMinutes = Number($('#customDurationInput').val());
+
+            if (customMinutes > 0) {
+                return Math.max(PRACTICE_TIMER_MIN_MINUTES, Math.min(PRACTICE_TIMER_MAX_MINUTES, customMinutes));
+            }
+
+            return Number(selectedChoice('#durationButtons')) || PRACTICE_TIMER_DEFAULT_MINUTES;
+        }
+
+        function toggleTimerDurationPanel() {
+            $('#timerDurationPanel').toggleClass('hidden', !timerIsEnabled());
         }
 
         function cleanLatex(value) {
@@ -708,7 +762,8 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
                 topic_id: topicId || 0,
                 difficulty: selectedChoice('#difficultyButtons'),
                 question_count: selectedChoice('#countButtons'),
-                timed: selectedChoice('#timerButtons')
+                timed: selectedChoice('#timerButtons'),
+                duration_minutes: timerIsEnabled() ? selectedDurationMinutes() : 0
             };
         }
 
@@ -945,8 +1000,17 @@ if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student')
         }
 
         $('#subjectSelect').on('change', renderTopicOptions);
-        $('#difficultyButtons, #countButtons, #timerButtons').on('click', '.choice-button', function () {
+        $('#difficultyButtons, #countButtons, #timerButtons, #durationButtons').on('click', '.choice-button', function () {
             setActiveChoice(`#${$(this).parent().attr('id')}`, $(this).data('value'));
+            if ($(this).parent().attr('id') === 'timerButtons') {
+                toggleTimerDurationPanel();
+            }
+            if ($(this).parent().attr('id') === 'durationButtons') {
+                $('#customDurationInput').val('');
+            }
+        });
+        $('#customDurationInput').on('input', function () {
+            $('#durationButtons .choice-button').removeClass('active');
         });
         $('#startPracticeBtn').on('click', startPractice);
         $('#previousBtn').on('click', function () {
