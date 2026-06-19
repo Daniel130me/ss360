@@ -112,12 +112,34 @@ function refreshImportExamYearOptions() {
 
 function refreshImportTopicOptions() {
     const subjectId = $('#import_subject_filter').val();
+    const classId = $('#import_class_filter').val();
+    const renderedTopics = new Set();
     let topicHtml = '';
 
-    importFilterData.topics.forEach(t => {
-        if (!subjectId || String(t.subject_id) === String(subjectId)) {
-            topicHtml += `<option value="${t.id}">${escapeImportHtml(t.topic_name)}</option>`;
+    (importFilterData.topics || []).forEach(t => {
+        if (subjectId && String(t.subject_id) !== String(subjectId)) {
+            return;
         }
+
+        const classIds = String(t.class_ids || t.class_id || '')
+            .split(',')
+            .map(id => id.trim())
+            .filter(Boolean);
+
+        if (classId && classIds.length > 0 && !classIds.includes('0') && !classIds.includes(String(classId))) {
+            return;
+        }
+
+        const topicName = String(t.topic_name || '').trim();
+        const topicValue = String(t.ids || t.id || '').trim();
+        const topicKey = `${t.subject_id || ''}|${topicName.toLowerCase()}`;
+
+        if (!topicName || !topicValue || renderedTopics.has(topicKey)) {
+            return;
+        }
+
+        renderedTopics.add(topicKey);
+        topicHtml += `<option value="${escapeImportHtml(topicValue)}">${escapeImportHtml(topicName)}</option>`;
     });
 
     $('#import_topic').html(topicHtml);
@@ -172,6 +194,9 @@ function bindImportFilterEvents() {
     $('#import_class_filter, #import_exam_year, #import_topic, #import_difficulty, #import_term_tag, #import_question_category, #import_search')
         .off('input change')
         .on('input change', function () {
+            if (this.id === 'import_class_filter') {
+                refreshImportTopicOptions();
+            }
             currentImportPage = 1;
             fetchBankQuestions();
         });
@@ -185,10 +210,11 @@ function selectedClassName() {
 
 function selectedImportTopicIds() {
     const value = $('#import_topic').val();
-    if (Array.isArray(value)) {
-        return value.filter(Boolean);
-    }
-    return value ? [value] : [];
+    const ids = Array.isArray(value)
+        ? value.flatMap(item => String(item).split(','))
+        : String(value || '').split(',');
+
+    return [...new Set(ids.map(item => item.trim()).filter(Boolean))];
 }
 
 function fetchBankQuestions() {
