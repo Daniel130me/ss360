@@ -387,20 +387,20 @@ const PRACTICE_TIMER_MAX_MINUTES = 120;
                 </select>
             </div>
 
-            <div class="practice-step" id="topicStep">
-                <label for="topicSelect" class="step-label">2. Pick a topic</label>
-                <p class="help-text">You can also leave this as any topic.</p>
-                <select id="topicSelect" class="form-control large-select">
-                    <option value="">Any topic in this subject</option>
-                </select>
-            </div>
-
             <div class="practice-step">
-                <span class="step-label">3. Choose question source</span>
+                <span class="step-label">2. Choose question source</span>
                 <p class="help-text">Leave this on suitable sources unless your teacher asks for WAEC, BECE, JAMB, or another source.</p>
                 <div class="choice-grid" id="sourceButtons">
                     <button type="button" class="choice-button active" data-value="all">All suitable sources</button>
                 </div>
+            </div>
+
+            <div class="practice-step" id="topicStep">
+                <label for="topicSelect" class="step-label">3. Pick a topic</label>
+                <p class="help-text">You can also leave this as any topic.</p>
+                <select id="topicSelect" class="form-control large-select">
+                    <option value="">Any topic in this subject</option>
+                </select>
             </div>
 
             <div class="practice-step">
@@ -714,8 +714,8 @@ const PRACTICE_TIMER_MAX_MINUTES = 120;
                 practiceState.topics = response.data.topics || [];
                 practiceState.sources = response.data.sources || [];
                 renderSubjectOptions();
-                renderTopicOptions();
                 renderSourceOptions(response.data.source_default_label || 'All suitable sources');
+                renderTopicOptions();
             }, 'json').fail(function () {
                 toastr.error('Network error while loading practice options.');
             });
@@ -741,8 +741,9 @@ const PRACTICE_TIMER_MAX_MINUTES = 120;
             const $topicSelect = $('#topicSelect');
             $topicSelect.empty().append('<option value="">Any topic in this subject</option>');
 
-            if (subjectId === 'all') {
+            if (subjectId === 'all' || !sourceAllowsTopicSelection()) {
                 $('#topicStep').addClass('hidden');
+                $topicSelect.val('');
                 return;
             }
 
@@ -770,9 +771,18 @@ const PRACTICE_TIMER_MAX_MINUTES = 120;
             });
         }
 
+        function selectedSourceFilter() {
+            return selectedChoice('#sourceButtons') || 'all';
+        }
+
+        function sourceAllowsTopicSelection() {
+            const sourceFilter = selectedSourceFilter();
+            return sourceFilter === 'all' || sourceFilter === 'topic';
+        }
+
         function buildPracticePayload() {
             const subjectId = $('#subjectSelect').val();
-            const topicId = $('#topicSelect').val();
+            const topicId = sourceAllowsTopicSelection() ? $('#topicSelect').val() : '';
             let scope = 'mixed_topic';
 
             if (subjectId === 'all') {
@@ -786,7 +796,7 @@ const PRACTICE_TIMER_MAX_MINUTES = 120;
                 practice_scope: scope,
                 subject_id: subjectId === 'all' ? 0 : subjectId,
                 topic_id: topicId || 0,
-                source_filter: selectedChoice('#sourceButtons') || 'all',
+                source_filter: selectedSourceFilter(),
                 difficulty: selectedChoice('#difficultyButtons'),
                 question_count: selectedChoice('#countButtons'),
                 timed: selectedChoice('#timerButtons'),
@@ -1029,6 +1039,9 @@ const PRACTICE_TIMER_MAX_MINUTES = 120;
         $('#subjectSelect').on('change', renderTopicOptions);
         $('#sourceButtons, #difficultyButtons, #countButtons, #timerButtons, #durationButtons').on('click', '.choice-button', function () {
             setActiveChoice(`#${$(this).parent().attr('id')}`, $(this).data('value'));
+            if ($(this).parent().attr('id') === 'sourceButtons') {
+                renderTopicOptions();
+            }
             if ($(this).parent().attr('id') === 'timerButtons') {
                 toggleTimerDurationPanel();
             }
