@@ -125,7 +125,16 @@ if ($action === 'get_import_filters') {
         ];
     }
 
-    $result = mysqli_query($conn, "SELECT id, topic_name, subject_id, class_id FROM topics ORDER BY topic_name ASC");
+    $result = mysqli_query($conn, "SELECT
+            MIN(id) AS id,
+            GROUP_CONCAT(id ORDER BY id) AS ids,
+            MIN(TRIM(topic_name)) AS topic_name,
+            subject_id,
+            GROUP_CONCAT(DISTINCT class_id ORDER BY class_id) AS class_ids
+        FROM topics
+        WHERE TRIM(topic_name) <> ''
+        GROUP BY subject_id, LOWER(TRIM(topic_name))
+        ORDER BY topic_name ASC");
     while ($result && $row = mysqli_fetch_assoc($result)) {
         $response['topics'][] = $row;
     }
