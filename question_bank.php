@@ -10,6 +10,44 @@ include_once("model/functions.php");
 
 $school_settings = json_decode($_SESSION['skul_settings'] ?? '{}', true);
 $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_bank';
+
+function qb_page_ensure_platform_admin_schema($conn)
+{
+    mysqli_query($conn, "CREATE TABLE IF NOT EXISTS ss360_platform_admins (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        staff_id INT NOT NULL,
+        school_id INT NOT NULL,
+        status TINYINT(1) NOT NULL DEFAULT 1,
+        datecreated DATETIME NULL,
+        UNIQUE KEY uniq_ss360_platform_admin (staff_id, school_id),
+        KEY idx_ss360_platform_admin_status (status)
+    )");
+}
+
+function qb_page_is_platform_admin($conn)
+{
+    if ((int)($_SESSION['school_id'] ?? -1) === 0 || !empty($_SESSION['is_ss360_admin']) || !empty($_SESSION['platform_admin']) || !empty($_SESSION['super_admin'])) {
+        return true;
+    }
+
+    qb_page_ensure_platform_admin_schema($conn);
+    $staff_id = (int)($_SESSION['userid'] ?? 0);
+    $school_id = (int)($_SESSION['school_id'] ?? 0);
+    if ($staff_id <= 0 || $school_id <= 0) {
+        return false;
+    }
+
+    $stmt = $conn->prepare("SELECT id FROM ss360_platform_admins WHERE staff_id = ? AND school_id = ? AND status = 1 LIMIT 1");
+    $stmt->bind_param("ii", $staff_id, $school_id);
+    $stmt->execute();
+    return $stmt->get_result()->num_rows > 0;
+}
+
+$is_ss360_admin = ((int)($_SESSION['school_id'] ?? -1) === 0)
+    || !empty($_SESSION['is_ss360_admin'])
+    || !empty($_SESSION['platform_admin'])
+    || !empty($_SESSION['super_admin'])
+    || qb_page_is_platform_admin($conn);
 ?>
 
 <!DOCTYPE html>
@@ -208,8 +246,8 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label>Class</label>
-                                                <select id="class_id" class="form-control"></select>
+                                                <label>Recommended Class/Level</label>
+                                                <input type="text" id="recommended_class" class="form-control" placeholder="Optional, e.g. JSS1">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -228,9 +266,49 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
                                         <select id="topic_id" class="form-control"></select>
                                     </div>
 
-                                    <div class="form-group d-none" id="exam-body-field">
-                                        <label>Exam Body</label>
-                                        <select id="exam_body_id" class="form-control"></select>
+                                    <div class="row d-none" id="exam-body-field">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Exam Body</label>
+                                                <select id="exam_body_id" class="form-control"></select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Exam Year</label>
+                                                <input type="number" id="exam_year" class="form-control" min="1900" max="2100" placeholder="Optional, e.g. 2025">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Term Tag</label>
+                                                <input type="text" id="term_tag" class="form-control" placeholder="Optional">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Category</label>
+                                                <input type="text" id="question_category" class="form-control" placeholder="Optional, e.g. Word Problem">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Review Status</label>
+                                                <select id="review_status" class="form-control">
+                                                    <option value="draft" selected>Draft</option>
+                                                    <option value="approved">Approved</option>
+                                                    <option value="rejected">Rejected</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Explanation</label>
+                                        <textarea id="explanation" class="form-control question-textarea" rows="3" placeholder="Optional explanation for the correct answer"></textarea>
                                     </div>
 
                                     <div class="form-group">
@@ -261,6 +339,37 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
                                 </button>
                                 <div id="structured-questions" class="mt-3"></div>
                             </div>
+
+                            <div class="bg-white p-3 mb-3 question-bank-card">
+                                <h5 class="mb-3">AI Generate Draft Bank Questions</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Number</label>
+                                            <input type="number" id="ai_bank_count" class="form-control" min="1" max="25" value="5">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Difficulty</label>
+                                            <select id="ai_bank_difficulty" class="form-control">
+                                                <option value="Mixed">Mixed</option>
+                                                <option value="Easy">Easy</option>
+                                                <option value="Medium" selected>Medium</option>
+                                                <option value="Hard">Hard</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Curriculum / Context</label>
+                                    <textarea id="ai_curriculum_context" class="form-control" rows="3" placeholder="Optional, e.g. Nigerian Basic Education Curriculum"></textarea>
+                                </div>
+                                <button type="button" class="btn btn-outline-success" id="generate-bank-btn">
+                                    <i class="fas fa-magic mr-1"></i> Generate Drafts
+                                </button>
+                                <small class="d-block text-muted mt-2">Uses the selected Source above. Generated questions are saved as drafts for review before teachers can import them.</small>
+                            </div>
                         </div>
 
                         <div class="col-lg-7">
@@ -275,12 +384,52 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
                                         <select id="subject_filter" class="form-control"></select>
                                     </div>
                                     <div class="form-group mb-0">
+                                        <label>Topic</label>
+                                        <select id="topic_filter" class="form-control"></select>
+                                    </div>
+                                    <div class="form-group mb-0">
                                         <label>Source</label>
                                         <select id="source_filter" class="form-control">
                                             <option value="">All</option>
                                             <option value="topic">Topic</option>
                                             <option value="exam_body">Exam Body</option>
                                         </select>
+                                    </div>
+                                    <div class="form-group mb-0">
+                                        <label>Year</label>
+                                        <select id="exam_year_filter" class="form-control">
+                                            <option value="">All</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group mb-0">
+                                        <label>Difficulty</label>
+                                        <select id="difficulty_filter" class="form-control">
+                                            <option value="">All</option>
+                                            <option value="Easy">Easy</option>
+                                            <option value="Medium">Medium</option>
+                                            <option value="Hard">Hard</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group mb-0">
+                                        <label>Status</label>
+                                        <select id="review_status_filter" class="form-control">
+                                            <option value="">All</option>
+                                            <option value="draft">Draft</option>
+                                            <option value="approved">Approved</option>
+                                            <option value="rejected">Rejected</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group mb-0">
+                                        <label>Class Tag</label>
+                                        <input type="search" id="recommended_class_filter" class="form-control" placeholder="Optional">
+                                    </div>
+                                    <div class="form-group mb-0">
+                                        <label>Term</label>
+                                        <input type="search" id="term_tag_filter" class="form-control" placeholder="Optional">
+                                    </div>
+                                    <div class="form-group mb-0">
+                                        <label>Category</label>
+                                        <input type="search" id="category_filter" class="form-control" placeholder="Optional">
                                     </div>
                                 </div>
 
@@ -313,6 +462,7 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
     <script src="../dist/js/examination.js?v=90poklk"></script>
     <script>
         const controllerUrl = '../question_bank_controller.php';
+        const isSS360Admin = <?= $is_ss360_admin ? 'true' : 'false' ?>;
         let questionBankMeta = { subjects: [], topics: [], exam_bodies: [], classes: [] };
         let currentPage = 1;
         let totalPages = 1;
@@ -365,6 +515,16 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
             initializeRichPasteEditor();
         }
 
+        function applyAdminGate() {
+            if (isSS360Admin) {
+                return;
+            }
+
+            $('#question-form :input, #reset-form-btn, #add-option-btn, #save-question-btn, #restructure-btn, #generate-bank-btn').prop('disabled', true);
+            $('#structured-questions').empty();
+            $('#question-form').prepend('<div class="alert alert-info">Only SchoolSuite360 admins can create or manage global bank questions.</div>');
+        }
+
         function fillSelect($select, rows, valueKey, labelKey, placeholder) {
             let html = `<option value="">${placeholder}</option>`;
             rows.forEach(row => {
@@ -375,13 +535,19 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
 
         function refreshTopicOptions() {
             const subjectId = $('#subject_id').val();
-            const classId = $('#class_id').val();
             const topics = questionBankMeta.topics.filter(topic => {
                 const subjectMatches = !subjectId || String(topic.subject_id) === String(subjectId);
-                const classMatches = !classId || !topic.class_id || String(topic.class_id) === String(classId);
-                return subjectMatches && classMatches;
+                return subjectMatches;
             });
             fillSelect($('#topic_id'), topics, 'id', 'topic_name', 'Select Topic');
+        }
+
+        function refreshTopicFilterOptions() {
+            const subjectId = $('#subject_filter').val();
+            const topics = questionBankMeta.topics.filter(topic => {
+                return !subjectId || String(topic.subject_id) === String(subjectId);
+            });
+            fillSelect($('#topic_filter'), topics, 'id', 'topic_name', 'All Topics');
         }
 
         function addOptionRow(text = '', isCorrect = false) {
@@ -406,7 +572,13 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
         function resetQuestionForm() {
             $('#question_id').val('');
             setEditorCode($('#question_text'), '');
+            setEditorCode($('#explanation'), '');
             $('#difficulty').val('Medium');
+            $('#recommended_class').val('');
+            $('#exam_year').val('');
+            $('#term_tag').val('');
+            $('#question_category').val('');
+            $('#review_status').val('draft');
             $('#source_type').val('topic').trigger('change');
             $('#topic_id').val('');
             $('#exam_body_id').val('');
@@ -429,10 +601,20 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
                 questionBankMeta = response.data;
                 fillSelect($('#subject_id'), questionBankMeta.subjects, 'id', 'subject', 'Select Subject');
                 fillSelect($('#subject_filter'), questionBankMeta.subjects, 'id', 'subject', 'All Subjects');
-                fillSelect($('#class_id'), questionBankMeta.classes, 'id', 'classname', 'Select Class');
                 fillSelect($('#exam_body_id'), questionBankMeta.exam_bodies, 'id', 'name', 'Select Exam Body');
+                refreshExamYearFilterOptions();
                 refreshTopicOptions();
+                refreshTopicFilterOptions();
             }, 'json');
+        }
+
+        function refreshExamYearFilterOptions() {
+            const years = [...new Set((questionBankMeta.exam_years || []).map(item => parseInt(item.exam_year, 10)).filter(Boolean))].sort((a, b) => b - a);
+            let html = '<option value="">All</option>';
+            years.forEach(year => {
+                html += `<option value="${year}">${year}</option>`;
+            });
+            $('#exam_year_filter').html(html);
         }
 
         function loadQuestions() {
@@ -444,7 +626,14 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
                 per_page: 10,
                 search: $('#search_filter').val(),
                 subject_id: $('#subject_filter').val(),
-                source_type: $('#source_filter').val()
+                topic_id: $('#topic_filter').val(),
+                source_type: $('#source_filter').val(),
+                exam_year: $('#exam_year_filter').val(),
+                difficulty: $('#difficulty_filter').val(),
+                review_status: $('#review_status_filter').val(),
+                recommended_class: $('#recommended_class_filter').val(),
+                term_tag: $('#term_tag_filter').val(),
+                question_category: $('#category_filter').val()
             }, function (response) {
                 if (response.status !== 'success') {
                     $('#question-list').html('<div class="alert alert-danger">Unable to load questions.</div>');
@@ -473,8 +662,17 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
                 `).join('');
 
                 const sourceLabel = question.source_type === 'exam_body'
-                    ? `Exam Body${question.exam_body_name ? ': ' + escapeHtml(question.exam_body_name) : ''}`
+                    ? `Exam Body${question.exam_body_name ? ': ' + escapeHtml(question.exam_body_name) : ''}${question.exam_year > 0 ? ' ' + escapeHtml(question.exam_year) : ''}`
                     : `Topic${question.topic_name ? ': ' + escapeHtml(question.topic_name) : ''}`;
+                const softTags = [
+                    question.exam_year > 0 ? `Year: ${escapeHtml(question.exam_year)}` : '',
+                    question.recommended_class ? `Class: ${escapeHtml(question.recommended_class)}` : '',
+                    question.term_tag ? `Term: ${escapeHtml(question.term_tag)}` : '',
+                    question.question_category ? `Category: ${escapeHtml(question.question_category)}` : '',
+                    `Status: ${escapeHtml(question.review_status || 'approved')}`,
+                    `Quality: ${Number(question.quality_score || 0)}`,
+                    `Used: ${Number(question.times_used || 0)}`
+                ].filter(Boolean).join(' | ');
 
                 return `
                     <div class="border rounded p-3 mb-3">
@@ -484,8 +682,18 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
                                 <div class="small text-muted mt-2">
                                     ${escapeHtml(question.subject || 'No subject')} · ${escapeHtml(question.difficulty || 'Medium')} · ${sourceLabel}
                                 </div>
+                                <div class="small text-muted mt-1">${softTags}</div>
                             </div>
                             <div class="btn-group btn-group-sm">
+                                <button type="button" class="btn btn-outline-success review-status-btn" data-id="${question.id}" data-status="approved" title="Approve">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary review-status-btn" data-id="${question.id}" data-status="draft" title="Move to draft">
+                                    <i class="fas fa-undo"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-warning review-status-btn" data-id="${question.id}" data-status="rejected" title="Reject">
+                                    <i class="fas fa-ban"></i>
+                                </button>
                                 <button type="button" class="btn btn-outline-primary edit-question-btn" data-question='${escapeHtml(JSON.stringify(question))}' title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </button>
@@ -521,6 +729,11 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
         }
 
         function saveQuestion() {
+            if (!isSS360Admin) {
+                toastr.error('Only SchoolSuite360 admins can save global bank questions.');
+                return;
+            }
+
             const options = collectOptions();
             const correctCount = options.filter(option => option.is_correct).length;
 
@@ -537,11 +750,17 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
                 question_id: $('#question_id').val(),
                 question: getEditorCode($('#question_text')),
                 subject_id: $('#subject_id').val(),
-                class_id: $('#class_id').val(),
+                class_id: 0,
                 source_type: $('#source_type').val(),
                 topic_id: $('#topic_id').val(),
                 exam_body_id: $('#exam_body_id').val(),
+                exam_year: $('#exam_year').val(),
                 difficulty: $('#difficulty').val(),
+                recommended_class: $('#recommended_class').val(),
+                term_tag: $('#term_tag').val(),
+                question_category: $('#question_category').val(),
+                explanation: getEditorCode($('#explanation')),
+                review_status: $('#review_status').val(),
                 options: JSON.stringify(options)
             }, function (response) {
                 $btn.prop('disabled', false).html('<i class="fas fa-save mr-1"></i> Save Question');
@@ -562,13 +781,18 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
         function editQuestion(question) {
             $('#question_id').val(question.id);
             setEditorCode($('#question_text'), question.question);
+            setEditorCode($('#explanation'), question.explanation || '');
             $('#subject_id').val(question.subject_id);
-            $('#class_id').val(question.class_id || '');
             $('#difficulty').val(question.difficulty || 'Medium');
+            $('#recommended_class').val(question.recommended_class || '');
+            $('#term_tag').val(question.term_tag || '');
+            $('#question_category').val(question.question_category || '');
+            $('#review_status').val(question.review_status || 'approved');
             $('#source_type').val(question.source_type || 'topic').trigger('change');
             refreshTopicOptions();
             $('#topic_id').val(question.topic_id || '');
             $('#exam_body_id').val(question.exam_body_id || '');
+            $('#exam_year').val(question.exam_year > 0 ? question.exam_year : '');
             $('#options-container').empty();
 
             (question.options || []).forEach(option => addOptionRow(option.options, Number(option.answer) === 1));
@@ -583,6 +807,11 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
         }
 
         function deleteQuestion(questionId) {
+            if (!isSS360Admin) {
+                toastr.error('Only SchoolSuite360 admins can delete global bank questions.');
+                return;
+            }
+
             if (!confirm('Delete this question from the question bank?')) {
                 return;
             }
@@ -596,6 +825,89 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
                 toastr.success(response.message);
                 loadQuestions();
             }, 'json');
+        }
+
+        function updateReviewStatus(questionId, reviewStatus) {
+            if (!isSS360Admin) {
+                toastr.error('Only SchoolSuite360 admins can update review status.');
+                return;
+            }
+
+            $.post(controllerUrl, {
+                action: 'update_review_status',
+                question_id: questionId,
+                review_status: reviewStatus
+            }, function (response) {
+                if (response.status !== 'success') {
+                    toastr.error(response.message || 'Unable to update review status.');
+                    return;
+                }
+
+                toastr.success(response.message);
+                loadQuestions();
+            }, 'json');
+        }
+
+        function generateBankQuestions() {
+            if (!isSS360Admin) {
+                toastr.error('Only SchoolSuite360 admins can generate global bank drafts.');
+                return;
+            }
+
+            const subjectName = $('#subject_id option:selected').text();
+            const sourceType = $('#source_type').val();
+            const topicName = $('#topic_id option:selected').text();
+            const examBodyName = $('#exam_body_id option:selected').text();
+            const $btn = $('#generate-bank-btn');
+
+            if (!$('#subject_id').val()) {
+                toastr.warning('Select a subject before generating bank questions.');
+                return;
+            }
+
+            if (sourceType === 'topic' && !$('#topic_id').val()) {
+                toastr.warning('Select a topic before generating topic-based bank questions.');
+                return;
+            }
+
+            if (sourceType === 'exam_body' && !$('#exam_body_id').val()) {
+                toastr.warning('Select an exam body before generating exam-body bank questions.');
+                return;
+            }
+
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Generating...');
+            $.post(controllerUrl, {
+                action: 'generate_bank_questions',
+                subject_id: $('#subject_id').val(),
+                source_type: sourceType,
+                topic_id: $('#topic_id').val(),
+                exam_body_id: $('#exam_body_id').val(),
+                exam_year: $('#exam_year').val(),
+                subject_name: subjectName,
+                topic_name: topicName,
+                exam_body_name: examBodyName,
+                difficulty: $('#ai_bank_difficulty').val(),
+                num_questions: $('#ai_bank_count').val(),
+                recommended_class: $('#recommended_class').val(),
+                term_tag: $('#term_tag').val(),
+                question_category: $('#question_category').val(),
+                curriculum_context: $('#ai_curriculum_context').val()
+            }, function (response) {
+                $btn.prop('disabled', false).html('<i class="fas fa-magic mr-1"></i> Generate Drafts');
+                if (response.status !== 'success') {
+                    toastr.error(response.message || 'Unable to generate bank questions.');
+                    return;
+                }
+
+                toastr.success(response.message);
+                $('#source_filter').val(sourceType);
+                $('#review_status_filter').val('draft');
+                currentPage = 1;
+                loadQuestions();
+            }, 'json').fail(function () {
+                $btn.prop('disabled', false).html('<i class="fas fa-magic mr-1"></i> Generate Drafts');
+                toastr.error('Server error while generating bank questions.');
+            });
         }
 
         function renderStructuredQuestions(questions) {
@@ -619,6 +931,11 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
         }
 
         function restructureQuestions() {
+            if (!isSS360Admin) {
+                toastr.error('Only SchoolSuite360 admins can restructure global bank questions.');
+                return;
+            }
+
             const subjectName = $('#subject_id option:selected').text();
             const $btn = $('#restructure-btn');
             $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Restructuring...');
@@ -646,6 +963,7 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
         $(function () {
             loadMeta().then(function () {
                 resetQuestionForm();
+                applyAdminGate();
                 loadQuestions();
             });
 
@@ -655,7 +973,13 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
                 $('#exam-body-field').toggleClass('d-none', !isExamBody);
             });
 
-            $('#subject_id, #class_id').on('change', refreshTopicOptions);
+            $('#subject_id').on('change', refreshTopicOptions);
+            $('#subject_filter').on('change', function () {
+                refreshTopicFilterOptions();
+                currentPage = 1;
+                loadQuestions();
+            });
+
             $('#reset-form-btn').on('click', resetQuestionForm);
             $('#add-option-btn').on('click', function () {
                 addOptionRow();
@@ -670,7 +994,7 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
                 $(this).closest('.option-row').remove();
             });
 
-            $('#search_filter, #subject_filter, #source_filter').on('input change', function () {
+            $('#search_filter, #topic_filter, #source_filter, #exam_year_filter, #difficulty_filter, #review_status_filter, #recommended_class_filter, #term_tag_filter, #category_filter').on('input change', function () {
                 currentPage = 1;
                 loadQuestions();
             });
@@ -697,7 +1021,12 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
                 deleteQuestion($(this).data('id'));
             });
 
+            $('#question-list').on('click', '.review-status-btn', function () {
+                updateReviewStatus($(this).data('id'), $(this).data('status'));
+            });
+
             $('#restructure-btn').on('click', restructureQuestions);
+            $('#generate-bank-btn').on('click', generateBankQuestions);
 
             $('#structured-questions').on('click', '.use-structured-btn', function () {
                 const questions = $('#structured-questions').data('questions') || [];
@@ -709,6 +1038,8 @@ $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3] ?? 'question_ba
                 $('#question_id').val('');
                 setEditorCode($('#question_text'), question.question);
                 $('#difficulty').val(question.difficulty || 'Medium');
+                $('#question_category').val(question.question_category || $('#question_category').val());
+                setEditorCode($('#explanation'), question.explanation || '');
                 $('#options-container').empty();
                 question.options.forEach(option => addOptionRow(option.text, option.is_correct));
                 $('#save-question-btn').html('<i class="fas fa-save mr-1"></i> Save Question');

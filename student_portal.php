@@ -182,11 +182,23 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <div style="text-align: center; margin-bottom: 10px; color: #64748b; font-size: 0.98rem;">Check your academic performance and grades.</div>
                         <a href="results" class="portal-card-link">View Results &rarr;</a>
                     </div>
-                     <div class="portal-card">
+                    <div class="portal-card">
                         <span class="text-white bg-primary material-symbols-outlined">menu_book</span>
                         <div class="portal-card-title">Notes</div>
                         <div style="text-align: center; margin-bottom: 10px; color: #64748b; font-size: 0.98rem;">Access all class notes here</div>
                         <a href="student_class_notes" class="portal-card-link">View Notes &rarr;</a>
+                    </div>
+                    <div class="portal-card">
+                        <span class="text-white bg-primary material-symbols-outlined">quiz</span>
+                        <div class="portal-card-title">Practice Questions</div>
+                        <div style="text-align: center; margin-bottom: 10px; color: #64748b; font-size: 0.98rem;">Practice by subject, topic, and difficulty.</div>
+                        <a href="student_practice" class="portal-card-link">Start Practice &rarr;</a>
+                    </div>
+                    <div class="portal-card">
+                        <span class="text-white bg-primary material-symbols-outlined">insights</span>
+                        <div class="portal-card-title">My Learning Progress</div>
+                        <div style="text-align: center; margin-bottom: 10px; color: #64748b; font-size: 0.98rem;">See your practice score and topics to improve.</div>
+                        <a href="student_learning_progress" class="portal-card-link">View Progress &rarr;</a>
                     </div>
                     <div class="portal-card">
                         <span class="text-white bg-primary material-symbols-outlined">person</span>

@@ -517,32 +517,32 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                                 <div class="form-group mb-0 col-12 col-sm-4">
                                     <label for="" class="mb-0">Which assessment is this score for?</label>
                                     <div class="d-flex" style="flex-wrap: wrap; gap: 15px;">
-                                        <?php if ($school_settings['ca1'] == 1): ?>
+                                        <?php if (($school_settings['ca1'] ?? 0) == 1): ?>
                                             <div class="input-group d-flex align-items-center icheck-gray-dark" style="width: auto;">
                                                 <input type="radio" name="ca" id="ca_1" value="1" <?= $assessment_data['score_destination'] == '1' ? 'checked' : '' ?>>
                                                 <label for="ca_1" class="mb-0">CA1</label>
                                             </div>
                                         <?php endif; ?>
-                                        <?php if ($school_settings['ca2'] == 1): ?>
+                                        <?php if (($school_settings['ca2'] ?? 0) == 1): ?>
                                             <div class="input-group d-flex align-items-center icheck-gray-dark" style="width: auto;">
                                                 <input type="radio" name="ca" id="ca_2" value="2" <?= $assessment_data['score_destination'] == '2' ? 'checked' : '' ?>>
                                                 <label for="ca_2" class="mb-0">CA2</label>
                                             </div>
                                         <?php endif; ?>
-                                        <?php if ($school_settings['ca3'] == 1): ?>
+                                        <?php if (($school_settings['ca3'] ?? 0) == 1): ?>
                                             <div class="input-group d-flex align-items-center icheck-gray-dark" style="width: auto;">
                                                 <input type="radio" name="ca" id="ca_3" value="3" <?= $assessment_data['score_destination'] == '3' ? 'checked' : '' ?>>
                                                 <label for="ca_3" class="mb-0">CA3</label>
                                             </div>
                                         <?php endif; ?>
-                                        <?php if ($school_settings['practical'] == 1): ?>
+                                        <?php if (($school_settings['practical'] ?? 0) == 1): ?>
                                             <div class="input-group d-flex align-items-center icheck-gray-dark" style="width: auto;">
                                                 <input type="radio" name="ca" id="practical" value="4" <?= $assessment_data['score_destination'] == '4' ? 'checked' : '' ?>>
                                                 <label for="practical" class="mb-0">Practical</label>
                                             </div>
                                         <?php endif; ?>
                                         <!-- exam -->
-                                        <?php if ($school_settings['exa'] == 1): ?>
+                                        <?php if (($school_settings['exa'] ?? 0) == 1): ?>
                                             <div class="input-group d-flex align-items-center icheck-gray-dark" style="width: auto;">
                                                 <input type="radio" name="ca" id="exam" value="5" <?= $assessment_data['score_destination'] == '5' ? 'checked' : '' ?>>
                                                 <label for="exam" class="mb-0">Exam</label>
@@ -600,6 +600,7 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                                         </div>
                                     </div>
                                     <button type="button" class="btn btn-danger btn-sm mt-2" onclick="deleteQuestion(<?= $qdata['question']['id'] ?>)">Delete Question</button>
+                                    <button type="button" class="btn btn-outline-success btn-sm mt-2 ml-2 regenerate-question-btn" onclick="openRegenerateQuestionModal(this)">Regenerate with AI</button>
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -609,8 +610,8 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                             <button type="button" class="btn btn-secondary" id="next-page-btn">Next</button>
                             <!-- Add New Question: only visible on last page or when there is a single page -->
                             <button type="button" class="btn btn-primary" id="add-question-btn" <?= ($page != $total_pages) ? 'style="display:none"' : '' ?>>Add New Question</button>
-                            <button type="button" class="btn btn-info" id="import-question-btn" onclick="openImportQuestionModal()" <?= ($page != $total_pages) ? 'style="display:none"' : '' ?>>Import Question</button>
-                            <button type="button" class="btn btn-success" id="ai-question-btn" onclick="openAIGeneratorModal()" <?= ($page != $total_pages) ? 'style="display:none"' : '' ?>>Generate Question with AI</button>
+                            <button type="button" class="btn btn-info" id="import-question-btn">Import Question</button>
+                            <button type="button" class="btn btn-success" id="ai-question-btn">Generate Question with AI</button>
                             <!-- <button type="button" class="btn btn-success ml-auto" id="save-page-btn">Save Page</button> -->
                             <button type="button" class="btn btn-primary d-block" id="save-all-btn">Save Assessment</button>
                         </div>
@@ -725,16 +726,78 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                         </div>
                     </div>
                     <div class="row" id="import_dynamic_filter_container" style="display:none;">
-                        <div class="col-md-12">
-                            <div class="form-group border bg-white p-2 rounded" id="import_exam_body_container" style="display:none;">
-                                <label>Exam Body</label>
-                                <select class="form-control" id="import_exam_body"></select>
+                            <div class="col-md-6">
+                                <div class="form-group border bg-white p-2 rounded" id="import_exam_body_container" style="display:none;">
+                                    <label>Exam Body</label>
+                                    <select class="form-control" id="import_exam_body"></select>
+                                </div>
+                                <div class="form-group border bg-white p-2 rounded" id="import_exam_year_container" style="display:none;">
+                                    <label>Exam Year</label>
+                                    <select class="form-control" id="import_exam_year">
+                                        <option value="">All Years</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="form-group border bg-white p-2 rounded" id="import_topic_container" style="display:none;">
-                                <label>Topic</label>
-                                <select class="form-control" id="import_topic"></select>
+                            <div class="col-md-6">
+                                <div class="form-group border bg-white p-2 rounded" id="import_topic_container" style="display:none;">
+                                    <label>Topic(s)</label>
+                                    <select class="form-control" id="import_topic" multiple size="5"></select>
+                                    <small class="text-muted">Select one or more topics. Hold Ctrl to select multiple topics.</small>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="row" id="import_soft_filter_container" style="display:none;">
+                        <div class="col-md-4">
+                            <div class="form-group border bg-white p-2 rounded">
+                                <label>Difficulty</label>
+                                <select class="form-control" id="import_difficulty">
+                                    <option value="">All</option>
+                                    <option value="Easy">Easy</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Hard">Hard</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group border bg-white p-2 rounded">
+                                <label>Term Tag</label>
+                                <input type="text" class="form-control" id="import_term_tag" placeholder="Optional">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group border bg-white p-2 rounded">
+                                <label>Category</label>
+                                <input type="text" class="form-control" id="import_question_category" placeholder="Optional">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border rounded p-3 mb-3" id="bank-builder-container" style="display:none;">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="font-weight-bold mb-0">Build from Bank</h6>
+                            <button type="button" class="btn btn-sm btn-info" id="build-bank-btn">Build Questions</button>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>Easy</label>
+                                <input type="number" min="0" max="50" value="0" class="form-control" id="build_easy_count">
+                            </div>
+                            <div class="col-md-4">
+                                <label>Medium</label>
+                                <input type="number" min="0" max="50" value="0" class="form-control" id="build_medium_count">
+                            </div>
+                            <div class="col-md-4">
+                                <label>Hard</label>
+                                <input type="number" min="0" max="50" value="0" class="form-control" id="build_hard_count">
+                            </div>
+                        </div>
+                        <small class="text-muted d-block mt-2">Uses approved topic questions first, sorted by quality and usage balance.</small>
+                    </div>
+
+                    <div class="form-group border bg-white p-2 rounded">
+                        <label>Search Questions / Options</label>
+                        <input type="search" class="form-control" id="import_search" placeholder="Search question text or option text">
                     </div>
 
                     <hr>
@@ -800,6 +863,44 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-success" id="ai-generate-btn" onclick="generateQuestionsWithAI()">Generate</button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Regenerate Single Question Modal -->
+    <div class="modal fade" id="aiRegenerateQuestionModal" tabindex="-1" role="dialog" aria-labelledby="aiRegenerateQuestionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="aiRegenerateQuestionModalLabel">Regenerate Question with AI</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body bg-light">
+                    <div class="form-group border bg-white p-2 rounded">
+                        <label>Rewrite Context</label>
+                        <textarea class="form-control ai-summernote" id="ai_regenerate_context" rows="6" placeholder="Describe how you want this question rewritten."></textarea>
+                    </div>
+                    <div class="form-group border bg-white p-2 rounded">
+                        <label>Level of Difficulty</label>
+                        <select class="form-control" id="ai_regenerate_difficulty">
+                            <option value="Easy">Easy</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="Hard">Hard</option>
+                        </select>
+                    </div>
+                    <div id="ai-regenerate-loading-indicator" style="display:none; text-align:center; padding:10px;">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <p class="mt-2 mb-0">Regenerating this question with AI...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" id="ai-regenerate-btn" onclick="regenerateCurrentQuestionWithAI()">Regenerate</button>
                 </div>
             </div>
         </div>
@@ -943,6 +1044,11 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                         $('#total-pages').text(totalPages);
                         if (currentPage === totalPages) $('#add-question-btn').show();
                         else $('#add-question-btn').hide();
+                        if (typeof pendingAfterNavigation === 'function') {
+                            var afterNavigation = pendingAfterNavigation;
+                            pendingAfterNavigation = null;
+                            afterNavigation();
+                        }
                     }
                     // Hide spinner, show questions
                     $('#questions-loading-spinner').hide();
@@ -1057,6 +1163,7 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
 
         // Intercept navigation: attempt to navigate to newPage via loadPage(newPage)
         var pendingPage = null;
+        var pendingAfterNavigation = null;
 
         function handleNavigationRequest(newPage) {
             if (isDirty) {
@@ -1065,6 +1172,16 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
             } else {
                 loadPage(newPage);
             }
+        }
+
+        function runOnLastPage(action) {
+            if (currentPage === totalPages) {
+                action();
+                return;
+            }
+
+            pendingAfterNavigation = action;
+            handleNavigationRequest(totalPages);
         }
 
         $('#next-page-btn').off('click').on('click', function() {
@@ -1099,8 +1216,21 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
             }
         });
 
+        $('#cancel-continue-btn').off('click').on('click', function() {
+            pendingPage = null;
+            pendingAfterNavigation = null;
+        });
+
         $('#save-all-btn').click(function() {
             saveEntireAssessment();
+        });
+
+        $('#import-question-btn').off('click').on('click', function() {
+            runOnLastPage(openImportQuestionModal);
+        });
+
+        $('#ai-question-btn').off('click').on('click', function() {
+            runOnLastPage(openAIGeneratorModal);
         });
 
         // show/hide add-question on initial load

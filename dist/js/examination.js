@@ -819,6 +819,7 @@ function addNewQuestion() {
                 </div>
             </div>
             <button type="button" class="btn btn-danger btn-sm mt-2" onclick="$(this).closest('.question-block').remove()">Delete Question</button>
+            <button type="button" class="btn btn-outline-success btn-sm mt-2 ml-2 regenerate-question-btn" onclick="openRegenerateQuestionModal(this)">Regenerate with AI</button>
         </div>
     `;
     $('#questions-container').append(template);
@@ -882,6 +883,7 @@ function createQuestionTemplate(questionData) {
                 </div>
             </div>
             <button type="button" class="btn btn-danger btn-sm mt-2" onclick="deleteQuestion(<?= $qdata['question']['id'] ?>)">Delete Question</button>
+            <button type="button" class="btn btn-outline-success btn-sm mt-2 ml-2 regenerate-question-btn" onclick="openRegenerateQuestionModal(this)">Regenerate with AI</button>
         </div>
     `;
 }

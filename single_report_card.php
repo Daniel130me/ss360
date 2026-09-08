@@ -9,6 +9,7 @@ $class_id = $_POST['class_id'];
 $session_id = $_POST['session_id'];
 $term_id = $_POST['term_id'];
 $sessionOrTerm = $_POST['sessionOrTerm'];
+$is_cumulative_report = $sessionOrTerm === 'session' || $term_id === 'cum';
 $class_id = resolve_student_report_class_id($student_id, $session_id, $term_id, $class_id, $school_id);
 // $hidden_skill=$_SESSION['hidden_row'];
 // print_r($_SESSION['hidden_row']);
@@ -36,7 +37,7 @@ $biorow = mysqli_fetch_array($select_biodata);
 if ($biorow) {
     $biorow['class_id'] = $class_id;
 }
-$exact_term_id = $term_id == 'cum' ? 3 : $term_id;
+$exact_term_id = $is_cumulative_report ? 3 : $term_id;
 // echo "SELECT first,second,third, ca1, ca2, ca3, practical, exam, grading,school_open FROM skul_settings WHERE session_id='$session_id' and term_id='$exact_term_id' and school_id='$school_id'";
 $select_settings = mysqli_query($conn, "SELECT first,second,third, ca1, ca2, ca3, practical, exam, grading,school_open FROM skul_settings WHERE session_id='$session_id' and term_id='$exact_term_id' and school_id='$school_id'");
 $setrow = mysqli_fetch_array($select_settings);
@@ -134,8 +135,8 @@ if (!$show_report_private_sections) {
     $grade = 'Poor';
     $fallback_score_rows = [];
 }
-if ($sessionOrTerm == 'session') {
-    $term_Note = "THIRD";
+if ($is_cumulative_report) {
+    $term_Note = "CUMULATIVE";
     $next_term = $setrow['first'];
 } else if ($term_id == 1) {
     $term_Note = "FIRST";
@@ -151,7 +152,7 @@ $department = '';
 if (!empty($biorow['department'])) {
     $department = '[' . $biorow['department'] . ']';
 }
-$template_context = get_report_template_by_context($school_id, $session_id, $term_id == 'cum' ? 'cumulative' : $term_id);
+$template_context = get_report_template_by_context($school_id, $session_id, $is_cumulative_report ? 'cumulative' : $term_id);
 $template = normalize_report_template_config($template_context['template_json'] ?? []);
 $template_columns = get_report_card_template_score_columns($template);
 $template_labels = $template['labels'] ?? [];

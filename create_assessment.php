@@ -540,6 +540,7 @@ if ($assessment_id) {
                                                         </div>
                                                         <!-- <button type="button" class="btn btn-success btn-sm mt-2 mr-2" onclick="saveQuestion(this.closest('.question-block'))">Save Question</button> -->
                                                         <button type="button" class="btn btn-danger btn-sm mt-2" onclick="deleteQuestion(<?= $qdata['question']['id'] ?>)">Delete Question</button>
+                                                        <button type="button" class="btn btn-outline-success btn-sm mt-2 ml-2 regenerate-question-btn" onclick="openRegenerateQuestionModal(this)">Regenerate with AI</button>
                                                     </div>
                                                 <?php endforeach; ?>
                                             </div>
@@ -660,16 +661,78 @@ if ($assessment_id) {
                             </div>
                         </div>
                         <div class="row" id="import_dynamic_filter_container" style="display:none;">
-                            <div class="col-md-12">
-                                <div class="form-group border bg-white p-2 rounded" id="import_exam_body_container" style="display:none;">
-                                    <label>Exam Body</label>
-                                    <select class="form-control" id="import_exam_body"></select>
+                                <div class="col-md-6">
+                                    <div class="form-group border bg-white p-2 rounded" id="import_exam_body_container" style="display:none;">
+                                        <label>Exam Body</label>
+                                        <select class="form-control" id="import_exam_body"></select>
+                                    </div>
+                                    <div class="form-group border bg-white p-2 rounded" id="import_exam_year_container" style="display:none;">
+                                        <label>Exam Year</label>
+                                        <select class="form-control" id="import_exam_year">
+                                            <option value="">All Years</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="form-group border bg-white p-2 rounded" id="import_topic_container" style="display:none;">
-                                    <label>Topic</label>
-                                    <select class="form-control" id="import_topic"></select>
+                                <div class="col-md-6">
+                                    <div class="form-group border bg-white p-2 rounded" id="import_topic_container" style="display:none;">
+                                        <label>Topic(s)</label>
+                                        <select class="form-control" id="import_topic" multiple size="5"></select>
+                                        <small class="text-muted">Select one or more topics. Hold Ctrl to select multiple topics.</small>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="row" id="import_soft_filter_container" style="display:none;">
+                            <div class="col-md-4">
+                                <div class="form-group border bg-white p-2 rounded">
+                                    <label>Difficulty</label>
+                                    <select class="form-control" id="import_difficulty">
+                                        <option value="">All</option>
+                                        <option value="Easy">Easy</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="Hard">Hard</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group border bg-white p-2 rounded">
+                                    <label>Term Tag</label>
+                                    <input type="text" class="form-control" id="import_term_tag" placeholder="Optional">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group border bg-white p-2 rounded">
+                                    <label>Category</label>
+                                    <input type="text" class="form-control" id="import_question_category" placeholder="Optional">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border rounded p-3 mb-3" id="bank-builder-container" style="display:none;">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="font-weight-bold mb-0">Build from Bank</h6>
+                                <button type="button" class="btn btn-sm btn-info" id="build-bank-btn">Build Questions</button>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Easy</label>
+                                    <input type="number" min="0" max="50" value="0" class="form-control" id="build_easy_count">
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Medium</label>
+                                    <input type="number" min="0" max="50" value="0" class="form-control" id="build_medium_count">
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Hard</label>
+                                    <input type="number" min="0" max="50" value="0" class="form-control" id="build_hard_count">
+                                </div>
+                            </div>
+                            <small class="text-muted d-block mt-2">Uses approved topic questions first, sorted by quality and usage balance.</small>
+                        </div>
+
+                        <div class="form-group border bg-white p-2 rounded">
+                            <label>Search Questions / Options</label>
+                            <input type="search" class="form-control" id="import_search" placeholder="Search question text or option text">
                         </div>
 
                         <hr>
@@ -735,6 +798,44 @@ if ($assessment_id) {
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             <button type="button" class="btn btn-success" id="ai-generate-btn" onclick="generateQuestionsWithAI()">Generate</button>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Regenerate Single Question Modal -->
+        <div class="modal fade" id="aiRegenerateQuestionModal" tabindex="-1" role="dialog" aria-labelledby="aiRegenerateQuestionModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title" id="aiRegenerateQuestionModalLabel">Regenerate Question with AI</h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body bg-light">
+                        <div class="form-group border bg-white p-2 rounded">
+                            <label>Rewrite Context</label>
+                            <textarea class="form-control ai-summernote" id="ai_regenerate_context" rows="6" placeholder="Describe how you want this question rewritten."></textarea>
+                        </div>
+                        <div class="form-group border bg-white p-2 rounded">
+                            <label>Level of Difficulty</label>
+                            <select class="form-control" id="ai_regenerate_difficulty">
+                                <option value="Easy">Easy</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="Hard">Hard</option>
+                            </select>
+                        </div>
+                        <div id="ai-regenerate-loading-indicator" style="display:none; text-align:center; padding:10px;">
+                            <div class="spinner-border text-success" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <p class="mt-2 mb-0">Regenerating this question with AI...</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-success" id="ai-regenerate-btn" onclick="regenerateCurrentQuestionWithAI()">Regenerate</button>
                     </div>
                 </div>
             </div>

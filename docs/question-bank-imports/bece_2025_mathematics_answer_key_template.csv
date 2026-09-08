@@ -1,0 +1,41 @@
+question_no,correct_option,answer_status,migration_ready,source_page,needs_math_review,needs_diagram_review,review_note
+1,A,provisional,yes,5,no,no,
+2,C,provisional,yes,5,yes,no,normalize math notation to MathQuill span or safe HTML
+3,D,provisional,yes,5,no,no,
+4,C,provisional,yes,5,yes,no,normalize math notation to MathQuill span or safe HTML
+5,A,provisional,yes,5,no,no,
+6,B,provisional,yes,5,yes,no,normalize math notation to MathQuill span or safe HTML
+7,,needs_source_fix,no,5,yes,no,normalize math notation to MathQuill span or safe HTML Source/options mismatch: computed value does not appear in A-D. Keep out of migration until verified.
+8,D,provisional,yes,5,no,no,
+9,C,provisional,yes,5,no,no,
+10,C,provisional,yes,6,yes,no,normalize math notation to MathQuill span or safe HTML
+11,B,provisional,yes,6,no,no,
+12,B,provisional,yes,6,no,no,
+13,C,provisional,yes,6,no,no,
+14,B,provisional,yes,6,yes,no,normalize math notation to MathQuill span or safe HTML
+15,B,provisional,yes,6,no,no,
+16,,needs_source_fix,no,6,no,no,Source/options mismatch: factorization appears to have no matching option. Keep out of migration until verified.
+17,A,provisional,yes,6,yes,no,normalize math notation to MathQuill span or safe HTML
+18,B,provisional,yes,6,no,no,
+19,B,provisional,yes,6,yes,no,normalize math notation to MathQuill span or safe HTML
+20,D,provisional,yes,6,yes,yes,normalize math notation to MathQuill span or safe HTML; verify/crop diagram or table from PDF visual page Visual asset prepared: assets/bece_2025_mathematics/q20_pyramid.png.
+21,B,provisional,yes,6,yes,no,normalize math notation to MathQuill span or safe HTML
+22,D,provisional,yes,6,yes,no,normalize math notation to MathQuill span or safe HTML
+23,A,provisional,yes,7,yes,no,normalize math notation to MathQuill span or safe HTML
+24,C,provisional,yes,7,no,no,
+25,B,provisional,yes,7,yes,no,normalize math notation to MathQuill span or safe HTML
+26,B,provisional,yes,7,no,no,
+27,D,provisional,yes,7,no,no,
+28,C,provisional,yes,7,yes,yes,normalize math notation to MathQuill span or safe HTML; verify/crop diagram or table from PDF visual page
+29,C,provisional,yes,7,yes,no,normalize math notation to MathQuill span or safe HTML Visual asset prepared: assets/bece_2025_mathematics/q29_q30_mapping.png.
+30,B,provisional,yes,7,yes,no,normalize math notation to MathQuill span or safe HTML Visual asset prepared: assets/bece_2025_mathematics/q29_q30_mapping.png.
+31,A,provisional,yes,7,yes,no,normalize math notation to MathQuill span or safe HTML
+32,D,provisional,no,7,no,yes,verify/crop diagram or table from PDF visual page Visual asset prepared but source label is split across pages: assets/bece_2025_mathematics/q32_bearing.png. Review/redraw before final migration.
+33,D,provisional,yes,8,yes,no,normalize math notation to MathQuill span or safe HTML
+34,D,provisional,yes,8,yes,no,normalize math notation to MathQuill span or safe HTML
+35,D,provisional,yes,8,yes,yes,normalize math notation to MathQuill span or safe HTML; verify/crop diagram or table from PDF visual page
+36,C,provisional,yes,8,yes,no,normalize math notation to MathQuill span or safe HTML Visual asset prepared: assets/bece_2025_mathematics/q36_q37_table.png.
+37,B,provisional,yes,8,yes,no,normalize math notation to MathQuill span or safe HTML Visual asset prepared: assets/bece_2025_mathematics/q36_q37_table.png.
+38,A,provisional,yes,8,no,no,
+39,C,provisional,yes,9,yes,no,normalize math notation to MathQuill span or safe HTML
+40,C,provisional,yes,9,no,yes,verify/crop diagram or table from PDF visual page Visual asset prepared: assets/bece_2025_mathematics/q40_triangle.png.

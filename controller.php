@@ -1,16 +1,29 @@
 <?php
 session_start();
 error_reporting(E_ALL);
+$action = $_POST['action'] ?? '';
+
+// Score entry pages can remain open after the server-side PHP session expires.
+// Reject the save before database setup so the client receives clean JSON and can
+// ask the user to authenticate again without discarding the scores already entered.
+if ($action === 'submit_scores' && (!isset($_SESSION['userid'], $_SESSION['school_id']))) {
+    http_response_code(401);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode([
+        'status' => '401',
+        'message' => 'Your session has expired. Log in again, then retry submitting your scores.'
+    ]);
+    exit;
+}
 
 include_once("model/connect.php");
 include_once("model/functions.php");
 $date = date("Y:m:d H:i:s");
 
 
-    $action = $_POST['action'];
     if ($action == 'settings') {
         $grading = $_POST['grades'];
-        $first = test_input($_POST['first_term_date']) == '' ? '0001-01-01': test_input($_POST['third_term_date']);
+        $first = test_input($_POST['first_term_date']) == '' ? '0001-01-01' : test_input($_POST['first_term_date']);
         $session = test_input($_POST['session_id']);
         $term_id = test_input($_POST['term_id']);
         $second = test_input($_POST['second_term_date']) == '' ? '0001-01-01' : test_input($_POST['second_term_date']);

@@ -1212,20 +1212,29 @@ function build_report_score_comparison_data($score_rows, $target_student_id)
     }
 
     foreach (['2' => ['1', '2'], '3' => ['1', '2', '3']] as $scope => $terms) {
-        $subject_scores = [];
+        $subject_student_scores = [];
         foreach ($terms as $term_id) {
             foreach (($term_scores[$term_id] ?? []) as $subject_id => $student_scores) {
                 foreach ($student_scores as $student_id => $total) {
-                    if (!isset($subject_scores[$subject_id][$student_id])) {
-                        $subject_scores[$subject_id][$student_id] = 0;
+                    if (!isset($subject_student_scores[$subject_id][$student_id])) {
+                        $subject_student_scores[$subject_id][$student_id] = [
+                            'total' => 0,
+                            'term_count' => 0,
+                        ];
                     }
-                    $subject_scores[$subject_id][$student_id] += $total;
+                    $subject_student_scores[$subject_id][$student_id]['total'] += $total;
+                    $subject_student_scores[$subject_id][$student_id]['term_count']++;
                 }
             }
         }
 
-        foreach ($subject_scores as $subject_id => $student_scores) {
-            $comparison_data['cumulative'][$scope][$subject_id] = summarize_report_comparison_scores($student_scores, $target_student_id);
+        foreach ($subject_student_scores as $subject_id => $student_scores) {
+            $student_averages = [];
+            foreach ($student_scores as $student_id => $score_summary) {
+                // Missing terms are excluded instead of being treated as zero.
+                $student_averages[$student_id] = $score_summary['total'] / $score_summary['term_count'];
+            }
+            $comparison_data['cumulative'][$scope][$subject_id] = summarize_report_comparison_scores($student_averages, $target_student_id);
         }
     }
 

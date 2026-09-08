@@ -10258,6 +10258,31 @@ function showScoreSaveMessage(type, message) {
         .show();
 }
 
+function openScoreLoginPopup() {
+    const popupWidth = 480;
+    const popupHeight = 640;
+    const popupLeft = Math.max(0, window.screenX + (window.outerWidth - popupWidth) / 2);
+    const popupTop = Math.max(0, window.screenY + (window.outerHeight - popupHeight) / 2);
+    const popupFeatures = [
+        'popup=yes',
+        `width=${popupWidth}`,
+        `height=${popupHeight}`,
+        `left=${Math.round(popupLeft)}`,
+        `top=${Math.round(popupTop)}`,
+        'resizable=yes',
+        'scrollbars=yes'
+    ].join(',');
+    const loginPopup = window.open('login', 'scoreSessionLogin', popupFeatures);
+
+    if (!loginPopup) {
+        toastr.error('The login popup was blocked. Allow popups for this site and try again.');
+        return false;
+    }
+
+    loginPopup.focus();
+    return false;
+}
+
 function hideScoreSaveMessage() {
     $('#score_save_message').hide().html('');
 }
@@ -10337,9 +10362,9 @@ function submitScores() {
         $.ajax({
             url: '../controller.php',
             type: 'POST',
+            dataType: 'json',
             data: { scores: tableData, action: "submit_scores" },
             success: function (data) {
-                data = JSON.parse(data)
                 if (data.status == '1') {
                     setTimeout(track_scores_changes, 1000);
                     toastr.success(data.msg);
@@ -10356,6 +10381,26 @@ function submitScores() {
                     showScoreSaveMessage('warning', data.err);
                     toastr.error(data.err);
                 }
+            },
+            error: function (xhr) {
+                if (xhr.status === 401) {
+                    const message = xhr.responseJSON && xhr.responseJSON.message
+                        ? xhr.responseJSON.message
+                        : 'Your session has expired. Log in again, then retry submitting your scores.';
+                    const loginMessage = `${message} Your entered scores are still on this page. ` +
+                        '<a href="login" onclick="return openScoreLoginPopup()">Open the login popup</a>, ' +
+                        'then return here and click Submit Scores again.';
+
+                    showScoreSaveMessage('warning', loginMessage);
+                    toastr.error('Your session has expired. Your entered scores have not been cleared.');
+                    return;
+                }
+
+                showScoreSaveMessage(
+                    'warning',
+                    'Scores could not be submitted because the server returned an invalid response. Your entered scores are still on this page; please try again.'
+                );
+                toastr.error('Scores could not be submitted. Please try again.');
             }
         });
     } else {
@@ -14784,6 +14829,12 @@ async function preview_report_card_multiple(page_type, sessionOrTerm) {
         student_ids = $("#select_student_field").val().split(",");
         term_id = $(".select_btn.term.active").attr("data-name");
         class_id = $("#select_class_field").val();
+    }
+
+    // Session reports must use the cumulative template context, even when
+    // they are launched while the third-term selector is active.
+    if (sessionOrTerm === "session") {
+        term_id = "cum";
     }
     // const student_ids = $('.bulk_report_ids').val().split(',') || $("#select_student_field").val().split(",");
     // alert(student_ids)

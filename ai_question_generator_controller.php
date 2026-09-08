@@ -16,6 +16,29 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $userid = $_SESSION['userid'];
 $action = $_POST['action'] ?? '';
 
+function ai_convert_latex_to_math_spans(&$parsed)
+{
+    array_walk_recursive($parsed, function (&$value) {
+        if (!is_string($value)) {
+            return;
+        }
+
+        $value = preg_replace_callback('/(?:\\\\\[|\\\\\()(.*?)(?:\\\\\]|\\\\\))/s', function($m) {
+            $latex = trim($m[1]);
+            $latex = str_replace('\\', '\\\\', $latex);
+            $latex = str_replace('"', '\\"', $latex);
+            return '<span contenteditable="false" class="math-editor-rendered" data-latex="' . $latex . '"></span>';
+        }, $value);
+
+        $value = preg_replace_callback('/(?<!\\\\)\$\$(.*?)(?<!\\\\)\$\$|(?<!\\\\)\$(.*?)(?<!\\\\)\$/s', function($m) {
+            $latex = trim(!empty($m[1]) ? $m[1] : $m[2]);
+            $latex = str_replace('\\', '\\\\', $latex);
+            $latex = str_replace('"', '\\"', $latex);
+            return '<span contenteditable="false" class="math-editor-rendered" data-latex="' . $latex . '"></span>';
+        }, $value);
+    });
+}
+
     // Shared AI quota: assessment question generation and student assistant chats use the same daily row.
     
     // Action: Fetch Current Usage (On Modal Open)
@@ -83,29 +106,7 @@ Provide NO OTHER TEXT, NO EXPLANATIONS, AND NO INTRODUCTIONS. Output ONLY valid 
     if ($ai_result['status'] === 'success') {
         $parsed = $ai_result['data'];
         
-        array_walk_recursive($parsed, function (&$value) {
-            if (!is_string($value)) {
-                return;
-            }
-
-            $value = preg_replace_callback('/(?:\\\\\[|\\\\\()(.*?)(?:\\\\\]|\\\\\))/s', function($m) {
-            $latex = trim($m[1]);
-            // Escape any existing backslashes in the latex for JSON safety
-            $latex = str_replace('\\', '\\\\', $latex);
-            // Also escape " if it somehow exists
-            $latex = str_replace('"', '\\"', $latex);
-            return '<span contenteditable="false" class="math-editor-rendered" data-latex="' . $latex . '"></span>';
-            }, $value);
-
-            $value = preg_replace_callback('/(?<!\\\\)\$\$(.*?)(?<!\\\\)\$\$|(?<!\\\\)\$(.*?)(?<!\\\\)\$/s', function($m) {
-            $latex = trim(!empty($m[1]) ? $m[1] : $m[2]);
-            // Escape any existing backslashes in the latex for JSON safety
-            $latex = str_replace('\\', '\\\\', $latex);
-            // Also escape " if it somehow exists
-            $latex = str_replace('"', '\\"', $latex);
-            return '<span contenteditable="false" class="math-editor-rendered" data-latex="' . $latex . '"></span>';
-            }, $value);
-        });
+        ai_convert_latex_to_math_spans($parsed);
 
         if ($parsed === null) {
             echo json_encode(['status' => 'error', 'message' => 'Failed to parse AI response. Invalid JSON.']);
@@ -141,6 +142,117 @@ Provide NO OTHER TEXT, NO EXPLANATIONS, AND NO INTRODUCTIONS. Output ONLY valid 
             'debug' => $ai_result['debug'] ?? null,
         ]);
     }
-} else {
+    } else if ($action === 'regenerate_question') {
+        $context = trim((string)($_POST['context'] ?? ''));
+        $difficulty = $_POST['difficulty'] ?? 'Medium';
+        $subject_id = (int)($_POST['subject_id'] ?? 0);
+
+        if ($context === '') {
+            echo json_encode(['status' => 'error', 'message' => 'Rewrite context is required.']);
+            exit();
+        }
+
+        if (!in_array($difficulty, ['Easy', 'Medium', 'Hard'], true)) {
+            $difficulty = 'Medium';
+        }
+
+        $subject_name = '';
+        if ($subject_id > 0) {
+            $subject_stmt = $conn->prepare("SELECT subject FROM subjects WHERE id = ? LIMIT 1");
+            if ($subject_stmt) {
+                $subject_stmt->bind_param('i', $subject_id);
+                $subject_stmt->execute();
+                $subject_result = $subject_stmt->get_result();
+                if ($subject_row = $subject_result->fetch_assoc()) {
+                    $subject_name = trim((string)$subject_row['subject']);
+                }
+                $subject_stmt->close();
+            }
+        }
+
+        $usage = ss360_ai_usage_can_consume($conn, $userid, 1);
+        if (!$usage['allowed']) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Daily AI limit reached. You have ' . $usage['remaining'] . ' use(s) left today.',
+                'usage' => $usage['used'],
+                'limit' => $usage['limit'],
+                'remaining' => $usage['remaining'],
+            ]);
+            exit();
+        }
+
+        $system_prompt = "You are an expert teacher rewriting one multiple-choice assessment question.
+Return only valid JSON with this exact shape:
+{
+  \"question\": \"Question text\",
+  \"options\": [
+    {\"text\": \"Option text\", \"is_correct\": true},
+    {\"text\": \"Option text\", \"is_correct\": false},
+    {\"text\": \"Option text\", \"is_correct\": false},
+    {\"text\": \"Option text\", \"is_correct\": false}
+  ]
+}
+Rules:
+- Generate exactly one question.
+- Generate exactly four options.
+- Exactly one option must be correct.
+- Keep the regenerated question inside the assessment subject when one is provided.
+- If the assessment subject is English or English Language, generate only English/literacy content; do not generate mathematics, equations, algebra, science, or unrelated subject content unless the teacher explicitly asks for a cross-subject item.
+- If the teacher context conflicts with the assessment subject, keep the assessment subject and satisfy the teacher's style/request within that subject.
+- Respect the teacher's rewrite context and requested difficulty.
+- Preserve useful formatting where needed.
+- If you use math, use standard LaTeX inside \$...\$ or \$\$...\$\$.
+- Do not include explanations, markdown fences, or extra text.";
+
+        $subject_line = $subject_name !== '' ? $subject_name : 'Not specified';
+        $user_prompt = "Assessment subject: $subject_line\nDifficulty: \"$difficulty\"\n\nRewrite/regenerate this assessment question using the teacher's context below.\n\nTeacher context:\n$context";
+
+        $ai_result = ss360_ai_chat_json($conn, [
+            ['role' => 'system', 'content' => $system_prompt],
+            ['role' => 'user', 'content' => $user_prompt],
+        ], 0.7, [
+            'response_format_json' => true,
+            'recover_failed_generation' => false,
+        ]);
+
+        if ($ai_result['status'] !== 'success') {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'AI providers failed to regenerate the question. Please try again.',
+                'debug_message' => $ai_result['message'] ?? 'Unknown AI gateway error.',
+            ]);
+            exit();
+        }
+
+        $parsed = $ai_result['data'];
+        if (isset($parsed['questions'][0]) && is_array($parsed['questions'][0])) {
+            $parsed = $parsed['questions'][0];
+        }
+
+        ai_convert_latex_to_math_spans($parsed);
+
+        $options = $parsed['options'] ?? [];
+        $correct_count = 0;
+        foreach ($options as $option) {
+            if (!empty($option['is_correct']) || (!empty($option['answer']) && (int)$option['answer'] === 1)) {
+                $correct_count++;
+            }
+        }
+
+        if (empty($parsed['question']) || !is_array($options) || count($options) !== 4 || $correct_count !== 1) {
+            echo json_encode(['status' => 'error', 'message' => 'AI response did not contain one valid question with exactly four options and one correct answer.']);
+            exit();
+        }
+
+        $new_usage = ss360_ai_usage_record_success($conn, $userid, 1);
+        echo json_encode([
+            'status' => 'success',
+            'data' => $parsed,
+            'usage' => $new_usage['used'],
+            'limit' => $new_usage['limit'],
+            'remaining' => $new_usage['remaining'],
+        ]);
+    } else {
     echo json_encode(['status' => 'error', 'message' => 'Invalid request']);
 }

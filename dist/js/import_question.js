@@ -1,14 +1,44 @@
 /* Import Question Feature JavaScript */
 
 let currentImportPage = 1;
+let importFilterData = { subjects: [], classes: [], exam_bodies: [], exam_years: [], topics: [] };
+
+function escapeImportHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, function (char) {
+        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[char];
+    });
+}
+
+function renderImportMathContent($scope) {
+    if (!$scope || !$scope.length) return;
+
+    if (typeof loadMathQuillResources === 'function' && typeof renderEquationsIn === 'function') {
+        loadMathQuillResources(function () {
+            try {
+                renderEquationsIn($scope);
+            } catch (e) {
+                console.warn('Unable to render imported question math.', e);
+            }
+        });
+        return;
+    }
+
+    // Fallback for pages where the editor helpers are unavailable: show the raw LaTeX
+    // instead of leaving formula-only options visually blank.
+    $scope.find('span.math-editor-rendered').each(function () {
+        const latex = $(this).attr('data-latex') || '';
+        if (!$(this).text().trim() && latex) {
+            $(this).text(latex);
+        }
+    });
+}
 
 function openImportQuestionModal() {
     $('#importQuestionModal').modal('show');
     loadImportFilters();
-    $('#import-questions-list').empty();
+    $('#import-questions-list').html('<div class="alert alert-info">Please select Subject, Source Type, and Topic/Exam Body to view questions.</div>');
     $('#import-pagination').hide();
 
-    // Set default values if Subject and Class are already selected in the main form
     const subjectId = $("#select_subject_field").val();
     if (subjectId) {
         $("#import_subject_filter").val(subjectId).trigger('change');
@@ -22,77 +52,21 @@ function loadImportFilters() {
         data: { action: 'get_import_filters' },
         success: function (response) {
             try {
-                const res = JSON.parse(response);
-                if (res.status === 'success') {
-                    // Populate Subjects
-                    let subjectHtml = '<option value="">Select Subject</option>';
-                    res.data.subjects.forEach(s => {
-                        subjectHtml += `<option value="${s.id}">${s.subject}</option>`;
-                    });
-                    $('#import_subject_filter').html(subjectHtml);
-
-                    // Populate Classes
-                    let classHtml = '<option value="">Select Class</option>';
-                    res.data.classes.forEach(c => {
-                        classHtml += `<option value="${c.id}">${c.classname}</option>`;
-                    });
-                    $('#import_class_filter').html(classHtml);
-
-                    // Attach event listener for Source Type
-                    $('#import_source_type').off('change').on('change', function () {
-                        const type = $(this).val();
-                        $('#import_dynamic_filter_container').hide();
-                        $('#import_exam_body_container').hide();
-                        $('#import_topic_container').hide();
-                        
-                        const $classFilterCol = $('#import_class_filter').closest('.col-md-4');
-
-                        if (type === 'Exam bodies') {
-                            $classFilterCol.hide();
-                            let ebHtml = '<option value="">Select Exam Body</option>';
-                            res.data.exam_bodies.forEach(e => {
-                                ebHtml += `<option value="${e.id}">${e.name}</option>`;
-                            });
-                            $('#import_exam_body').html(ebHtml);
-                            $('#import_dynamic_filter_container').show();
-                            $('#import_exam_body_container').show();
-                        } else if (type === 'Topics') {
-                            $classFilterCol.hide();
-                            const subId = $('#import_subject_filter').val();
-                            
-                            let tHtml = '<option value="">Select Topic</option>';
-                            res.data.topics.forEach(t => {
-                                if (!subId || t.subject_id == subId) {
-                                    tHtml += `<option value="${t.id}">${t.topic_name}</option>`;
-                                }
-                            });
-                            $('#import_topic').html(tHtml);
-                            $('#import_dynamic_filter_container').show();
-                            $('#import_topic_container').show();
-                        } else {
-                            $classFilterCol.show();
-                        }
-                        
-                        currentImportPage = 1;
-                        fetchBankQuestions();
-                    });
-
-                    // Automatically select if the assessment form already has values
-                    const mainSubjectId = $("#select_subject_field").val();
-                    if (mainSubjectId) $('#import_subject_filter').val(mainSubjectId);
-
-                    // Trigger form change manually
-                    $('#import_subject_filter, #import_class_filter, #import_exam_body, #import_topic').off('change').on('change', function () {
-                        if ($(this).attr('id') === 'import_subject_filter' || $(this).attr('id') === 'import_class_filter') {
-                            if ($('#import_source_type').val() === 'Topics') {
-                                $('#import_source_type').trigger('change');
-                            }
-                        }
-                        currentImportPage = 1;
-                        fetchBankQuestions();
-                    });
-
+                const res = typeof response === 'string' ? JSON.parse(response) : response;
+                if (res.status !== 'success') {
+                    toastr.error(res.message || 'Unable to load import filters.');
+                    return;
                 }
+
+                importFilterData = res.data;
+                fillImportFilters();
+                bindImportFilterEvents();
+
+                const mainSubjectId = $("#select_subject_field").val();
+                if (mainSubjectId) {
+                    $('#import_subject_filter').val(mainSubjectId);
+                }
+                refreshImportTopicOptions();
             } catch (e) {
                 console.error("Error parsing filters", e);
             }
@@ -100,20 +74,163 @@ function loadImportFilters() {
     });
 }
 
+function fillImportFilters() {
+    let subjectHtml = '<option value="">Select Subject</option>';
+    importFilterData.subjects.forEach(s => {
+        subjectHtml += `<option value="${s.id}">${escapeImportHtml(s.subject)}</option>`;
+    });
+    $('#import_subject_filter').html(subjectHtml);
+
+    let classHtml = '<option value="">Any Class/Level</option>';
+    importFilterData.classes.forEach(c => {
+        classHtml += `<option value="${c.id}">${escapeImportHtml(c.classname)}</option>`;
+    });
+    $('#import_class_filter').html(classHtml);
+
+    let examBodyHtml = '<option value="">Select Exam Body</option>';
+    importFilterData.exam_bodies.forEach(e => {
+        examBodyHtml += `<option value="${e.id}">${escapeImportHtml(e.name)}</option>`;
+    });
+    $('#import_exam_body').html(examBodyHtml);
+    refreshImportExamYearOptions();
+}
+
+function refreshImportExamYearOptions() {
+    const examBodyId = $('#import_exam_body').val();
+    const years = [...new Set((importFilterData.exam_years || [])
+        .filter(item => !examBodyId || String(item.exam_body_id) === String(examBodyId))
+        .map(item => parseInt(item.exam_year, 10))
+        .filter(Boolean))]
+        .sort((a, b) => b - a);
+
+    let yearHtml = '<option value="">All Years</option>';
+    years.forEach(year => {
+        yearHtml += `<option value="${year}">${year}</option>`;
+    });
+    $('#import_exam_year').html(yearHtml);
+}
+
+function refreshImportTopicOptions() {
+    const subjectId = $('#import_subject_filter').val();
+    const classId = $('#import_class_filter').val();
+    const renderedTopics = new Set();
+    let topicHtml = '';
+
+    (importFilterData.topics || []).forEach(t => {
+        if (subjectId && String(t.subject_id) !== String(subjectId)) {
+            return;
+        }
+
+        const classIds = String(t.class_ids || t.class_id || '')
+            .split(',')
+            .map(id => id.trim())
+            .filter(Boolean);
+
+        if (classId && classIds.length > 0 && !classIds.includes('0') && !classIds.includes(String(classId))) {
+            return;
+        }
+
+        const topicName = String(t.topic_name || '').trim();
+        const topicValue = String(t.ids || t.id || '').trim();
+        const topicKey = `${t.subject_id || ''}|${topicName.toLowerCase()}`;
+
+        if (!topicName || !topicValue || renderedTopics.has(topicKey)) {
+            return;
+        }
+
+        renderedTopics.add(topicKey);
+        topicHtml += `<option value="${escapeImportHtml(topicValue)}">${escapeImportHtml(topicName)}</option>`;
+    });
+
+    $('#import_topic').html(topicHtml);
+}
+
+function bindImportFilterEvents() {
+    $('#import_source_type').off('change').on('change', function () {
+        const type = $(this).val();
+        $('#import_dynamic_filter_container').hide();
+        $('#import_exam_body_container').hide();
+        $('#import_exam_year_container').hide();
+        $('#import_topic_container').hide();
+        $('#import_soft_filter_container').hide();
+        $('#bank-builder-container').hide();
+
+        const $classFilterCol = $('#import_class_filter').closest('.col-md-4');
+
+        if (type === 'Exam bodies') {
+            $classFilterCol.hide();
+            $('#import_dynamic_filter_container').show();
+            $('#import_exam_body_container').show();
+            $('#import_exam_year_container').show();
+            $('#import_soft_filter_container').show();
+            refreshImportExamYearOptions();
+        } else if (type === 'Topics') {
+            $classFilterCol.show();
+            refreshImportTopicOptions();
+            $('#import_dynamic_filter_container').show();
+            $('#import_topic_container').show();
+            $('#import_soft_filter_container').show();
+            $('#bank-builder-container').show();
+        } else {
+            $classFilterCol.show();
+        }
+
+        currentImportPage = 1;
+        fetchBankQuestions();
+    });
+
+    $('#import_subject_filter').off('change').on('change', function () {
+        refreshImportTopicOptions();
+        currentImportPage = 1;
+        fetchBankQuestions();
+    });
+
+    $('#import_exam_body').off('change').on('change', function () {
+        refreshImportExamYearOptions();
+        currentImportPage = 1;
+        fetchBankQuestions();
+    });
+
+    $('#import_class_filter, #import_exam_year, #import_topic, #import_difficulty, #import_term_tag, #import_question_category, #import_search')
+        .off('input change')
+        .on('input change', function () {
+            if (this.id === 'import_class_filter') {
+                refreshImportTopicOptions();
+            }
+            currentImportPage = 1;
+            fetchBankQuestions();
+        });
+
+    $('#build-bank-btn').off('click').on('click', buildFromBank);
+}
+
+function selectedClassName() {
+    return $('#import_class_filter').val() ? ($('#import_class_filter option:selected').text() || '') : '';
+}
+
+function selectedImportTopicIds() {
+    const value = $('#import_topic').val();
+    const ids = Array.isArray(value)
+        ? value.flatMap(item => String(item).split(','))
+        : String(value || '').split(',');
+
+    return [...new Set(ids.map(item => item.trim()).filter(Boolean))];
+}
+
 function fetchBankQuestions() {
     const subject_id = $('#import_subject_filter').val();
     const class_id = $('#import_class_filter').val();
     const source_type = $('#import_source_type').val();
     const exam_body_id = $('#import_exam_body').val();
-    const topic_id = $('#import_topic').val();
+    const topicIds = selectedImportTopicIds();
 
-    if(!subject_id || !source_type) {
-        return; // Don't fetch if minimal criteria are not met
+    if (!subject_id || !source_type) {
+        return;
     }
-    
-    if(source_type === 'Local' && !class_id) return;
-    if(source_type === 'Exam bodies' && !exam_body_id) return;
-    if(source_type === 'Topics' && !topic_id) return;
+
+    if (source_type === 'Local' && !class_id) return;
+    if (source_type === 'Exam bodies' && !exam_body_id) return;
+    if (source_type === 'Topics' && topicIds.length === 0) return;
 
     $('#import-questions-list').html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div><p>Fetching questions...</p></div>');
 
@@ -126,15 +243,22 @@ function fetchBankQuestions() {
             class_id: class_id,
             source_type: source_type,
             exam_body_id: exam_body_id,
-            topic_id: topic_id,
+            exam_year: $('#import_exam_year').val(),
+            topic_id: topicIds[0] || '',
+            topic_ids: JSON.stringify(topicIds),
+            difficulty: $('#import_difficulty').val(),
+            term_tag: $('#import_term_tag').val(),
+            question_category: $('#import_question_category').val(),
+            search: $('#import_search').val(),
+            recommended_class: source_type === 'Topics' ? selectedClassName() : '',
             page: currentImportPage,
             per_page: 5
         },
         success: function (response) {
             try {
-                const res = JSON.parse(response);
+                const res = typeof response === 'string' ? JSON.parse(response) : response;
                 if (res.status === 'success') {
-                    renderImportedQuestionsList(res.data);
+                    renderImportedQuestionsList(res.data, source_type);
                     renderImportPagination(res.pagination);
                 }
             } catch (e) {
@@ -145,7 +269,7 @@ function fetchBankQuestions() {
     });
 }
 
-function renderImportedQuestionsList(questions) {
+function renderImportedQuestionsList(questions, sourceType, checkedByDefault = false) {
     let html = '';
     if (questions.length === 0) {
         html = '<div class="alert alert-info">No questions found matching the selected filters.</div>';
@@ -168,25 +292,67 @@ function renderImportedQuestionsList(questions) {
                 optionsHtml += '</div>';
             }
 
+            const meta = [
+                q.difficulty ? escapeImportHtml(q.difficulty) : '',
+                q.recommended_class ? `Class: ${escapeImportHtml(q.recommended_class)}` : '',
+                q.exam_year > 0 ? `Year: ${escapeImportHtml(q.exam_year)}` : '',
+                q.term_tag ? `Term: ${escapeImportHtml(q.term_tag)}` : '',
+                q.question_category ? `Category: ${escapeImportHtml(q.question_category)}` : '',
+                q.quality_score !== undefined ? `Quality: ${parseInt(q.quality_score, 10) || 0}` : ''
+            ].filter(Boolean).join(' | ');
+
+            const feedbackHtml = sourceType === 'Local' ? '' : `
+                <div class="mt-2">
+                    <button type="button" class="btn btn-xs btn-outline-success bank-feedback-btn" data-id="${q.id}" data-feedback="useful">Useful</button>
+                    <button type="button" class="btn btn-xs btn-outline-secondary bank-feedback-btn" data-id="${q.id}" data-feedback="too_easy">Too Easy</button>
+                    <button type="button" class="btn btn-xs btn-outline-secondary bank-feedback-btn" data-id="${q.id}" data-feedback="too_hard">Too Hard</button>
+                    <button type="button" class="btn btn-xs btn-outline-warning bank-feedback-btn" data-id="${q.id}" data-feedback="wrong_answer">Wrong Answer</button>
+                    <button type="button" class="btn btn-xs btn-outline-warning bank-feedback-btn" data-id="${q.id}" data-feedback="poorly_worded">Poorly Worded</button>
+                    <button type="button" class="btn btn-xs btn-outline-danger bank-feedback-btn" data-id="${q.id}" data-feedback="not_relevant">Not Relevant</button>
+                </div>`;
+
             html += `
                 <div class="card mb-3 shadow-sm question-import-item">
                     <div class="card-body">
                         <div class="d-flex align-items-start">
                             <div class="icheck-primary mr-3 mt-1">
-                                <input type="checkbox" id="import_q_${q.id}" class="import-question-checkbox" value="${q.id}">
+                                <input type="checkbox" id="import_q_${q.id}" class="import-question-checkbox" value="${q.id}" ${checkedByDefault ? 'checked' : ''}>
                                 <label for="import_q_${q.id}"></label>
                             </div>
                             <div style="flex-grow: 1; max-height: 250px; overflow-y: auto;">
                                 <div>${q.question}</div>
+                                <div class="small text-muted mt-2">${meta}</div>
                                 ${optionsHtml}
+                                ${feedbackHtml}
                             </div>
                         </div>
                     </div>
-                </div>
-            `;
+                </div>`;
         });
     }
     $('#import-questions-list').html(html);
+    renderImportMathContent($('#import-questions-list'));
+    $('.bank-feedback-btn').off('click').on('click', function () {
+        recordBankFeedback($(this).data('id'), $(this).data('feedback'));
+    });
+}
+
+function recordBankFeedback(questionId, feedbackType) {
+    $.post('../question_bank_controller.php', {
+        action: 'record_feedback',
+        question_id: questionId,
+        feedback_type: feedbackType
+    }, function (response) {
+        const res = typeof response === 'string' ? JSON.parse(response) : response;
+        if (res.status === 'success') {
+            toastr.success(res.message);
+            fetchBankQuestions();
+        } else {
+            toastr.error(res.message || 'Unable to record feedback.');
+        }
+    }).fail(function () {
+        toastr.error('Server error while recording feedback.');
+    });
 }
 
 function renderImportPagination(pagination) {
@@ -225,7 +391,6 @@ function importSelectedQuestions() {
     }
 
     const source_type = $('#import_source_type').val();
-
     const $btn = $('#import-submit-btn');
     $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Importing...');
 
@@ -240,12 +405,9 @@ function importSelectedQuestions() {
         success: function (response) {
             $btn.prop('disabled', false).html('Import Selected Questions');
             try {
-                const res = JSON.parse(response);
+                const res = typeof response === 'string' ? JSON.parse(response) : response;
                 if (res.status === 'success') {
-                    // Add items to DOM
-                    res.data.forEach(qData => {
-                        addImportedQuestionToDOM(qData);
-                    });
+                    res.data.forEach(qData => addImportedQuestionToDOM(qData));
                     $('#importQuestionModal').modal('hide');
                     toastr.success(`Successfully imported ${res.data.length} question(s).`);
                 }
@@ -261,8 +423,46 @@ function importSelectedQuestions() {
     });
 }
 
+function buildFromBank() {
+    const subjectId = $('#import_subject_filter').val();
+    const topicIds = selectedImportTopicIds();
+    const $btn = $('#build-bank-btn');
+
+    if (!subjectId || topicIds.length === 0) {
+        toastr.warning('Select a subject and at least one topic before building from the bank.');
+        return;
+    }
+
+    $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Building...');
+    $.post('../import_question_controller.php', {
+        action: 'build_from_bank',
+        subject_id: subjectId,
+        topic_ids: JSON.stringify(topicIds),
+        easy_count: $('#build_easy_count').val(),
+        medium_count: $('#build_medium_count').val(),
+        hard_count: $('#build_hard_count').val()
+    }, function (response) {
+        $btn.prop('disabled', false).text('Build Questions');
+        try {
+            const res = typeof response === 'string' ? JSON.parse(response) : response;
+            if (res.status !== 'success') {
+                toastr.error(res.message || 'Unable to build from bank.');
+                return;
+            }
+            renderImportedQuestionsList(res.data, 'Topics', true);
+            renderImportPagination({ page: 1, total_pages: 1, total_count: res.data.length });
+            $('#import-questions-list')[0]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            toastr.success(`Prepared ${res.data.length} question(s). Review them, then click Import Selected Questions.`);
+        } catch (e) {
+            toastr.error('Unable to parse bank builder response.');
+        }
+    }).fail(function () {
+        $btn.prop('disabled', false).text('Build Questions');
+        toastr.error('Server error while building from bank.');
+    });
+}
+
 function addImportedQuestionToDOM(qData) {
-    // Determine next question number by scanning existing labels like "Question 6"
     let maxNum = 0;
     $('#questions-container .question-block').each(function () {
         const labelText = $(this).find('.form-group > label').first().text().trim();
@@ -273,10 +473,8 @@ function addImportedQuestionToDOM(qData) {
         }
     });
     const nextNumber = (maxNum > 0) ? maxNum + 1 : ($('.question-block').length + 1);
-
     const randomId = Math.floor(Math.random() * 1000000);
 
-    // Add padded options if they are fewer than 4 (for consistency)
     let optionsHtml = '';
     for (let i = 0; i < 4; i++) {
         let optText = '';
@@ -293,8 +491,7 @@ function addImportedQuestionToDOM(qData) {
                     <label for="radio_imported_${randomId}_${i}"></label>
                     <textarea class="form-control option-textarea" style="height: 100px">${optText}</textarea>
                 </div>
-            </div>
-        `;
+            </div>`;
     }
 
     const template = `
@@ -314,12 +511,11 @@ function addImportedQuestionToDOM(qData) {
                 </div>
             </div>
             <button type="button" class="btn btn-danger btn-sm mt-2" onclick="$(this).closest('.question-block').remove()">Delete Question</button>
-        </div>
-    `;
+            <button type="button" class="btn btn-outline-success btn-sm mt-2 ml-2 regenerate-question-btn" onclick="openRegenerateQuestionModal(this)">Regenerate with AI</button>
+        </div>`;
 
     $('#questions-container').append(template);
 
-    // Re-initialize summernote plugins only on uninitialized elements
     if (typeof initializeSummernote === 'function') {
         initializeSummernote();
     }
