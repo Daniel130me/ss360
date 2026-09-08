@@ -508,7 +508,7 @@ while ($row = mysqli_fetch_array($select)) {
                                         <ul class="menu-scrollbar px-0" id="" role="" style="flex-wrap: nowrap; overflow: auto; width: 100%; white-space: nowrap">
                                             <button class="btn select_btn term my-1 <?= $_SESSION['term_id'] == '1' ? 'active' : '' ?> mr-2" data-name="1" id="first" onclick="toggletermfilterClass(this)">1st Term</button>
                                             <button class="btn select_btn term my-1 <?= $_SESSION['term_id'] == '2' ? 'active' : '' ?> mr-2" data-name="2" id="second" onclick="toggletermfilterClass(this)">2nd Term</button>
-                                            <button class="btn select_btn term my-1 <?= $_SESSION['term_id'] == '3' ? 'active' : '' ?> mr-2" data-name="3" id="third" onclick="toggletermfilterClass(this)">3rd Term</button>
+                                            <button class="btn select_btn term my-1 <?= $_SESSION['term_id'] == '3' ? 'active' : '' ?> mr-2" data-name="3" data-cumulative-report="true" id="third" onclick="toggletermfilterClass(this)">3rd Term</button>
                                             <button class="btn select_btn term my-1 mr-2" data-name="summary" id="summary" onclick="toggletermfilterClass(this)">Summary</button>
                                         </ul>
                                     </div>
@@ -943,7 +943,8 @@ while ($row = mysqli_fetch_array($select)) {
         let myschl = <?php echo $_SESSION['school_id'] ?>
     </script>
     <script src="../dist/js/accounts.js?v=113join"></script>
-    <script src="../dist/js/skul.js?v=0op"></script>
+    <script src="../dist/js/report_template_rendering.js?v=20260519"></script>
+    <script src="../dist/js/skul.js?v=20260804-report-context"></script>
     <script>
         setTimeout(get_score_data(),
             setTimeout(() => {
@@ -953,15 +954,19 @@ while ($row = mysqli_fetch_array($select)) {
         $(document).ready(function() {
             get_billing_data();
             fetchParentPortalReports();
+            updateParentReportPrintButtons();
 
             // Fetch reports when session changes
             $('#select_session_field').on('change', function() {
                 setTimeout(fetchParentPortalReports, 100);
             });
 
-            // Fetch reports when term changes (hooking into toggletermfilterClass)
-            $(document).on('click', '.select_btn.term', function() {
-                setTimeout(fetchParentPortalReports, 100);
+            // Fetch reports and update print actions after the selected term changes.
+            $(document).on('click', '#filterTerm .select_btn.term', function() {
+                setTimeout(function() {
+                    fetchParentPortalReports();
+                    updateParentReportPrintButtons();
+                }, 100);
             });
 
             // Ensure listeners are attached only once, potentially using .off().on()
@@ -974,6 +979,13 @@ while ($row = mysqli_fetch_array($select)) {
                 resetReportZoom();
             });
         });
+
+        function updateParentReportPrintButtons() {
+            const activeTerm = $('#filterTerm .select_btn.term.active');
+            const supportsCumulativeReport = activeTerm.attr('data-cumulative-report') === 'true';
+
+            $('#preview-session-pdf').toggleClass('d-none', !supportsCumulativeReport);
+        }
 
         function fetchParentPortalReports() {
             let session_id = $('#select_session_field').val();

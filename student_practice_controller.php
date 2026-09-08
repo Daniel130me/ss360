@@ -3,6 +3,47 @@ session_start();
 
 header('Content-Type: application/json; charset=utf-8');
 
+/**
+ * Return a short identifier that can be matched with the private server log.
+ * Database details are deliberately never sent to the student's browser.
+ */
+function practice_error_reference()
+{
+    try {
+        return strtoupper(bin2hex(random_bytes(4)));
+    } catch (Throwable $exception) {
+        return strtoupper(substr(sha1(uniqid('', true)), 0, 8));
+    }
+}
+
+set_exception_handler(function (Throwable $exception) {
+    $reference = practice_error_reference();
+
+    error_log(sprintf(
+        '[student_practice:%s] %s: %s in %s on line %d',
+        $reference,
+        get_class($exception),
+        $exception->getMessage(),
+        $exception->getFile(),
+        $exception->getLine()
+    ));
+
+    if (!headers_sent()) {
+        http_response_code(500);
+        header('Content-Type: application/json; charset=utf-8');
+    }
+
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Unable to load practice data. Please contact support with reference ' . $reference . '.',
+        'reference' => $reference,
+    ]);
+    exit;
+});
+
+// Make database failures consistent across PHP versions and catchable above.
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
 if (!isset($_SESSION['userid']) || ($_SESSION['user_type'] ?? '') !== 'student') {
     echo json_encode(['status' => 'error', 'message' => 'Please log in as a student to practice.']);
     exit;
@@ -314,14 +355,18 @@ function practice_decode_question_ids($question_ids_json)
     return array_values(array_filter(array_map('intval', $ids), fn($id) => $id > 0));
 }
 
-practice_ensure_schema($conn);
-
 $student_id = (int)$_SESSION['userid'];
 $school_id = (int)($_SESSION['school_id'] ?? 0);
+$action = $_POST['action'] ?? '';
+
+// Filter loading only reads question data and must not depend on schema-change privileges.
+if ($action !== 'get_filters') {
+    practice_ensure_schema($conn);
+}
+
 $student_context = practice_get_student_context($conn, $student_id, $school_id);
 $class_id = $student_context['class_id'];
 $class_name = $student_context['class_name'];
-$action = $_POST['action'] ?? '';
 
 if ($action === 'get_filters') {
     [$where, $types, $params] = practice_base_where($school_id, $class_id);
@@ -366,7 +411,13 @@ if ($action === 'get_filters') {
         "SELECT
                 CASE WHEN q.source_type = 'exam_body' THEN 'exam_body' ELSE 'topic' END AS source_type,
                 CASE WHEN q.source_type = 'exam_body' THEN q.exam_body_id ELSE 0 END AS exam_body_id,
-                COALESCE(eb.name, 'Topic Questions') AS source_name,
+                CASE
+                    WHEN q.source_type = 'exam_body' THEN COALESCE(
+                        NULLIF(TRIM(eb.name), ''),
+                        CONCAT('Exam Body #', q.exam_body_id)
+                    )
+                    ELSE 'Topic Questions'
+                END AS source_name,
                 COUNT(*) AS question_count
             FROM question_bank q
             LEFT JOIN exam_bodies eb ON eb.id = q.exam_body_id
@@ -374,8 +425,16 @@ if ($action === 'get_filters') {
             GROUP BY
                 CASE WHEN q.source_type = 'exam_body' THEN 'exam_body' ELSE 'topic' END,
                 CASE WHEN q.source_type = 'exam_body' THEN q.exam_body_id ELSE 0 END,
-                COALESCE(eb.name, 'Topic Questions')
-            ORDER BY CASE WHEN q.source_type = 'exam_body' THEN 1 ELSE 0 END, source_name ASC",
+                CASE
+                    WHEN q.source_type = 'exam_body' THEN COALESCE(
+                        NULLIF(TRIM(eb.name), ''),
+                        CONCAT('Exam Body #', q.exam_body_id)
+                    )
+                    ELSE 'Topic Questions'
+                END
+            ORDER BY
+                MIN(CASE WHEN q.source_type = 'exam_body' THEN 1 ELSE 0 END),
+                source_name ASC",
         $types,
         $params
     );

@@ -716,8 +716,15 @@ const PRACTICE_TIMER_MAX_MINUTES = 120;
                 renderSubjectOptions();
                 renderSourceOptions(response.data.source_default_label || 'All suitable sources');
                 renderTopicOptions();
-            }, 'json').fail(function () {
-                toastr.error('Network error while loading practice options.');
+            }, 'json').fail(function (xhr) {
+                const response = xhr.responseJSON || {};
+                const message = response.message || 'Unable to load practice options.';
+
+                toastr.error(message);
+                console.error('Practice filter request failed', {
+                    status: xhr.status,
+                    response: xhr.responseText
+                });
             });
         }
 

@@ -1167,7 +1167,8 @@ while ($row = mysqli_fetch_array($select)) {
         // alert("l")
         // get_score_data()
     </script>
-    <script src="../dist/js/skul.js?v=033"></script>
+    <script src="../dist/js/report_template_rendering.js?v=20260519"></script>
+    <script src="../dist/js/skul.js?v=20260804-report-context"></script>
     <script>
         let class_id = <?= $data[0]['class_id'] ?>;
         let student_id = <?= $data[0]['id'] ?>;
