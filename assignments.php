@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 // echo $_SESSION['term_id'];
 // echo $_SESSION['school_id'];
 // echo $_SESSION['session_id'];
@@ -272,7 +274,9 @@ $school_id = $_SESSION['school_id'];
                                             : ''}
                                         </div>
                                         <div class="mt-auto pt-3">
-                                            ${showTakeButton && !assignment.percentage_score ?
+                                            ${assignment.has_attempted
+                                                ? `<div class="alert alert-success text-center mb-0 py-2"><i class="fas fa-check-circle mr-1"></i> Completed</div>`
+                                                : showTakeButton ?
                                                 `<button type="button" onclick="takeAssessment(${assignment.id})" class="btn btn-primary btn-block">
                                                     <i class="fas fa-play-circle mr-1"></i> Take Assessment
                                                 </button>`
@@ -313,6 +317,9 @@ $school_id = $_SESSION['school_id'];
     }
 
     function formatDateTime(date, time) {
+        if (!date) {
+            return 'No deadline';
+        }
         let dateObj = new Date(date + ' ' + time);
         return dateObj.toLocaleString();
     }

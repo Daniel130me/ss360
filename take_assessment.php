@@ -1,7 +1,9 @@
 <?php
 // error_reporting(E_ALL);
 date_default_timezone_set('Africa/Lagos'); // Set the timezone to Lagos
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 // echo "l";
 if (!isset($_SESSION['userid']) || $_SESSION['user_type'] !== 'student') {
     $_SESSION['take_assessment'] = "take_assessment?id={$_GET['id']}";
@@ -31,15 +33,24 @@ if (isset($_SESSION['redirect_to_assessment'])) {
     unset($_SESSION['take_assessment']);
 }
 
-// Check eligibility and attempts
-$check_assessment = mysqli_query($conn, "SELECT * FROM assessment WHERE id = '$assessment_id'");
-if (!$check_assessment || mysqli_num_rows($check_assessment) === 0) {
+// Load only an assessment owned by the student's school.
+$school_id = (int)$_SESSION['school_id'];
+$assessment_stmt = $conn->prepare(
+    "SELECT a.*, s.subject AS subject_name
+     FROM assessment a
+     INNER JOIN subjects s ON s.id = a.subject_id
+     WHERE a.id = ? AND a.school_id = ?
+     LIMIT 1"
+);
+$assessment_stmt->bind_param('ii', $assessment_id, $school_id);
+$assessment_stmt->execute();
+$assessment = $assessment_stmt->get_result()->fetch_assoc();
+$assessment_stmt->close();
+
+if (!$assessment) {
     header("Location: assessment_status?id=$assessment_id&type=unauthorized");
     exit();
 }
-
-
-$assessment = mysqli_fetch_assoc($check_assessment);
 
 // Check if student's class is allowed
 $student_class = get_class_id_by_student_id($student_id);
@@ -74,11 +85,6 @@ if ($attempt = mysqli_fetch_assoc($attempt_check)) {
         exit();
     }
 
-    // Get assessment duration
-    $assessment_sql = "SELECT * FROM assessment WHERE id = '$assessment_id'";
-    $assessment_result = mysqli_query($conn, $assessment_sql);
-    $assessment = mysqli_fetch_assoc($assessment_result);
-
     $duration_minutes = $assessment['duration'];
     $total_time_seconds = $duration_minutes * 60;
 
@@ -111,10 +117,14 @@ if ($attempt = mysqli_fetch_assoc($attempt_check)) {
         {$assessment['duration']} * 60, 'in_progress')");
 }
 
-// Get questions
-$questions_sql = "SELECT * FROM questions WHERE ass_id = '$assessment_id' AND deleted=0";
-$questions_result = mysqli_query($conn, $questions_sql);
-$total_questions = mysqli_num_rows($questions_result);
+// Only the count is needed here; question content is loaded on demand.
+$question_count_stmt = $conn->prepare(
+    'SELECT COUNT(*) AS total FROM questions WHERE ass_id = ? AND deleted = 0'
+);
+$question_count_stmt->bind_param('i', $assessment_id);
+$question_count_stmt->execute();
+$total_questions = (int)$question_count_stmt->get_result()->fetch_assoc()['total'];
+$question_count_stmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -249,28 +259,10 @@ $total_questions = mysqli_num_rows($questions_result);
         let flaggedQuestions = [];
         let autoSaveInterval;
         let timeLeft;
-        // write an ajax query to load the question ids in object form [1:"question id", 2: "question id"]
-        let questionIds = {};
-        $.ajax({
-            url: '../controller_new.php',
-            method: 'POST',
-            async: false,
-            cache: true,
-            data: {
-                action: 'getQuestionIds',
-                assessment_id: $('#assessmentId').val()
-            },
-                success: function(response) {
-                    // response may be { question_ids: [...] } — normalize to an array
-                    questionIds = response && response.question_ids ? response.question_ids : response;
-                    console.log('Loaded questionIds:', questionIds);
-                },
-            error: function() {
-                console.error('Failed to load question IDs');
-            }
-        });
+        // Populated once by initExam(). The server returns the stable order for this attempt.
+        let questionIds = [];
     </script>
-    <script src="../dist/js/examination.js?v=iok1q121tazlklk"></script>
+    <script src="../dist/js/examination.js?v=20260913-assessment-flow"></script>
     <script>
         // Setup calculator button
     document.getElementById('calculatorBtn').addEventListener('click', function() {

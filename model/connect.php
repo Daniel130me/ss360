@@ -10,7 +10,7 @@ $db = $_SESSION['env'] == 'prod' ? 'ss360' : 'ss360';
 // $db = $_SESSION['env'] == 'prod' ? 'defaultdb' : 'ss360';
 $port = $_SESSION['env'] == 'prod' ? 3306 : 3306;
 // $port = $_SESSION['env'] == 'prod' ? 25060 : 3306;
-$apply_ssl = $_SESSION['env'] == 'prod' ? MYSQLI_CLIENT_SSL : null;
+$apply_ssl = $_SESSION['env'] == 'prod' ? MYSQLI_CLIENT_SSL : 0;
 
 $conn = mysqli_init();
 if (!$conn) {
@@ -18,7 +18,7 @@ if (!$conn) {
 }
 
 // Connect over SSL as required by DigitalOcean
-if (!mysqli_real_connect($conn, $host, $user, $pass, $db, $port, NULL, $apply_ssl)) {
+if (!mysqli_real_connect($conn, $host, $user, $pass, $db, $port, 0, $apply_ssl)) {
     die("Connect Error: " . mysqli_connect_error());
 }
 

@@ -1,35 +1,49 @@
 <?php
-session_start();
-include_once("model/connect.php");
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 
-header('Content-Type: application/json');
+include_once('model/connect.php');
+include_once('model/assessment_delivery.php');
 
-$assessment_id = $_POST['assessment_id'];
-$student_id = $_SESSION['userid'];
-$time_remaining = $_POST['time_remaining'];
-$last_question = $_POST['last_question'];
-$answers = $_POST['answers'];
-$flagged_questions = $_POST['flagged_questions'];
+header('Content-Type: application/json; charset=utf-8');
 
-$sql = "UPDATE assessment_attempts 
-        SET time_remaining = ?,
-            last_question = ?,
-            answers = ?,
-            flagged_questions = ?,
-            last_activity = NOW()
-        WHERE assessment_id = ? 
-        AND student_id = ? 
-        AND status = 'in_progress'";
+$assessmentId = (int)($_POST['assessment_id'] ?? 0);
+$timeRemaining = max(0, (int)($_POST['time_remaining'] ?? 0));
+$lastQuestion = max(1, (int)($_POST['last_question'] ?? 1));
+$answers = json_decode((string)($_POST['answers'] ?? ''), true);
+$flaggedQuestions = json_decode((string)($_POST['flagged_questions'] ?? '[]'), true);
 
-$stmt = mysqli_prepare($conn, $sql);
-mysqli_stmt_bind_param($stmt, "iissii", 
-    $time_remaining, 
-    $last_question, 
-    $answers, 
-    $flagged_questions, 
-    $assessment_id, 
-    $student_id
-);
+try {
+    if ($assessmentId <= 0 || !is_array($answers) || !is_array($flaggedQuestions)) {
+        throw new InvalidArgumentException('Invalid assessment progress.');
+    }
 
-$success = mysqli_stmt_execute($stmt);
-echo json_encode(['success' => $success]);
+    $context = assessment_delivery_require_student($conn, $assessmentId);
+    $answersJson = json_encode($answers, JSON_THROW_ON_ERROR);
+    $flaggedJson = json_encode(array_values($flaggedQuestions), JSON_THROW_ON_ERROR);
+
+    $stmt = $conn->prepare(
+        "UPDATE assessment_attempts
+         SET time_remaining = ?, last_question = ?, answers = ?,
+             flagged_questions = ?, last_activity = NOW()
+         WHERE id = ? AND status = 'in_progress'"
+    );
+    $stmt->bind_param(
+        'iissi',
+        $timeRemaining,
+        $lastQuestion,
+        $answersJson,
+        $flaggedJson,
+        $context['attempt_id']
+    );
+    $stmt->execute();
+    $stmt->close();
+
+    echo json_encode(['success' => true]);
+} catch (Throwable $error) {
+    $statusCode = (int)$error->getCode() === 403 ? 403 : 422;
+    http_response_code($statusCode);
+    error_log('[assessment_timer_progress] ' . $error);
+    echo json_encode(['success' => false, 'message' => $error->getMessage()]);
+}

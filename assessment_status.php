@@ -1,33 +1,53 @@
 <?php
-session_start();
-if (!isset($_SESSION['userid'])) {
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+if (($_SESSION['user_type'] ?? '') !== 'student' || !isset($_SESSION['userid'])) {
     header("Location: login");
     exit();
 }
 include_once("model/connect.php");
 
 $assessment_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$message_type = isset($_GET['type']) ? $_GET['type'] : '';
+$message_type = in_array($_GET['type'] ?? '', ['completed', 'expired', 'unauthorized'], true)
+    ? $_GET['type']
+    : '';
+$student_id = (int)$_SESSION['userid'];
+$school_id = (int)($_SESSION['school_id'] ?? 0);
 
-// Get assessment details
-$sql = "SELECT a.*, s.subject 
-        FROM assessment a 
-        JOIN subjects s ON a.subject_id = s.id 
-        WHERE a.id = '$assessment_id'";
-$result = mysqli_query($conn, $sql);
-$assessment = mysqli_fetch_assoc($result);
+// Scope the page to the authenticated student's school and assigned class.
+$assessmentStmt = $conn->prepare(
+    "SELECT a.id, a.assessment_type, s.subject
+     FROM assessment a
+     JOIN subjects s ON a.subject_id = s.id
+     JOIN students st ON st.id = ? AND st.school_id = a.school_id
+     WHERE a.id = ? AND a.school_id = ?
+       AND FIND_IN_SET(st.class_id, REPLACE(a.class_ids, ' ', ''))
+     LIMIT 1"
+);
+$assessmentStmt->bind_param('iii', $student_id, $assessment_id, $school_id);
+$assessmentStmt->execute();
+$assessment = $assessmentStmt->get_result()->fetch_assoc();
+$assessmentStmt->close();
+if (!$assessment) {
+    http_response_code(404);
+    exit('Assessment not found.');
+}
 
 // Get student's result/attempt status
-$student_id = $_SESSION['userid'];
-$status_sql = "SELECT r.*, a.start_time, a.status as attempt_status
+$statusStmt = $conn->prepare(
+    "SELECT r.*, a.start_time, a.status AS attempt_status
                FROM assessment_attempts a
                LEFT JOIN assessment_results r 
                     ON r.assessment_id = a.assessment_id 
                     AND r.student_id = a.student_id
-               WHERE a.assessment_id = '$assessment_id' 
-               AND a.student_id = '$student_id'";
-$status_result = mysqli_query($conn, $status_sql);
-$status = mysqli_fetch_assoc($status_result);
+               WHERE a.assessment_id = ? AND a.student_id = ?
+               ORDER BY a.id DESC LIMIT 1"
+);
+$statusStmt->bind_param('ii', $assessment_id, $student_id);
+$statusStmt->execute();
+$status = $statusStmt->get_result()->fetch_assoc() ?: [];
+$statusStmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -57,7 +77,9 @@ $status = mysqli_fetch_assoc($status_result);
             <h1 class="font-weight-bold mt-3">Assessment Completed!</h1>
             <p>You have successfully completed the <?= htmlspecialchars($assessment['subject']) ?> assessment.</p>
             <!-- <p>Score: <= $status['score'] ?>/<= $status['total_questions'] ?> (<= $status['percentage_score'] ?>%)</p> -->
-            <p>Submitted on: <?= date('F j, Y g:i A', strtotime($status['submitted_at'])) ?></p>
+            <?php if (!empty($status['submitted_at'])): ?>
+                <p>Submitted on: <?= date('F j, Y g:i A', strtotime($status['submitted_at'])) ?></p>
+            <?php endif; ?>
 
         <?php elseif ($message_type === 'expired'):
             if (isset($_SESSION['viewed_instructions'][$assessment_id])) {

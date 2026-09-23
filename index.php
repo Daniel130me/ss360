@@ -34,10 +34,13 @@ include_once("model/connect.php");
 
 // }
 // $_SESSION['']
-$school_short = $parameter[1 + $par];
+$school_short = $parameter[1 + $par] ?? '';
 // $_SESSION['url'] = null;
-if ($school_short != $_SESSION['url'] or !isset($_SESSION['url'])) {
-    $check = mysqli_query($conn, "SELECT url,session_id, phone1 FROM school WHERE url='$school_short'");
+if (!isset($_SESSION['url']) || $school_short !== $_SESSION['url']) {
+    $schoolStmt = $conn->prepare('SELECT url, session_id, phone1 FROM school WHERE url = ? LIMIT 1');
+    $schoolStmt->bind_param('s', $school_short);
+    $schoolStmt->execute();
+    $check = $schoolStmt->get_result();
     // echo "takn page";
     // exit;
     // session_destroy();
@@ -46,6 +49,7 @@ if ($school_short != $_SESSION['url'] or !isset($_SESSION['url'])) {
         // header("Location: 404");
         exit;
     }
+    $schoolStmt->close();
 }
 $_SESSION['url'] = $school_short;
 // $_SESSION['session_id'] = $school_short;
@@ -86,6 +90,10 @@ if (isset($_GET['id'])) {
     if ($new_url[0] == 'assessment') {
         // echo "assessment";
         include('single_assessment.php');
+        exit;
+    }
+    if ($new_url[0] == 'create_assessment') {
+        include('create_assessment.php');
         exit;
     }
     if ($new_url[0] == 'students') {

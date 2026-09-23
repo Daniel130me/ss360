@@ -347,7 +347,7 @@ function addAIGeneratedQuestionToDOM(qData) {
                 <div class="icheck-primary d-flex">
                     <input type="radio" id="radio_ai_${randomId}_${i}" name="question_ai_${randomId}" ${isChecked}>
                     <label for="radio_ai_${randomId}_${i}"></label>
-                    <textarea class="form-control option-textarea" style="height: 100px">${optText}</textarea>
+                    <textarea class="form-control option-textarea" style="height: 100px">${escapeAssessmentTextareaValue(optText)}</textarea>
                 </div>
             </div>
         `;
@@ -357,7 +357,7 @@ function addAIGeneratedQuestionToDOM(qData) {
         <div class="py-3 px-15 bg-white mb-3 question-block" style="border-radius: 10px;">
             <div class="form-group">
                 <label>Question ${nextNumber}</label>
-                <textarea class="question-textarea form-control" style="height: 200px">${qData.question || ''}</textarea>
+                <textarea class="question-textarea form-control" style="height: 200px">${escapeAssessmentTextareaValue(qData.question)}</textarea>
             </div>
 
             <div class="options-container mt-3">
@@ -369,7 +369,7 @@ function addAIGeneratedQuestionToDOM(qData) {
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn btn-danger btn-sm mt-2" onclick="$(this).closest('.question-block').remove()">Delete Question</button>
+            <button type="button" class="btn btn-danger btn-sm mt-2" onclick="removeAssessmentQuestion(this)">Delete Question</button>
             <button type="button" class="btn btn-outline-success btn-sm mt-2 ml-2 regenerate-question-btn" onclick="openRegenerateQuestionModal(this)">Regenerate with AI</button>
         </div>
     `;
@@ -379,4 +379,5 @@ function addAIGeneratedQuestionToDOM(qData) {
     if (typeof initializeSummernote === 'function') {
         initializeSummernote();
     }
+    if (typeof markDirty === 'function') markDirty();
 }

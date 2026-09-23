@@ -29,11 +29,11 @@ $data = [];
 // echo $_GET['id'];
 // exit;
 
-$select = mysqli_query($conn, "SELECT s.*,c.classname,
+$select = mysqli_query($conn, "SELECT s.*,c.classname,sch.parent_email_login_enabled,
 p.firstname as p_firstname,p.lastname as p_lastname,
 p.phone as p_phone,p.email as p_email,p.city,p.state,
 p.address as p_address,p.country FROM students s, class c, 
-parent p WHERE p.id=s.parent_id AND s.class_id=c.id AND 
+parent p, school sch WHERE p.id=s.parent_id AND s.class_id=c.id AND sch.id=s.school_id AND
 s.school_id='$school_id' AND 
 s.id='{$_GET['id']}'");
 
@@ -53,6 +53,7 @@ while ($row = mysqli_fetch_array($select)) {
         'email' => $row['email'] == '' ? 'Nil' : $row['email'],
         'datecreated' => $row['datecreated'],
         'parent_id' => $row['parent_id'],
+        'parent_email_login_enabled' => (int)$row['parent_email_login_enabled'],
         'p_firstname' => $row['p_firstname'] == '' ? 'Nil' : $row['p_firstname'],
         'p_lastname' => $row['p_lastname'] == '' ? 'Nil' : $row['p_lastname'],
         'p_phone' => $row['p_phone'],
@@ -758,6 +759,17 @@ while ($row = mysqli_fetch_array($select)) {
                                                     <p class="font-weight-bold small muted-text">Email address</p>
                                                     <p class="p_email"><?= $data[0]['p_email'] ?></p>
                                                 </div>
+                                                <?php if (
+                                                    $data[0]['parent_email_login_enabled'] === 1
+                                                    && in_array((int)($_SESSION['staff_type'] ?? 0), [1, 2, 3, 4, 5], true)
+                                                ) { ?>
+                                                    <div class="w-100">
+                                                        <button type="button" class="btn btn-sm btn-primary"
+                                                            onclick="open_parent_password_modal('<?= $data[0]['id'] ?>')">
+                                                            Set Parent Password
+                                                        </button>
+                                                    </div>
+                                                <?php } ?>
                                                 <div class="">
                                                     <p class="font-weight-bold small muted-text">Address</p>
                                                     <p class="p_address"><?= $data[0]['p_address'] ?></p>
@@ -1144,6 +1156,28 @@ while ($row = mysqli_fetch_array($select)) {
     <!-- REQUIRED SCRIPTS -->
 
     <!-- jQuery -->
+    <div class="modal fade" id="set_parent_password_modal">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <form id="set_parent_password_form">
+                        <div class="form-group">
+                            <label for="parent_new_password">Set Parent Password</label>
+                            <input type="password" name="new_password" id="parent_new_password"
+                                class="form-control" minlength="4" autocomplete="new-password" required>
+                        </div>
+                        <input type="hidden" name="action" value="set_parent_password">
+                        <input type="hidden" name="student_id" id="student_id_for_parent_password">
+                        <div class="card-foot px-0 pb-0">
+                            <button type="submit" id="set_parent_password_btn" class="btn-sm btn-primary">Set Password</button>
+                            <button type="button" class="btn btn-grey" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="../plugins/jquery/jquery.min.js"></script>
     <!-- Bootstrap 4 -->
     <script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>

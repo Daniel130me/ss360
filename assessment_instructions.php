@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 if (!isset($_SESSION['userid']) || $_SESSION['user_type'] !== 'student') {
     header("Location: login");
     exit();
@@ -12,24 +14,57 @@ include_once("model/connect.php");
 include_once("model/functions.php");
 
 // Get current student info
-$student_sql = mysqli_query($conn, "SELECT firstname, lastname, middlename, admission_no, class_id FROM students WHERE id='$student_id' AND school_id='{$_SESSION['school_id']}'");
-$student_info = mysqli_fetch_assoc($student_sql);
+$school_id = (int)$_SESSION['school_id'];
+$student_stmt = $conn->prepare(
+    'SELECT firstname, lastname, middlename, admission_no, class_id
+     FROM students WHERE id = ? AND school_id = ? AND status = 1 LIMIT 1'
+);
+$student_stmt->bind_param('ii', $student_id, $school_id);
+$student_stmt->execute();
+$student_info = $student_stmt->get_result()->fetch_assoc();
+$student_stmt->close();
+
+if (!$student_info) {
+    header("Location: assessment_status?id=$assessment_id&type=unauthorized");
+    exit();
+}
 $student_fullname = $student_info ? trim($student_info['firstname'] . ' ' . $student_info['lastname'] . ' ' . $student_info['middlename']) : '';
 $admission_no = $student_info['admission_no'] ?? '';
 $class_name = $student_info ? get_class_by_classid($student_info['class_id']) : '';
 
 // Get assessment info
-$sql = "SELECT a.*, s.subject 
-        FROM assessment a 
-        JOIN subjects s ON a.subject_id = s.id 
-        WHERE a.id = '$assessment_id'";
-$result = mysqli_query($conn, $sql);
-$assessment = mysqli_fetch_assoc($result);
+$assessment_stmt = $conn->prepare(
+    'SELECT a.*, s.subject
+     FROM assessment a
+     INNER JOIN subjects s ON a.subject_id = s.id
+     WHERE a.id = ? AND a.school_id = ? LIMIT 1'
+);
+$assessment_stmt->bind_param('ii', $assessment_id, $school_id);
+$assessment_stmt->execute();
+$assessment = $assessment_stmt->get_result()->fetch_assoc();
+$assessment_stmt->close();
+
+$allowedClasses = $assessment
+    ? array_filter(array_map('intval', explode(',', (string)$assessment['class_ids'])))
+    : [];
+if (!$assessment || !in_array((int)$student_info['class_id'], $allowedClasses, true)) {
+    header("Location: assessment_status?id=$assessment_id&type=unauthorized");
+    exit();
+}
 
 // Get question count
-$questions_sql = "SELECT COUNT(*) as total FROM questions WHERE ass_id = '$assessment_id' AND deleted=0";
-$questions_result = mysqli_query($conn, $questions_sql);
-$question_count = mysqli_fetch_assoc($questions_result)['total'];
+$question_stmt = $conn->prepare(
+    'SELECT COUNT(*) AS total FROM questions WHERE ass_id = ? AND deleted = 0'
+);
+$question_stmt->bind_param('i', $assessment_id);
+$question_stmt->execute();
+$question_count = (int)$question_stmt->get_result()->fetch_assoc()['total'];
+$question_stmt->close();
+
+$blacklistedStudents = array_filter(array_map(
+    'intval',
+    explode(',', (string)($assessment['blacklist_students'] ?? ''))
+));
 ?>
 
 <!DOCTYPE html>
@@ -190,7 +225,7 @@ $question_count = mysqli_fetch_assoc($questions_result)['total'];
 
 <body>
     <div class="instruction-card">
-        <?php if (in_array($student_id, explode(',', $assessment['blacklist_students']))) { ?>
+        <?php if (in_array((int)$student_id, $blacklistedStudents, true)) { ?>
             <div class="no-access-container">
                 <div class="no-access-icon">
                     <i class="fas fa-ban"></i>

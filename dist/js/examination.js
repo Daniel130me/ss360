@@ -35,6 +35,7 @@ function get_all_classes_for_assessment(assess_id) {
     $.ajax({
         url: '../controller.php',
         type: 'POST',
+        dataType: 'json',
         data: {
             action: 'get_all_classes_for_assessment',
             assessment_id: assess_id
@@ -80,7 +81,7 @@ function loadExistingAssessment(assessment_id) {
             $('#set_duration_checkbox').prop('checked', response.settings.duration_set);
             $('#deadline_date').val(response.settings.deadline_date);
             $('#deadline_time').val(response.settings.deadline_time);
-            $('#set_deadline_checkbox').prop('checked', response.settings.deadline_Set);
+            $('#set_deadline_checkbox').prop('checked', response.settings.deadline_set);
             $('#desired_score').val(response.settings.desired_score);
             $('#round_off_dec').prop('checked', response.settings.round_off_decimal);
             $('[name="ca"][value="' + response.settings.ca_type + '"]').prop('checked', true);
@@ -116,6 +117,9 @@ function loadExistingAssessment(assessment_id) {
     });
 }
 function checkExistingAssessment() {
+    // Once this page owns an assessment ID, field changes must update it rather than create another row.
+    if (Number(existingAssessmentId) > 0) return;
+
     //   alert('fh')
     const subject_id = $("#select_subject_field").val();
     const assessment_type = $(".assessment_btn.select_btn.active").data("id");
@@ -818,12 +822,13 @@ function addNewQuestion() {
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn btn-danger btn-sm mt-2" onclick="$(this).closest('.question-block').remove()">Delete Question</button>
+            <button type="button" class="btn btn-danger btn-sm mt-2" onclick="removeAssessmentQuestion(this)">Delete Question</button>
             <button type="button" class="btn btn-outline-success btn-sm mt-2 ml-2 regenerate-question-btn" onclick="openRegenerateQuestionModal(this)">Regenerate with AI</button>
         </div>
     `;
     $('#questions-container').append(template);
     initializeSummernote();
+    if (typeof markDirty === 'function') markDirty();
 }
 // $('#add-question-btn').click(function() {
 //     addNewQuestion();
@@ -850,7 +855,7 @@ function confirmRemoveClass() {
 function createQuestionTemplate(questionData) {
     const questionCount = $('.question-block').length + 1;
     const questionId = questionData.question.id;
-    const questionText = questionData.question.question;
+    const questionText = escapeAssessmentTextareaValue(questionData.question.question);
     const options = questionData.options;
 
     return `
@@ -875,37 +880,161 @@ function createQuestionTemplate(questionData) {
                                     <label for="radio_${questionId}_${option.id}"></label>
                                     <textarea class="form-control option-textarea" 
                                         data-option-id="${option.id}"
-                                        style="height: 100px">${option.options}</textarea>
+                                        style="height: 100px">${escapeAssessmentTextareaValue(option.options)}</textarea>
                                 </div>
                             </div>
                         `).join('')}
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn btn-danger btn-sm mt-2" onclick="deleteQuestion(<?= $qdata['question']['id'] ?>)">Delete Question</button>
+            <button type="button" class="btn btn-danger btn-sm mt-2" onclick="removeAssessmentQuestion(this)">Delete Question</button>
             <button type="button" class="btn btn-outline-success btn-sm mt-2 ml-2 regenerate-question-btn" onclick="openRegenerateQuestionModal(this)">Regenerate with AI</button>
         </div>
     `;
 }
 
-function deleteQuestion(questionId) {
-    if (confirm('Are you sure you want to delete this question?')) {
-        $.post('../controller_new.php', {
+function confirmAssessmentQuestionRemoval() {
+    let $modal = $('#deleteQuestionConfirmModal');
+    if (!$modal.length) {
+        $('body').append(`
+            <div class="modal fade" id="deleteQuestionConfirmModal" tabindex="-1" role="dialog"
+                 aria-labelledby="deleteQuestionConfirmModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteQuestionConfirmModalLabel">Delete Question</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete this question?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-danger confirm-question-delete">Delete Question</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `);
+        $modal = $('#deleteQuestionConfirmModal');
+    }
+
+    return new Promise(resolve => {
+        let settled = false;
+        const finish = confirmed => {
+            if (settled) return;
+            settled = true;
+            $modal.off('.questionDelete');
+            resolve(confirmed);
+        };
+
+        $modal
+            .off('.questionDelete')
+            .one('click.questionDelete', '.confirm-question-delete', function () {
+                finish(true);
+                $modal.modal('hide');
+            })
+            .one('hidden.bs.modal.questionDelete', function () {
+                finish(false);
+            })
+            .modal('show');
+    });
+}
+
+async function removeAssessmentQuestion(button) {
+    const $question = $(button).closest('.question-block');
+    const questionId = Number($question.data('question-id')) || 0;
+
+    if (!await confirmAssessmentQuestionRemoval()) return;
+
+    if (!questionId) {
+        $question.remove();
+        if (typeof markDirty === 'function') markDirty();
+        return;
+    }
+
+    const $deleteButton = $(button).prop('disabled', true);
+    $.ajax({
+        url: '../controller_new.php',
+        type: 'POST',
+        data: {
             action: 'delete_question',
+            assessment_id: existingAssessmentId,
             question_id: questionId
-        }, function (response) {
-            if (response.success) {
-                $(`[data-question-id="${questionId}"]`).remove();
-                toastr.success('Question deleted successfully');
+        },
+        success: function (response) {
+            if (!response.success) {
+                toastr.error(response.message || 'Unable to delete the question.');
+                return;
+            }
+
+            toastr.success(response.message || 'Question deleted successfully.');
+            $question.remove();
+
+            // Keep other unsaved edits on the page. Only reload when deletion empties a paginated page.
+            if ($('#questions-container .question-block').length === 0
+                && typeof loadPage === 'function' && typeof currentPage !== 'undefined') {
+                loadPage(Math.max(1, currentPage - 1));
             } else {
-                toastr.error('Error deleting question');
+                $('#questions-container .question-block').each(function (index) {
+                    const pageOffset = typeof currentPage !== 'undefined' && typeof perPage !== 'undefined'
+                        ? (currentPage - 1) * perPage
+                        : 0;
+                    $(this).find('.form-group > label').first().text(`Question ${pageOffset + index + 1}`);
+                });
+            }
+        },
+        error: function (xhr) {
+            const response = xhr.responseJSON || {};
+            toastr.error(response.message || 'Unable to delete the question.');
+        },
+        complete: function () {
+            if ($question.closest('html').length) {
+                $deleteButton.prop('disabled', false);
+            }
+        }
+    });
+}
+
+function escapeAssessmentTextareaValue(value) {
+    return $('<div>').text(String(value || '')).html();
+}
+
+// Retained for older server-rendered markup while cached pages are refreshed.
+function deleteQuestion(questionId) {
+    const $question = $(`[data-question-id="${Number(questionId)}"]`).first();
+    if ($question.length) removeAssessmentQuestion($question.find('.btn-danger').get(0));
+}
+
+function syncAssessmentQuestionMapping(mapping) {
+    if (!Array.isArray(mapping)) return;
+
+    $('.question-block').each(function (questionIndex) {
+        const saved = mapping[questionIndex];
+        if (!saved) return;
+
+        $(this)
+            .attr('data-question-id', saved.question_id)
+            .data('question-id', saved.question_id);
+
+        $(this).find('.option-group').each(function (optionIndex) {
+            const optionId = saved.options && saved.options[optionIndex]
+                ? saved.options[optionIndex]
+                : null;
+            const $textarea = $(this).find('.option-textarea');
+            if (optionId) {
+                $textarea.attr('data-option-id', optionId).data('option-id', optionId);
+            } else {
+                $textarea.removeAttr('data-option-id').data('option-id', null);
             }
         });
-    }
+    });
 }
 
 function initExam() {
-    // Load question IDs first
+    // The server owns the per-attempt order so refreshes cannot reorder saved answers.
     $.ajax({
         url: '../controller_new.php',
         method: 'POST',
@@ -914,15 +1043,20 @@ function initExam() {
             assessment_id: $('#assessmentId').val()
         },
         success: function (response) {
-            questionIds = response.question_ids;
-            loadQuestion(1);
-            initTimer();
+            if (!response.success || !Array.isArray(response.question_ids) || response.question_ids.length === 0) {
+                toastr.error(response.message || 'No questions are available for this assessment.');
+                return;
+            }
+
+            questionIds = response.question_ids.map(Number);
             setupNavigation();
             setupAutoSave();
             setupAnswerHandling();
+            initTimer();
         },
-        error: function () {
-            console.error('Failed to load question IDs');
+        error: function (xhr) {
+            const response = xhr.responseJSON || {};
+            toastr.error(response.message || 'Failed to load assessment questions.');
         }
     });
 }
@@ -1026,6 +1160,7 @@ function saveEntireAssessment_for_create_assessment() {
         desired_score: $("#desired_score").val() || 0,
         round_off_decimal: $("#round_off_dec").is(":checked") ? 1 : 0,
         ca_type: $('[name="ca"]:checked').val() || 0,
+        save_token: typeof assessmentSaveToken === 'string' ? assessmentSaveToken : '',
         class_ids: Array.from($(".classes_container button"))
             .map((btn) => $(btn).data("class-id"))
             .join(","),
@@ -1076,38 +1211,7 @@ function saveEntireAssessment_for_create_assessment() {
                 if (response.assessment_id) {
                     existingAssessmentId = response.assessment_id;
                 }
-                // If server returned mapping of created/updated IDs, sync them into the DOM
-                if (response.mapping && Array.isArray(response.mapping)) {
-                    $(".question-block").each(function (qIndex) {
-                        const map = response.mapping[qIndex];
-                        if (!map) return;
-                        // set question id attribute
-                        $(this)
-                            .attr("data-question-id", map.question_id)
-                            .data("question-id", map.question_id);
-
-                        // set option ids in order (positionally)
-                        $(this)
-                            .find(".option-group")
-                            .each(function (optIndex) {
-                                const optId =
-                                    map.options && map.options[optIndex]
-                                        ? map.options[optIndex]
-                                        : null;
-                                if (optId) {
-                                    $(this)
-                                        .find(".option-textarea")
-                                        .attr("data-option-id", optId)
-                                        .data("option-id", optId);
-                                } else {
-                                    $(this)
-                                        .find(".option-textarea")
-                                        .removeAttr("data-option-id")
-                                        .data("option-id", null);
-                                }
-                            });
-                    });
-                }
+                syncAssessmentQuestionMapping(response.mapping);
                 // setTimeout(() => {
                 //     window.location.href = 'assessment';
                 // }, 1500);
@@ -1115,8 +1219,9 @@ function saveEntireAssessment_for_create_assessment() {
                 toastr.error(response.message || "Error saving assessment");
             }
         },
-        error: function () {
-            toastr.error("Network error occurred");
+        error: function (xhr) {
+            const response = xhr.responseJSON || {};
+            toastr.error(response.message || "Network error occurred");
         },
         complete: function () {
             saveBtn.prop("disabled", false).text(originalText);
@@ -1198,6 +1303,7 @@ function saveEntireAssessment() {
         desired_score: $("#desired_score").val() || 0,
         round_off_decimal: $("#round_off_dec").is(":checked") ? 1 : 0,
         ca_type: $('[name="ca"]:checked').val() || 0,
+        save_token: typeof assessmentSaveToken === 'string' ? assessmentSaveToken : '',
         class_ids: Array.from($(".classes_container button"))
             .map((btn) => $(btn).data("class-id"))
             .join(","),
@@ -1248,6 +1354,7 @@ function saveEntireAssessment() {
                 if (response.assessment_id) {
                     existingAssessmentId = response.assessment_id;
                 }
+                syncAssessmentQuestionMapping(response.mapping);
                 // setTimeout(() => {
                 //     window.location.href = 'assessment';
                 // }, 1500);
@@ -1255,8 +1362,9 @@ function saveEntireAssessment() {
                 toastr.error(response.message || "Error saving assessment");
             }
         },
-        error: function () {
-            toastr.error("Network error occurred");
+        error: function (xhr) {
+            const response = xhr.responseJSON || {};
+            toastr.error(response.message || "Network error occurred");
         },
         complete: function () {
             saveBtn.prop("disabled", false).text(originalText);
@@ -1297,13 +1405,23 @@ function initTimer() {
         success: function (response) {
             if (response.success) {
                 timeLeft = parseInt(response.time_remaining);
-                currentQuestion = parseInt(response.last_question) || 1;
+                currentQuestion = Math.min(
+                    Math.max(parseInt(response.last_question) || 1, 1),
+                    questionIds.length
+                );
 
                 if (response.answers) {
                     answers = JSON.parse(response.answers);
                 }
                 if (response.flagged_questions) {
                     flaggedQuestions = JSON.parse(response.flagged_questions);
+                    // Older attempts stored navigation positions; convert them once to stable IDs.
+                    flaggedQuestions = flaggedQuestions.map(value => {
+                        const numericValue = Number(value);
+                        return questionIds.includes(numericValue)
+                            ? numericValue
+                            : (questionIds[numericValue - 1] || numericValue);
+                    });
                 }
 
                 loadQuestion(currentQuestion);
@@ -1360,21 +1478,26 @@ function remove_this_class(element) {
 }
 
 function loadQuestion(num) {
-    if (num < 1 || num > totalQuestions) {
+    if (num < 1 || num > questionIds.length) {
         toastr.warning("You have reached the end of the questions.");
         return;
     }
 
     currentQuestion = num;
+    const questionId = questionIds[num - 1];
 
     $.ajax({
         type: 'POST',
         url: '../get_question.php',
         data: {
             assessment_id: document.getElementById('assessmentId').value,
-            question_num: num
+            question_id: questionId
         },
         success: function (response) {
+            if (!response || response.success === false || Number(response.id) !== questionId) {
+                toastr.error(response.message || 'Unable to load this question.');
+                return;
+            }
             displayQuestion(response);
             updateNavigationPanel();
 
@@ -1384,6 +1507,10 @@ function loadQuestion(num) {
             } else {
                 $('#flagBtn').removeClass('btn-warning').addClass('btn-info').text('Flag Question');
             }
+        },
+        error: function (xhr) {
+            const response = xhr.responseJSON || {};
+            toastr.error(response.message || 'Unable to load this question.');
         }
     });
 }
@@ -1519,7 +1646,7 @@ function setupNavigation() {
 
     if (nextBtn) {
         nextBtn.onclick = () => {
-            if (currentQuestion < totalQuestions) {
+            if (currentQuestion < questionIds.length) {
                 loadQuestion(++currentQuestion);
             } else {
                 alert('end of question');
@@ -1585,7 +1712,11 @@ function submitExam(isAutoSubmit = false) {
     }
 }
 
+let assessmentSubmissionInProgress = false;
+
 function processSubmission() {
+    if (assessmentSubmissionInProgress) return;
+    assessmentSubmissionInProgress = true;
     clearInterval(autoSaveInterval);
 
     $.ajax({
@@ -1598,35 +1729,20 @@ function processSubmission() {
         },
         success: function (response) {
             if (response.success) {
-                // Update attempt status
-                $.ajax({
-                    url: '../update_attempt_status.php',
-                    method: 'POST',
-                    data: {
-                        assessment_id: $('#assessmentId').val(),
-                        status: 'completed'
-                    }
-                });
                 window.location.href = 'assessment_status?id=' + $('#assessmentId').val() + '&type=completed';
             } else {
+                assessmentSubmissionInProgress = false;
                 toastr.error('Failed to submit assessment: ' + response.message);
             }
         },
         error: function () {
+            assessmentSubmissionInProgress = false;
             toastr.error('Network error occurred. Please try again.');
         }
     });
 }
 
 function handleTimeExpired() {
-    $.ajax({
-        url: '../update_attempt_status.php',
-        method: 'POST',
-        data: {
-            assessment_id: $('#assessmentId').val(),
-            status: 'expired'
-        }
-    });
     processSubmission();
 }
 
@@ -1634,7 +1750,7 @@ function updateNavigationPanel() {
     const questionNav = $('#questionNav');
     questionNav.empty();
 
-    for (let i = 1; i <= totalQuestions; i++) {
+    for (let i = 1; i <= questionIds.length; i++) {
         let btnClass = 'btn-default';
         if (i === currentQuestion) {
             btnClass = 'current';
@@ -1648,7 +1764,7 @@ function updateNavigationPanel() {
             btnClass = 'btn-primary answered';
         }
 
-        if (flaggedQuestions.includes(i)) {
+        if (flaggedQuestions.includes(questionId)) {
             btnClass += ' flagged';
         }
 
@@ -1666,12 +1782,13 @@ function toggleFlagQuestion() {
     }
 
     if (questionId) {
-        const index = flaggedQuestions.indexOf(parseInt(currentQuestion));
+        questionId = Number(questionId);
+        const index = flaggedQuestions.indexOf(questionId);
         if (index > -1) {
             flaggedQuestions.splice(index, 1);
             $('#flagBtn').removeClass('btn-warning').addClass('btn-info').text('Flag Question');
         } else {
-            flaggedQuestions.push(parseInt(currentQuestion));
+            flaggedQuestions.push(questionId);
             $('#flagBtn').removeClass('btn-info').addClass('btn-warning').text('Unflag Question');
         }
         updateNavigationPanel();

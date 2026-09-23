@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 if (!isset($_SESSION['userid'])) {
     header("Location: login");
     exit();
@@ -7,6 +9,14 @@ if (!isset($_SESSION['userid'])) {
 
 include_once("model/connect.php");
 include_once("model/functions.php");
+include_once("model/assessment_editor.php");
+
+try {
+    $staffContext = assessment_editor_require_staff();
+} catch (Throwable $error) {
+    http_response_code(403);
+    exit('You are not authorized to view assessment results.');
+}
 
 $result_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -16,21 +26,28 @@ $result_query = "SELECT ar.*, a.instruction, s.firstname, s.lastname, sub.subjec
                  JOIN assessment a ON ar.assessment_id = a.id
                  JOIN students s ON ar.student_id = s.id
                  JOIN subjects sub ON a.subject_id = sub.id
-                 WHERE ar.id = ?";
+                 WHERE ar.id = ? AND a.school_id = ? AND s.school_id = ?";
 $stmt = $conn->prepare($result_query);
-$stmt->bind_param("i", $result_id);
+$stmt->bind_param("iii", $result_id, $staffContext['school_id'], $staffContext['school_id']);
 $stmt->execute();
 $result = $stmt->get_result()->fetch_assoc();
+$stmt->close();
+if (!$result) {
+    http_response_code(404);
+    exit('Assessment result not found.');
+}
 
 // Get all questions with their options and correct answers
 $questions_query = "SELECT q.*, o.options, o.id as option_id, o.answer 
                    FROM questions q
                    JOIN options o ON q.id = o.question_id
-                   WHERE q.ass_id = ? and q.deleted=0";
+                   WHERE q.ass_id = ? AND q.deleted = 0 AND o.deleted = 0
+                   ORDER BY q.id, o.id";
 $stmt = $conn->prepare($questions_query);
 $stmt->bind_param("i", $result['assessment_id']);
 $stmt->execute();
 $options = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
 
 // Group options by question
 $questions = [];

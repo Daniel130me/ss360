@@ -1,7 +1,11 @@
 <?php
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 include_once("model/connect.php");
 include_once("model/functions.php");
+include_once("model/assessment_editor.php");
+include_once("model/assessment_delivery.php");
 
 header('Content-Type: application/json');
 
@@ -12,6 +16,88 @@ if (!isset($_POST['action'])) {
 
 $action = $_POST['action'];
 $response = ['success' => false, 'message' => 'Unknown action'];
+
+// Keep all assessment-editor writes behind one validated, transactional implementation.
+$assessmentEditorWriteActions = [
+    'delete_question',
+    'save_all_questions',
+    'save_entire_assessment',
+    'save_update_entire_assessment_create',
+    'save_update_entire_assessment',
+];
+if (in_array($action, $assessmentEditorWriteActions, true)) {
+    try {
+        if ($action === 'delete_question') {
+            $assessmentId = (int)($_POST['assessment_id'] ?? 0);
+            $questionId = (int)($_POST['question_id'] ?? 0);
+            if ($assessmentId <= 0 || $questionId <= 0) {
+                throw new InvalidArgumentException('Invalid assessment or question.');
+            }
+            assessment_editor_delete_question($conn, $assessmentId, $questionId);
+            $response = ['success' => true, 'message' => 'Question deleted successfully.'];
+        } elseif ($action === 'save_all_questions') {
+            $assessmentId = (int)($_POST['assessment_id'] ?? 0);
+            $questions = json_decode((string)($_POST['questions'] ?? ''), true, 512, JSON_THROW_ON_ERROR);
+            $mapping = assessment_editor_save_question_page($conn, $assessmentId, $questions);
+            $response = [
+                'success' => true,
+                'message' => 'Questions saved successfully.',
+                'mapping' => $mapping,
+            ];
+        } else {
+            $settings = json_decode((string)($_POST['settings'] ?? ''), true, 512, JSON_THROW_ON_ERROR);
+            $questions = json_decode((string)($_POST['questions'] ?? ''), true, 512, JSON_THROW_ON_ERROR);
+            $isFullQuestionSet = $action === 'save_update_entire_assessment_create';
+            $saved = assessment_editor_save($conn, $settings, $questions, $isFullQuestionSet);
+            $response = [
+                'success' => true,
+                'message' => $settings['assessment_id'] ? 'Assessment updated successfully.' : 'Assessment saved successfully.',
+                'assessment_id' => $saved['assessment_id'],
+                'mapping' => $saved['mapping'],
+            ];
+        }
+    } catch (Throwable $error) {
+        $statusCode = in_array((int)$error->getCode(), [403, 404], true) ? (int)$error->getCode() : 422;
+        http_response_code($statusCode);
+        $reference = strtoupper(substr(hash('sha256', uniqid('', true)), 0, 8));
+        error_log("[assessment_editor:{$reference}] " . $error);
+        $isInputError = $error instanceof InvalidArgumentException;
+        $response = [
+            'success' => false,
+            'message' => $isInputError ? $error->getMessage() : "Unable to save the assessment. Reference: {$reference}",
+            'reference' => $reference,
+        ];
+    }
+
+    echo json_encode($response);
+    exit;
+}
+
+$assessmentEditorReadActions = ['check_existing_assessment', 'load_questions_page', 'load_assessment'];
+if (in_array($action, $assessmentEditorReadActions, true)) {
+    try {
+        assessment_editor_require_staff();
+    } catch (Throwable $error) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'message' => 'You are not authorized to manage assessments.']);
+        exit;
+    }
+}
+
+$deprecatedAssessmentEditorActions = [
+    'save_question',
+    'update_question',
+    'save_assessment_settings',
+    'create_assessment',
+];
+if (in_array($action, $deprecatedAssessmentEditorActions, true)) {
+    http_response_code(410);
+    echo json_encode([
+        'success' => false,
+        'message' => 'This assessment editor request is outdated. Refresh the page and try again.',
+    ]);
+    exit;
+}
 
 switch ($action) {
     case 'delete_question':
@@ -996,22 +1082,43 @@ switch ($action) {
         break;
 
     case 'login':
-        $phone = test_input($_POST['phone']);
-        $password = test_input($_POST['password']);
+        $login_identifier = trim((string)($_POST['phone'] ?? ''));
+        $password = (string)($_POST['password'] ?? '');
         $remember = isset($_POST['remember']) ? true : false;
-        // echo "ll" . $_SESSION['url'];
-        // exit;
-        $school_id = get_school_id_by_url($_SESSION['url']);
+
+        // Resolve the school and its parent-login policy in one query.
+        $school_url = (string)($_SESSION['url'] ?? '');
+        $school_stmt = $conn->prepare(
+            "SELECT id, parent_email_login_enabled FROM school WHERE url = ? LIMIT 1"
+        );
+        $school_stmt->bind_param('s', $school_url);
+        $school_stmt->execute();
+        $school_config = $school_stmt->get_result()->fetch_assoc();
+        $school_stmt->close();
+
+        $school_id = (int)($school_config['id'] ?? 0);
+        $parent_email_login_enabled = (int)($school_config['parent_email_login_enabled'] ?? 0) === 1;
+
+        if ($school_id <= 0 || $login_identifier === '' || $password === '') {
+            echo json_encode(['status' => '0', 'err' => 'Login details are required.']);
+            exit;
+        }
 
         // Try staff login first
-        // $result = mysqli_query($conn, "SELECT * FROM staff WHERE phone = '$phone'");
-        $result = mysqli_query($conn, "SELECT * FROM staff WHERE phone = '$phone' AND school_id = '$school_id'");
+        $staff_stmt = $conn->prepare("SELECT * FROM staff WHERE phone = ? AND school_id = ? LIMIT 1");
+        $staff_stmt->bind_param('si', $login_identifier, $school_id);
+        $staff_stmt->execute();
+        $result = $staff_stmt->get_result();
 
         if (mysqli_num_rows($result) < 1) {
             // Try student login
-            $student_sql = "SELECT id,status, photo, firstname, lastname, class_id, school_id, phone, passw
-                           FROM students WHERE admission_no = '$phone' AND school_id = '$school_id'";
-            $student_result = mysqli_query($conn, $student_sql);
+            $student_stmt = $conn->prepare(
+                "SELECT id,status,photo,firstname,lastname,class_id,school_id,phone,passw
+                 FROM students WHERE admission_no = ? AND school_id = ? LIMIT 1"
+            );
+            $student_stmt->bind_param('si', $login_identifier, $school_id);
+            $student_stmt->execute();
+            $student_result = $student_stmt->get_result();
 
             if (mysqli_num_rows($student_result) > 0) {
                 $row = mysqli_fetch_array($student_result);
@@ -1079,12 +1186,19 @@ switch ($action) {
             }
 
             // Try parent login if student login failed
-            $parent_sql = "SELECT id,status,email,school_id,passw,firstname, lastname FROM parent WHERE phone = '$phone' AND school_id='$school_id'";
-            $result = mysqli_query($conn, $parent_sql);
+            $parent_login_column = $parent_email_login_enabled ? 'email' : 'phone';
+            $parent_stmt = $conn->prepare(
+                "SELECT id,status,phone,email,school_id,passw,firstname,lastname
+                 FROM parent WHERE {$parent_login_column} = ? AND school_id = ? LIMIT 1"
+            );
+            $parent_stmt->bind_param('si', $login_identifier, $school_id);
+            $parent_stmt->execute();
+            $result = $parent_stmt->get_result();
             if (mysqli_num_rows($result) > 0) { // if parent
                 $row = mysqli_fetch_array($result);
-                // echo $row['passw'];
-                if (password_verify($password, $row['passw']) or $password == '1234') {
+                $parent_password_valid = password_verify($password, $row['passw'])
+                    || (!$parent_email_login_enabled && $password === '1234');
+                if ($parent_password_valid) {
                     if ($row['status'] == 0) {
                         die(json_encode(array('status' => '0', 'err' => 'Access denied!. Contact the admin to gain access.')));
                     }
@@ -1094,6 +1208,8 @@ switch ($action) {
                     $_SESSION['lastname'] = $row['lastname'];
                     $_SESSION['school_id'] = $row['school_id'];
                     $_SESSION['email'] = $row['email'];
+                    $_SESSION['phone'] = $row['phone'];
+                    $_SESSION['user_type'] = 'parent';
 
                     $selectschoolname = mysqli_query($conn, "SELECT commentby,hidden_skills, phone1,email,address, session_id,term_id,school_name, logo, url,back_pic FROM school WHERE id='{$_SESSION['school_id']}'");
                     $row_sch = mysqli_fetch_array($selectschoolname);
@@ -1137,8 +1253,7 @@ switch ($action) {
                     exit;
                 }
             } else {
-                // echo mysqli_error($conn);
-                echo json_encode(array('status' => '0', 'err' => 'Phone number and/or PIN incorrect'));
+                echo json_encode(array('status' => '0', 'err' => 'Login details are incorrect'));
                 exit;
             }
             exit;
@@ -1220,35 +1335,50 @@ switch ($action) {
         }
         break;
     case 'get_student_assignments':
-        if (isset($_POST['class_id']) && isset($_POST['student_id'])) {
-            $class_id = mysqli_real_escape_string($conn, $_POST['class_id']);
-            $student_id = mysqli_real_escape_string($conn, $_POST['student_id']);
-            $school_id = $_SESSION['school_id'];
+        if (($_SESSION['user_type'] ?? '') === 'student') {
+            // Never trust student/class IDs posted by the browser; derive them from the authenticated student.
+            $student_id = (int)($_SESSION['userid'] ?? 0);
+            $school_id = (int)($_SESSION['school_id'] ?? 0);
+            $studentStmt = $conn->prepare(
+                'SELECT class_id FROM students WHERE id = ? AND school_id = ? AND status = 1 LIMIT 1'
+            );
+            $studentStmt->bind_param('ii', $student_id, $school_id);
+            $studentStmt->execute();
+            $studentRow = $studentStmt->get_result()->fetch_assoc();
+            $studentStmt->close();
+            if (!$studentRow) {
+                http_response_code(403);
+                $response = ['success' => false, 'message' => 'Student account not found.'];
+                break;
+            }
+            $class_id = (int)$studentRow['class_id'];
 
             // Get assignments for student's class
-            $sql = "SELECT a.*, s.subject 
+            $sql = "SELECT a.id, a.instruction, a.duration_set, a.duration,
+                           a.deadline_set, a.deadline_date, a.deadline_time,
+                           a.show_score, a.blacklist_students, s.subject
                    FROM assessment a 
                    LEFT JOIN subjects s ON a.subject_id = s.id 
-                   WHERE a.school_id = '$school_id' 
+                   WHERE a.school_id = ?
                    AND a.assessment_type = 1 
-                   AND FIND_IN_SET('$class_id', a.class_ids)
+                   AND FIND_IN_SET(?, REPLACE(a.class_ids, ' ', ''))
                    ORDER BY a.datecreated DESC";
-
-            $result = mysqli_query($conn, $sql);
+            $assignmentStmt = $conn->prepare($sql);
+            $assignmentStmt->bind_param('ii', $school_id, $class_id);
+            $assignmentStmt->execute();
+            $result = $assignmentStmt->get_result();
             $assignments = [];
             $assessment_ids = [];
             $rows_buffer = [];
 
-            // Buffer rows and collect assessment IDs where show_score = 1
+            // Collect IDs once so completion and optional score display can be resolved in one query.
             while ($row = mysqli_fetch_assoc($result)) {
                 $row['student_score'] = null;
                 $rows_buffer[] = $row;
-                if (isset($row['show_score']) && $row['show_score'] == 1) {
-                    $assessment_ids[] = (int)$row['id'];
-                }
+                $assessment_ids[] = (int)$row['id'];
             }
 
-            // If there are assessments that should show scores, fetch all their scores for this student/class/school in one query
+            // One result query avoids both N+1 lookups and confusing completion with a non-zero score.
             $scores_map = [];
             if (!empty($assessment_ids)) {
                 $ass_list = implode(',', $assessment_ids);
@@ -1269,20 +1399,16 @@ switch ($action) {
 
             // Attach scores to buffered rows and build final assignments array
             foreach ($rows_buffer as $r) {
-                if (isset($r['show_score']) && $r['show_score'] == 1) {
-                    $aid = (int)$r['id'];
-                    if (isset($scores_map[$aid])) {
+                $aid = (int)$r['id'];
+                $r['has_attempted'] = isset($scores_map[$aid]);
+                if ($r['has_attempted'] && (int)$r['show_score'] === 1) {
                         $r['student_score'] = $scores_map[$aid]['score'];
                         $r['total_questions'] = $scores_map[$aid]['total_questions'];
                         $r['percentage_score'] = $scores_map[$aid]['percentage_score'];
-                    } else {
-                        $r['student_score'] = 0;
-                        $r['total_questions'] = 0;
-                        $r['percentage_score'] = 0;
-                    }
                 }
                 $assignments[] = $r;
             }
+            $assignmentStmt->close();
 
             $response = [
                 'success' => true,
@@ -1291,19 +1417,25 @@ switch ($action) {
         } else {
             $response = [
                 'success' => false,
-                'message' => 'Missing required parameters'
+                'message' => 'You are not authorized to view student assignments.'
             ];
+            http_response_code(403);
         }
         break;
 
     case 'check_existing_assessment':
         if (isset($_POST['subject_id']) && isset($_POST['assessment_type']) && isset($_POST['class_ids']) && isset($_POST['term'])) {
+            $context = assessment_editor_require_staff();
             $subject_id = (int)$_POST['subject_id'];
             $assessment_type = (int)$_POST['assessment_type'];
             $term = (int)$_POST['term'];
-            $class_ids = mysqli_real_escape_string($conn, $_POST['class_ids']);
-            $class_id_array = explode(',', $class_ids);
+            $class_id_array = array_values(array_filter(array_map('intval', explode(',', (string)$_POST['class_ids']))));
             $conditions = [];
+
+            if (!$class_id_array) {
+                echo json_encode(['exists' => false]);
+                exit;
+            }
 
             // Build conditions for each class ID
             foreach ($class_id_array as $id) {
@@ -1312,13 +1444,14 @@ switch ($action) {
 
             // Query to check for existing assessment
             $query = "SELECT id FROM assessment 
-                     WHERE subject_id = ? 
-                     AND assessment_type = ? 
+                     WHERE school_id = ?
+                     AND subject_id = ?
+                     AND assessment_type = ?
                      AND term = ?
                      AND (" . implode(' OR ', $conditions) . ")";
 
             $stmt = mysqli_prepare($conn, $query);
-            mysqli_stmt_bind_param($stmt, "iii", $subject_id, $assessment_type, $term);
+            mysqli_stmt_bind_param($stmt, "iiii", $context['school_id'], $subject_id, $assessment_type, $term);
             mysqli_stmt_execute($stmt);
             $result = mysqli_stmt_get_result($stmt);
 
@@ -1337,24 +1470,26 @@ switch ($action) {
         //responsible for loading paginated questions
     case 'load_questions_page':
         // expects: assessment_id, page, per_page
+        $context = assessment_editor_require_staff();
         $assessment_id = isset($_POST['assessment_id']) ? (int)$_POST['assessment_id'] : 0;
         $page = isset($_POST['page']) ? max(1, (int)$_POST['page']) : 1;
-        $per_page = isset($_POST['per_page']) ? max(1, (int)$_POST['per_page']) : 5;
+        $per_page = isset($_POST['per_page']) ? min(50, max(1, (int)$_POST['per_page'])) : 5;
 
-        if ($assessment_id <= 0) {
+        if ($assessment_id <= 0 || !assessment_editor_find_owned_assessment($conn, $assessment_id, $context['school_id'])) {
             echo json_encode(['success' => false, 'message' => 'Invalid assessment id']);
             exit;
         }
-
-        $offset = ($page - 1) * $per_page;
 
         // total count
         $count_q = $conn->prepare("SELECT COUNT(*) as cnt FROM questions WHERE ass_id = ? AND deleted=0");
         $count_q->bind_param("i", $assessment_id);
         $count_q->execute();
         $cnt_res = $count_q->get_result()->fetch_assoc();
+        $count_q->close();
         $total = intval($cnt_res['cnt']);
         $total_pages = max(1, ceil($total / $per_page));
+        $page = min($page, $total_pages);
+        $offset = ($page - 1) * $per_page;
 
         // fetch questions for page
         $qstmt = $conn->prepare("SELECT * FROM questions WHERE ass_id = ? AND deleted=0 ORDER BY id LIMIT ?, ?");
@@ -1362,12 +1497,29 @@ switch ($action) {
         $qstmt->execute();
         $qres = $qstmt->get_result();
 
+        $pageQuestions = [];
+        while ($question = $qres->fetch_assoc()) {
+            $pageQuestions[(int)$question['id']] = ['question' => $question, 'options' => []];
+        }
+        $qstmt->close();
+
+        if ($pageQuestions) {
+            $questionIds = implode(',', array_keys($pageQuestions));
+            $optionsResult = $conn->query(
+                "SELECT * FROM options WHERE deleted = 0 AND question_id IN ({$questionIds}) ORDER BY id"
+            );
+            while ($option = $optionsResult->fetch_assoc()) {
+                $pageQuestions[(int)$option['question_id']]['options'][] = $option;
+            }
+        }
+
         $html = '';
         $start_num = $offset + 1;
         $i = 0;
-        while ($question = $qres->fetch_assoc()) {
+        foreach ($pageQuestions as $pageQuestion) {
+            $question = $pageQuestion['question'];
             $qid = $question['id'];
-            $question_text = htmlspecialchars($question['question']);
+            $question_text = htmlspecialchars($question['question'], ENT_QUOTES, 'UTF-8');
             $qnum = $start_num + $i;
             // Question block (no unnecessary nesting)
             $html .= "<div class=\"py-3 px-15 bg-white mb-3 question-block\" style=\"border-radius: 10px;\" data-question-id=\"$qid\">";
@@ -1375,18 +1527,12 @@ switch ($action) {
             $html .= "    <textarea class=\"question-textarea form-control\" style=\"height:200px\">$question_text</textarea>";
             $html .= "  </div>";
 
-            // Options block (not nested inside another question)
-            $opts = $conn->prepare("SELECT * FROM options WHERE question_id = ? AND deleted=0");
-            $opts->bind_param("i", $qid);
-            $opts->execute();
-            $optres = $opts->get_result();
-
             $html .= "  <div class=\"options-container mt-3\">";
             $html .= "    <div class=\"form-group\"><label>Options</label><p class=\"text-muted small\">Select the radio button for the correct answer</p></div>";
             $html .= "    <div class=\"row\">";
-            while ($opt = $optres->fetch_assoc()) {
+            foreach ($pageQuestion['options'] as $opt) {
                 $opt_id = $opt['id'];
-                $opt_text = htmlspecialchars($opt['options']);
+                $opt_text = htmlspecialchars($opt['options'], ENT_QUOTES, 'UTF-8');
                 $checked = $opt['answer'] ? 'checked' : '';
                 $html .= "      <div class=\"option-group col-md-6 col-12 mb-3 d-flex align-items-start\">";
                 $html .= "        <div class=\"icheck-primary d-flex\">";
@@ -1398,7 +1544,7 @@ switch ($action) {
             }
             $html .= "    </div>"; // .row
             $html .= "  </div>"; // .options-container
-            $html .= "  <button type=\"button\" class=\"btn btn-danger btn-sm mt-2\" onclick=\"deleteQuestion($qid)\">Delete Question</button>";
+            $html .= "  <button type=\"button\" class=\"btn btn-danger btn-sm mt-2\" onclick=\"removeAssessmentQuestion(this)\">Delete Question</button>";
             $html .= "  <button type=\"button\" class=\"btn btn-outline-success btn-sm mt-2 ml-2 regenerate-question-btn\" onclick=\"openRegenerateQuestionModal(this)\">Regenerate with AI</button>";
             $html .= "</div>"; // .question-block
             $i++;
@@ -1407,46 +1553,64 @@ switch ($action) {
         echo json_encode(['success' => true, 'html' => $html, 'total_pages' => $total_pages, 'page' => $page]);
         exit;
     case 'load_assessment':
-        $assessment_id = $_POST['assessment_id'];
+        $context = assessment_editor_require_staff();
+        $assessment_id = (int)($_POST['assessment_id'] ?? 0);
 
         // Load assessment settings
-        $query = "SELECT a.*, GROUP_CONCAT(c.classname SEPARATOR ', ') as class_names
+        // The correlated aggregate avoids ONLY_FULL_GROUP_BY differences across MySQL hosts.
+        $query = "SELECT a.*, a.score_destination AS ca_type,
+                    (SELECT GROUP_CONCAT(c.classname ORDER BY FIND_IN_SET(c.id, a.class_ids) SEPARATOR ', ')
+                     FROM class c
+                     WHERE c.school_id = a.school_id AND FIND_IN_SET(c.id, a.class_ids)) AS class_names
              FROM assessment a
-             LEFT JOIN (
-                 SELECT DISTINCT c.id, c.classname 
-                 FROM class c
-             ) c ON FIND_IN_SET(c.id, a.class_ids)
-             WHERE a.id = ?
-             GROUP BY a.id";
+             WHERE a.id = ? AND a.school_id = ?";
         $stmt = $conn->prepare($query);
-        $stmt->bind_param("i", $assessment_id);
+        $stmt->bind_param("ii", $assessment_id, $context['school_id']);
         $stmt->execute();
         $settings = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
 
-        // Load questions and options
-        $questions = [];
-        $query = "SELECT * FROM questions WHERE ass_id = ?";
+        if (!$settings) {
+            http_response_code(404);
+            echo json_encode(['success' => false, 'message' => 'Assessment not found.']);
+            exit;
+        }
+
+        // Load all questions and options in one query to avoid an options query per question.
+        $questionsById = [];
+        $query = "SELECT q.*, o.id AS option_id, o.options AS option_text, o.answer AS option_answer,
+                         o.deleted AS option_deleted
+                  FROM questions q
+                  LEFT JOIN options o ON o.question_id = q.id AND o.deleted = 0
+                  WHERE q.ass_id = ? AND q.deleted = 0
+                  ORDER BY q.id, o.id";
         $stmt = $conn->prepare($query);
         $stmt->bind_param("i", $assessment_id);
         $stmt->execute();
-        $questionsResult = $stmt->get_result();
-
-        while ($question = $questionsResult->fetch_assoc()) {
-            $optionsQuery = "SELECT * FROM options WHERE question_id = ?";
-            $optStmt = $conn->prepare($optionsQuery);
-            $optStmt->bind_param("i", $question['id']);
-            $optStmt->execute();
-            $options = $optStmt->get_result()->fetch_all(MYSQLI_ASSOC);
-
-            $questions[] = [
-                'question' => $question,
-                'options' => $options
-            ];
+        $rows = $stmt->get_result();
+        while ($row = $rows->fetch_assoc()) {
+            $questionId = (int)$row['id'];
+            if (!isset($questionsById[$questionId])) {
+                $question = $row;
+                unset($question['option_id'], $question['option_text'], $question['option_answer'], $question['option_deleted']);
+                $questionsById[$questionId] = ['question' => $question, 'options' => []];
+            }
+            if ($row['option_id'] !== null) {
+                $questionsById[$questionId]['options'][] = [
+                    'id' => (int)$row['option_id'],
+                    'question_id' => $questionId,
+                    'options' => $row['option_text'],
+                    'answer' => (int)$row['option_answer'],
+                    'deleted' => (int)$row['option_deleted'],
+                ];
+            }
         }
+        $stmt->close();
 
         echo json_encode([
+            'success' => true,
             'settings' => $settings,
-            'questions' => $questions
+            'questions' => array_values($questionsById)
         ]);
         exit;
         // case 'load_assessment':
@@ -1494,7 +1658,25 @@ switch ($action) {
         //     exit;
     case 'mark_instructions_viewed':
         $assessment_id = isset($_POST['assessment_id']) ? (int)$_POST['assessment_id'] : 0;
-        if ($assessment_id > 0) {
+        if ($assessment_id > 0 && ($_SESSION['user_type'] ?? '') === 'student') {
+            $studentId = (int)($_SESSION['userid'] ?? 0);
+            $schoolId = (int)($_SESSION['school_id'] ?? 0);
+            $eligibilityStmt = $conn->prepare(
+                "SELECT 1 FROM assessment a
+                 INNER JOIN students s ON s.id = ? AND s.school_id = a.school_id AND s.status = 1
+                 WHERE a.id = ? AND a.school_id = ?
+                   AND FIND_IN_SET(s.class_id, REPLACE(a.class_ids, ' ', ''))
+                 LIMIT 1"
+            );
+            $eligibilityStmt->bind_param('iii', $studentId, $assessment_id, $schoolId);
+            $eligibilityStmt->execute();
+            $eligible = (bool)$eligibilityStmt->get_result()->fetch_row();
+            $eligibilityStmt->close();
+            if (!$eligible) {
+                http_response_code(403);
+                $response = ['status' => 'error', 'message' => 'You cannot take this assessment.'];
+                break;
+            }
             $_SESSION['viewed_instructions'][$assessment_id] = true;
             $response = ['status' => 'success'];
         } else {
@@ -1503,35 +1685,58 @@ switch ($action) {
         break;
     case 'delete_assessment':
         if (isset($_POST['assessment_id'])) {
-            $assessment_id = mysqli_real_escape_string($conn, $_POST['assessment_id']);
+            $assessment_id = (int)$_POST['assessment_id'];
 
             mysqli_begin_transaction($conn);
             try {
+                $staff = assessment_editor_require_staff();
+                if (!assessment_editor_find_owned_assessment($conn, $assessment_id, $staff['school_id'], true)) {
+                    throw new RuntimeException('Assessment not found.', 404);
+                }
                 // Delete assessment progress
-                mysqli_query($conn, "DELETE FROM assessment_progress WHERE assessment_id = '$assessment_id'");
+                $deleteProgress = $conn->prepare('DELETE FROM assessment_progress WHERE assessment_id = ?');
+                $deleteProgress->bind_param('i', $assessment_id);
+                $deleteProgress->execute();
+                $deleteProgress->close();
 
                 // Delete assessment results
-                mysqli_query($conn, "DELETE FROM assessment_results WHERE assessment_id = '$assessment_id'");
+                $deleteResults = $conn->prepare('DELETE FROM assessment_results WHERE assessment_id = ?');
+                $deleteResults->bind_param('i', $assessment_id);
+                $deleteResults->execute();
+                $deleteResults->close();
 
                 // Delete assessment attempts
-                mysqli_query($conn, "DELETE FROM assessment_attempts WHERE assessment_id = '$assessment_id'");
+                $deleteAttempts = $conn->prepare('DELETE FROM assessment_attempts WHERE assessment_id = ?');
+                $deleteAttempts->bind_param('i', $assessment_id);
+                $deleteAttempts->execute();
+                $deleteAttempts->close();
 
                 // Delete options for all questions in this assessment
-                mysqli_query($conn, "DELETE o FROM options o 
-                                   INNER JOIN questions q ON o.question_id = q.id 
-                                   WHERE q.ass_id = '$assessment_id'");
+                $deleteOptions = $conn->prepare(
+                    'DELETE o FROM options o INNER JOIN questions q ON o.question_id = q.id WHERE q.ass_id = ?'
+                );
+                $deleteOptions->bind_param('i', $assessment_id);
+                $deleteOptions->execute();
+                $deleteOptions->close();
 
                 // Delete questions
-                mysqli_query($conn, "DELETE FROM questions WHERE ass_id = '$assessment_id'");
+                $deleteQuestions = $conn->prepare('DELETE FROM questions WHERE ass_id = ?');
+                $deleteQuestions->bind_param('i', $assessment_id);
+                $deleteQuestions->execute();
+                $deleteQuestions->close();
 
                 // Finally delete the assessment itself
-                mysqli_query($conn, "DELETE FROM assessment WHERE id = '$assessment_id'");
+                $deleteAssessment = $conn->prepare('DELETE FROM assessment WHERE id = ? AND school_id = ?');
+                $deleteAssessment->bind_param('ii', $assessment_id, $staff['school_id']);
+                $deleteAssessment->execute();
+                $deleteAssessment->close();
 
                 mysqli_commit($conn);
                 $response = ['success' => true, 'message' => 'Assessment deleted successfully'];
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 mysqli_rollback($conn);
-                $response = ['success' => false, 'message' => 'Error deleting assessment: ' . $e->getMessage()];
+                http_response_code(in_array((int)$e->getCode(), [403, 404], true) ? (int)$e->getCode() : 422);
+                $response = ['success' => false, 'message' => $e->getMessage()];
             }
         } else {
             $response = ['success' => false, 'message' => 'Assessment ID not provided'];
@@ -1543,64 +1748,98 @@ switch ($action) {
             $student_id = (int)$_POST['student_id'];
             mysqli_begin_transaction($conn);
             try {
+                $staff = assessment_editor_require_staff();
+                if (!assessment_editor_find_owned_assessment($conn, $assessment_id, $staff['school_id'], true)) {
+                    throw new RuntimeException('Assessment not found.', 404);
+                }
+                $studentStmt = $conn->prepare('SELECT id FROM students WHERE id = ? AND school_id = ? LIMIT 1');
+                $studentStmt->bind_param('ii', $student_id, $staff['school_id']);
+                $studentStmt->execute();
+                $studentExists = (bool)$studentStmt->get_result()->fetch_row();
+                $studentStmt->close();
+                if (!$studentExists) {
+                    throw new RuntimeException('Student not found.', 404);
+                }
                 // Delete assessment progress
-                mysqli_query($conn, "DELETE FROM assessment_progress WHERE assessment_id = $assessment_id AND student_id = $student_id");
+                $deleteProgress = $conn->prepare('DELETE FROM assessment_progress WHERE assessment_id = ? AND student_id = ?');
+                $deleteProgress->bind_param('ii', $assessment_id, $student_id);
+                $deleteProgress->execute();
+                $deleteProgress->close();
 
                 // Delete assessment results
-                mysqli_query($conn, "DELETE FROM assessment_results WHERE assessment_id = $assessment_id AND student_id = $student_id");
+                $deleteResults = $conn->prepare('DELETE FROM assessment_results WHERE assessment_id = ? AND student_id = ?');
+                $deleteResults->bind_param('ii', $assessment_id, $student_id);
+                $deleteResults->execute();
+                $deleteResults->close();
 
                 // Delete assessment attempts
-                mysqli_query($conn, "DELETE FROM assessment_attempts WHERE assessment_id = $assessment_id AND student_id = $student_id");
+                $deleteAttempts = $conn->prepare('DELETE FROM assessment_attempts WHERE assessment_id = ? AND student_id = ?');
+                $deleteAttempts->bind_param('ii', $assessment_id, $student_id);
+                $deleteAttempts->execute();
+                $deleteAttempts->close();
 
                 mysqli_commit($conn);
                 $response = ['success' => true];
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 mysqli_rollback($conn);
-                $response = ['success' => false, 'message' => 'Error resetting assessment: ' . $e->getMessage()];
+                http_response_code(in_array((int)$e->getCode(), [403, 404], true) ? (int)$e->getCode() : 422);
+                $response = ['success' => false, 'message' => $e->getMessage()];
             }
         }
         break;
     case 'getQuestionIds':
         $assessment_id = isset($_POST['assessment_id']) ? (int)$_POST['assessment_id'] : 0;
-        if ($assessment_id > 0) {
-            $query = "SELECT id FROM questions WHERE ass_id = ? AND deleted=0 ORDER BY id";
-            $stmt = $conn->prepare($query);
-            $stmt->bind_param("i", $assessment_id);
-            $stmt->execute();
-            $result = $stmt->get_result();
-
-            $question_ids = [];
-            while ($row = $result->fetch_assoc()) {
-                $question_ids[] = $row['id'];
+        try {
+            if ($assessment_id <= 0) {
+                throw new InvalidArgumentException('Invalid assessment ID');
             }
 
+            $context = assessment_delivery_require_student($conn, $assessment_id);
             $response = [
-                'question_ids' => $question_ids
+                'success' => true,
+                'question_ids' => assessment_delivery_question_ids($conn, $context),
             ];
-        } else {
-            $response = ['status' => 'error', 'message' => 'Invalid assessment ID'];
+        } catch (Throwable $error) {
+            $statusCode = (int)$error->getCode() === 403 ? 403 : 422;
+            http_response_code($statusCode);
+            $response = ['success' => false, 'message' => $error->getMessage()];
         }
         break;
     case 'disallow_attempt':
         try {
-            $school_id = (int) ($_SESSION['school_id'] ?? 0);
+            $staff = assessment_editor_require_staff();
+            $school_id = $staff['school_id'];
             $assessment_id = (int) ($_POST['assessment_id'] ?? 0);
-            $student_id = (string) ($_POST['student_id'] ?? '0'); // Keep as string for array search
+            $student_id = (int) ($_POST['student_id'] ?? 0);
             $status = (int) ($_POST['status'] ?? 0); // 0 for allow, 1 for disallow
 
-            if ($school_id <= 0 || $assessment_id <= 0 || $student_id <= 0) {
+            if ($assessment_id <= 0 || $student_id <= 0 || !in_array($status, [0, 1], true)) {
                 throw new Exception("Invalid input provided.");
             }
 
-            // Use prepared statements to prevent SQL injection
-            $stmt = $conn->prepare("SELECT blacklist_students FROM assessment WHERE school_id = ? AND id = ?");
+            $studentStmt = $conn->prepare('SELECT id FROM students WHERE id = ? AND school_id = ? LIMIT 1');
+            $studentStmt->bind_param('ii', $student_id, $school_id);
+            $studentStmt->execute();
+            $studentExists = (bool)$studentStmt->get_result()->fetch_row();
+            $studentStmt->close();
+            if (!$studentExists) {
+                throw new RuntimeException('Student not found.', 404);
+            }
+
+            $conn->begin_transaction();
+            $stmt = $conn->prepare(
+                'SELECT blacklist_students FROM assessment WHERE school_id = ? AND id = ? LIMIT 1 FOR UPDATE'
+            );
             $stmt->bind_param("ii", $school_id, $assessment_id);
             $stmt->execute();
             $result = $stmt->get_result();
 
             if ($row = $result->fetch_assoc()) {
-                $blacklist = !empty($row['blacklist_students']) ? explode(',', $row['blacklist_students']) : [];
-                $is_blacklisted = in_array($student_id, $blacklist);
+                $blacklist = array_values(array_filter(array_map(
+                    'intval',
+                    explode(',', (string)($row['blacklist_students'] ?? ''))
+                )));
+                $is_blacklisted = in_array($student_id, $blacklist, true);
 
                 if ($status === 1 && !$is_blacklisted) { // Disallow: Add to list
                     $blacklist[] = $student_id;
@@ -1617,11 +1856,19 @@ switch ($action) {
                 $update_stmt = $conn->prepare("UPDATE assessment SET blacklist_students = ? WHERE school_id = ? AND id = ?");
                 $update_stmt->bind_param("sii", $new_blacklist_str, $school_id, $assessment_id);
                 $update_stmt->execute();
+                $update_stmt->close();
             } else {
-                $response = ['success' => false, 'message' => 'Assessment not found.'];
+                throw new RuntimeException('Assessment not found.', 404);
             }
-        } catch (Exception $e) {
-            $response = ['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()];
+            $stmt->close();
+            $conn->commit();
+        } catch (Throwable $e) {
+            try {
+                $conn->rollback();
+            } catch (Throwable $ignored) {
+            }
+            http_response_code(in_array((int)$e->getCode(), [403, 404], true) ? (int)$e->getCode() : 422);
+            $response = ['success' => false, 'message' => $e->getMessage()];
         }
         break;
 }

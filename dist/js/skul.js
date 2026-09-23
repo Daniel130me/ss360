@@ -6728,6 +6728,51 @@ function reset_student_password_modal(e) {
     });
 }
 
+function open_parent_password_modal(studentId) {
+    $('#set_parent_password_form')[0].reset();
+    $('#student_id_for_parent_password').val(studentId);
+    $('#set_parent_password_modal').modal('show');
+}
+
+$(document).on('submit', '#set_parent_password_form', function (event) {
+    event.preventDefault();
+
+    const form = this;
+    const $button = $('#set_parent_password_btn');
+    const formData = new FormData(form);
+
+    $.ajax({
+        url: '../controller.php',
+        type: 'post',
+        data: formData,
+        contentType: false,
+        processData: false,
+        beforeSend: function () {
+            $button.text('Processing...').prop('disabled', true);
+        },
+        success: function (data) {
+            try {
+                const response = typeof data === 'string' ? JSON.parse(data) : data;
+                if (response.status === '1') {
+                    toastr.success(response.msg || 'Parent password set successfully.');
+                    $('#set_parent_password_modal').modal('hide');
+                    form.reset();
+                } else {
+                    toastr.error(response.err || 'Unable to set the parent password.');
+                }
+            } catch (error) {
+                toastr.error('An unexpected error occurred.');
+            }
+        },
+        error: function () {
+            toastr.error('Unable to set the parent password. Please try again.');
+        },
+        complete: function () {
+            $button.text('Set Password').prop('disabled', false);
+        }
+    });
+});
+
 // alert("dgh")
 
 var student_name;

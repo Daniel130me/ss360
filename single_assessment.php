@@ -1,17 +1,28 @@
 <?php
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 if (!isset($_SESSION['userid'])) {
     header("Location: login");
     exit();
 }
 include_once("model/connect.php");
 include_once("model/functions.php");
+include_once("model/assessment_editor.php");
 $school_id = $_SESSION['school_id'];
+try {
+    assessment_editor_require_staff();
+} catch (Throwable $error) {
+    http_response_code(403);
+    exit('You are not authorized to manage assessments.');
+}
 $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3];
 $school_settings = json_decode($_SESSION['skul_settings'], true);
-if (isset($_GET['id'])) {
-    $assessment_id = $_GET['id'];
+if (!isset($_GET['id']) || (int)$_GET['id'] <= 0) {
+    http_response_code(400);
+    exit('A valid assessment ID is required.');
 }
+$assessment_id = (int)$_GET['id'];
 if (isset($_GET['page'])) {
     $page = max(1, intval($_GET['page']));
 } else {
@@ -20,43 +31,33 @@ if (isset($_GET['page'])) {
 $per_page = 5; // number of questions per page
 $offset = ($page - 1) * $per_page;
 
-// select assessment data
-$sql = "SELECT * FROM assessment WHERE id = '$assessment_id'";
-$result = mysqli_query($conn, $sql);
-$assessment_data = mysqli_fetch_assoc($result);
-
+// Scope every editor read to the logged-in school.
+$stmt = $conn->prepare('SELECT * FROM assessment WHERE id = ? AND school_id = ? LIMIT 1');
+$stmt->bind_param('ii', $assessment_id, $school_id);
+$stmt->execute();
+$assessment_data = $stmt->get_result()->fetch_assoc();
+$stmt->close();
 if (!$assessment_data) {
-    $assessment_data = [
-        'id' => null,
-        'subject_id' => null,
-        'assessment_type' => 1,
-        'instruction' => '',
-        'duration' => 20,
-        'duration_set' => 1,
-        'deadline_date' => '',
-        'deadline_time' => '00:00:00',
-        'deadline_set' => 0,
-        'class_ids' => '',
-        'desired_score' => 0,
-        'round_off_decimal' => 0,
-        'term' => 1,
-        'score_destination' => '6'
-    ];
+    http_response_code(404);
+    exit('Assessment not found.');
 }
 
 // total questions count for pagination
-$count_sql = "SELECT COUNT(*) as cnt FROM questions WHERE ass_id = '$assessment_id' and deleted=0";
-$count_res = mysqli_query($conn, $count_sql);
-$total_questions = 0;
-if ($count_row = mysqli_fetch_assoc($count_res)) {
-    $total_questions = intval($count_row['cnt']);
-}
+$stmt = $conn->prepare('SELECT COUNT(*) AS cnt FROM questions WHERE ass_id = ? AND deleted = 0');
+$stmt->bind_param('i', $assessment_id);
+$stmt->execute();
+$total_questions = (int)$stmt->get_result()->fetch_assoc()['cnt'];
+$stmt->close();
 $total_pages = max(1, ceil($total_questions / $per_page));
+$page = min($page, $total_pages);
+$offset = ($page - 1) * $per_page;
 
 // fetch only the first page (or requested page) of questions
-$questions_sql = "SELECT * FROM questions WHERE ass_id = '$assessment_id' and deleted=0 ORDER BY id LIMIT $offset, $per_page";
-$questions_result = mysqli_query($conn, $questions_sql);
-$has_questions = mysqli_num_rows($questions_result) > 0;
+$stmt = $conn->prepare('SELECT * FROM questions WHERE ass_id = ? AND deleted = 0 ORDER BY id LIMIT ?, ?');
+$stmt->bind_param('iii', $assessment_id, $offset, $per_page);
+$stmt->execute();
+$questions_result = $stmt->get_result();
+$has_questions = $questions_result->num_rows > 0;
 // echo "ll";
 // exit;
 
@@ -65,21 +66,25 @@ $questions_data = array();
 // For question numbering
 $start_question_num = $offset + 1;
 $q_index = 0;
-while ($question = mysqli_fetch_assoc($questions_result)) {
-    $question_id = $question['id'];
-    $options_sql = "SELECT * FROM options WHERE question_id = '$question_id' and deleted=0";
-    $options_result = mysqli_query($conn, $options_sql);
-    $options = array();
-    while ($option = mysqli_fetch_assoc($options_result)) {
-        $options[] = $option;
-    }
-    $questions_data[] = array(
+while ($question = $questions_result->fetch_assoc()) {
+    $questions_data[(int)$question['id']] = array(
         'question' => $question,
-        'options' => $options,
+        'options' => [],
         'number' => $start_question_num + $q_index
     );
     $q_index++;
 }
+$stmt->close();
+if ($questions_data) {
+    $questionIds = implode(',', array_keys($questions_data));
+    $optionsResult = $conn->query(
+        "SELECT * FROM options WHERE deleted = 0 AND question_id IN ({$questionIds}) ORDER BY id"
+    );
+    while ($option = $optionsResult->fetch_assoc()) {
+        $questions_data[(int)$option['question_id']]['options'][] = $option;
+    }
+}
+$questions_data = array_values($questions_data);
 // var_dump($questions_data)
 ?>
 
@@ -325,14 +330,14 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a href="question_bank" class="nav-link">
                                 <p class="d-flex">
                                     <i class="material-symbols-outlined pr-2">library_books</i>
                                     Question Bank
                                 </p>
                             </a>
-                        </li>
+                        </li> -->
                         <li class="nav-item">
                             <a href="payments" class="nav-link">
                                 <p class="d-flex">
@@ -599,7 +604,7 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                                             </div>
                                         </div>
                                     </div>
-                                    <button type="button" class="btn btn-danger btn-sm mt-2" onclick="deleteQuestion(<?= $qdata['question']['id'] ?>)">Delete Question</button>
+                                    <button type="button" class="btn btn-danger btn-sm mt-2" onclick="removeAssessmentQuestion(this)">Delete Question</button>
                                     <button type="button" class="btn btn-outline-success btn-sm mt-2 ml-2 regenerate-question-btn" onclick="openRegenerateQuestionModal(this)">Regenerate with AI</button>
                                 </div>
                             <?php endforeach; ?>
@@ -972,11 +977,12 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
     <script src="../plugins/moment/moment.min.js"></script>
     <script src="../plugins/daterangepicker/daterangepicker.js"></script>
     <script>
-        var existingAssessmentId = <?= $_GET['id'] ?>;
+        var existingAssessmentId = <?= json_encode($assessment_id) ?>;
+        var assessmentSaveToken = null;
         var classElementToRemove = null;
     </script>
     <script src="../dist/js/assessment_image_buffer.js"></script>
-    <script src="../dist/js/examination.js?v=90poklk"></script>
+    <script src="../dist/js/examination.js?v=20260915-question-delete"></script>
     <script src="../dist/js/import_question.js?v=001"></script>
     <script src="https://unpkg.com/turndown/dist/turndown.js"></script>
     <script src="../dist/js/ai_question_generator.js?v=001"></script>
@@ -1049,6 +1055,8 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                             pendingAfterNavigation = null;
                             afterNavigation();
                         }
+                    } else {
+                        toastr.error(data.message || 'Failed to load questions');
                     }
                     // Hide spinner, show questions
                     $('#questions-loading-spinner').hide();
@@ -1080,12 +1088,12 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
             $('.question-block').each(function() {
                 var $q = $(this);
                 var qid = $q.data('question-id') || null;
-                var questionText = $q.find('.question-textarea').val();
+                var questionText = $q.find('.question-textarea').summernote('code');
                 var options = [];
                 $q.find('.option-group').each(function() {
                     var $opt = $(this);
                     var optId = $opt.find('.option-textarea').data('option-id') || null;
-                    var optText = $opt.find('.option-textarea').val();
+                    var optText = $opt.find('.option-textarea').summernote('code');
                     var isAnswer = $opt.find('input[type="radio"]').is(':checked');
                     options.push({
                         id: optId,
@@ -1136,23 +1144,16 @@ while ($question = mysqli_fetch_assoc($questions_result)) {
                     }
                     if (data.success) {
                         toastr.success('Page saved');
-                        // update any new question ids
-                        if (data.question_ids && data.question_ids.length) {
-                            $('.question-block').each(function(i) {
-                                var qid = $(this).data('question-id');
-                                if (!qid && data.question_ids[i]) {
-                                    $(this).attr('data-question-id', data.question_ids[i]);
-                                }
-                            });
-                        }
+                        syncAssessmentQuestionMapping(data.mapping);
                         clearDirty();
                         if (typeof onSuccess === 'function') onSuccess();
                     } else {
                         toastr.error(data.message || 'Save failed');
                     }
                 },
-                error: function() {
-                    toastr.error('Save failed');
+                error: function(xhr) {
+                    var response = xhr.responseJSON || {};
+                    toastr.error(response.message || 'Save failed');
                 }
             });
         }

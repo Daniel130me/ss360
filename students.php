@@ -54,7 +54,7 @@ $school_id = $_SESSION['school_id'];
             background-color: transparent !important;
         }
 
-        
+
 
         .filter_Select+.select2-container {
             width: 150px !important;
@@ -65,8 +65,8 @@ $school_id = $_SESSION['school_id'];
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
 
-             <!-- Navbar -->
-    <nav class="main-header navbar border-bottom-0 navbar-expand justify-content-between bg1">
+        <!-- Navbar -->
+        <nav class="main-header navbar border-bottom-0 navbar-expand justify-content-between bg1">
             <!-- <div class=""> -->
 
             <!-- Left navbar links -->
@@ -103,13 +103,13 @@ $school_id = $_SESSION['school_id'];
                             <span class="material-symbols-outlined mr-2">lock</span> Change PIN
                         </a>
                         <?php
-                            if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
-                            ?>
-                        <a href="my_payment" class="dropdown-item text-muted d-flex">
-                            <span class="material-symbols-outlined mr-2">payments</span> Billing
-                        </a>
+                        if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) {
+                        ?>
+                            <a href="my_payment" class="dropdown-item text-muted d-flex">
+                                <span class="material-symbols-outlined mr-2">payments</span> Billing
+                            </a>
                         <?php
-                            }?>
+                        } ?>
                         <a href="logout" class="dropdown-item text-muted d-flex">
                             <span class="material-symbols-outlined mr-2">logout</span> Logout
                         </a>
@@ -118,18 +118,18 @@ $school_id = $_SESSION['school_id'];
             </ul>
             <!-- </div> -->
         </nav>
-    <!-- /.navbar -->
+        <!-- /.navbar -->
 
-    <!-- Main Sidebar Container -->
-    <!-- Main Sidebar Container -->
-           <aside class="main-sidebar sidebar-light-primary elevation-4">
+        <!-- Main Sidebar Container -->
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-light-primary elevation-4">
             <!-- Brand Logo -->
             <a href="" class="brand-link">
                 <img src="../uploads/<?= $_SESSION['logo'] ?>" alt="<?= $_SESSION['school_name'] ?>" class="brand-image" style="opacity: .8">
                 <span class="brand-text font-weight-light" style="visibility: hidden;">Rus</span>
             </a>
-           
-            
+
+
             <!-- <div href="" class="px-15 pt-15 border-bottom" style="padding-bottom: 30px;">
                 <img src="../uploads/<= $_SESSION['logo'] ?>" style="height: 200px; object-fit:cover;" alt="Logo"
                     class="brand-image img-circle elevation-5 w-100">
@@ -199,8 +199,8 @@ $school_id = $_SESSION['school_id'];
                                 </p>
                             </a>
                         </li>
-                        
-                        
+
+
                         <li class="nav-item">
                             <a href="post_scores" class="nav-link">
                                 <p class="d-flex">
@@ -234,24 +234,24 @@ $school_id = $_SESSION['school_id'];
                             </a>
                         </li>
                         <?php if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4 || $_SESSION['staff_type'] == 5) { ?>
-                        <li class="nav-item">
-                            <a href="staff_attendance" class="nav-link">
-                                <p class="d-flex">
-                                    <i class="material-symbols-outlined pr-2">add_chart</i>
-                                   Staff Attendance
-                                </p>
-                            </a>
-                        </li>
+                            <li class="nav-item">
+                                <a href="staff_attendance" class="nav-link">
+                                    <p class="d-flex">
+                                        <i class="material-symbols-outlined pr-2">add_chart</i>
+                                        Staff Attendance
+                                    </p>
+                                </a>
+                            </li>
                         <?php } ?>
-                        <?php if($_SESSION['school_id'] == 27 || $_SESSION['school_id']==13){  ?>
-                        <li class="nav-item">
-                            <a href="lesson_note" class="nav-link">
-                                <p class="d-flex">
-                                    <i class="material-symbols-outlined pr-2">list</i>
-                                    Lesson Note
-                                </p>
-                            </a>
-                        </li>
+                        <?php if ($_SESSION['school_id'] == 27 || $_SESSION['school_id'] == 13) {  ?>
+                            <li class="nav-item">
+                                <a href="lesson_note" class="nav-link">
+                                    <p class="d-flex">
+                                        <i class="material-symbols-outlined pr-2">list</i>
+                                        Lesson Note
+                                    </p>
+                                </a>
+                            </li>
                         <?php } ?>
                         <li class="nav-item">
                             <a href="assessment" class="nav-link">
@@ -262,16 +262,16 @@ $school_id = $_SESSION['school_id'];
                             </a>
                         </li>
                         <?php
-                         if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4 || $_SESSION['staff_type'] == 7) {
-                             ?>
-                        <li class="nav-item">
-                            <a href="payments" class="nav-link">
-                                <p class="d-flex">
-                                    <i class="material-symbols-outlined pr-2">payments</i>
-                                    Payments
-                                </p>
-                            </a>
-                        </li>
+                        if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4 || $_SESSION['staff_type'] == 7) {
+                        ?>
+                            <li class="nav-item">
+                                <a href="payments" class="nav-link">
+                                    <p class="d-flex">
+                                        <i class="material-symbols-outlined pr-2">payments</i>
+                                        Payments
+                                    </p>
+                                </a>
+                            </li>
                         <?php } ?>
                         <li class="nav-item">
                             <a href="time_table" class="nav-link">
@@ -369,9 +369,9 @@ $school_id = $_SESSION['school_id'];
                                     <input type="checkbox" id="select_all" onchange="check_uncheck_all()">
                                     <label for="select_all" class="text-primary px-2">Select all</label>
                                 </div>
-                               <?php if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) { ?>
-                                <p class="mr-3 text-danger font-weight-normal action_btn" style="display:none; margin: 0; cursor: pointer;" onclick="get_all_checked_checkbox('multiple',null,'delete_student_modal')">Delete Students</p>
-                                <p class="font-weight-normal action_btn" style="display:none; margin: 0; cursor: pointer;" onclick="get_all_checked_checkbox('multiple',null,'bulk_transfer_modal')">Transfer Students</p>
+                                <?php if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4) { ?>
+                                    <p class="mr-3 text-danger font-weight-normal action_btn" style="display:none; margin: 0; cursor: pointer;" onclick="get_all_checked_checkbox('multiple',null,'delete_student_modal')">Delete Students</p>
+                                    <p class="font-weight-normal action_btn" style="display:none; margin: 0; cursor: pointer;" onclick="get_all_checked_checkbox('multiple',null,'bulk_transfer_modal')">Transfer Students</p>
                                 <?php } ?>
                             </div>
                         </div>
@@ -394,7 +394,7 @@ $school_id = $_SESSION['school_id'];
                     <form class="transfer_student_modal" onsubmit="transfer_student_modal(event, 'student_table', '../display_student_table.php')" action="controller.php">
                         <div class="form-group">
                             <label for="select_class_transfer_field">Select class to transfer student(s) to</label>
-                             <select class="form-control select2" name="class_id" onchange="getstudents(this.value)" id="classes_select" style="width: 100%;" required></select>
+                            <select class="form-control select2" name="class_id" onchange="getstudents(this.value)" id="classes_select" style="width: 100%;" required></select>
                         </div>
                         <input type="hidden" name="action" value="transfer_students">
                         <input type="hidden" name="ids" value="" class="bulk_transfer_ids">
@@ -412,7 +412,28 @@ $school_id = $_SESSION['school_id'];
             </div>
         </div>
     </div>
-<div class="modal fade" id="reset_student_password_modal">
+    <div class="modal fade" id="set_parent_password_modal">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <form id="set_parent_password_form">
+                        <div class="form-group">
+                            <label for="parent_new_password">Set Parent Password</label>
+                            <input type="password" name="new_password" id="parent_new_password"
+                                class="form-control" minlength="4" autocomplete="new-password" required>
+                        </div>
+                        <input type="hidden" name="action" value="set_parent_password">
+                        <input type="hidden" name="student_id" id="student_id_for_parent_password">
+                        <div class="card-foot px-0 pb-0">
+                            <button type="submit" id="set_parent_password_btn" class="btn-sm btn-primary">Set Password</button>
+                            <button type="button" class="btn btn-grey" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="reset_student_password_modal">
         <div class="modal-dialog modal-sm modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body">
@@ -497,7 +518,7 @@ $school_id = $_SESSION['school_id'];
                                             <p class="mb-0 muted-text">Admission number</p>
                                             <input type="text" name="admissionnumber" placeholder="Admission number" class="form-control">
                                         </div>
-                                       
+
                                         <div class="mb-3 col-sm-6 col-12">
                                             <p class="mb-0 muted-text">Class</p>
                                             <select class="form-control select2" name="class_id" style="width: 100%;" required>
@@ -512,7 +533,7 @@ $school_id = $_SESSION['school_id'];
                                                 ?>
                                             </select>
                                         </div>
-                                         <div class="mb-3 col-sm-6 col-12">
+                                        <div class="mb-3 col-sm-6 col-12">
                                             <p class="mb-0 muted-text">Department</p>
                                             <input type="text" name="department" placeholder="Department" class="form-control">
                                         </div>
@@ -668,7 +689,7 @@ $school_id = $_SESSION['school_id'];
 
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 
-     <script src="../plugins/select2/js/select2.full.min.js"></script> 
+    <script src="../plugins/select2/js/select2.full.min.js"></script>
     <!-- AdminLTE App -->
     <script src="../dist/js/adminlte.min.js"></script>
     <!-- <script src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
@@ -678,7 +699,7 @@ $school_id = $_SESSION['school_id'];
 
     <!-- <script>$('.select2').select2()</script> -->
     <script src="../dist/js/skul.js?v=1abnsx"></script>
-     <script>
+    <script>
         $(function() {
             function initClassSelect(data) {
                 $('#classes_select').empty();
@@ -691,7 +712,9 @@ $school_id = $_SESSION['school_id'];
             // Fetch grouped classes from the server
             $.ajax({
                 url: '../controller.php',
-                data: { "action":"get_current_graduate_classes" },
+                data: {
+                    "action": "get_current_graduate_classes"
+                },
                 type: 'POST',
                 // method: 'POST',
                 dataType: 'json'

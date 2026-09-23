@@ -1,79 +1,46 @@
 <?php
-date_default_timezone_set('Africa/Lagos'); // Set the timezone to Lagos
-// echo date("Y:m:d H-i-s");
-session_start();
-include_once("model/connect.php");
+date_default_timezone_set('Africa/Lagos');
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 
-header('Content-Type: application/json');
+include_once('model/connect.php');
+include_once('model/assessment_delivery.php');
 
-$assessment_id = $_POST['assessment_id'];
-$student_id = $_SESSION['userid'];
+header('Content-Type: application/json; charset=utf-8');
 
-// Check for existing attempt
-$sql = "SELECT * FROM assessment_attempts 
-        WHERE assessment_id = ? 
-        AND student_id = ? 
-        AND status = 'in_progress'";
+$assessmentId = (int)($_POST['assessment_id'] ?? 0);
 
-$stmt = mysqli_prepare($conn, $sql);
-mysqli_stmt_bind_param($stmt, "ii", $assessment_id, $student_id);
-mysqli_stmt_execute($stmt);
-$result = mysqli_stmt_get_result($stmt);
+try {
+    if ($assessmentId <= 0) {
+        throw new InvalidArgumentException('Invalid assessment.');
+    }
 
-if ($attempt = mysqli_fetch_assoc($result)) {
-    // var_dump($attempt);
-    // Check if attempt has expired due to inactivity (30 minutes)
-   $last_activity = strtotime($attempt['last_activity']);
-//   echo '<br>';
-    // echo $rdate = $last_activity+(7*60*60);
-  
-    if ($last_activity > 0) {
-        // echo time();
-        // echo '<br>';
-        // echo $last_activity;
-        // echo '<br>';
-        // echo time() -  $last_activity;
-        if (time() -  $last_activity > 1800) {
-            echo 'last'.$last_activity; 
-            echo 'time'.time();
-            // echo (time() - $rdate);
-            // mysqli_query($conn, "UPDATE assessment_attempts 
-            //               SET status = 'expired' 
-            //               WHERE id = {$attempt['id']}");
-            // echo json_encode([
-            //     'success' => false,
-            //     'message' => 'Attempt expired due to inactivity'
-            // ]);
-            // exit;
-        }
+    $context = assessment_delivery_require_student($conn, $assessmentId);
+    $stmt = $conn->prepare(
+        "SELECT time_remaining, last_question, answers, flagged_questions
+         FROM assessment_attempts
+         WHERE id = ? AND status = 'in_progress'
+         LIMIT 1"
+    );
+    $stmt->bind_param('i', $context['attempt_id']);
+    $stmt->execute();
+    $attempt = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if (!$attempt) {
+        throw new RuntimeException('No active assessment attempt was found.', 403);
     }
 
     echo json_encode([
         'success' => true,
-        'time_remaining' => $attempt['time_remaining'],
-        'last_question' => $attempt['last_question'],
-        'answers' => $attempt['answers'],
-        'flagged_questions' => $attempt['flagged_questions']
+        'time_remaining' => max(0, (int)$attempt['time_remaining']),
+        'last_question' => max(1, (int)$attempt['last_question']),
+        'answers' => $attempt['answers'] ?: '{}',
+        'flagged_questions' => $attempt['flagged_questions'] ?: '[]',
     ]);
-} else {
-    // Create new attempt
-    $assessment_sql = "SELECT duration FROM assessment WHERE id = ?";
-    $stmt = mysqli_prepare($conn, $assessment_sql);
-    mysqli_stmt_bind_param($stmt, "i", $assessment_id);
-    mysqli_stmt_execute($stmt);
-    $assessment = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
-
-    $duration_seconds = $assessment['duration'] * 60;
-
-    mysqli_query($conn, "INSERT INTO assessment_attempts 
-                       (assessment_id, student_id, start_time, time_remaining, last_activity) 
-                       VALUES ($assessment_id, $student_id, NOW(), $duration_seconds, NOW())");
-
-    echo json_encode([
-        'success' => true,
-        'time_remaining' => $duration_seconds,
-        'last_question' => 1,
-        'answers' => '{}',
-        'flagged_questions' => '[]'
-    ]);
+} catch (Throwable $error) {
+    $statusCode = (int)$error->getCode() === 403 ? 403 : 422;
+    http_response_code($statusCode);
+    echo json_encode(['success' => false, 'message' => $error->getMessage()]);
 }

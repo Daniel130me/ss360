@@ -1,12 +1,21 @@
 <?php
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 if (!isset($_SESSION['userid'])) {
     header("Location: login");
     exit();
 }
 include_once("model/connect.php");
 include_once("model/functions.php");
+include_once("model/assessment_editor.php");
 $school_id = $_SESSION['school_id'];
+try {
+    assessment_editor_require_staff();
+} catch (Throwable $error) {
+    http_response_code(403);
+    exit('You are not authorized to manage assessments.');
+}
 $_SESSION['location'] = explode("/", $_SERVER['REQUEST_URI'])[3];
 $school_settings = json_decode($_SESSION['skul_settings'], true);
 // var_dump($school_settings);
@@ -29,29 +38,48 @@ $assessment_data = [
 ];
 
 if ($assessment_id) {
-    $sql = "SELECT * FROM assessment WHERE id = '$assessment_id'";
-    $result = mysqli_query($conn, $sql);
-    if ($row = mysqli_fetch_assoc($result)) {
-        $assessment_data = $row;
+    $stmt = $conn->prepare(
+        'SELECT a.*, s.subject AS subject_name
+         FROM assessment a
+         LEFT JOIN subjects s ON s.id = a.subject_id
+         WHERE a.id = ? AND a.school_id = ? LIMIT 1'
+    );
+    $stmt->bind_param('ii', $assessment_id, $school_id);
+    $stmt->execute();
+    $assessment_data = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+    if (!$assessment_data) {
+        http_response_code(404);
+        exit('Assessment not found.');
     }
 }
 $questions_data = [];
 if ($assessment_id) {
-    $q_sql = "SELECT * FROM questions WHERE ass_id = '$assessment_id' AND deleted = 0";
-    $q_res = mysqli_query($conn, $q_sql);
+    $stmt = $conn->prepare('SELECT * FROM questions WHERE ass_id = ? AND deleted = 0 ORDER BY id');
+    $stmt->bind_param('i', $assessment_id);
+    $stmt->execute();
+    $q_res = $stmt->get_result();
+    $questionsById = [];
     while ($q_row = mysqli_fetch_assoc($q_res)) {
-        $options = [];
-        $o_sql = "SELECT * FROM options WHERE question_id = '{$q_row['id']}'";
-        $o_res = mysqli_query($conn, $o_sql);
-        while ($o_row = mysqli_fetch_assoc($o_res)) {
-            $options[] = $o_row;
-        }
-        $questions_data[] = [
+        $questionsById[(int)$q_row['id']] = [
             'question' => $q_row,
-            'options' => $options
+            'options' => [],
         ];
     }
+    $stmt->close();
+
+    if ($questionsById) {
+        $questionIds = implode(',', array_keys($questionsById));
+        $optionsResult = $conn->query(
+            "SELECT * FROM options WHERE deleted = 0 AND question_id IN ({$questionIds}) ORDER BY id"
+        );
+        while ($option = $optionsResult->fetch_assoc()) {
+            $questionsById[(int)$option['question_id']]['options'][] = $option;
+        }
+    }
+    $questions_data = array_values($questionsById);
 }
+$assessment_save_token = bin2hex(random_bytes(16));
 ?>
 
 <!DOCTYPE html>
@@ -287,14 +315,14 @@ if ($assessment_id) {
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a href="question_bank" class="nav-link">
                                 <p class="d-flex">
                                     <i class="material-symbols-outlined pr-2">library_books</i>
                                     Question Bank
                                 </p>
                             </a>
-                        </li>
+                        </li> -->
                         <li class="nav-item">
                             <a href="payments" class="nav-link">
                                 <p class="d-flex">
@@ -352,8 +380,12 @@ if ($assessment_id) {
                                         <div class="col-12 col-md-3" id="select_subject_single">
                                             <div class="form-group align-left">
                                                 <label for="" class="mb-0">Select Subject</label>
-                                                <select class="form-control select2" class="select_subject_field" id="select_subject_field" onchange="" style="width: 100%;">
-
+                                                <select class="form-control select2" id="select_subject_field" style="width: 100%;">
+                                                    <?php if (!empty($assessment_data['subject_id'])): ?>
+                                                        <option value="<?= (int)$assessment_data['subject_id'] ?>" selected>
+                                                            <?= htmlspecialchars((string)($assessment_data['subject_name'] ?? 'Selected subject')) ?>
+                                                        </option>
+                                                    <?php endif; ?>
                                                 </select>
                                             </div>
                                         </div>
@@ -440,7 +472,7 @@ if ($assessment_id) {
                                                         <input type="date" class="form-control" id="deadline_date" value="<?= $assessment_data['deadline_date'] ?>">
                                                         <input type="time" class="form-control" id="deadline_time" value="<?= $assessment_data['deadline_time'] ?>">
                                                         <!--<div class="input-group-prepend icheck-gray-dark ml-2">-->
-                                                        <!--    <input <?= $assessment_data['deadline_Set'] ? 'checked' : '' ?> class="class-checkbox" type="checkbox" id="set_deadline_checkbox">-->
+                                                        <!--    <input <?= $assessment_data['deadline_set'] ? 'checked' : '' ?> class="class-checkbox" type="checkbox" id="set_deadline_checkbox">-->
                                                         <!--    <label for="set_deadline_checkbox">Set Deadline</label>-->
                                                         <!--</div>-->
                                                     </div>
@@ -462,31 +494,31 @@ if ($assessment_id) {
                                                 <div class="form-group mb-0 col-12 col-sm-4">
                                                     <label for="" class="mb-0">Which assessment is this score for?</label>
                                                     <div class="d-flex" style="flex-wrap: wrap; gap: 15px;">
-                                                        <?php if ($school_settings['ca1'] == 1): ?>
+                                                        <?php if (($school_settings['ca1'] ?? 0) == 1): ?>
                                                             <div class="input-group d-flex align-items-center icheck-gray-dark" style="width: auto;">
                                                                 <input type="radio" name="ca" id="ca_1" value="1" <?= $assessment_data['score_destination'] == '1' ? 'checked' : '' ?>>
                                                                 <label for="ca_1" class="mb-0">CA1</label>
                                                             </div>
                                                         <?php endif; ?>
-                                                        <?php if ($school_settings['ca2'] == 1): ?>
+                                                        <?php if (($school_settings['ca2'] ?? 0) == 1): ?>
                                                             <div class="input-group d-flex align-items-center icheck-gray-dark" style="width: auto;">
                                                                 <input type="radio" name="ca" id="ca_2" value="2" <?= $assessment_data['score_destination'] == '2' ? 'checked' : '' ?>>
                                                                 <label for="ca_2" class="mb-0">CA2</label>
                                                             </div>
                                                         <?php endif; ?>
-                                                        <?php if ($school_settings['ca3'] == 1): ?>
+                                                        <?php if (($school_settings['ca3'] ?? 0) == 1): ?>
                                                             <div class="input-group d-flex align-items-center icheck-gray-dark" style="width: auto;">
                                                                 <input type="radio" name="ca" id="ca_3" value="3" <?= $assessment_data['score_destination'] == '3' ? 'checked' : '' ?>>
                                                                 <label for="ca_3" class="mb-0">CA3</label>
                                                             </div>
                                                         <?php endif; ?>
-                                                        <?php if ($school_settings['practical'] == 1): ?>
+                                                        <?php if (($school_settings['practical'] ?? 0) == 1): ?>
                                                             <div class="input-group d-flex align-items-center icheck-gray-dark" style="width: auto;">
-                                                                <input type="radio" name="ca" id="practical" value="4" <?= $assessment_data['score_destination'] == '4' ? 'checked' : '' ?>>>
+                                                                <input type="radio" name="ca" id="practical" value="4" <?= $assessment_data['score_destination'] == '4' ? 'checked' : '' ?>>
                                                                 <label for="practical" class="mb-0">Practical</label>
                                                             </div>
                                                         <?php endif; ?>
-                                                        <?php if ($school_settings['exa'] == 1): ?>
+                                                        <?php if (($school_settings['exa'] ?? 0) == 1): ?>
                                                             <div class="input-group d-flex align-items-center icheck-gray-dark" style="width: auto;">
                                                                 <input type="radio" name="ca" id="exam" value="5" <?= $assessment_data['score_destination'] == '5' ? 'checked' : '' ?>>
                                                                 <label for="exam" class="mb-0">Exam</label>
@@ -494,7 +526,7 @@ if ($assessment_id) {
                                                         <?php endif; ?>
                                                         <!-- else check  radio button "none"  -->
                                                         <div class="input-group d-flex align-items-center icheck-gray-dark" style="width: auto;">
-                                                            <input type="radio" name="ca" id="none" value="6" checked>
+                                                            <input type="radio" name="ca" id="none" value="6" <?= $assessment_data['score_destination'] == '6' ? 'checked' : '' ?>>
                                                             <label for="none" class="mb-0">None</label>
                                                         </div>
                                                     </div>
@@ -539,7 +571,7 @@ if ($assessment_id) {
                                                             </div>
                                                         </div>
                                                         <!-- <button type="button" class="btn btn-success btn-sm mt-2 mr-2" onclick="saveQuestion(this.closest('.question-block'))">Save Question</button> -->
-                                                        <button type="button" class="btn btn-danger btn-sm mt-2" onclick="deleteQuestion(<?= $qdata['question']['id'] ?>)">Delete Question</button>
+                                                        <button type="button" class="btn btn-danger btn-sm mt-2" onclick="removeAssessmentQuestion(this)">Delete Question</button>
                                                         <button type="button" class="btn btn-outline-success btn-sm mt-2 ml-2 regenerate-question-btn" onclick="openRegenerateQuestionModal(this)">Regenerate with AI</button>
                                                     </div>
                                                 <?php endforeach; ?>
@@ -875,19 +907,20 @@ if ($assessment_id) {
         <script src="../plugins/daterangepicker/daterangepicker.js"></script>
 
         <script>
-            var existingAssessmentId = null;
+            var existingAssessmentId = <?= json_encode($assessment_id) ?>;
+            var assessmentSaveToken = <?= json_encode($assessment_save_token) ?>;
             var classElementToRemove = null;
         </script>
         <script src="../dist/js/assessment_image_buffer.js"></script>
-        <script src="../dist/js/examination.js?v=0032itiswellnow"></script>
+        <script src="../dist/js/examination.js?v=20260915-question-delete"></script>
         <script src="../dist/js/import_question.js?v=001"></script>
         <script src="https://unpkg.com/turndown/dist/turndown.js"></script>
         <script src="../dist/js/ai_question_generator.js?v=001"></script>
         <script>
             // Add event listeners for form changes
             $(document).ready(function() {
-                // Hide assessment sections initially
-                $('.assessment-settings-section, .questions-section').hide();
+                // Existing assessments are immediately editable; new ones wait for required selections.
+                $('.assessment-settings-section, .questions-section').toggle(Number(existingAssessmentId) > 0);
 
                 // Check for existing assessment when required fields change
                 $('#select_subject_field').change(checkExistingAssessment);

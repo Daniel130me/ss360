@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 if (!isset($_SESSION['userid'])) {
     header("Location: login");
     exit();
@@ -7,6 +9,14 @@ if (!isset($_SESSION['userid'])) {
 
 include_once("model/connect.php");
 include_once("model/functions.php");
+include_once("model/assessment_editor.php");
+
+try {
+    $staffContext = assessment_editor_require_staff();
+} catch (Throwable $error) {
+    http_response_code(403);
+    exit('You are not authorized to view assessment results.');
+}
 
 $assessment_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 // Accept single or comma-separated class IDs (e.g. ?class_id=45 or ?class_id=45,44)
@@ -28,10 +38,19 @@ $class_id_list = implode(',', $class_ids);
 
 // Get assessment details
 
-$assessment_query = "SELECT a.*, s.subject FROM assessment a 
-                    JOIN subjects s ON a.subject_id = s.id 
-                    WHERE a.id = $assessment_id";
-$assessment = $conn->query($assessment_query)->fetch_assoc();
+$assessmentStmt = $conn->prepare(
+    'SELECT a.*, s.subject FROM assessment a
+     JOIN subjects s ON a.subject_id = s.id
+     WHERE a.id = ? AND a.school_id = ? LIMIT 1'
+);
+$assessmentStmt->bind_param('ii', $assessment_id, $staffContext['school_id']);
+$assessmentStmt->execute();
+$assessment = $assessmentStmt->get_result()->fetch_assoc();
+$assessmentStmt->close();
+if (!$assessment) {
+    http_response_code(404);
+    exit('Assessment not found.');
+}
 
 // Get all students who haven't attempted
 
@@ -41,13 +60,16 @@ $not_attempted_query = "SELECT s.id, s.firstname, s.lastname, c.classname
                        FROM students s 
                        LEFT JOIN class c ON s.class_id = c.id
                        LEFT JOIN assessment_results ar ON s.id = ar.student_id AND ar.assessment_id = $assessment_id
-                       WHERE s.class_id IN ($class_id_list) AND ar.id IS NULL";
+                       WHERE s.school_id = {$staffContext['school_id']}
+                         AND s.class_id IN ($class_id_list) AND ar.id IS NULL";
 $not_attempted = $conn->query($not_attempted_query)->fetch_all(MYSQLI_ASSOC);
 
 // Get results with filters
 
 // Build results filter and include class filter so results are limited to the selected classes
-$where = "WHERE ar.assessment_id = $assessment_id AND s.class_id IN ($class_id_list)";
+$where = "WHERE ar.assessment_id = $assessment_id
+          AND s.school_id = {$staffContext['school_id']}
+          AND s.class_id IN ($class_id_list)";
 if (isset($_GET['score_min'])) {
     $score_min = floatval($_GET['score_min']);
     $where .= " AND ar.percentage_score >= $score_min";
@@ -397,7 +419,7 @@ $avg_score = $conn->query($avg_query)->fetch_assoc()['avg_score'];
                                 <div class="card">
                                     <div class="card-body">
                                         <h5>Class Average</h5>
-                                        <h3><?php echo number_format($avg_score, 1); ?>%</h3>
+                                        <h3><?php echo number_format((float)($avg_score ?? 0), 1); ?>%</h3>
                                     </div>
                                 </div>
                             </div>
@@ -472,7 +494,11 @@ $avg_score = $conn->query($avg_query)->fetch_assoc()['avg_score'];
                                                 <p class="card-text">Class: <?php echo htmlspecialchars($student['classname']); ?></p>
                                                 <!-- button to blacklist student from attempting the assessment -->
                                                 <?php
-                                                $is_blacklisted = in_array($student['id'], explode(',', $assessment['blacklist_students']));
+                                                $blacklistedStudents = array_filter(array_map(
+                                                    'intval',
+                                                    explode(',', (string)($assessment['blacklist_students'] ?? ''))
+                                                ));
+                                                $is_blacklisted = in_array((int)$student['id'], $blacklistedStudents, true);
                                                 $button_class = $is_blacklisted ? 'btn-success' : 'btn-danger';
                                                 $button_text = $is_blacklisted ? 'Allow Attempt' : 'Disallow Attempt';
                                                 $button_data_status = $is_blacklisted ? 0 : 1;
@@ -528,7 +554,7 @@ $avg_score = $conn->query($avg_query)->fetch_assoc()['avg_score'];
 
     <!-- Summernote -->
     <script src="../plugins/summernote/summernote-bs4.min.js"></script>
-    <script src="../dist/js/examination.js"></script>
+    <script src="../dist/js/examination.js?v=20260913-assessment-flow"></script>
 
     <script src="../dist/js/skul.js?v=w3q125sj"></script>
     <!-- date-range-picker -->

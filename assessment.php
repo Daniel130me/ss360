@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 // echo $_SESSION['staff_type'];
 if (!isset($_SESSION['userid'])) {
     header("Location: login");
@@ -245,14 +247,14 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a href="question_bank" class="nav-link">
                                 <p class="d-flex">
                                     <i class="material-symbols-outlined pr-2">library_books</i>
                                     Question Bank
                                 </p>
                             </a>
-                        </li>
+                        </li> -->
                         <?php
                          if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['staff_type'] == 4 || $_SESSION['staff_type'] == 7) {
                              ?>

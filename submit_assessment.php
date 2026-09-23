@@ -1,196 +1,234 @@
 <?php
-session_start();
-include_once("model/connect.php");
-
-header('Content-Type: application/json');
-
-if (!isset($_POST['assessment_id']) || !isset($_POST['answers'])) {
-    echo json_encode(['success' => false, 'message' => 'Missing parameters']);
-    exit;
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
 }
 
-$assessment_id = (int)$_POST['assessment_id'];
-$student_id = $_SESSION['userid'];
-$answers = json_decode($_POST['answers'], true);
+include_once('model/connect.php');
+include_once('model/assessment_delivery.php');
 
-mysqli_begin_transaction($conn);
+header('Content-Type: application/json; charset=utf-8');
+
+$assessmentId = (int)($_POST['assessment_id'] ?? 0);
+$submittedAnswers = json_decode((string)($_POST['answers'] ?? ''), true);
+$timeRemaining = max(0, (int)($_POST['time_remaining'] ?? 0));
+$studentId = (int)($_SESSION['userid'] ?? 0);
+$schoolId = (int)($_SESSION['school_id'] ?? 0);
+
+function assessment_submission_response(array $result): array
+{
+    return [
+        'success' => true,
+        'result_id' => (int)$result['id'],
+        'score' => (int)$result['score'],
+        'total' => (int)$result['total_questions'],
+        'percentage' => (float)$result['percentage_score'],
+    ];
+}
 
 try {
-
-    // Get assessment details
-    $assessment_sql = "SELECT subject_id,desired_score,score_destination,round_off_decimal FROM assessment WHERE id = ?";
-    $stmt = mysqli_prepare($conn, $assessment_sql);
-    if (!$stmt) {
-        throw new Exception("Prepare failed: (" . $conn->errno . ") " . $conn->error);
+    if (($_SESSION['user_type'] ?? '') !== 'student' || $assessmentId <= 0 || !is_array($submittedAnswers)) {
+        throw new InvalidArgumentException('Invalid assessment submission.');
     }
-    mysqli_stmt_bind_param($stmt, "i", $assessment_id);
-    mysqli_stmt_execute($stmt);
-    $assessment_result = mysqli_stmt_get_result($stmt);
-    $assessment_row = mysqli_fetch_assoc($assessment_result);
-    $subject_id = $assessment_row['subject_id'];
-    $desired_score = $assessment_row['desired_score'];
-    $score_destination = $assessment_row['score_destination'];
-    $round_off_decimal = $assessment_row['round_off_decimal'];
-    mysqli_stmt_close($stmt);
-    
-    // Get total number of questions first
-    $total_query = "SELECT COUNT(*) as total FROM questions WHERE ass_id = ? and deleted=0";
-    $stmt = mysqli_prepare($conn, $total_query);
-    if (!$stmt) {
-        throw new Exception("Prepare failed: (" . $conn->errno . ") " . $conn->error);
+
+    // A retry after a successful response must be harmless and return the original result.
+    $existingStmt = $conn->prepare(
+        "SELECT r.id, r.score, r.total_questions, r.percentage_score
+         FROM assessment_results r
+         INNER JOIN assessment a ON a.id = r.assessment_id AND a.school_id = ?
+         WHERE r.assessment_id = ? AND r.student_id = ?
+         LIMIT 1"
+    );
+    $existingStmt->bind_param('iii', $schoolId, $assessmentId, $studentId);
+    $existingStmt->execute();
+    $existingResult = $existingStmt->get_result()->fetch_assoc();
+    $existingStmt->close();
+    if ($existingResult) {
+        echo json_encode(assessment_submission_response($existingResult));
+        exit;
     }
-    mysqli_stmt_bind_param($stmt, "i", $assessment_id);
-    mysqli_stmt_execute($stmt);
-    $total_result = mysqli_stmt_get_result($stmt);
-    $total_row = mysqli_fetch_assoc($total_result);
-    $total_questions = $total_row['total'];
-    mysqli_stmt_close($stmt);
 
-    // Calculate score
-    $score = 0;
-    $processed_questions = [];
+    $context = assessment_delivery_require_student($conn, $assessmentId);
+    $conn->begin_transaction();
 
-    foreach ($answers as $question_id => $answer_id) {
-        // Validate answer format
-        if (!is_numeric($answer_id)) continue;
+    // Serialize submission and timer/autosave updates for this attempt.
+    $attemptStmt = $conn->prepare(
+        'SELECT id, status FROM assessment_attempts WHERE id = ? FOR UPDATE'
+    );
+    $attemptStmt->bind_param('i', $context['attempt_id']);
+    $attemptStmt->execute();
+    $attempt = $attemptStmt->get_result()->fetch_assoc();
+    $attemptStmt->close();
+    if (!$attempt || $attempt['status'] !== 'in_progress') {
+        throw new RuntimeException('This assessment attempt is no longer active.');
+    }
 
-        // Prevent duplicate answers for same question
-        if (in_array($question_id, $processed_questions)) continue;
-        $processed_questions[] = $question_id;
+    $assessmentStmt = $conn->prepare(
+        "SELECT subject_id, desired_score, score_destination, round_off_decimal
+         FROM assessment WHERE id = ? AND school_id = ? LIMIT 1"
+    );
+    $assessmentStmt->bind_param('ii', $assessmentId, $schoolId);
+    $assessmentStmt->execute();
+    $assessment = $assessmentStmt->get_result()->fetch_assoc();
+    $assessmentStmt->close();
+    if (!$assessment) {
+        throw new RuntimeException('Assessment not found.');
+    }
 
-        // Check if this question belongs to this assessment
-        $question_check = "SELECT id FROM questions WHERE id = ? AND ass_id = ? and deleted=0";
-        $stmt = mysqli_prepare($conn, $question_check);
-        if (!$stmt) {
-            throw new Exception("Prepare failed: (" . $conn->errno . ") " . $conn->error);
+    // One query loads the valid question/option map and replaces the former N+1 scoring loop.
+    $questionStmt = $conn->prepare(
+        "SELECT q.id AS question_id, o.id AS option_id, o.answer
+         FROM questions q
+         LEFT JOIN options o ON o.question_id = q.id AND o.deleted = 0
+         WHERE q.ass_id = ? AND q.deleted = 0
+         ORDER BY q.id, o.id"
+    );
+    $questionStmt->bind_param('i', $assessmentId);
+    $questionStmt->execute();
+    $questionRows = $questionStmt->get_result();
+
+    $validOptions = [];
+    while ($row = $questionRows->fetch_assoc()) {
+        $questionId = (int)$row['question_id'];
+        if (!isset($validOptions[$questionId])) {
+            $validOptions[$questionId] = [];
         }
-        mysqli_stmt_bind_param($stmt, "ii", $question_id, $assessment_id);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_store_result($stmt);
-        if (mysqli_stmt_num_rows($stmt) == 0) {
-            mysqli_stmt_free_result($stmt);
-            mysqli_stmt_close($stmt);
+        if ($row['option_id'] !== null) {
+            $validOptions[$questionId][(int)$row['option_id']] = (int)$row['answer'] === 1;
+        }
+    }
+    $questionStmt->close();
+
+    $totalQuestions = count($validOptions);
+    if ($totalQuestions < 1) {
+        throw new RuntimeException('This assessment has no questions.');
+    }
+
+    $answers = [];
+    $score = 0;
+    foreach ($submittedAnswers as $questionId => $optionId) {
+        $questionId = (int)$questionId;
+        $optionId = (int)$optionId;
+        if (!isset($validOptions[$questionId][$optionId])) {
             continue;
         }
-        mysqli_stmt_free_result($stmt);
-        mysqli_stmt_close($stmt);
-
-        // Check if answer is correct
-        $sql = "SELECT answer FROM options WHERE question_id = ? and deleted=0 AND id = ?";
-        $stmt = mysqli_prepare($conn, $sql);
-        if (!$stmt) {
-            throw new Exception("Prepare failed: (" . $conn->errno . ") " . $conn->error);
+        $answers[$questionId] = $optionId;
+        if ($validOptions[$questionId][$optionId]) {
+            $score++;
         }
-        mysqli_stmt_bind_param($stmt, "ii", $question_id, $answer_id);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-
-        if ($row = mysqli_fetch_assoc($result)) {
-            if ($row['answer'] == '1') {
-                $score++;
-            }
-        }
-        mysqli_stmt_close($stmt);
-    }
-    
-    // Calculate percentage score
-    $percentage_score = ($score / $total_questions) * 100;
-    $actual_score = ((int)$desired_score/(int)$total_questions) * $score;
-    if ($round_off_decimal == '1') {
-        $actual_score = round($actual_score, 2);
-    } else if ($round_off_decimal == '0') {
-        $actual_score = round($actual_score, 0);
     }
 
+    $percentageScore = ($score / $totalQuestions) * 100;
+    $actualScore = ((float)$assessment['desired_score'] / $totalQuestions) * $score;
+    $actualScore = (int)$assessment['round_off_decimal'] === 1
+        ? round($actualScore, 2)
+        : round($actualScore);
+    $answersJson = json_encode($answers, JSON_THROW_ON_ERROR);
 
-    // Save result
-    $sql = "INSERT INTO assessment_results 
+    $resultStmt = $conn->prepare(
+        "INSERT INTO assessment_results
             (assessment_id, student_id, score, total_questions, percentage_score, answers, submitted_at)
-            VALUES (?, ?, ?, ?, ?, ?, NOW())";
-    $stmt = mysqli_prepare($conn, $sql);
-    if (!$stmt) {
-        throw new Exception("Prepare failed: (" . $conn->errno . ") " . $conn->error);
-    }   
-    $answers_json = json_encode($answers);
-    mysqli_stmt_bind_param($stmt, "iiiids",
-        $assessment_id, $student_id, $score, $total_questions, $percentage_score, $answers_json);
-    
-    if (!mysqli_stmt_execute($stmt)) {
-        throw new Exception("Execute failed: (" . mysqli_stmt_errno($stmt) . ") " . mysqli_stmt_error($stmt));
-    }
+         VALUES (?, ?, ?, ?, ?, ?, NOW())"
+    );
+    $resultStmt->bind_param(
+        'iiiids',
+        $assessmentId,
+        $studentId,
+        $score,
+        $totalQuestions,
+        $percentageScore,
+        $answersJson
+    );
+    $resultStmt->execute();
+    $resultId = $conn->insert_id;
+    $resultStmt->close();
 
-    $result_id = mysqli_insert_id($conn);
-    mysqli_stmt_close($stmt);
+    $scoreFields = [1 => 'ca1', 2 => 'ca2', 3 => 'ca3', 4 => 'pra', 5 => 'exam'];
+    $scoreDestination = (int)$assessment['score_destination'];
+    if (isset($scoreFields[$scoreDestination])) {
+        $scoreField = $scoreFields[$scoreDestination];
+        $subjectId = (int)$assessment['subject_id'];
+        $termId = (int)$_SESSION['term_id'];
+        $sessionId = (int)$_SESSION['session_id'];
+        $classId = (int)$_SESSION['class_id'];
 
+        $scoreRowStmt = $conn->prepare(
+            "SELECT id FROM skulscores
+             WHERE student_id = ? AND subject_id = ? AND term_id = ?
+               AND session_id = ? AND school_id = ? AND class_id = ?
+             LIMIT 1 FOR UPDATE"
+        );
+        $scoreRowStmt->bind_param('iiiiii', $studentId, $subjectId, $termId, $sessionId, $schoolId, $classId);
+        $scoreRowStmt->execute();
+        $scoreRow = $scoreRowStmt->get_result()->fetch_assoc();
+        $scoreRowStmt->close();
 
-  
-
-    // First check if record exists
-    $check_sql = "SELECT id FROM skulscores 
-                  WHERE student_id = {$_SESSION['userid']} 
-                  AND subject_id = $subject_id
-                  AND term_id = {$_SESSION['term_id']}
-                  AND session_id = {$_SESSION['session_id']}
-                  AND school_id = {$_SESSION['school_id']}
-                  AND class_id = {$_SESSION['class_id']}";
-    
-    $result = mysqli_query($conn, $check_sql);
-    
-    $score_field = "";
-    switch ($score_destination) {
-        case 1: $score_field = "ca1"; break;
-        case 2: $score_field = "ca2"; break;
-        case 3: $score_field = "ca3"; break;
-        case 4: $score_field = "pra"; break;
-        case 5: $score_field = "exam"; break;
-        case 6: $score_field = "assignment"; break;
-        default: throw new Exception("Invalid score destination");
-    }
-    // Only update/insert into skulscores if score destination is not 'assignment'
-    if ($score_field !== 'assignment') {
-        if (mysqli_num_rows($result) > 0) {
-            // Update existing record
-            $sql = "UPDATE skulscores SET $score_field = $actual_score 
-                    WHERE student_id = {$_SESSION['userid']} 
-                    AND subject_id = $subject_id
-                    AND term_id = {$_SESSION['term_id']}
-                    AND session_id = {$_SESSION['session_id']}
-                    AND school_id = {$_SESSION['school_id']}
-                    AND class_id = {$_SESSION['class_id']}";
+        if ($scoreRow) {
+            $scoreStmt = $conn->prepare("UPDATE skulscores SET {$scoreField} = ? WHERE id = ?");
+            $scoreRowId = (int)$scoreRow['id'];
+            $scoreStmt->bind_param('di', $actualScore, $scoreRowId);
         } else {
-            // Insert new record
-            $sql = "INSERT INTO skulscores (student_id, subject_id, term_id, session_id, school_id, class_id, $score_field) 
-                    VALUES ({$_SESSION['userid']}, $subject_id, {$_SESSION['term_id']}, 
-                            {$_SESSION['session_id']}, {$_SESSION['school_id']}, 
-                            {$_SESSION['class_id']}, $actual_score)";
+            $scoreStmt = $conn->prepare(
+                "INSERT INTO skulscores
+                    (student_id, subject_id, term_id, session_id, school_id, class_id, {$scoreField})
+                 VALUES (?, ?, ?, ?, ?, ?, ?)"
+            );
+            $scoreStmt->bind_param(
+                'iiiiiid',
+                $studentId,
+                $subjectId,
+                $termId,
+                $sessionId,
+                $schoolId,
+                $classId,
+                $actualScore
+            );
         }
+        $scoreStmt->execute();
+        $scoreStmt->close();
+    }
 
-            if (!mysqli_query($conn, $sql)) {
-                throw new Exception("Query failed: " . mysqli_error($conn));
-            }
-        }
+    $completeStmt = $conn->prepare(
+        "UPDATE assessment_attempts
+         SET status = 'completed', score = ?, answers = ?, time_remaining = ?,
+             completed_at = NOW(), last_activity = NOW()
+         WHERE id = ? AND status = 'in_progress'"
+    );
+    $completeStmt->bind_param('isii', $score, $answersJson, $timeRemaining, $context['attempt_id']);
+    $completeStmt->execute();
+    if ($completeStmt->affected_rows !== 1) {
+        throw new RuntimeException('The assessment attempt could not be completed.');
+    }
+    $completeStmt->close();
 
+    $progressStmt = $conn->prepare(
+        'DELETE FROM assessment_progress WHERE assessment_id = ? AND student_id = ?'
+    );
+    $progressStmt->bind_param('ii', $assessmentId, $studentId);
+    $progressStmt->execute();
+    $progressStmt->close();
 
-    // Delete progress data
-    mysqli_query($conn, "DELETE FROM assessment_progress 
-                WHERE assessment_id = $assessment_id AND student_id = $student_id");
+    $conn->commit();
+    unset($_SESSION['viewed_instructions'][$assessmentId]);
 
-    mysqli_commit($conn);
-
-    echo json_encode([
-        'success' => true,
-        'result_id' => $result_id,
+    echo json_encode(assessment_submission_response([
+        'id' => $resultId,
         'score' => $score,
-        'total' => $total_questions,
-        'percentage' => $percentage_score
-    ]);
+        'total_questions' => $totalQuestions,
+        'percentage_score' => $percentageScore,
+    ]));
+} catch (Throwable $error) {
+    try {
+        $conn->rollback();
+    } catch (Throwable $ignored) {
+    }
 
-} catch (Exception $e) {
-    mysqli_rollback($conn);
-    error_log("Assessment submission error: " . $e->getMessage());
+    $statusCode = (int)$error->getCode() === 403 ? 403 : 422;
+    http_response_code($statusCode);
+    $reference = strtoupper(substr(hash('sha256', uniqid('', true)), 0, 8));
+    error_log("[assessment_submission:{$reference}] " . $error);
     echo json_encode([
         'success' => false,
-        'message' => 'Error submitting assessment. Please try again. ' . $e->getMessage()
+        'message' => "Unable to submit the assessment. Reference: {$reference}",
+        'reference' => $reference,
     ]);
 }
-?>

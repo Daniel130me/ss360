@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 error_reporting(E_ALL);
 $action = $_POST['action'] ?? '';
 
@@ -133,6 +135,7 @@ $date = date("Y:m:d H:i:s");
         }
     }
        if ($action == "get_all_classes_for_assessment") {
+        header('Content-Type: application/json; charset=utf-8');
         $assessment_id = $_POST['assessment_id'];
         $select = mysqli_query($conn, "SELECT id, classname FROM class WHERE school_id='{$_SESSION['school_id']}' ORDER BY classname ASC");
         $data = [];
@@ -761,10 +764,15 @@ $date = date("Y:m:d H:i:s");
         }
     }
     if ($action === 'getsettings') {
-        $school_id = $_SESSION['school_id'];
-        $term_id = $_SESSION['term_id'];
-        $session_id = $_POST['session_id'];
-        $select = mysqli_query($conn, "SELECT * FROM skul_settings WHERE school_id='$school_id' AND session_id='$session_id' AND term_id='$term_id'");
+        $school_id = (int)($_SESSION['school_id'] ?? 0);
+        $term_id = (int)($_SESSION['term_id'] ?? 0);
+        $session_id = (int)($_POST['session_id'] ?? ($_SESSION['session_id'] ?? 0));
+        $settingsStmt = $conn->prepare(
+            'SELECT * FROM skul_settings WHERE school_id = ? AND session_id = ? AND term_id = ? LIMIT 1'
+        );
+        $settingsStmt->bind_param('iii', $school_id, $session_id, $term_id);
+        $settingsStmt->execute();
+        $select = $settingsStmt->get_result();
         if ($row = mysqli_fetch_array($select)) {
             echo json_encode(
                 array(
@@ -779,7 +787,10 @@ $date = date("Y:m:d H:i:s");
                     'grade' => $row['grading'],
                 )
             );
+        } else {
+            echo json_encode([]);
         }
+        $settingsStmt->close();
     }
 
     if ($action === 'getstudents') {
@@ -2408,8 +2419,10 @@ $date = date("Y:m:d H:i:s");
 //                       AND s.school_id='$school_id' 
 //                       ORDER BY s.lastname ASC";
             // $select = mysqli_query($conn, "SELECT c.classname,c.id,s.* FROM students s, class c WHERE s.class_id=c.id AND s.class_id='$class_id' AND s.school_id='$school_id' ORDER BY s.lastname ASC");
-            $select = mysqli_query($conn, "SELECT pr.status AS student_status, c.classname,c.id,s.* FROM students s  
+            $select = mysqli_query($conn, "SELECT pr.status AS student_status, c.classname,c.id,
+                      sch.parent_email_login_enabled,s.* FROM students s
                       LEFT JOIN class c ON s.class_id=c.id
+                      INNER JOIN school sch ON sch.id=s.school_id
                       LEFT JOIN payment_record pr ON pr.student_id=s.id AND pr.term_id='{$_SESSION['term_id']}' 
                       AND pr.session_id='{$_SESSION['session_id']}' 
                       WHERE s.class_id='$class_id' 
@@ -2470,7 +2483,13 @@ $date = date("Y:m:d H:i:s");
                                 <a onclick="get_the_id_for_password_reset('<?= $row['id'] ?>','reset_student_password_modal')" class="btn p-0 text-primary mr-3">Reset Student Password</a>
                             <?php } 
                             endif;
+                            if (
+                                (int)$row['parent_email_login_enabled'] === 1
+                                && in_array((int)($_SESSION['staff_type'] ?? 0), [1, 2, 3, 4, 5], true)
+                            ) {
                             ?>
+                                <a onclick="open_parent_password_modal('<?= $row['id'] ?>')" class="btn p-0 text-primary mr-3">Set Parent Password</a>
+                            <?php } ?>
                         </div>
                     </td>
 
@@ -4677,6 +4696,65 @@ if (isset($_POST['action']) && $_POST['action'] == 'assign_staff_subjects_by_cla
             $hashedpassword = password_hash($new_password, PASSWORD_ARGON2I);
             $update = mysqli_query($conn, "UPDATE students SET passw='$hashedpassword', dateupdated='$date', updatedby='{$_SESSION['userid']}' WHERE id='$student_id' AND school_id='$school_id'");
             echo $update === true ? json_encode(array('status' => '1')) : mysqli_error($conn);
+        }
+
+        if ($action === 'set_parent_password') {
+            $school_id = (int)($_SESSION['school_id'] ?? 0);
+            $staff_type = (int)($_SESSION['staff_type'] ?? 0);
+            $student_id = (int)($_POST['student_id'] ?? 0);
+            $new_password = (string)($_POST['new_password'] ?? '');
+
+            if (!in_array($staff_type, [1, 2, 3, 4, 5], true)) {
+                http_response_code(403);
+                echo json_encode(['status' => '0', 'err' => 'You are not authorized to set parent passwords.']);
+                exit;
+            }
+
+            if (strlen($new_password) < 4) {
+                echo json_encode(['status' => '0', 'err' => 'The parent password must contain at least 4 characters.']);
+                exit;
+            }
+
+            // Resolve the linked parent and feature flag together; never trust a parent ID from the browser.
+            $parent_stmt = $conn->prepare(
+                "SELECT p.id, p.email, sch.parent_email_login_enabled
+                 FROM students s
+                 INNER JOIN parent p ON p.id = s.parent_id AND p.school_id = s.school_id
+                 INNER JOIN school sch ON sch.id = s.school_id
+                 WHERE s.id = ? AND s.school_id = ?
+                 LIMIT 1"
+            );
+            $parent_stmt->bind_param('ii', $student_id, $school_id);
+            $parent_stmt->execute();
+            $parent = $parent_stmt->get_result()->fetch_assoc();
+            $parent_stmt->close();
+
+            if (!$parent || (int)$parent['parent_email_login_enabled'] !== 1) {
+                echo json_encode(['status' => '0', 'err' => 'Parent email login is not enabled for this school.']);
+                exit;
+            }
+
+            if (trim((string)$parent['email']) === '') {
+                echo json_encode(['status' => '0', 'err' => 'Add the parent email address before setting a password.']);
+                exit;
+            }
+
+            $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+            $parent_id = (int)$parent['id'];
+            $updated_by = (int)$_SESSION['userid'];
+            $updated_at = date('Y-m-d H:i:s');
+            $update_stmt = $conn->prepare(
+                "UPDATE parent SET passw = ?, dateupdated = ?, updatedby = ?
+                 WHERE id = ? AND school_id = ?"
+            );
+            $update_stmt->bind_param('ssiii', $hashed_password, $updated_at, $updated_by, $parent_id, $school_id);
+            $updated = $update_stmt->execute();
+            $update_stmt->close();
+
+            echo $updated
+                ? json_encode(['status' => '1', 'msg' => 'Parent password set successfully.'])
+                : json_encode(['status' => '0', 'err' => 'Parent password was not updated.']);
+            exit;
         }
 
         if ($action == 'update_student_data') {

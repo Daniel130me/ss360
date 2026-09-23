@@ -2,8 +2,9 @@
 // echo $_SESSION['url'];
 // echo "here";
 // exit;
-$select = mysqli_query($conn, "SELECT id,back_pic,logo,phone1 FROM school WHERE url='{$_SESSION['url']}'");
+$select = mysqli_query($conn, "SELECT id,back_pic,logo,phone1,parent_email_login_enabled FROM school WHERE url='{$_SESSION['url']}'");
 $row = mysqli_fetch_assoc($select);
+$parent_email_login_enabled = (int)($row['parent_email_login_enabled'] ?? 0) === 1;
 // print_r($row);
 // exit;
 ?>
@@ -51,16 +52,24 @@ $row = mysqli_fetch_assoc($select);
                         <?php endif; ?>   
                     <input type="hidden" name="action" value="login">
                         <div class="form-group mb-3">
-                            <label for="">Phone number<span class="text-danger">*</span></label>
-                            <input type="text" name="phone" class="form-control" placeholder="e.g 08136467317" autocomplete="tel" required>
-                            <small class="text-muted">Accepted format: <?=$row['id'] == '27' ? '07055527775' : '08160127318' ?></small>
+                            <label for="login_identifier"><?= $parent_email_login_enabled ? 'Login ID' : 'Phone number' ?><span class="text-danger">*</span></label>
+                            <input type="text" name="phone" id="login_identifier" class="form-control"
+                                placeholder="<?= $parent_email_login_enabled ? 'Phone, admission number, or parent email' : 'e.g 08136467317' ?>"
+                                autocomplete="username" required>
+                            <small class="text-muted">
+                                <?= $parent_email_login_enabled
+                                    ? 'Parents should enter their registered email address.'
+                                    : 'Accepted format: ' . ($row['id'] == '27' ? '07055527775' : '08160127318') ?>
+                            </small>
                         </div>
                         <div class="form-group mb-3">
                             <div class="row justify-content-between">
-                                <label for="" class="col-6">PIN<span class="text-danger">*</span></label>
-                                <a href="forgot_password" class="col-6 text-right accent">Forgot PIN?</a>
+                                <label for="login_password" class="col-6"><?= $parent_email_login_enabled ? 'PIN / Password' : 'PIN' ?><span class="text-danger">*</span></label>
+                                <a href="forgot_password" class="col-6 text-right accent">Forgot <?= $parent_email_login_enabled ? 'password' : 'PIN' ?>?</a>
                             </div>
-                            <input type="password" name="password" class="form-control" placeholder="Enter your pin" required>
+                            <input type="password" name="password" id="login_password" class="form-control"
+                                placeholder="<?= $parent_email_login_enabled ? 'Enter your PIN or password' : 'Enter your pin' ?>"
+                                autocomplete="current-password" required>
                         </div>
                         <div class="form-group mb-3">
                             <button type="submit" class="staff_login_btn btn btn-primary btn-block" disabled>Login</button>
