@@ -1,0 +1,1054 @@
+{
+ "source_exam_body": "JAMB",
+ "source_exam_year": 2025,
+ "source_subject": "Mathematics",
+ "listing_url": "https://myschool.ng/classroom/mathematics?exam_type=jamb&exam_year=2025",
+ "collected_at": "2026-09-24",
+ "items": [
+  {
+   "item": 1,
+   "source_id": "74090",
+   "source_url": "https://myschool.ng/classroom/mathematics/74090?exam_type=jamb&exam_year=2025",
+   "source_question_number": 1,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_url": "https://myschool.ng/storage/classroom/CuhSVieJX6M1U3Jw4MguxYo9MR76CQV8fWppnyLI.png",
+   "stem_image_local_path": "uploads/question_bank/jamb_2025_mathematics/Q1_diagram.png",
+   "stem_plain_text": "From the diagram above, find the area of the triangle PQR",
+   "options_plain_text": {
+    "a": "143cm",
+    "b": "120cm",
+    "c": "130cm",
+    "d": "117cm"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 2,
+   "source_id": "74091",
+   "source_url": "https://myschool.ng/classroom/mathematics/74091?exam_type=jamb&exam_year=2025",
+   "source_question_number": 2,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "The set {1,2,3,4,5} is equivalent to",
+   "options_plain_text": {
+    "a": "{2,3,1,4}",
+    "b": "{1,2,3,4,5,5}",
+    "c": "{1,2,3,4}",
+    "d": "{4,3,1,5,2}"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 3,
+   "source_id": "74092",
+   "source_url": "https://myschool.ng/classroom/mathematics/74092?exam_type=jamb&exam_year=2025",
+   "source_question_number": 3,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Solve the simultaneous equation - = 1 and y - = 8",
+   "options_plain_text": {
+    "a": "x = 10, y = -6",
+    "b": "x = 10, y = 6",
+    "c": "x = 6, y = 10",
+    "d": "x = 10, y = 6"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 4,
+   "source_id": "74093",
+   "source_url": "https://myschool.ng/classroom/mathematics/74093?exam_type=jamb&exam_year=2025",
+   "source_question_number": 4,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Solve the inequality 2x + 3 > 5x + 8",
+   "options_plain_text": {
+    "a": "x > 1",
+    "b": "x > -1",
+    "c": "x < -1",
+    "d": "x < 1"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 5,
+   "source_id": "74094",
+   "source_url": "https://myschool.ng/classroom/mathematics/74094?exam_type=jamb&exam_year=2025",
+   "source_question_number": 5,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Given that a * b = + (a - b). Find the value of 3 * 2",
+   "options_plain_text": {
+    "a": "-6",
+    "b": "",
+    "c": "",
+    "d": "-1"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 6,
+   "source_id": "74095",
+   "source_url": "https://myschool.ng/classroom/mathematics/74095?exam_type=jamb&exam_year=2025",
+   "source_question_number": 6,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Simplify 125 × 49 × 10",
+   "options_plain_text": {
+    "a": "",
+    "b": "",
+    "c": "350",
+    "d": "35"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 7,
+   "source_id": "74096",
+   "source_url": "https://myschool.ng/classroom/mathematics/74096?exam_type=jamb&exam_year=2025",
+   "source_question_number": 7,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Find the coordinates of the midpoint of line PQ given P(-3, 4) and Q(5, 6).",
+   "options_plain_text": {
+    "a": "(1, 4)",
+    "b": "(4, 1)",
+    "c": "(5, 1)",
+    "d": "(1, 5)"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 8,
+   "source_id": "74097",
+   "source_url": "https://myschool.ng/classroom/mathematics/74097?exam_type=jamb&exam_year=2025",
+   "source_question_number": 8,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Given that Cos A = for 0 ≤ A ≤ 90º, find Tan A.",
+   "options_plain_text": {
+    "a": "",
+    "b": "",
+    "c": "",
+    "d": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 9,
+   "source_id": "74098",
+   "source_url": "https://myschool.ng/classroom/mathematics/74098?exam_type=jamb&exam_year=2025",
+   "source_question_number": 9,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Which of the following angles cannot be constructed using a protractor, a compass, and a sharpened pencil?",
+   "options_plain_text": {
+    "a": "135°",
+    "b": "90°",
+    "c": "145°",
+    "d": "60°"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 10,
+   "source_id": "74099",
+   "source_url": "https://myschool.ng/classroom/mathematics/74099?exam_type=jamb&exam_year=2025",
+   "source_question_number": 10,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Find the number of permutations of the letters of the word SCHOOL.",
+   "options_plain_text": {
+    "a": "600",
+    "b": "360",
+    "c": "480",
+    "d": "300"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 11,
+   "source_id": "74100",
+   "source_url": "https://myschool.ng/classroom/mathematics/74100?exam_type=jamb&exam_year=2025",
+   "source_question_number": 11,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Y is partly constant and partly varies as x. When x = 3, y = 7 and when x = 5, y = 11. Find the constants of variation.",
+   "options_plain_text": {
+    "a": "2,3",
+    "b": "1,2",
+    "c": "3,2",
+    "d": "3,4"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 12,
+   "source_id": "74101",
+   "source_url": "https://myschool.ng/classroom/mathematics/74101?exam_type=jamb&exam_year=2025",
+   "source_question_number": 12,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "The average weight of 15 iron bars is 1000 kg. If the heaviest iron bar is removed, the average weight is reduced by 5 kg. Find the weight in kg of the heaviest iron bar.",
+   "options_plain_text": {
+    "a": "1170kg",
+    "b": "1270kg",
+    "c": "1070kg",
+    "d": "1370kg"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 13,
+   "source_id": "74102",
+   "source_url": "https://myschool.ng/classroom/mathematics/74102?exam_type=jamb&exam_year=2025",
+   "source_question_number": 13,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Find the sum of the entries in the inverse of",
+   "options_plain_text": {
+    "a": "1",
+    "b": "-1",
+    "c": "2",
+    "d": "0.5"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 14,
+   "source_id": "74151",
+   "source_url": "https://myschool.ng/classroom/mathematics/74151?exam_type=jamb&exam_year=2025",
+   "source_question_number": 14,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "A varies directly as b when A = 4, b = 1. Find A when b = 2",
+   "options_plain_text": {
+    "a": "12",
+    "b": "14",
+    "c": "16",
+    "d": "11"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 15,
+   "source_id": "74152",
+   "source_url": "https://myschool.ng/classroom/mathematics/74152?exam_type=jamb&exam_year=2025",
+   "source_question_number": 15,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "If I is a 2 × 2 identity matrix, find the determinant of the matrix.",
+   "options_plain_text": {
+    "a": "1",
+    "b": "2",
+    "c": "-1",
+    "d": "0"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 16,
+   "source_id": "74153",
+   "source_url": "https://myschool.ng/classroom/mathematics/74153?exam_type=jamb&exam_year=2025",
+   "source_question_number": 16,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "The determinant of the matrix is -5. Find the value of p.",
+   "options_plain_text": {
+    "a": "0",
+    "b": "2",
+    "c": "3",
+    "d": "1"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 17,
+   "source_id": "74154",
+   "source_url": "https://myschool.ng/classroom/mathematics/74154?exam_type=jamb&exam_year=2025",
+   "source_question_number": 17,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "The mean of the numbers 0, x + 2, 3x + 6, and 4x + 8 is 4, find the value of x.",
+   "options_plain_text": {
+    "a": "",
+    "b": "",
+    "c": "0",
+    "d": "4"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 18,
+   "source_id": "74155",
+   "source_url": "https://myschool.ng/classroom/mathematics/74155?exam_type=jamb&exam_year=2025",
+   "source_question_number": 18,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Obtain the equation of a straight line passing through (3, 15) whose slope = 3 .",
+   "options_plain_text": {
+    "a": "5y + 16x + 27 = 0",
+    "b": "5y - 16x + 27 = 0",
+    "c": "5y - 16x - 27 = 0",
+    "d": "5y + 16x - 27 = 0"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 19,
+   "source_id": "74156",
+   "source_url": "https://myschool.ng/classroom/mathematics/74156?exam_type=jamb&exam_year=2025",
+   "source_question_number": 19,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "A car dealer bought a used car for ₦270,000 and spent ₦70,000 to refurbish it. He later sold the car for ₦490,000. What was the percentage profit?",
+   "options_plain_text": {
+    "a": "30%",
+    "b": "35%",
+    "c": "25%",
+    "d": "45%"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 20,
+   "source_id": "74157",
+   "source_url": "https://myschool.ng/classroom/mathematics/74157?exam_type=jamb&exam_year=2025",
+   "source_question_number": 20,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Simplify ( ) of 1 (3 - )",
+   "options_plain_text": {
+    "a": ".",
+    "b": ".",
+    "c": ".",
+    "d": "."
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 21,
+   "source_id": "74158",
+   "source_url": "https://myschool.ng/classroom/mathematics/74158?exam_type=jamb&exam_year=2025",
+   "source_question_number": 21,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "In a basket of fruits, there are 6 grapes, 11 bananas, and 13 oranges. If one fruit is chosen at random, what is the probability that the fruit is either a grape or a banana?",
+   "options_plain_text": {
+    "a": "",
+    "b": "",
+    "c": "",
+    "d": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 22,
+   "source_id": "74159",
+   "source_url": "https://myschool.ng/classroom/mathematics/74159?exam_type=jamb&exam_year=2025",
+   "source_question_number": 22,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Calculate the interior angle of a 5 - sided regular polygon",
+   "options_plain_text": {
+    "a": "120º",
+    "b": "90º",
+    "c": "108º",
+    "d": "180º"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 23,
+   "source_id": "74160",
+   "source_url": "https://myschool.ng/classroom/mathematics/74160?exam_type=jamb&exam_year=2025",
+   "source_question_number": 23,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "A banker spent of his salary on shirts, of the remainder on transport, and kept the rest for contingencies. What fraction was left",
+   "options_plain_text": {
+    "a": "",
+    "b": "",
+    "c": "",
+    "d": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 24,
+   "source_id": "74161",
+   "source_url": "https://myschool.ng/classroom/mathematics/74161?exam_type=jamb&exam_year=2025",
+   "source_question_number": 24,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Find the probability of getting an even number in a single throw of a six-sided die.",
+   "options_plain_text": {
+    "a": "",
+    "b": "",
+    "c": "",
+    "d": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 25,
+   "source_id": "74162",
+   "source_url": "https://myschool.ng/classroom/mathematics/74162?exam_type=jamb&exam_year=2025",
+   "source_question_number": 25,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Integrate y = 4x + 2x + cos x.",
+   "options_plain_text": {
+    "a": "x - x - sin x + C",
+    "b": "x + x + sin x + C",
+    "c": "x - x + sin x + C",
+    "d": "x + x - sin x + C"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 26,
+   "source_id": "74163",
+   "source_url": "https://myschool.ng/classroom/mathematics/74163?exam_type=jamb&exam_year=2025",
+   "source_question_number": 26,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Simplify - log 0.00001.",
+   "options_plain_text": {
+    "a": "-5",
+    "b": "-4",
+    "c": "5",
+    "d": "4"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 27,
+   "source_id": "74167",
+   "source_url": "https://myschool.ng/classroom/mathematics/74167?exam_type=jamb&exam_year=2025",
+   "source_question_number": 27,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "The chord of a circle of radius 17 cm is 30 cm long. Calculate the distance of the chord from the centre of the circle.",
+   "options_plain_text": {
+    "a": "15cm",
+    "b": "47cm",
+    "c": "8cm",
+    "d": "169cm"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 28,
+   "source_id": "74168",
+   "source_url": "https://myschool.ng/classroom/mathematics/74168?exam_type=jamb&exam_year=2025",
+   "source_question_number": 28,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Find the limit of y = as x goes to 2.",
+   "options_plain_text": {
+    "a": "Infinity",
+    "b": "10",
+    "c": "0",
+    "d": "12"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 29,
+   "source_id": "74169",
+   "source_url": "https://myschool.ng/classroom/mathematics/74169?exam_type=jamb&exam_year=2025",
+   "source_question_number": 29,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "The second and fifth terms of a G.P are 1 and respectively. Find the common ratio",
+   "options_plain_text": {
+    "a": "",
+    "b": "",
+    "c": "",
+    "d": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 30,
+   "source_id": "74170",
+   "source_url": "https://myschool.ng/classroom/mathematics/74170?exam_type=jamb&exam_year=2025",
+   "source_question_number": 30,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "An amount of # 600,000.00 was realized when a principal y was saved for 5% simple interest for 4 years, find the value of y",
+   "options_plain_text": {
+    "a": "# 570,000",
+    "b": "# 500,000",
+    "c": "# 300,000",
+    "d": "# 400,000"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 31,
+   "source_id": "74172",
+   "source_url": "https://myschool.ng/classroom/mathematics/74172?exam_type=jamb&exam_year=2025",
+   "source_question_number": 31,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Given the progression 3, 5, 7, 9,.... . . . find an expression for the (n - 2) term of the progression.",
+   "options_plain_text": {
+    "a": "",
+    "b": "",
+    "c": "",
+    "d": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 32,
+   "source_id": "74173",
+   "source_url": "https://myschool.ng/classroom/mathematics/74173?exam_type=jamb&exam_year=2025",
+   "source_question_number": 32,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Find the derivatives of y = sin 4x",
+   "options_plain_text": {
+    "a": "-4sin x",
+    "b": "-4cos x",
+    "c": "4sin4x",
+    "d": "4cos4x"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 33,
+   "source_id": "74174",
+   "source_url": "https://myschool.ng/classroom/mathematics/74174?exam_type=jamb&exam_year=2025",
+   "source_question_number": 33,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "If A = , make the subject of the formula",
+   "options_plain_text": {
+    "a": "=",
+    "b": "=",
+    "c": "=",
+    "d": "="
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 34,
+   "source_id": "74175",
+   "source_url": "https://myschool.ng/classroom/mathematics/74175?exam_type=jamb&exam_year=2025",
+   "source_question_number": 34,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "What is the minimum value of y = 2 - 4x - 2x",
+   "options_plain_text": {
+    "a": "4",
+    "b": "5",
+    "c": "3",
+    "d": "2"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 35,
+   "source_id": "74176",
+   "source_url": "https://myschool.ng/classroom/mathematics/74176?exam_type=jamb&exam_year=2025",
+   "source_question_number": 35,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "If the probability of death is q and the probability of survival is p, find the probability of one death and one survival in an accident involving two persons",
+   "options_plain_text": {
+    "a": "p/q",
+    "b": "pq",
+    "c": "p - q",
+    "d": "p + q"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 36,
+   "source_id": "74177",
+   "source_url": "https://myschool.ng/classroom/mathematics/74177?exam_type=jamb&exam_year=2025",
+   "source_question_number": 36,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_url": "https://myschool.ng/storage/classroom/0HqeHTW1CKqpKSjDtSl6Ie1M6qopMjuONhioBHwp.png",
+   "stem_image_local_path": "uploads/question_bank/jamb_2025_mathematics/Q36_diagram.png",
+   "stem_plain_text": "Given the construction in the figure above. What is X Z",
+   "options_plain_text": {
+    "a": "60º",
+    "b": "30º",
+    "c": "75º",
+    "d": "45º"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 37,
+   "source_id": "74185",
+   "source_url": "https://myschool.ng/classroom/mathematics/74185?exam_type=jamb&exam_year=2025",
+   "source_question_number": 37,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Convert 137 to base 5",
+   "options_plain_text": {
+    "a": "",
+    "b": ".",
+    "c": ".",
+    "d": "."
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 38,
+   "source_id": "74186",
+   "source_url": "https://myschool.ng/classroom/mathematics/74186?exam_type=jamb&exam_year=2025",
+   "source_question_number": 38,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "P is partly constant and varies partly as Q. If P = 32 when Q = 16 and P = 20 when Q = 12, find P when Q = 28",
+   "options_plain_text": {
+    "a": "68",
+    "b": "64",
+    "c": "66",
+    "d": "62"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 39,
+   "source_id": "74187",
+   "source_url": "https://myschool.ng/classroom/mathematics/74187?exam_type=jamb&exam_year=2025",
+   "source_question_number": 39,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "The word HANDIER can be arranged in how many ways",
+   "options_plain_text": {
+    "a": "3080",
+    "b": "2650",
+    "c": "4050",
+    "d": "5040"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 40,
+   "source_id": "74188",
+   "source_url": "https://myschool.ng/classroom/mathematics/74188?exam_type=jamb&exam_year=2025",
+   "source_question_number": 40,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_url": "https://myschool.ng/storage/classroom/G64aNMf7HmJVH7IAlEnlXCQClu9XRNk07B3f1UdQ.png",
+   "stem_image_local_path": "uploads/question_bank/jamb_2025_mathematics/Q40_diagram.png",
+   "stem_plain_text": "From the table above, estimate the mode of the distribution.",
+   "options_plain_text": {
+    "a": "37.8",
+    "b": "38.5",
+    "c": "29.5",
+    "d": "34.5"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 41,
+   "source_id": "74189",
+   "source_url": "https://myschool.ng/classroom/mathematics/74189?exam_type=jamb&exam_year=2025",
+   "source_question_number": 41,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Find the value of t for which ( ) = 64",
+   "options_plain_text": {
+    "a": "-6",
+    "b": "-5",
+    "c": "-7",
+    "d": "-4"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 42,
+   "source_id": "74190",
+   "source_url": "https://myschool.ng/classroom/mathematics/74190?exam_type=jamb&exam_year=2025",
+   "source_question_number": 42,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "If 54 = X , find the value of X to 3 decimal point",
+   "options_plain_text": {
+    "a": "132",
+    "b": "312",
+    "c": "123",
+    "d": "321"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 43,
+   "source_id": "74191",
+   "source_url": "https://myschool.ng/classroom/mathematics/74191?exam_type=jamb&exam_year=2025",
+   "source_question_number": 43,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Integrate the function y = 3x + 2x - 5 with respect to x.",
+   "options_plain_text": {
+    "a": "x + x - 5x + C",
+    "b": "x + 2x - 5x + C",
+    "c": "x + 2x - 5 + C",
+    "d": "x + 2x - 5 + C"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 44,
+   "source_id": "74192",
+   "source_url": "https://myschool.ng/classroom/mathematics/74192?exam_type=jamb&exam_year=2025",
+   "source_question_number": 44,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Express in standard form",
+   "options_plain_text": {
+    "a": "2",
+    "b": "2",
+    "c": "2",
+    "d": "2"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 45,
+   "source_id": "74193",
+   "source_url": "https://myschool.ng/classroom/mathematics/74193?exam_type=jamb&exam_year=2025",
+   "source_question_number": 45,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Solve x + 3x - 4 ≤ 0",
+   "options_plain_text": {
+    "a": "-4 x 1",
+    "b": "4 x - 1",
+    "c": "4 x 1",
+    "d": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 46,
+   "source_id": "74194",
+   "source_url": "https://myschool.ng/classroom/mathematics/74194?exam_type=jamb&exam_year=2025",
+   "source_question_number": 46,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Solve for y in - + = y",
+   "options_plain_text": {
+    "a": "",
+    "b": "",
+    "c": "",
+    "d": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 47,
+   "source_id": "74195",
+   "source_url": "https://myschool.ng/classroom/mathematics/74195?exam_type=jamb&exam_year=2025",
+   "source_question_number": 47,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "If cos = , find tan in terms of x and y",
+   "options_plain_text": {
+    "a": "",
+    "b": "",
+    "c": "",
+    "d": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 48,
+   "source_id": "74196",
+   "source_url": "https://myschool.ng/classroom/mathematics/74196?exam_type=jamb&exam_year=2025",
+   "source_question_number": 48,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "Given that and Q = . Find P + 2Q",
+   "options_plain_text": {
+    "a": "",
+    "b": "",
+    "c": "",
+    "d": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 49,
+   "source_id": "74197",
+   "source_url": "https://myschool.ng/classroom/mathematics/74197?exam_type=jamb&exam_year=2025",
+   "source_question_number": 49,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_url": "https://myschool.ng/storage/classroom/BrleVCCTR9vyYWrymiwk2FVS1vSuSdD4QKHv5SkC.png",
+   "stem_image_local_path": "uploads/question_bank/jamb_2025_mathematics/Q49_diagram.png",
+   "stem_plain_text": "The figure above is a pie chart. Use it to find in degrees those who are doctors",
+   "options_plain_text": {
+    "a": "60 .",
+    "b": "72 .",
+    "c": "90 .",
+    "d": "84 ."
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 50,
+   "source_id": "74198",
+   "source_url": "https://myschool.ng/classroom/mathematics/74198?exam_type=jamb&exam_year=2025",
+   "source_question_number": 50,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_url": "https://myschool.ng/storage/classroom/5AgSVvT4PuTana3HC7zIlLbmk8VFKK7q6k3JQJye.png",
+   "stem_image_local_path": "uploads/question_bank/jamb_2025_mathematics/Q50_diagram.png",
+   "stem_plain_text": "In the Venn diagram above, the shaded region is",
+   "options_plain_text": {
+    "a": "(P Q)' R",
+    "b": "(P Q) R)",
+    "c": "(P Q) R",
+    "d": "(P U R)' Q"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 51,
+   "source_id": "74199",
+   "source_url": "https://myschool.ng/classroom/mathematics/74199?exam_type=jamb&exam_year=2025",
+   "source_question_number": 51,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_url": "https://myschool.ng/storage/classroom/AVG3qECzMkFkQxAioIjOwxrcB2S2eV3g5vE75Zd1.png",
+   "stem_image_local_path": "uploads/question_bank/jamb_2025_mathematics/Q51_diagram.png",
+   "stem_plain_text": "The table above shows the weights of twelve mathematics students. Find the modal weight.",
+   "options_plain_text": {
+    "a": "54",
+    "b": "58",
+    "c": "60",
+    "d": "62"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 52,
+   "source_id": "74200",
+   "source_url": "https://myschool.ng/classroom/mathematics/74200?exam_type=jamb&exam_year=2025",
+   "source_question_number": 52,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "A binary operation * is defined on the set X = {1, 2, 3, 4, 5, 6} as a*b = ab + a + b. Compute 1 * 3",
+   "options_plain_text": {
+    "a": "14",
+    "b": "4",
+    "c": "7",
+    "d": "5"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 53,
+   "source_id": "74201",
+   "source_url": "https://myschool.ng/classroom/mathematics/74201?exam_type=jamb&exam_year=2025",
+   "source_question_number": 53,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_url": "https://myschool.ng/storage/classroom/3f4aqwkQxGSVvLlHEfLyqsxrt01I8QWoGA5ZUfBV.png",
+   "stem_image_local_path": "uploads/question_bank/jamb_2025_mathematics/Q53_diagram.png",
+   "stem_plain_text": "From the table above, determine the upper - class boundary of the modal class",
+   "options_plain_text": {
+    "a": "21.5",
+    "b": "30.5",
+    "c": "20.5",
+    "d": "10.5"
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 54,
+   "source_id": "74202",
+   "source_url": "https://myschool.ng/classroom/mathematics/74202?exam_type=jamb&exam_year=2025",
+   "source_question_number": 54,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_url": null,
+   "stem_image_local_path": null,
+   "stem_plain_text": "A bird flies from a tree P on a bearing of N60º E to a building, Q, a distance of 200 km. It then changes course and flies to another tree R on a bearing of S30ºE. Tree R is directly east of tree P. Calculate the distance of the building to tree R.",
+   "options_plain_text": {
+    "a": "200",
+    "b": "100",
+    "c": "100",
+    "d": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 55,
+   "source_id": "74203",
+   "source_url": "https://myschool.ng/classroom/mathematics/74203?exam_type=jamb&exam_year=2025",
+   "source_question_number": 55,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_url": "https://myschool.ng/storage/classroom/d386De6qPvenFwyL7qZkCNWDhaHClwnS8tWfWOkK.png",
+   "stem_image_local_path": "uploads/question_bank/jamb_2025_mathematics/Q55_diagram.png",
+   "stem_plain_text": "Given the triangle XYZ above, calculate the value of Cot and the length XY, respectively",
+   "options_plain_text": {
+    "a": ",",
+    "b": ",",
+    "c": ",",
+    "d": ","
+   },
+   "explanation_present": false,
+   "problems": []
+  }
+ ]
+}
