@@ -266,7 +266,7 @@ $(".url_upadter").submit(function (event) {
     let $btntext = $btn.html()
     var $url = $form.attr("action");
     let formdata = new FormData(this);
-    $.ajax({
+       $.ajax({
         url: $url,
         type: "post",
         data: formdata,
@@ -2851,7 +2851,7 @@ function handleSelect(clickedButton) {
         $('#select_subject').hide();
         $(".thecontentbox, .by_class_filter").hide()
         $(".data_overlay").show()
-        get_score_data()
+        getstudents($("#select_class_field").val())
 
         // getstudents(classValue);
         // setfilter('student');
@@ -3049,7 +3049,7 @@ function by_class_view_content() {
         success: (data) => {
             data = JSON.parse(data);
             let grader = format_grade(skul_settings["grading"]);
-            if (data.length <= 1) {
+            if (data.length === 0) {
                 $(".data_overlay").html(`
                 <p class="font-weight-bold">No record for the class selected</p>
             `);
@@ -3601,7 +3601,7 @@ function handleToggleSelection() {
     if ($("#by_class_btn").hasClass("active")) {
         by_class_view_content()
     } else if ($("#by_stud_btn").hasClass("active")) {
-        get_score_data()
+        getstudents($("#select_class_field").val())
     }
 }
 
@@ -3612,12 +3612,14 @@ var settingsData;
 const loadSettings = () => {
     // alert('kkkk')
     let session_id = $("#select_session_field").val()
+    let term_id = $(".termclass.active").attr("data-name") || $(".term.active").attr("data-name")
     return $.ajax({
         url: '../controller.php',
         type: 'POST',
         data: {
             'action': 'getsettings',
-            'session_id': session_id
+            'session_id': session_id,
+            'term_id': term_id
         },
         success: (data) => {
             settingsData = JSON.parse(data);
@@ -4504,10 +4506,20 @@ function filter_stud_Class() {
     })
 }
 function get_stud_byClass_report() {
+    const sessionId = $("#report_roster_session_field").val() || $("#select_session_field").val();
+    const termId = $("#report_roster_term_field").val() || $("#select_term_field").val();
+    // Keep report generation aligned with the roster the administrator selected.
+    $("#select_session_field").val(sessionId).trigger('change.select2');
+    $("#select_term_field").val(termId).trigger('change.select2');
     $.ajax({
         url: "../controller.php",
         type: "POST",
-        data: { 'action': 'get_stud_byClass_report', 'class_id': $(".filter_Select").val() },
+        data: {
+            'action': 'get_stud_byClass_report',
+            'class_id': $("#select_class_field_report").val(),
+            'session_id': sessionId,
+            'term_id': termId
+        },
         success: (data) => {
             data = data.trim()
             if (data.includes("nothinnow")) {
@@ -5095,7 +5107,11 @@ function toggletermfilterClass(element) {
     //         // alert("class")
     //     } else if ($("#by_stud_btn").hasClass("active")) {
     //         // alert("stude") 
-    check_result_toggle()
+    if ($("#scores_page").val() === 'view_scores' && $("#by_stud_btn").hasClass("active")) {
+        getstudents($("#select_class_field").val())
+    } else {
+        check_result_toggle()
+    }
     if ($(element).attr('data-name') != 'summary') {
         get_billing_data();
     }
@@ -5196,11 +5212,13 @@ function getsubjects(classid, callback) {
 var students = []
 function getstudents(classValue) {
     // alert('studen')
-    $.ajax({
+    return $.ajax({
         url: '../controller.php',
         type: 'POST',
         data: {
             classValue,
+            session_id: $("#select_session_field").val(),
+            term_id: $(".termclass.active").attr("data-name") || $(".term.active").attr("data-name"),
             'action': 'getstudents'
         },
         success: (data) => {
@@ -11238,6 +11256,7 @@ $(".loginform").submit(function (event) {
         url: $url,
         type: "post",
         data: formdata,
+        dataType: "json",
         contentType: false,
         processData: false,
         beforeSend: () => {
@@ -11247,18 +11266,22 @@ $(".loginform").submit(function (event) {
         success: (data) => {
             $($btn).attr("disabled", false)
             $($btn).html($btntext)
-            // data = JSON.parse(data)
             if (data.status == '1') {
-                // alert(data.location)
-                // alert(localStorage.getItem("myurl"))
-
-                window.location = `./${data.location}`
-
-                // window.location = `./${data.location}`
+                window.location.assign(`./${data.location}`)
             }
             else {
-                toastr.error(data.err);
+                toastr.error(data.err || "Login failed. Please try again.");
             }
+        },
+        error: (xhr) => {
+            $($btn).attr("disabled", false)
+            $($btn).html($btntext)
+
+            let message = "Unable to complete login. Please refresh and try again."
+            if (xhr.responseJSON && xhr.responseJSON.err) {
+                message = xhr.responseJSON.err
+            }
+            toastr.error(message)
         }
     });
 });

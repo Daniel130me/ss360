@@ -311,8 +311,35 @@ $school_settings = json_decode($_SESSION['skul_settings'], true);
                     <div class="py-3 px-15 bg-white" style="border-radius: 10px;">
 
                         <div class="d-flex mb-3 align-items-center">
+                            <div class="mr-3">
+                                <label for="report_roster_session_field" class="mb-0 muted-text">Session</label>
+                                <select class="select2 border-0 form-control" id="report_roster_session_field"
+                                    onchange="get_stud_byClass_report()">
+                                    <?php
+                                    $report_sessions = mysqli_query($conn, "SELECT id, session FROM sessions ORDER BY session ASC");
+                                    while ($session_row = mysqli_fetch_array($report_sessions)) {
+                                        $selected = (int)$session_row['id'] === (int)$school_settings['session'] ? 'selected' : '';
+                                        ?>
+                                        <option value="<?= (int)$session_row['id'] ?>" <?= $selected ?>>
+                                            <?= htmlspecialchars($session_row['session'], ENT_QUOTES, 'UTF-8') ?>
+                                        </option>
+                                        <?php
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                            <div class="mr-3">
+                                <label for="report_roster_term_field" class="mb-0 muted-text">Term</label>
+                                <select class="select2 border-0 form-control" id="report_roster_term_field"
+                                    onchange="get_stud_byClass_report()">
+                                    <option value="1" <?= (int)($_SESSION['term_id'] ?? 1) === 1 ? 'selected' : '' ?>>1st Term</option>
+                                    <option value="2" <?= (int)($_SESSION['term_id'] ?? 1) === 2 ? 'selected' : '' ?>>2nd Term</option>
+                                    <option value="3" <?= (int)($_SESSION['term_id'] ?? 1) === 3 ? 'selected' : '' ?>>3rd Term</option>
+                                    <option value="cum">Cumulative</option>
+                                </select>
+                            </div>
                             <div class="">
-                                <p class="muted-text mr-1">Filter:</p>
+                                <label for="select_class_field_report" class="mb-0 muted-text">Class</label>
                             </div>
                             <div>
                                 <select class="select2 filter_Select border-0 form-control"

@@ -75,12 +75,12 @@ function ss360_get_student_ai_profile($conn, $school_id, $student_id, $class_id,
 {
     $sql = "SELECT s.id, s.firstname, s.lastname, s.middlename, s.class_id, c.classname, se.session
             FROM students s
-            INNER JOIN class c ON c.id = s.class_id
+            INNER JOIN class c ON c.id = ? AND c.school_id = s.school_id
             LEFT JOIN sessions se ON se.id = ?
-            WHERE s.id = ? AND s.class_id = ? AND s.school_id = ?
+            WHERE s.id = ? AND s.school_id = ?
             LIMIT 1";
     $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, 'iiii', $session_id, $student_id, $class_id, $school_id);
+    mysqli_stmt_bind_param($stmt, 'iiii', $class_id, $session_id, $student_id, $school_id);
     mysqli_stmt_execute($stmt);
     $rows = ss360_statement_rows($stmt);
     if (empty($rows)) {
@@ -114,23 +114,48 @@ function ss360_get_student_score_rows($conn, $school_id, $student_id, $class_id,
                    sc.pra, sc.praTotal, sc.exam, sc.examTotal, sc.total
             FROM skulscores sc
             INNER JOIN subjects sub ON sub.id = sc.subject_id
-            WHERE sc.school_id = ? AND sc.student_id = ? AND sc.class_id = ? AND sc.session_id = ?
+            INNER JOIN (
+                SELECT MAX(id) AS score_id
+                FROM skulscores
+                WHERE school_id = ? AND student_id = ? AND session_id = ?
+                GROUP BY term_id, subject_id
+            ) latest ON latest.score_id = sc.id
             ORDER BY sub.subject ASC, sc.term_id ASC";
     $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, 'iiii', $school_id, $student_id, $class_id, $session_id);
+    mysqli_stmt_bind_param($stmt, 'iii', $school_id, $student_id, $session_id);
     mysqli_stmt_execute($stmt);
     return ss360_statement_rows($stmt);
 }
 
 function ss360_get_class_score_rows($conn, $school_id, $class_id, $session_id)
 {
-    $sql = "SELECT term_id, subject_id, student_id,
-                   total, ca1Total, ca2Total, ca3Total, praTotal, examTotal
-            FROM skulscores
-            WHERE school_id = ? AND class_id = ? AND session_id = ? AND status = '1'
-              AND (total > 0 OR ca1 > 0 OR ca2 > 0 OR ca3 > 0 OR pra > 0 OR exam > 0)";
-    $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, 'iii', $school_id, $class_id, $session_id);
+    if (function_exists('student_class_history_available') && student_class_history_available($conn)) {
+        $sql = "SELECT sc.term_id, sc.subject_id, sc.student_id,
+                       sc.total, sc.ca1Total, sc.ca2Total, sc.ca3Total, sc.praTotal, sc.examTotal
+                FROM skulscores sc
+                INNER JOIN student_class_enrollments e
+                   ON e.school_id = sc.school_id AND e.student_id = sc.student_id
+                  AND e.session_id = sc.session_id AND e.term_id = sc.term_id
+                INNER JOIN (
+                    SELECT MAX(id) AS score_id
+                    FROM skulscores
+                    WHERE school_id = ? AND session_id = ?
+                    GROUP BY student_id, term_id, subject_id
+                ) latest ON latest.score_id = sc.id
+                WHERE e.school_id = ? AND e.class_id = ? AND e.session_id = ?
+                  AND sc.status = '1'
+                  AND (sc.total > 0 OR sc.ca1 > 0 OR sc.ca2 > 0 OR sc.ca3 > 0 OR sc.pra > 0 OR sc.exam > 0)";
+        $stmt = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($stmt, 'iiiii', $school_id, $session_id, $school_id, $class_id, $session_id);
+    } else {
+        $sql = "SELECT term_id, subject_id, student_id,
+                       total, ca1Total, ca2Total, ca3Total, praTotal, examTotal
+                FROM skulscores
+                WHERE school_id = ? AND class_id = ? AND session_id = ? AND status = '1'
+                  AND (total > 0 OR ca1 > 0 OR ca2 > 0 OR ca3 > 0 OR pra > 0 OR exam > 0)";
+        $stmt = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($stmt, 'iii', $school_id, $class_id, $session_id);
+    }
     mysqli_stmt_execute($stmt);
     return ss360_statement_rows($stmt);
 }

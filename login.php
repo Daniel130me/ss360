@@ -94,7 +94,7 @@ $parent_email_login_enabled = (int)($row['parent_email_login_enabled'] ?? 0) ===
     <script src="../plugins/toastr/toastr.min.js"></script>
     <!-- Select2 -->
     <script src="../plugins/select2/js/select2.full.min.js"></script>
-    <script src="../dist/js/skul.js"></script>
+    <script src="../dist/js/skul.js?v=<?= (int)filemtime(__DIR__ . '/dist/js/skul.js') ?>"></script>
         <script>
         $(window).on('load', function() {
             $('.staff_login_btn').prop('disabled', false);

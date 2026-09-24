@@ -84,17 +84,30 @@ function get_report_card_score_rows_for_table($student_id, $class_id, $session_i
     $school_id = (int)$school_id;
 
     $rows = [];
-    $select = mysqli_query($conn, "SELECT b.subject AS subjectname, s.*
-        FROM skulscores s
-        INNER JOIN subjects b ON b.id=s.subject_id
-        WHERE s.school_id='$school_id' AND s.student_id='$student_id'
-        AND s.session_id='$session_id' AND s.term_id='$term_id'
-        AND s.class_id='$class_id' AND s.total > 0
-        ORDER BY b.subject ASC");
+    // A student's class is resolved separately from their scores. Do not filter
+    // the score row by its legacy class_id: historic transfer code rewrote that
+    // field, and doing so can hide an otherwise valid score.
+    $stmt = $conn->prepare(
+        'SELECT b.subject AS subjectname, s.*
+         FROM skulscores s
+         INNER JOIN subjects b ON b.id = s.subject_id
+         INNER JOIN (
+            SELECT MAX(id) AS score_id
+            FROM skulscores
+            WHERE school_id = ? AND student_id = ? AND session_id = ? AND term_id = ?
+            GROUP BY subject_id
+         ) latest ON latest.score_id = s.id
+         WHERE s.total > 0
+         ORDER BY b.subject ASC'
+    );
+    $stmt->bind_param('iiii', $school_id, $student_id, $session_id, $term_id);
+    $stmt->execute();
+    $select = $stmt->get_result();
 
     while ($select && $row = mysqli_fetch_assoc($select)) {
         $rows[] = $row;
     }
+    $stmt->close();
 
     return $rows;
 }

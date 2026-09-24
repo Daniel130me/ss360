@@ -589,26 +589,122 @@ $date = date("Y:m:d H:i:s");
     }
 
     if ($action == "transfer_students") {
-        $school_id = $_SESSION['school_id'];
-        $class_id = test_input($_POST['class_id']);
-        $ids = explode(",", $_POST['ids']);
-        $setting = json_decode($_SESSION['skul_settings'], true);
-        $session_id = $setting['session'];
-        // $sucess_check = '';
+        header('Content-Type: application/json; charset=utf-8');
 
-        // exit;
-        foreach ($ids as $student_id) {
-            $select_class_id = mysqli_query($conn, "SELECT class_id FROM students WHERE id='$student_id' AND school_id='$school_id'");
-            $class_row = mysqli_fetch_array($select_class_id);
-            $update = mysqli_query($conn, "UPDATE students SET class_id='$class_id' WHERE id='$student_id' AND school_id='$school_id'");
-            //    update his scores
-            $select_scores = mysqli_query($conn, "SELECT id FROM skulscores WHERE class_id='{$class_row['class_id']}' AND student_id='$student_id' AND session_id='$session_id'");
-            if (mysqli_num_rows($select_scores) > 0) {
-                // echo "yes";
-                $update_scores = mysqli_query($conn, "UPDATE skulscores SET class_id='$class_id' WHERE student_id='$student_id' AND session_id='$session_id'");
-            }
+        $school_id = (int)($_SESSION['school_id'] ?? 0);
+        $actor_id = (int)($_SESSION['userid'] ?? 0);
+        $staff_type = (int)($_SESSION['staff_type'] ?? 0);
+        $can_change_class = in_array($staff_type, [1, 2, 3], true)
+            || (int)($_SESSION['change_class'] ?? 0) === 1;
+
+        if ($school_id <= 0 || $actor_id <= 0 || !$can_change_class) {
+            http_response_code(403);
+            echo json_encode(['status' => '0', 'err' => 'You are not permitted to change student classes.']);
+            exit;
         }
-        echo json_encode(array('status' => '1', 'msg' => 'Transfered successfully'));
+
+        if (!student_class_history_available($conn)) {
+            http_response_code(503);
+            echo json_encode([
+                'status' => '0',
+                'err' => 'Class history is not installed. Run database/student_class_history.sql before transferring students.'
+            ]);
+            exit;
+        }
+
+        $class_id = filter_var($_POST['class_id'] ?? null, FILTER_VALIDATE_INT);
+        $ids = array_values(array_unique(array_filter(
+            array_map('intval', explode(',', (string)($_POST['ids'] ?? ''))),
+            static fn($id) => $id > 0
+        )));
+        $session_id = (int)($_SESSION['session_id'] ?? 0);
+        $term_id = max(1, min(3, (int)($_SESSION['term_id'] ?? 1)));
+
+        if (!$class_id || !$ids || $session_id <= 0) {
+            http_response_code(422);
+            echo json_encode(['status' => '0', 'err' => 'Select a destination class and at least one student.']);
+            exit;
+        }
+
+        $classStmt = $conn->prepare('SELECT id, is_graduate FROM class WHERE id = ? AND school_id = ? LIMIT 1');
+        $classStmt->bind_param('ii', $class_id, $school_id);
+        $classStmt->execute();
+        $destinationClass = $classStmt->get_result()->fetch_assoc();
+        $classStmt->close();
+        if (!$destinationClass) {
+            http_response_code(404);
+            echo json_encode(['status' => '0', 'err' => 'The destination class does not belong to this school.']);
+            exit;
+        }
+
+        $movementType = (int)$destinationClass['is_graduate'] === 1 ? 'graduation' : 'transfer';
+        $movementStmt = $conn->prepare(
+            'INSERT INTO student_class_movements
+                (school_id, student_id, from_class_id, to_class_id, effective_session_id,
+                 effective_term_id, movement_type, createdby)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+        );
+
+        try {
+            $conn->begin_transaction();
+            // IDs are integers at this point, so the IN list cannot contain SQL syntax.
+            $idList = implode(',', $ids);
+            $studentsResult = $conn->query(
+                "SELECT id, class_id FROM students WHERE school_id = {$school_id} AND id IN ({$idList}) FOR UPDATE"
+            );
+            $studentsById = [];
+            while ($studentRow = $studentsResult->fetch_assoc()) {
+                $studentsById[(int)$studentRow['id']] = (int)$studentRow['class_id'];
+            }
+            if (count($studentsById) !== count($ids)) {
+                throw new DomainException('One or more selected students do not belong to this school.');
+            }
+
+            foreach ($studentsById as $student_id => $from_class_id) {
+                set_student_enrollment_from_term(
+                    $conn,
+                    $school_id,
+                    $student_id,
+                    $session_id,
+                    $term_id,
+                    (int)$class_id,
+                    $actor_id,
+                    $movementType
+                );
+                $movementStmt->bind_param(
+                    'iiiiiisi',
+                    $school_id,
+                    $student_id,
+                    $from_class_id,
+                    $class_id,
+                    $session_id,
+                    $term_id,
+                    $movementType,
+                    $actor_id
+                );
+                $movementStmt->execute();
+            }
+
+            $conn->query(
+                "UPDATE students
+                 SET class_id = " . (int)$class_id . ", updatedby = {$actor_id}, dateupdated = NOW()
+                 WHERE school_id = {$school_id} AND id IN ({$idList})"
+            );
+            $conn->commit();
+            echo json_encode(['status' => '1', 'msg' => 'Student class history updated successfully.']);
+        } catch (DomainException $exception) {
+            $conn->rollback();
+            http_response_code(404);
+            echo json_encode(['status' => '0', 'err' => $exception->getMessage()]);
+        } catch (Throwable $exception) {
+            $conn->rollback();
+            error_log('[student_class_transfer] ' . $exception->getMessage());
+            http_response_code(500);
+            echo json_encode(['status' => '0', 'err' => 'The class change could not be saved. No records were changed.']);
+        } finally {
+            $movementStmt->close();
+        }
+        exit;
     }
 
     if ($action == 'add_subject_category') {
@@ -765,7 +861,7 @@ $date = date("Y:m:d H:i:s");
     }
     if ($action === 'getsettings') {
         $school_id = (int)($_SESSION['school_id'] ?? 0);
-        $term_id = (int)($_SESSION['term_id'] ?? 0);
+        $term_id = (int)($_POST['term_id'] ?? ($_SESSION['term_id'] ?? 0));
         $session_id = (int)($_POST['session_id'] ?? ($_SESSION['session_id'] ?? 0));
         $settingsStmt = $conn->prepare(
             'SELECT * FROM skul_settings WHERE school_id = ? AND session_id = ? AND term_id = ? LIMIT 1'
@@ -794,15 +890,30 @@ $date = date("Y:m:d H:i:s");
     }
 
     if ($action === 'getstudents') {
-        $class_id = test_input(($_POST['classValue']));
-        $school_id = $_SESSION['school_id'];
-        $select = mysqli_query($conn, "SELECT id,firstname,middlename,lastname FROM students WHERE school_id='$school_id' AND class_id='$class_id' ORDER BY firstname ASC");
-        // $select = mysqli_query($conn, "SELECT id,firstname,middlename,lastname FROM students WHERE school_id='$school_id' ORDER BY firstname ASC");
+        header('Content-Type: application/json; charset=utf-8');
+        $class_id = (int)($_POST['classValue'] ?? 0);
+        $school_id = (int)($_SESSION['school_id'] ?? 0);
+        $session_id = (int)($_POST['session_id'] ?? 0);
+        $term_id = (int)($_POST['term_id'] ?? 0);
         $data = array();
-        while ($row = mysqli_fetch_array($select)) {
+
+        if ($class_id <= 0 || $school_id <= 0) {
+            echo json_encode($data);
+            exit;
+        }
+
+        $studentsForPeriod = fetch_students_for_class_period(
+            $conn,
+            $school_id,
+            $class_id,
+            $session_id,
+            $term_id
+        );
+        foreach ($studentsForPeriod as $row) {
             $data[] = array('id' => $row['id'], 'name' => $row['lastname'] . ' ' . $row['firstname'] . ' ' . $row['middlename']);
         }
         echo json_encode($data);
+        exit;
     }
 
 
@@ -858,14 +969,21 @@ $date = date("Y:m:d H:i:s");
     }
 
     if ($action === 'get_score_data_by_class_term') {
-        $school_id = $_SESSION['school_id'];
-        $session_id = test_input($_POST['session_id']);
-        $class_id = test_input($_POST['class_id']);
-        $term_id = test_input($_POST['term_id']);
-        // $term_id = 
+        header('Content-Type: application/json; charset=utf-8');
+        $school_id = (int)($_SESSION['school_id'] ?? 0);
+        $session_id = (int)($_POST['session_id'] ?? 0);
+        $class_id = (int)($_POST['class_id'] ?? 0);
+        $term_id = (int)($_POST['term_id'] ?? 0);
         $data = array();
-        $select = mysqli_query($conn, "SELECT b.subject as subjectname,t.firstname,t.lastname,t.middlename, s.* FROM skulscores s, subjects b, students t WHERE s.student_id=t.id AND b.id=s.subject_id AND s.session_id='$session_id' AND s.class_id='$class_id' AND s.term_id='$term_id'");
-        while ($row = mysqli_fetch_array($select)) {
+
+        $scoreRows = fetch_score_rows_for_class_period(
+            $conn,
+            $school_id,
+            $class_id,
+            $session_id,
+            $term_id
+        );
+        foreach ($scoreRows as $row) {
             $data[] = [
                 'student_name' => $row['lastname'] . ' ' . $row['firstname'] . ' ' . $row['middlename'],
                 'student_id' => $row['student_id'],
@@ -890,6 +1008,7 @@ $date = date("Y:m:d H:i:s");
             ];
         }
         echo json_encode($data);
+        exit;
     }
        if ($action == 'toggle_approval') {
         $school_id = $_SESSION['school_id'];
@@ -1194,15 +1313,15 @@ $date = date("Y:m:d H:i:s");
 
     if ($action === 'get_grading_score_data') {
 
-        $school_id = $_SESSION['school_id'];
+        $school_id = (int)($_SESSION['school_id'] ?? 0);
         // $gradarra = json_encode(array("A"=>70,"B"=>60,"C"=>50,"D"=>40,"E"=>30,"F"=>0));
         // $update = mysqli_query($conn, "UPDATE skul_setting SET grading='$gradarra' WHERE school_id='$school_id'");
         // echo "llll";
         // exit;
-        $session_id = test_input($_POST['session_id']);
-        $student_id = test_input($_POST['student_id']);
-        $class_id = test_input($_POST['class_id']);
-        $term_id = test_input($_POST['term_id']);
+        $session_id = (int)($_POST['session_id'] ?? 0);
+        $student_id = (int)($_POST['student_id'] ?? 0);
+        $class_id = (int)($_POST['class_id'] ?? 0);
+        $term_id = (string)($_POST['term_id'] ?? '1');
         $requested_class_id = $class_id;
         $class_id = resolve_student_report_class_id($student_id, $session_id, $term_id, $class_id, $school_id);
         $is_historical_report_session = isset($_SESSION['session_id']) && (string)$session_id !== (string)$_SESSION['session_id'];
@@ -1214,13 +1333,38 @@ $date = date("Y:m:d H:i:s");
         $template_columns = get_report_card_template_score_columns($template_context['template_json'] ?? array());
         $needs_comparison_data = in_array('class_average', $template_columns, true) || in_array('position', $template_columns, true);
         // echo $sql = "SELECT b.subject as subjectname, s.*, t.firstname,t.lastname FROM skulscores s, subjects b, students t WHERE t.id=s.student_id AND b.id=s.subject_id AND s.session_id='$session_id' AND s.class_id='$class_id' AND s.student_id='$student_id' AND s.school_id='$school_id'");
-        $select = mysqli_query($conn, "SELECT b.subject as subjectname, s.*, t.firstname,t.lastname FROM skulscores s, subjects b, students t WHERE t.id=s.student_id AND b.id=s.subject_id AND s.session_id='$session_id' AND s.class_id='$class_id' AND s.student_id='$student_id' AND s.school_id='$school_id'");        // $select = mysqli_query($conn, "SELECT * FROM skulscores WHERE session_id='$session_id' AND class_id='$class_id' AND student_id='$student_id' AND session_id='$session_id' AND term_id='$term_id'");
+        $historyClassSelect = student_class_history_available($conn)
+            ? 'COALESCE(e.class_id, s.class_id) AS effective_term_class_id'
+            : 's.class_id AS effective_term_class_id';
+        $historyClassJoin = student_class_history_available($conn)
+            ? 'LEFT JOIN student_class_enrollments e
+                 ON e.school_id = s.school_id AND e.student_id = s.student_id
+                AND e.session_id = s.session_id AND e.term_id = s.term_id'
+            : '';
+        $scoreStmt = $conn->prepare(
+            "SELECT b.subject AS subjectname, s.*, t.firstname, t.lastname, {$historyClassSelect}
+             FROM skulscores s
+             INNER JOIN subjects b ON b.id = s.subject_id
+             INNER JOIN students t ON t.id = s.student_id AND t.school_id = s.school_id
+             {$historyClassJoin}
+             INNER JOIN (
+                SELECT MAX(id) AS score_id
+                FROM skulscores
+                WHERE school_id = ? AND student_id = ? AND session_id = ?
+                GROUP BY term_id, subject_id
+             ) latest ON latest.score_id = s.id
+             ORDER BY s.term_id, b.subject"
+        );
+        $scoreStmt->bind_param('iii', $school_id, $student_id, $session_id);
+        $scoreStmt->execute();
+        $select = $scoreStmt->get_result();
         while ($row = mysqli_fetch_array($select)) {
+            $rowClassId = (int)($row['effective_term_class_id'] ?: $class_id);
             if ($should_mask_unapproved_scores) {
                 // echo 'p';
                 $select_approval = mysqli_query($conn, "SELECT ca1,ca2,ca3,practical,exam 
                 FROM approval WHERE school_id='$school_id' AND session_id='$session_id' 
-                AND term_id='{$row['term_id']}' AND class_id='$class_id'");
+                AND term_id='{$row['term_id']}' AND class_id='$rowClassId'");
                 $approval_row = mysqli_fetch_array($select_approval);
                 if (mysqli_num_rows($select_approval) == 0) {
                     $approval_row['ca1'] = '0';
@@ -1235,7 +1379,7 @@ $date = date("Y:m:d H:i:s");
                     'student_id' => $row['student_id'],
                     'session_id' => $row['session_id'],
                     'term_id' => $row['term_id'],
-                    'class_id' => $row['class_id'],
+                    'class_id' => $rowClassId,
                     'subject_id' => $row['subject_id'],
                     'subject' => $row['subjectname'],
                     'CA1' => $should_mask_unapproved_scores ? ($approval_row['ca1'] == 1 && $row['status'] == 1 ? $row['ca1'] : '0') : $row['ca1'],
@@ -1273,12 +1417,50 @@ $date = date("Y:m:d H:i:s");
             //     'Term' => $row['term_id']
             // ];
         }
+        $scoreStmt->close();
         if ($needs_comparison_data) {
             $comparison_rows = array();
-            $comparison_select = mysqli_query($conn, "SELECT subject_id, student_id, term_id, total FROM skulscores WHERE session_id='$session_id' AND class_id='$class_id' AND school_id='$school_id' AND status='1' AND total > 0");
+            if (student_class_history_available($conn)) {
+                $comparisonStmt = $conn->prepare(
+                    'SELECT sc.subject_id, sc.student_id, sc.term_id, sc.total
+                     FROM skulscores sc
+                     INNER JOIN student_class_enrollments peer
+                        ON peer.school_id = sc.school_id AND peer.student_id = sc.student_id
+                       AND peer.session_id = sc.session_id AND peer.term_id = sc.term_id
+                     INNER JOIN student_class_enrollments target
+                        ON target.school_id = peer.school_id AND target.session_id = peer.session_id
+                       AND target.term_id = peer.term_id AND target.class_id = peer.class_id
+                       AND target.student_id = ?
+                     INNER JOIN (
+                        SELECT MAX(id) AS score_id
+                        FROM skulscores
+                        WHERE school_id = ? AND session_id = ?
+                        GROUP BY student_id, term_id, subject_id
+                     ) latest ON latest.score_id = sc.id
+                     WHERE sc.school_id = ? AND sc.session_id = ? AND sc.status = 1 AND sc.total > 0'
+                );
+                $comparisonStmt->bind_param(
+                    'iiiii',
+                    $student_id,
+                    $school_id,
+                    $session_id,
+                    $school_id,
+                    $session_id
+                );
+            } else {
+                $comparisonStmt = $conn->prepare(
+                    'SELECT subject_id, student_id, term_id, total
+                     FROM skulscores
+                     WHERE session_id = ? AND class_id = ? AND school_id = ? AND status = 1 AND total > 0'
+                );
+                $comparisonStmt->bind_param('iii', $session_id, $class_id, $school_id);
+            }
+            $comparisonStmt->execute();
+            $comparison_select = $comparisonStmt->get_result();
             while ($comparison_row = mysqli_fetch_assoc($comparison_select)) {
                 $comparison_rows[] = $comparison_row;
             }
+            $comparisonStmt->close();
             $comparison_data = build_report_score_comparison_data($comparison_rows, $student_id);
         }
         $select = mysqli_query($conn, "SELECT * FROM skul_settings WHERE school_id='$school_id' AND term_id='$settings_term_id' AND session_id='$session_id'");
@@ -1361,11 +1543,11 @@ $date = date("Y:m:d H:i:s");
     //     echo json_encode($data);
     // }
      if ($action === 'getsinglesessionreport_view') {
-        $school_id = $_SESSION['school_id'];
-        $session_id = test_input($_POST['session_id']);
-        $student_id = test_input($_POST['student_id']);
-        $class_id = test_input($_POST['class_id']);
-        $term_id = test_input($_POST['term_id']);
+        $school_id = (int)($_SESSION['school_id'] ?? 0);
+        $session_id = (int)($_POST['session_id'] ?? 0);
+        $student_id = (int)($_POST['student_id'] ?? 0);
+        $class_id = (int)($_POST['class_id'] ?? 0);
+        $term_id = (string)($_POST['term_id'] ?? '1');
         $requested_class_id = $class_id;
         $class_id = resolve_student_report_class_id($student_id, $session_id, $term_id, $class_id, $school_id);
         $is_historical_report_session = isset($_SESSION['session_id']) && (string)$session_id !== (string)$_SESSION['session_id'];
@@ -1383,21 +1565,38 @@ $date = date("Y:m:d H:i:s");
         // WHERE b.id=s.subject_id AND s.session_id='$session_id' 
         // AND s.class_id='$class_id' AND s.student_id='$student_id' 
         // AND s.school_id='$school_id' AND s.status='1' AND s.total > 0";
-        $select = mysqli_query($conn, "SELECT b.subject as subjectname, s.* FROM skulscores s, subjects b 
-        WHERE b.id=s.subject_id AND s.session_id='$session_id' 
-        AND s.class_id='$class_id' AND s.student_id='$student_id' 
-        AND s.school_id='$school_id' AND s.total > 0");
-        // AND s.school_id='$school_id'");
-        
-        if(mysqli_error($conn)){
-            echo mysqli_error($conn);
-        }
+        $historyClassSelect = student_class_history_available($conn)
+            ? 'COALESCE(e.class_id, s.class_id) AS effective_term_class_id'
+            : 's.class_id AS effective_term_class_id';
+        $historyClassJoin = student_class_history_available($conn)
+            ? 'LEFT JOIN student_class_enrollments e
+                 ON e.school_id = s.school_id AND e.student_id = s.student_id
+                AND e.session_id = s.session_id AND e.term_id = s.term_id'
+            : '';
+        $singleReportStmt = $conn->prepare(
+            "SELECT b.subject AS subjectname, s.*, {$historyClassSelect}
+             FROM skulscores s
+             INNER JOIN subjects b ON b.id = s.subject_id
+             {$historyClassJoin}
+             INNER JOIN (
+                SELECT MAX(id) AS score_id
+                FROM skulscores
+                WHERE school_id = ? AND student_id = ? AND session_id = ?
+                GROUP BY term_id, subject_id
+             ) latest ON latest.score_id = s.id
+             WHERE s.total > 0
+             ORDER BY s.term_id, b.subject"
+        );
+        $singleReportStmt->bind_param('iii', $school_id, $student_id, $session_id);
+        $singleReportStmt->execute();
+        $select = $singleReportStmt->get_result();
         while ($row = mysqli_fetch_array($select)) {
+            $rowClassId = (int)($row['effective_term_class_id'] ?: $class_id);
             if ($should_mask_unapproved_scores) {
                 // echo 'p';
                 $select_approval = mysqli_query($conn, "SELECT ca1,ca2,ca3,practical,exam 
                 FROM approval WHERE school_id='$school_id' AND session_id='$session_id' 
-                AND term_id='{$row['term_id']}' AND class_id='$class_id'");
+                AND term_id='{$row['term_id']}' AND class_id='$rowClassId'");
                 $approval_row = mysqli_fetch_array($select_approval);
                 if (mysqli_num_rows($select_approval) == 0) {
                     $approval_row['ca1'] = '0';
@@ -1411,7 +1610,7 @@ $date = date("Y:m:d H:i:s");
                 'student_id' => $row['student_id'],
                 'session_id' => $row['session_id'],
                 'term_id' => $row['term_id'],
-                'class_id' => $row['class_id'],
+                'class_id' => $rowClassId,
                 'subject_id' => $row['subject_id'],
                 'subject' => $row['subjectname'],
                 'CA1' => $should_mask_unapproved_scores ? ($approval_row['ca1'] == 1 && $row['status'] == 1 ? $row['ca1'] : '0') : $row['ca1'],
@@ -1428,7 +1627,9 @@ $date = date("Y:m:d H:i:s");
                 'Term' => $row['term_id']
             ];
         }
+        $singleReportStmt->close();
         echo json_encode($data);
+        exit;
     }
     if ($action == 'setclassapproval') {
         $school_id = $_SESSION['school_id'];
@@ -1854,16 +2055,30 @@ $date = date("Y:m:d H:i:s");
         }
 
         if ($action === 'get_stud_byClass_report') {
-            $school_id = $_SESSION['school_id'];
-            // $class_id = '44';
-            $class_id = test_input($_POST['class_id']);
+            $school_id = (int)($_SESSION['school_id'] ?? 0);
+            $class_id = (int)($_POST['class_id'] ?? 0);
+            $session_id = (int)($_POST['session_id'] ?? ($_SESSION['session_id'] ?? 0));
+            $requestedTerm = (string)($_POST['term_id'] ?? ($_SESSION['term_id'] ?? 1));
+            $term_id = $requestedTerm === 'cum' ? 3 : (int)$requestedTerm;
 
-            $select = mysqli_query($conn, "SELECT c.classname,c.id,s.* FROM students s, class c WHERE s.class_id=c.id AND s.class_id='$class_id' AND s.school_id='$school_id' ORDER BY s.lastname");
-            if (mysqli_num_rows($select) < 1) {
+            if ($school_id <= 0 || $class_id <= 0 || $session_id <= 0 || $term_id < 1 || $term_id > 3) {
+                http_response_code(422);
                 echo "nothinnow";
                 exit;
             }
-            while ($row = mysqli_fetch_array($select)) {
+
+            $students = fetch_students_for_class_period(
+                $conn,
+                $school_id,
+                $class_id,
+                $session_id,
+                $term_id
+            );
+            if (!$students) {
+                echo "nothinnow";
+                exit;
+            }
+            foreach ($students as $row) {
             ?>
                 <tr>
                     <td style="width: 10px;">
@@ -1881,7 +2096,7 @@ $date = date("Y:m:d H:i:s");
                     </td> -->
                     <td>
                         <div>
-                            <p style="font-size: 16px;"><?= $row['lastname'] ?> <?= $row['firstname'] . ' ' . $row['middlename'] ?></p>
+                            <p style="font-size: 16px;"><?= htmlspecialchars(trim($row['lastname'] . ' ' . $row['firstname'] . ' ' . $row['middlename']), ENT_QUOTES, 'UTF-8') ?></p>
                             <!-- <php -->
                             <!-- if ($_SESSION['staff_type'] == 1 || $_SESSION['staff_type'] == 2 || $_SESSION['staff_type'] == 3 || $_SESSION['change_class'] == 1) { -->
 
@@ -3921,6 +4136,9 @@ $date = date("Y:m:d H:i:s");
                                 $dateupdated = $date;
                                 $insert_payment = mysqli_query($conn, "INSERT INTO payment_record (student_id, class_id, session_id, term_id, school_id, status, createdby, updatedby, datecreated, dateupdated) VALUES ('$student_id', '$class_id', '$session_id', '$term_id', '$school_id', '$status', '$created_by', '$updatedby', '$datecreated', '$dateupdated')");
                                 if ($insert_payment) {
+                                    if (student_class_history_available($conn)) {
+                                        set_student_enrollment_from_term($conn, (int)$school_id, (int)$student_id, (int)$session_id, (int)$term_id, (int)$class_id, (int)$created_by, 'registration');
+                                    }
                                     echo json_encode(array('status' => '1'));
                                 } else {
                                     echo json_encode(array('status' => '0', 'err' => 'Student added but payment record failed: ' . mysqli_error($conn)));
@@ -3964,6 +4182,9 @@ $date = date("Y:m:d H:i:s");
                                         $dateupdated = $date;
                                         $insert_payment = mysqli_query($conn, "INSERT INTO payment_record (student_id, class_id, session_id, term_id, school_id, status, createdby, updatedby, datecreated, dateupdated) VALUES ('$student_id', '$class_id', '$session_id', '$term_id', '$school_id', '$status', '$created_by', '$updatedby', '$datecreated', '$dateupdated')");
                                         if ($insert_payment) {
+                                            if (student_class_history_available($conn)) {
+                                                set_student_enrollment_from_term($conn, (int)$school_id, (int)$student_id, (int)$session_id, (int)$term_id, (int)$class_id, (int)$created_by, 'registration');
+                                            }
                                             echo json_encode(array('status' => '1'));
                                         } else {
                                             echo json_encode(array('status' => '0', 'err' => 'Student added but payment record failed: ' . mysqli_error($conn)));
@@ -4015,6 +4236,9 @@ $date = date("Y:m:d H:i:s");
                 //   echo  "INSERT INTO payment_record (student_id, class_id, session_id, term_id, school_id, status, created_by, updatedby, datecreated, dateupdated) VALUES ('$student_id', '$class_id', '$session_id', '$term_id', '$school_id', '$status', '$created_by', '$updatedby', '$datecreated', '$dateupdated')";
                     $insert_payment = mysqli_query($conn, "INSERT INTO payment_record (student_id, class_id, session_id, term_id, school_id, status, createdby, updatedby, datecreated, dateupdated) VALUES ('$student_id', '$class_id', '$session_id', '$term_id', '$school_id', '$status', '$created_by', '$updatedby', '$datecreated', '$dateupdated')");
                     if ($insert_payment) {
+                        if (student_class_history_available($conn)) {
+                            set_student_enrollment_from_term($conn, (int)$school_id, (int)$student_id, (int)$session_id, (int)$term_id, (int)$class_id, (int)$created_by, 'registration');
+                        }
                         echo json_encode(array('status' => '1'));
                     } else {
                         echo json_encode(array('status' => '0', 'err' => 'Student added but payment record failed: ' . mysqli_error($conn)));
@@ -4758,14 +4982,14 @@ if (isset($_POST['action']) && $_POST['action'] == 'assign_staff_subjects_by_cla
         }
 
         if ($action == 'update_student_data') {
-            $school_id = $_SESSION['school_id'];
-            $id = test_input($_POST['id']);
+            $school_id = (int)($_SESSION['school_id'] ?? 0);
+            $id = (int)($_POST['id'] ?? 0);
             // $current_parent_id = test_input($_POST['current_parent_id']);
             // exit;
             $firstname = test_input($_POST['firstname']);
             $lastname = test_input($_POST['lastname']);
             $middlename = test_input($_POST['middlename']);
-            $class_id = test_input($_POST['class_id']);
+            $class_id = (int)($_POST['class_id'] ?? 0);
             $gender = test_input($_POST['gender']);
             $dob = test_input($_POST['dob']);
             $phone = test_input($_POST['phone']);
@@ -4778,6 +5002,38 @@ if (isset($_POST['action']) && $_POST['action'] == 'assign_staff_subjects_by_cla
             $admission_no = test_input($_POST['admissionnumber']);
             $department = test_input($_POST['department']);
 
+            $existingClassStmt = $conn->prepare(
+                'SELECT s.class_id
+                 FROM students s
+                 INNER JOIN class c ON c.id = ? AND c.school_id = s.school_id
+                 WHERE s.id = ? AND s.school_id = ?
+                 LIMIT 1'
+            );
+            $existingClassStmt->bind_param('iii', $class_id, $id, $school_id);
+            $existingClassStmt->execute();
+            $existingStudent = $existingClassStmt->get_result()->fetch_assoc();
+            $existingClassStmt->close();
+            if (!$existingStudent) {
+                http_response_code(404);
+                echo json_encode(['status' => '0', 'err' => 'Student or destination class was not found in this school.']);
+                exit;
+            }
+
+            $previousClassId = (int)$existingStudent['class_id'];
+            $classChanged = $previousClassId !== $class_id;
+            $canChangeClass = in_array((int)($_SESSION['staff_type'] ?? 0), [1, 2, 3], true)
+                || (int)($_SESSION['change_class'] ?? 0) === 1;
+            if ($classChanged && !$canChangeClass) {
+                http_response_code(403);
+                echo json_encode(['status' => '0', 'err' => 'You are not permitted to change this student\'s class.']);
+                exit;
+            }
+            if ($classChanged && !student_class_history_available($conn)) {
+                http_response_code(503);
+                echo json_encode(['status' => '0', 'err' => 'Install the class-history migration before changing a class.']);
+                exit;
+            }
+
             // $password = test_input($_POST['password']);
             // $hashedpassword = password_hash($password, PASSWORD_ARGON2I);
 
@@ -4788,7 +5044,9 @@ if (isset($_POST['action']) && $_POST['action'] == 'assign_staff_subjects_by_cla
             // $state = test_input($_POST['state']);
             // $country = test_input($_POST['country']);
 
-            // Handle file upload
+            // Handle file upload. The old file is removed only after the database
+            // transaction commits; a failed update removes the newly uploaded file.
+            $newPhotoPath = null;
             if ($_FILES['studentphoto']['name'] != '') {
                 $path = "uploads/";
                 $valid_ext = array("jpg", "png", "jpeg");
@@ -4802,6 +5060,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'assign_staff_subjects_by_cla
                         echo json_encode(array('status' => '0', 'err' => "File upload failed"));
                         exit;
                     }
+                    $newPhotoPath = $path;
                 } else {
                     echo json_encode(array('status' => '0', 'err' => "File format not supported"));
                     exit;
@@ -4835,22 +5094,74 @@ if (isset($_POST['action']) && $_POST['action'] == 'assign_staff_subjects_by_cla
             // Update parent information without updating the password
             // $updateparent = mysqli_query($conn, "UPDATE parent SET firstname='$pfname', lastname='$plname', email='$parentemail', address='$address', city='$city', state='$state', country='$country', dateupdated='$date', updatedby='$createdby' WHERE id='$current_parent_id' AND school_id='$school_id'");
 
+            $oldPhotoPathToDelete = null;
             if ($_FILES['studentphoto']['name'] != '') {
                 $selectphoto = mysqli_query($conn, "SELECT photo FROM students WHERE school_id='$school_id' AND id='$id'");
                 $photorow = mysqli_fetch_array($selectphoto);
                 if ($photorow['photo'] != 'avatar.png') {
-                    $filepath = "uploads/" . $photorow['photo'];
-                    deleteFile($filepath);
+                    $oldPhotoPathToDelete = "uploads/" . $photorow['photo'];
                 }
             }
 // echo "UPDATE students SET admission_no = '$admission_no', status='$status', photo='$final_img', firstname='$firstname',lastname='$lastname',middlename='$middlename',class_id='$class_id',gender='$gender',dob='$dob',phone='$phone',email='$email',dateupdated='$date', updatedby='$createdby' WHERE school_id='$school_id' AND id='$id'";
-         if($_FILES['studentphoto']['name'] == ''){
-            $updatestudent = mysqli_query($conn, "UPDATE students SET department='$department', admission_no = '$admission_no', firstname='$firstname',lastname='$lastname',middlename='$middlename',class_id='$class_id',gender='$gender',dob='$dob',phone='$phone',email='$email',dateupdated='$date', updatedby='$createdby' WHERE school_id='$school_id' AND id='$id'");
-         }else {
-            $updatestudent = mysqli_query($conn, "UPDATE students SET department='$department', admission_no = '$admission_no', photo='$final_img', firstname='$firstname',lastname='$lastname',middlename='$middlename',class_id='$class_id',gender='$gender',dob='$dob',phone='$phone',email='$email',dateupdated='$date', updatedby='$createdby' WHERE school_id='$school_id' AND id='$id'");
+         try {
+            $conn->begin_transaction();
+            if($_FILES['studentphoto']['name'] == ''){
+                $updatestudent = mysqli_query($conn, "UPDATE students SET department='$department', admission_no = '$admission_no', firstname='$firstname',lastname='$lastname',middlename='$middlename',class_id='$class_id',gender='$gender',dob='$dob',phone='$phone',email='$email',dateupdated='$date', updatedby='$createdby' WHERE school_id='$school_id' AND id='$id'");
+            }else {
+                $updatestudent = mysqli_query($conn, "UPDATE students SET department='$department', admission_no = '$admission_no', photo='$final_img', firstname='$firstname',lastname='$lastname',middlename='$middlename',class_id='$class_id',gender='$gender',dob='$dob',phone='$phone',email='$email',dateupdated='$date', updatedby='$createdby' WHERE school_id='$school_id' AND id='$id'");
+            }
+            if (!$updatestudent) {
+                throw new RuntimeException(mysqli_error($conn));
+            }
+
+            if ($classChanged) {
+                $effectiveSessionId = (int)($_SESSION['session_id'] ?? 0);
+                $effectiveTermId = max(1, min(3, (int)($_SESSION['term_id'] ?? 1)));
+                set_student_enrollment_from_term(
+                    $conn,
+                    $school_id,
+                    $id,
+                    $effectiveSessionId,
+                    $effectiveTermId,
+                    $class_id,
+                    (int)$createdby,
+                    'manual'
+                );
+                $movementStmt = $conn->prepare(
+                    "INSERT INTO student_class_movements
+                        (school_id, student_id, from_class_id, to_class_id, effective_session_id,
+                         effective_term_id, movement_type, createdby)
+                     VALUES (?, ?, ?, ?, ?, ?, 'correction', ?)"
+                );
+                $movementStmt->bind_param(
+                    'iiiiiii',
+                    $school_id,
+                    $id,
+                    $previousClassId,
+                    $class_id,
+                    $effectiveSessionId,
+                    $effectiveTermId,
+                    $createdby
+                );
+                $movementStmt->execute();
+                $movementStmt->close();
+            }
+            $conn->commit();
+            if ($oldPhotoPathToDelete !== null) {
+                deleteFile($oldPhotoPathToDelete);
+            }
+         } catch (Throwable $exception) {
+            $conn->rollback();
+            if ($newPhotoPath !== null) {
+                deleteFile($newPhotoPath);
+            }
+            error_log('[student_update] ' . $exception->getMessage());
+            echo json_encode(['status' => '0', 'err' => 'Student information was not updated.']);
+            exit;
          }
             // $updatestudent = mysqli_query($conn, "UPDATE students SET status='$status', photo='$final_img', firstname='$firstname',lastname='$lastname',middlename='$middlename',class_id='$class_id',gender='$gender',dob='$dob',phone='$phone',email='$email',parent_id='$parent_id',dateupdated='$date', updatedby='$createdby' WHERE school_id='$school_id' AND id='$id'");
-            echo $updatestudent === true ? json_encode(array('status' => '1')) : mysqli_error($conn);
+            echo json_encode(array('status' => '1'));
+            exit;
             // }
         }
 
@@ -4899,15 +5210,48 @@ if (isset($_POST['action']) && $_POST['action'] == 'assign_staff_subjects_by_cla
             echo $deletecat === true ? json_encode(array('status' => '1')) : mysqli_error($conn);
         }
         if ($action == 'delete_class_data') {
-            $school_id = $_SESSION['school_id'];
-            $id = test_input($_POST['id']);
-            // $selectstudent = mysqli_query($conn, "SELECT parent_id FROM students WHERE id='$id' AND school_id='$school_id'");
-            // $row = mysqli_fetch_array($selectstudent);
-            // $parent_id = $row['parent_id'];
-            $deleteclass = mysqli_query($conn, "DELETE FROM class WHERE id='$id' AND school_id='$school_id'");
-            // $deleteparent = mysqli_query($conn, "DELETE FROM parent WHERE id='$parent_id' AND school_id='$school_id'");
-            // $deletescores = mysqli_query($conn, "DELETE FROM skulscores WHERE student_id='$id' AND school_id='$school_id'");
-            echo $deleteclass === true ? json_encode(array('status' => '1')) : mysqli_error($conn);
+            header('Content-Type: application/json; charset=utf-8');
+            $school_id = (int)($_SESSION['school_id'] ?? 0);
+            $id = (int)($_POST['id'] ?? 0);
+            $canDeleteClass = in_array((int)($_SESSION['staff_type'] ?? 0), [1, 2, 3], true)
+                || (int)($_SESSION['add_class'] ?? 0) === 1;
+            if (!$canDeleteClass) {
+                http_response_code(403);
+                echo json_encode(['status' => '0', 'err' => 'You are not permitted to delete classes.']);
+                exit;
+            }
+
+            $referenceQueries = [
+                "SELECT 1 FROM students WHERE school_id = {$school_id} AND class_id = {$id}",
+                "SELECT 1 FROM skulscores WHERE school_id = {$school_id} AND class_id = {$id}",
+                "SELECT 1 FROM comment WHERE school_id = {$school_id} AND class_id = {$id}",
+                "SELECT 1 FROM other_comments WHERE school_id = {$school_id} AND class_id = {$id}",
+                "SELECT 1 FROM attendance WHERE school_id = {$school_id} AND class_id = {$id}",
+                "SELECT 1 FROM payment_record WHERE school_id = {$school_id} AND class_id = {$id}",
+            ];
+            if (student_class_history_available($conn)) {
+                $referenceQueries[] = "SELECT 1 FROM student_class_enrollments WHERE school_id = {$school_id} AND class_id = {$id}";
+                $referenceQueries[] = "SELECT 1 FROM student_class_movements WHERE school_id = {$school_id} AND (from_class_id = {$id} OR to_class_id = {$id})";
+            }
+            $referenceResult = $conn->query(implode(' UNION ALL ', $referenceQueries) . ' LIMIT 1');
+            if ($referenceResult->num_rows > 0) {
+                http_response_code(409);
+                echo json_encode([
+                    'status' => '0',
+                    'err' => 'This class has student or historical records and cannot be deleted. Rename it if necessary.'
+                ]);
+                exit;
+            }
+
+            $deleteStmt = $conn->prepare('DELETE FROM class WHERE id = ? AND school_id = ?');
+            $deleteStmt->bind_param('ii', $id, $school_id);
+            $deleteStmt->execute();
+            $deleted = $deleteStmt->affected_rows === 1;
+            $deleteStmt->close();
+            echo $deleted
+                ? json_encode(['status' => '1'])
+                : json_encode(['status' => '0', 'err' => 'Class was not found.']);
+            exit;
         }
      if ($action == 'get_current_graduate_classes') {
             $school_id = $_SESSION['school_id'];

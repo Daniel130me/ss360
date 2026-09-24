@@ -12,3 +12,6 @@ well-known (4).zip
 # uploads
 graphify-out
 vendor
+# Production-derived recovery exports contain school record identifiers and must
+# never be committed. Keep only the reusable migration and recovery script in Git.
+database/recovery-private/

@@ -1,6 +1,7 @@
 <?php
 // error_reporting(E_ALL);
 require_once __DIR__ . '/report_card_columns.php';
+require_once __DIR__ . '/student_class_history.php';
 $date = date("Y-m-d H:i:s");
 function getSSessionName($id) {
     global $conn;
@@ -51,33 +52,78 @@ function resolve_student_report_class_id($student_id, $session_id, $term_id, $re
         return $requested_class_id;
     }
 
-    if ($requested_class_id > 0) {
-        $requested_check = mysqli_query($conn, "SELECT id FROM skulscores
-            WHERE school_id='$school_id' AND student_id='$student_id' AND session_id='$session_id'
-            AND class_id='$requested_class_id'" . (!$has_term_filter || $term_id === 'cum' ? "" : " AND term_id='$exact_term_id'") . "
-            LIMIT 1");
+    // Class membership is a term-level fact. Cumulative reports use the final
+    // (third-term) enrolment as their display class while each term's scores stay
+    // attached to the class in which they were earned.
+    $enrollmentTerms = $term_id === 'cum' ? [3, 2, 1] : [$exact_term_id];
+    foreach ($enrollmentTerms as $enrollmentTermId) {
+        $enrollmentClassId = get_student_enrollment_class_id(
+            $conn,
+            $school_id,
+            $student_id,
+            $session_id,
+            (int)$enrollmentTermId
+        );
+        if ($enrollmentClassId !== null) {
+            return $enrollmentClassId;
+        }
+    }
 
-        if ($requested_check && mysqli_num_rows($requested_check) > 0) {
+    if ($requested_class_id > 0) {
+        $requestedSql = 'SELECT id FROM skulscores
+            WHERE school_id = ? AND student_id = ? AND session_id = ? AND class_id = ?';
+        if ($has_term_filter && $term_id !== 'cum') {
+            $requestedSql .= ' AND term_id = ?';
+        }
+        $requestedSql .= ' LIMIT 1';
+        $requestedStmt = $conn->prepare($requestedSql);
+        if ($has_term_filter && $term_id !== 'cum') {
+            $requestedStmt->bind_param(
+                'iiiii',
+                $school_id,
+                $student_id,
+                $session_id,
+                $requested_class_id,
+                $exact_term_id
+            );
+        } else {
+            $requestedStmt->bind_param('iiii', $school_id, $student_id, $session_id, $requested_class_id);
+        }
+        $requestedStmt->execute();
+        $requestedExists = $requestedStmt->get_result()->num_rows > 0;
+        $requestedStmt->close();
+
+        if ($requestedExists) {
             return $requested_class_id;
         }
     }
 
     // If the student's current class has no score rows for this report period,
     // use the class stored on the historical score rows for the selected session/term.
-    $resolve_query = "SELECT class_id, COUNT(*) AS score_rows
+    $resolve_query = "SELECT class_id, COUNT(DISTINCT subject_id) AS subject_rows
         FROM skulscores
-        WHERE school_id='$school_id' AND student_id='$student_id' AND session_id='$session_id'";
+        WHERE school_id = ? AND student_id = ? AND session_id = ?";
 
     if ($has_term_filter && $term_id !== 'cum') {
-        $resolve_query .= " AND term_id='$exact_term_id'";
+        $resolve_query .= " AND term_id = ?";
     }
 
-    $resolve_query .= " GROUP BY class_id ORDER BY score_rows DESC, class_id DESC LIMIT 1";
-    $resolved = mysqli_query($conn, $resolve_query);
+    $resolve_query .= " GROUP BY class_id ORDER BY subject_rows DESC, class_id DESC LIMIT 1";
+    $resolvedStmt = $conn->prepare($resolve_query);
+    if ($has_term_filter && $term_id !== 'cum') {
+        $resolvedStmt->bind_param('iiii', $school_id, $student_id, $session_id, $exact_term_id);
+    } else {
+        $resolvedStmt->bind_param('iii', $school_id, $student_id, $session_id);
+    }
+    $resolvedStmt->execute();
+    $resolved = $resolvedStmt->get_result();
 
     if ($resolved && $row = mysqli_fetch_assoc($resolved)) {
+        $resolvedStmt->close();
         return (int)$row['class_id'];
     }
+
+    $resolvedStmt->close();
 
     return $requested_class_id;
 }
@@ -94,6 +140,16 @@ function get_total_students_with_scores_in_class($class_id, $session_id, $term_i
 
     if ($class_id <= 0 || $session_id <= 0 || $school_id <= 0) {
         return 0;
+    }
+
+    if (student_class_history_available($conn)) {
+        return count_students_for_class_period(
+            $conn,
+            $school_id,
+            $class_id,
+            $session_id,
+            $exact_term_id
+        );
     }
 
     $query = "SELECT COUNT(DISTINCT student_id) AS total_student

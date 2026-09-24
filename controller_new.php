@@ -2,12 +2,15 @@
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
+
+// Declare JSON before loading dependencies. A legacy include that emits whitespace
+// must not cause login responses to fall back to text/html in production.
+header('Content-Type: application/json; charset=utf-8');
+
 include_once("model/connect.php");
 include_once("model/functions.php");
 include_once("model/assessment_editor.php");
 include_once("model/assessment_delivery.php");
-
-header('Content-Type: application/json');
 
 if (!isset($_POST['action'])) {
     echo json_encode(['success' => false, 'message' => 'No action specified']);
