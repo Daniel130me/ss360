@@ -1,0 +1,1915 @@
+{
+ "source_exam_body": "JAMB",
+ "source_exam_year": 2023,
+ "source_subject": "Mathematics",
+ "listing_url": "https://myschool.ng/classroom/mathematics?exam_type=jamb&exam_year=2023",
+ "collected_at": "2026-09-24",
+ "triage": {
+  "discovered": 80,
+  "imported": 80,
+  "held_for_review": 0,
+  "duplicate_skipped": 0
+ },
+ "items": [
+  {
+   "item": 1,
+   "status": "imported",
+   "source_id": "67243",
+   "source_url": "https://myschool.ng/classroom/mathematics/67243?exam_type=jamb&exam_year=2023",
+   "source_question_number": 1,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "How many different 8 letter words are possible using the letters of the word SYLLABUS?",
+   "options_plain_text": {
+    "a": "(8 - 1)!",
+    "b": "\\frac{8!}{2!}",
+    "c": "\\frac{8!}{2! 2!}",
+    "d": "8!",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 2,
+   "status": "imported",
+   "source_id": "67244",
+   "source_url": "https://myschool.ng/classroom/mathematics/67244?exam_type=jamb&exam_year=2023",
+   "source_question_number": 2,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Evaluate: 16 ^{0.16} × 16 ^{0.04} × 2 ^{0.2}",
+   "options_plain_text": {
+    "a": "2",
+    "b": "0",
+    "c": "2 ^0",
+    "d": "\\frac{1}{2}",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 3,
+   "status": "imported",
+   "source_id": "67245",
+   "source_url": "https://myschool.ng/classroom/mathematics/67245?exam_type=jamb&exam_year=2023",
+   "source_question_number": 3,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Let '*' and '^' be two binary operations such that a * b = a ^2 b and a ^ b = 2a + b. Find (-4 * 2) ^ (7 * -1).",
+   "options_plain_text": {
+    "a": "-49",
+    "b": "64",
+    "c": "113",
+    "d": "15",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 4,
+   "status": "imported",
+   "source_id": "67248",
+   "source_url": "https://myschool.ng/classroom/mathematics/67248?exam_type=jamb&exam_year=2023",
+   "source_question_number": 4,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Evaluate \\int_0^1 4x - 6\\sqrt[3] {x^2}dx",
+   "options_plain_text": {
+    "a": "- \\frac{5}{8}",
+    "b": "- \\frac{8}{5}",
+    "c": "\\frac{8}{5}",
+    "d": "\\frac{5}{8}",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 5,
+   "status": "imported",
+   "source_id": "67251",
+   "source_url": "https://myschool.ng/classroom/mathematics/67251?exam_type=jamb&exam_year=2023",
+   "source_question_number": 5,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The population of a village decreased from 1,230 to 1,040 due to breakout of an epidemic. What is the percentage decrease in the population?",
+   "options_plain_text": {
+    "a": "15.44%",
+    "b": "15.43%",
+    "c": "15.42%",
+    "d": "15.45%",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 6,
+   "status": "imported",
+   "source_id": "67253",
+   "source_url": "https://myschool.ng/classroom/mathematics/67253?exam_type=jamb&exam_year=2023",
+   "source_question_number": 6,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The interior angle of a regular polygon is five times the size of its exterior angle. Identify the polygon.",
+   "options_plain_text": {
+    "a": "dodecagon",
+    "b": "enneadecagon",
+    "c": "icosagon",
+    "d": "hendecagon",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 7,
+   "status": "imported",
+   "source_id": "67254",
+   "source_url": "https://myschool.ng/classroom/mathematics/67254?exam_type=jamb&exam_year=2023",
+   "source_question_number": 7,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The area A of a circle is increasing at a constant rate of 1.5 cm ^2s^{-1} . Find, to 3 significant figures, the rate at which the radius r of the circle is increasing when the area of the circle is 2 cm ^2 .",
+   "options_plain_text": {
+    "a": "0.200 cms ^{-1}",
+    "b": "0.798 cms ^{-1}",
+    "c": "0.300 cms ^{-1}",
+    "d": "0.299 cms ^{-1}",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 8,
+   "status": "imported",
+   "source_id": "67257",
+   "source_url": "https://myschool.ng/classroom/mathematics/67257?exam_type=jamb&exam_year=2023",
+   "source_question_number": 8,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Make x the subject of the formula: y = \\frac {3x - 9c}{4x + 5d}",
+   "options_plain_text": {
+    "a": "x = \\frac {-(9c - 5dy)}{4y - 3}",
+    "b": "x = \\frac {9c + 5dy}{4y - 3}",
+    "c": "x = \\frac {9c - 5dy}{4y - 3}",
+    "d": "x = \\frac {-(9c + 5dy)}{4y - 3}",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 9,
+   "status": "imported",
+   "source_id": "67258",
+   "source_url": "https://myschool.ng/classroom/mathematics/67258?exam_type=jamb&exam_year=2023",
+   "source_question_number": 9,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Solve for x: 3(x – 1) ≤ 2 (x – 3)",
+   "options_plain_text": {
+    "a": "x ≤ -3",
+    "b": "x ≥ -3",
+    "c": "x ≤ 3",
+    "d": "x ≥ 3",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 10,
+   "status": "imported",
+   "source_id": "67259",
+   "source_url": "https://myschool.ng/classroom/mathematics/67259?exam_type=jamb&exam_year=2023",
+   "source_question_number": 10,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/lUWf8v5pP2w4z6AY59qJWE3dJ5K0csLlI1PC7RRa.png"
+   ],
+   "stem_image_local_path": "uploads/question_bank/jamb_2023_mathematics/Q10_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/jamb_2023_mathematics/Q10_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The diagram above is a circle with centre C. P, Q and S are points on the circumference. PS and SR are tangents to the circle. ∠PSR = 36 ^o . Find ∠PQR",
+   "options_plain_text": {
+    "a": "72 ^0",
+    "b": "36 ^0",
+    "c": "144 ^0",
+    "d": "54 ^0",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 11,
+   "status": "imported",
+   "source_id": "67260",
+   "source_url": "https://myschool.ng/classroom/mathematics/67260?exam_type=jamb&exam_year=2023",
+   "source_question_number": 11,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "If a car runs at a constant speed and takes 4.5 hrs to run a distance of 225 km, what time will it take to run 150 km?",
+   "options_plain_text": {
+    "a": "2 hrs",
+    "b": "4 hrs",
+    "c": "3 hrs",
+    "d": "1 hr",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 12,
+   "status": "imported",
+   "source_id": "67261",
+   "source_url": "https://myschool.ng/classroom/mathematics/67261?exam_type=jamb&exam_year=2023",
+   "source_question_number": 12,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Divide 1101001 _{two} by 101 _{two}",
+   "options_plain_text": {
+    "a": "11101 _{two}",
+    "b": "111 _{two}",
+    "c": "10111 _{two}",
+    "d": "10101 _{two}",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 13,
+   "status": "imported",
+   "source_id": "67262",
+   "source_url": "https://myschool.ng/classroom/mathematics/67262?exam_type=jamb&exam_year=2023",
+   "source_question_number": 13,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "If \\frac {3 - \\sqrt 3}{2 + \\sqrt 3} = a + b\\sqrt 3 , what are the values a and b?",
+   "options_plain_text": {
+    "a": "a = 9, b = -5",
+    "b": "a = 5, b = 9",
+    "c": "a = 9, b = 5",
+    "d": "a = -5, b = 9",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 14,
+   "status": "imported",
+   "source_id": "67263",
+   "source_url": "https://myschool.ng/classroom/mathematics/67263?exam_type=jamb&exam_year=2023",
+   "source_question_number": 14,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Find the value of t, if the distance between the points P(–3, –14) and Q(t, –5) is 9 units.",
+   "options_plain_text": {
+    "a": "3",
+    "b": "2",
+    "c": "- 3",
+    "d": "- 2",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 15,
+   "status": "imported",
+   "source_id": "67264",
+   "source_url": "https://myschool.ng/classroom/mathematics/67264?exam_type=jamb&exam_year=2023",
+   "source_question_number": 15,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "At simple interest, a man made a deposit of some money in the bank. The amount in his bank account after 10 years is three times the money deposited. If the interest rate stays the same, after how many years will the amount be five times the money deposited?",
+   "options_plain_text": {
+    "a": "15 years",
+    "b": "25 years",
+    "c": "20 years",
+    "d": "30 years",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 16,
+   "status": "imported",
+   "source_id": "67265",
+   "source_url": "https://myschool.ng/classroom/mathematics/67265?exam_type=jamb&exam_year=2023",
+   "source_question_number": 16,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Evaluate the following limit: lim_{x\\to2} \\frac {x^2 + 4x - 12}{x^2 - 2x}",
+   "options_plain_text": {
+    "a": "4",
+    "b": "8",
+    "c": "0",
+    "d": "2",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 17,
+   "status": "imported",
+   "source_id": "67266",
+   "source_url": "https://myschool.ng/classroom/mathematics/67266?exam_type=jamb&exam_year=2023",
+   "source_question_number": 17,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The ages of students in a small primary school were recorded in the table below. Age 5 - 6 7 - 8 9 -10 Frequency 29 40 38 Estimate the mean",
+   "options_plain_text": {
+    "a": "7.7",
+    "b": "7.5",
+    "c": "7.8",
+    "d": "7.6",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 18,
+   "status": "imported",
+   "source_id": "67269",
+   "source_url": "https://myschool.ng/classroom/mathematics/67269?exam_type=jamb&exam_year=2023",
+   "source_question_number": 18,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "A committee of 5 people is to be chosen from a group of 6 men and 4 women. How many committees are possible if there is to be a majority of women?",
+   "options_plain_text": {
+    "a": "60",
+    "b": "15",
+    "c": "66",
+    "d": "4",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 19,
+   "status": "imported",
+   "source_id": "67270",
+   "source_url": "https://myschool.ng/classroom/mathematics/67270?exam_type=jamb&exam_year=2023",
+   "source_question_number": 19,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "If D = \\begin{bmatrix}2& -1&3\\\\4&1&2\\\\1&-3&1\\\\\\end{bmatrix} Find |D|",
+   "options_plain_text": {
+    "a": "16",
+    "b": "14",
+    "c": "-23",
+    "d": "-37",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 20,
+   "status": "imported",
+   "source_id": "67271",
+   "source_url": "https://myschool.ng/classroom/mathematics/67271?exam_type=jamb&exam_year=2023",
+   "source_question_number": 20,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/KsctAvbyqTx1Cv6EQdmJNb5iNrOlGEESsKtfV7j2.png"
+   ],
+   "stem_image_local_path": "uploads/question_bank/jamb_2023_mathematics/Q20_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/jamb_2023_mathematics/Q20_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "A boat sails 8 km north from P to Q and then sails 6 km west from Q to R. Calculate the bearing of R from P. Give your answer to the nearest degree.",
+   "options_plain_text": {
+    "a": "217 ^o",
+    "b": "323 ^o",
+    "c": "037 ^o",
+    "d": "053 ^o",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 21,
+   "status": "imported",
+   "source_id": "67272",
+   "source_url": "https://myschool.ng/classroom/mathematics/67272?exam_type=jamb&exam_year=2023",
+   "source_question_number": 21,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "A coin is thrown 3 times. What is the probability that atleast one head is obtained?",
+   "options_plain_text": {
+    "a": "\\frac {7}{8}",
+    "b": "\\frac {3}{8}",
+    "c": "None the above",
+    "d": "\\frac {1}{8}",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 22,
+   "status": "imported",
+   "source_id": "67273",
+   "source_url": "https://myschool.ng/classroom/mathematics/67273?exam_type=jamb&exam_year=2023",
+   "source_question_number": 22,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Find the equation of straight line passing through (2, 3) and perpendicular to the line 3x + 2y + 4 = 0",
+   "options_plain_text": {
+    "a": "3y = 5x - 2",
+    "b": "y = \\frac {5}{3} \\times - 2",
+    "c": "None of these",
+    "d": "3y = 2x + 5",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 23,
+   "status": "imported",
+   "source_id": "67274",
+   "source_url": "https://myschool.ng/classroom/mathematics/67274?exam_type=jamb&exam_year=2023",
+   "source_question_number": 23,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Differentiate the function y = \\sqrt[3]{x^2}(2x - x^2)",
+   "options_plain_text": {
+    "a": "\\frac {dy}{dx} = \\frac {10x^{5/3}}{3} - \\frac {8x^{2/3}}{3}",
+    "b": "\\frac {dy}{dx} = \\frac {10x^{2/3}}{3} - \\frac {8x^{5/3}}{3}",
+    "c": "\\frac {dy}{dx} = \\frac {10x^{5/3}}{3} - \\frac {8x^{5/3}}{3}",
+    "d": "\\frac {dy}{dx} = \\frac {10x^{2/3}}{3} - \\frac {8x^{2/3}}{3}",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 24,
+   "status": "imported",
+   "source_id": "67276",
+   "source_url": "https://myschool.ng/classroom/mathematics/67276?exam_type=jamb&exam_year=2023",
+   "source_question_number": 24,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Calculate the mean deviation of the first five prime numbers.",
+   "options_plain_text": {
+    "a": "2.72",
+    "b": "5.6",
+    "c": "5.25",
+    "d": "13.6",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 25,
+   "status": "imported",
+   "source_id": "67277",
+   "source_url": "https://myschool.ng/classroom/mathematics/67277?exam_type=jamb&exam_year=2023",
+   "source_question_number": 25,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Determine the area of the region bounded by y = 2x^2 + 10 and Y = 4x + 16 .",
+   "options_plain_text": {
+    "a": "18",
+    "b": "\\frac {-10}{3}",
+    "c": "\\frac {44}{3}",
+    "d": "\\frac {64}{3}",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 26,
+   "status": "imported",
+   "source_id": "67278",
+   "source_url": "https://myschool.ng/classroom/mathematics/67278?exam_type=jamb&exam_year=2023",
+   "source_question_number": 26,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Find the value of y if 402_y = 102_{ten}",
+   "options_plain_text": {
+    "a": "4",
+    "b": "2",
+    "c": "5",
+    "d": "3",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 27,
+   "status": "imported",
+   "source_id": "67279",
+   "source_url": "https://myschool.ng/classroom/mathematics/67279?exam_type=jamb&exam_year=2023",
+   "source_question_number": 27,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Find the value of y, if log (y + 8) + log (y - 8) = 2log 3 + 2log 5",
+   "options_plain_text": {
+    "a": "y = ±5",
+    "b": "y = ±10",
+    "c": "y = ±17",
+    "d": "y = ±13",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 28,
+   "status": "imported",
+   "source_id": "67281",
+   "source_url": "https://myschool.ng/classroom/mathematics/67281?exam_type=jamb&exam_year=2023",
+   "source_question_number": 28,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "In a group of 500 people, 350 people can speak English, and 400 people can speak French. Find how many people can speak both languages.",
+   "options_plain_text": {
+    "a": "750",
+    "b": "850",
+    "c": "250",
+    "d": "150",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 29,
+   "status": "imported",
+   "source_id": "67282",
+   "source_url": "https://myschool.ng/classroom/mathematics/67282?exam_type=jamb&exam_year=2023",
+   "source_question_number": 29,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Factorize: 16x^4 - y^4",
+   "options_plain_text": {
+    "a": "(2x - y)(2x + y)(4x^2 + y^2)",
+    "b": "(2x + y)(2x + y)(4x^2 + y^2)",
+    "c": "(2x - y)(2x - y)(4x^2 + y^2)",
+    "d": "(2x - y)(2x + y)(4x^2 - y^2)",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 30,
+   "status": "imported",
+   "source_id": "67283",
+   "source_url": "https://myschool.ng/classroom/mathematics/67283?exam_type=jamb&exam_year=2023",
+   "source_question_number": 30,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "If A = { 1, 2, 3, 4, 5, 6}, B = { 2, 4, 6, 8 }. Find (A – B) ⋃ (B – A).",
+   "options_plain_text": {
+    "a": "{1, 3, 5, 8}",
+    "b": "{8}",
+    "c": "{1, 2, 3, 4, 5, 6, 8}",
+    "d": "{1, 3, 5}",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 31,
+   "status": "imported",
+   "source_id": "67284",
+   "source_url": "https://myschool.ng/classroom/mathematics/67284?exam_type=jamb&exam_year=2023",
+   "source_question_number": 31,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "A bag contains 8 red balls and some white balls. If the probability of drawing a white ball is half of the probability of drawing a red ball then find the probability of drawing a red ball and a white ball if the balls are drawn without replacement.",
+   "options_plain_text": {
+    "a": "\\frac {1}{3}",
+    "b": "\\frac {2}{9}",
+    "c": "\\frac {2}{3}",
+    "d": "\\frac {8}{33}",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 32,
+   "status": "imported",
+   "source_id": "67286",
+   "source_url": "https://myschool.ng/classroom/mathematics/67286?exam_type=jamb&exam_year=2023",
+   "source_question_number": 32,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The ages of students in a small primary school were recorded in the table below. Age 5-6 7-8 9-10 Frequency 29 40 38 Estimate the median.",
+   "options_plain_text": {
+    "a": "7.725",
+    "b": "6.225",
+    "c": "7.5",
+    "d": "6.5",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 33,
+   "status": "imported",
+   "source_id": "67292",
+   "source_url": "https://myschool.ng/classroom/mathematics/67292?exam_type=jamb&exam_year=2023",
+   "source_question_number": 33,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Find the matrix A A \\begin {bmatrix} 0 & 1\\\\2 & -1 \\end {bmatrix} = \\begin {bmatrix} 2 & -1\\\\1 & 0 \\end {bmatrix}",
+   "options_plain_text": {
+    "a": "\\begin {bmatrix} 2 & 1\\\\-^1/_2 & -^1/_2 \\end {bmatrix}",
+    "b": "\\begin {bmatrix} 0 & 1\\\\^1/_2 & ^1/_2 \\end {bmatrix}",
+    "c": "\\begin {bmatrix} 2 & 1\\\\0 & -1 \\end {bmatrix}",
+    "d": "\\begin {bmatrix} 2 & 1\\\\^1/_2 & -2 \\end {bmatrix}",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 34,
+   "status": "imported",
+   "source_id": "67298",
+   "source_url": "https://myschool.ng/classroom/mathematics/67298?exam_type=jamb&exam_year=2023",
+   "source_question_number": 34,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/sDqGa3vw7lMmTxPDq5wWE7NB9NwbZmt0onFqRrg6.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/jamb_2023_mathematics/Q34_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/jamb_2023_mathematics/Q34_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "How many students scored at least 25%",
+   "options_plain_text": {
+    "a": "16",
+    "b": "19",
+    "c": "3",
+    "d": "8",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 35,
+   "status": "imported",
+   "source_id": "67301",
+   "source_url": "https://myschool.ng/classroom/mathematics/67301?exam_type=jamb&exam_year=2023",
+   "source_question_number": 35,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "If -2x^3 + 6x^2 + 17x - 21 is divided by (x + 1) , then the remainder is",
+   "options_plain_text": {
+    "a": "32",
+    "b": "30",
+    "c": "-30",
+    "d": "-32",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 36,
+   "status": "imported",
+   "source_id": "67302",
+   "source_url": "https://myschool.ng/classroom/mathematics/67302?exam_type=jamb&exam_year=2023",
+   "source_question_number": 36,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Let a binary operation '*' be defined on a set A. The operation will be commutative if",
+   "options_plain_text": {
+    "a": "a*b = b*a",
+    "b": "(a*b)*c = a*(b*c)",
+    "c": "(b ο c)*a = (b*a) ο (c*a)",
+    "d": "None of the above",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 37,
+   "status": "imported",
+   "source_id": "67309",
+   "source_url": "https://myschool.ng/classroom/mathematics/67309?exam_type=jamb&exam_year=2023",
+   "source_question_number": 37,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Solve the following quadratic inequality: x^2 - x - 4 ≤ 2",
+   "options_plain_text": {
+    "a": "-3 < x < 2",
+    "b": "-2 ≤ x ≤ 3",
+    "c": "x ≤ -2, x ≤ 3",
+    "d": "-2 < x < 3",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 38,
+   "status": "imported",
+   "source_id": "67329",
+   "source_url": "https://myschool.ng/classroom/mathematics/67329?exam_type=jamb&exam_year=2023",
+   "source_question_number": 38,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "What is the general term of the sequence 3, 8, 13, 18, ...?",
+   "options_plain_text": {
+    "a": "5n - 2",
+    "b": "5n + 2",
+    "c": "5",
+    "d": "5n",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 39,
+   "status": "imported",
+   "source_id": "67332",
+   "source_url": "https://myschool.ng/classroom/mathematics/67332?exam_type=jamb&exam_year=2023",
+   "source_question_number": 39,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The locus of a point equidistant from two intersecting lines is",
+   "options_plain_text": {
+    "a": "where the sum of the distances of two focal points is fixed",
+    "b": "the collection of points that are equally distant from a fixed point and a line",
+    "c": "the perpendicular bisector of the lines",
+    "d": "pair of bisectors of the angles between the two lines",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 40,
+   "status": "imported",
+   "source_id": "67335",
+   "source_url": "https://myschool.ng/classroom/mathematics/67335?exam_type=jamb&exam_year=2023",
+   "source_question_number": 40,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Two numbers are respectively 35% and 80% more than a third number. The ratio of the two numbers is",
+   "options_plain_text": {
+    "a": "7 : 16",
+    "b": "3 : 4",
+    "c": "16 : 7",
+    "d": "4 : 3",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 41,
+   "status": "imported",
+   "source_id": "67336",
+   "source_url": "https://myschool.ng/classroom/mathematics/67336?exam_type=jamb&exam_year=2023",
+   "source_question_number": 41,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The angle of elevation and depression of the top and bottom of another building, measured from the top of a 24 m tall building, is 30° and 60°, respectively. Determine the second building's height.",
+   "options_plain_text": {
+    "a": "24 m",
+    "b": "32 \\sqrt3 m",
+    "c": "24 \\sqrt3",
+    "d": "32 m",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 42,
+   "status": "imported",
+   "source_id": "67348",
+   "source_url": "https://myschool.ng/classroom/mathematics/67348?exam_type=jamb&exam_year=2023",
+   "source_question_number": 42,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/Qvtx4fWKxvooXUyOYd3tqIdasCCzeZ3mzSuVrBes.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/jamb_2023_mathematics/Q42_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/jamb_2023_mathematics/Q42_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Calculate, correct to three significant figures, the length AB in the diagram above.",
+   "options_plain_text": {
+    "a": "36.4 cm",
+    "b": "36.1 cm",
+    "c": "36.2 cm",
+    "d": "36.3 cm",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 43,
+   "status": "imported",
+   "source_id": "67358",
+   "source_url": "https://myschool.ng/classroom/mathematics/67358?exam_type=jamb&exam_year=2023",
+   "source_question_number": 43,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "An article when sold for ₦230.00 makes a 15% profit. Find the profit or loss % if it was sold for ₦180.00",
+   "options_plain_text": {
+    "a": "10% gain",
+    "b": "10% loss",
+    "c": "12% loss",
+    "d": "12% gain",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 44,
+   "status": "imported",
+   "source_id": "67359",
+   "source_url": "https://myschool.ng/classroom/mathematics/67359?exam_type=jamb&exam_year=2023",
+   "source_question_number": 44,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/VHsttMSUqFAUdE2b59vbZKRqlWlgWkZ7mE3aWcKv.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/jamb_2023_mathematics/Q44_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/jamb_2023_mathematics/Q44_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Calculate, correct to three significant figures, the length of the arc AB in the diagram above. [Take \\pi = ^{22}/_7 ]",
+   "options_plain_text": {
+    "a": "32.4 cm",
+    "b": "30.6 cm",
+    "c": "28.8 cm",
+    "d": "30.5 cm",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 45,
+   "status": "imported",
+   "source_id": "67364",
+   "source_url": "https://myschool.ng/classroom/mathematics/67364?exam_type=jamb&exam_year=2023",
+   "source_question_number": 45,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "A rectangular plot of land has sides with lengths of 38 m and 52 m corrected to the nearest m. Find the range of the possible values of the area of the rectangle",
+   "options_plain_text": {
+    "a": "1931.25 m ^2 ≤ A < 2021.25 m ^2",
+    "b": "1950 m ^2 ≤ A < 2002 m ^2",
+    "c": "1957 m ^2 ≤ A < 1995 m ^2",
+    "d": "1931.25 m ^2 ≥ A > 2021.25 m ^2",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 46,
+   "status": "imported",
+   "source_id": "67365",
+   "source_url": "https://myschool.ng/classroom/mathematics/67365?exam_type=jamb&exam_year=2023",
+   "source_question_number": 46,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "A man sells different brands of an items. ^1/_9 of the items he has in his shop are from Brand A, ^5/_8 of the remainder are from Brand B and the rest are from Brand C. If the total number of Brand C items in the man's shop is 81, how many more Brand B items than Brand C does the shop has?",
+   "options_plain_text": {
+    "a": "243",
+    "b": "108",
+    "c": "54",
+    "d": "135",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 47,
+   "status": "imported",
+   "source_id": "67366",
+   "source_url": "https://myschool.ng/classroom/mathematics/67366?exam_type=jamb&exam_year=2023",
+   "source_question_number": 47,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Find the area, to the nearest cm ^2 , of the triangle whose sides are in the ratio 2 : 3 : 4 and whose perimeter is 180 cm.",
+   "options_plain_text": {
+    "a": "1162 cm ^2",
+    "b": "1163 cm ^2",
+    "c": "1160 cm ^2",
+    "d": "1161 cm ^2",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 48,
+   "status": "imported",
+   "source_id": "67367",
+   "source_url": "https://myschool.ng/classroom/mathematics/67367?exam_type=jamb&exam_year=2023",
+   "source_question_number": 48,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Find the compound interest (CI) on ₦15,700 for 2 years at 8% per annum compounded annually.",
+   "options_plain_text": {
+    "a": "₦6,212.48",
+    "b": "₦2,834.48",
+    "c": "₦18,312.48",
+    "d": "₦2,612.48",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 49,
+   "status": "imported",
+   "source_id": "67368",
+   "source_url": "https://myschool.ng/classroom/mathematics/67368?exam_type=jamb&exam_year=2023",
+   "source_question_number": 49,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/gXmkkYGaRzreX5PHKeVg7hQp8W4PgAlBlrRV10sy.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/jamb_2023_mathematics/Q49_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/jamb_2023_mathematics/Q49_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Find the volume of the cylinder above [Take \\pi= ^{22}/_7 ]",
+   "options_plain_text": {
+    "a": "9,856 cm ^3",
+    "b": "14,784 cm ^3",
+    "c": "4,928 cm ^3",
+    "d": "19,712 cm ^3",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 50,
+   "status": "imported",
+   "source_id": "67369",
+   "source_url": "https://myschool.ng/classroom/mathematics/67369?exam_type=jamb&exam_year=2023",
+   "source_question_number": 50,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The third term of an A.P is 6 and the fifth term is 12. Find the sum of its first twelve terms",
+   "options_plain_text": {
+    "a": "201",
+    "b": "144",
+    "c": "198",
+    "d": "72",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 51,
+   "status": "imported",
+   "source_id": "67370",
+   "source_url": "https://myschool.ng/classroom/mathematics/67370?exam_type=jamb&exam_year=2023",
+   "source_question_number": 51,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Express 16.54 x 10 ^{-5} - 6.76 x 10 ^{-8} + 0.23 x 10 ^{-6} in standard form",
+   "options_plain_text": {
+    "a": "1.66 x 10 ^{-4}",
+    "b": "1.66 x 10 ^{-5}",
+    "c": "1.65 x 10 ^{-5}",
+    "d": "1.65 x 10 ^{-4}",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 52,
+   "status": "imported",
+   "source_id": "67371",
+   "source_url": "https://myschool.ng/classroom/mathematics/67371?exam_type=jamb&exam_year=2023",
+   "source_question_number": 52,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/WMXIaeLBDT5fADriYAKrCrH4KVPzJE7sIrpzF89I.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/jamb_2023_mathematics/Q52_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/jamb_2023_mathematics/Q52_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The graph above depicts the performance ratings of two sports teams A and B in five different seasons In the last five seasons, what was the difference in the average performance ratings between Team B and Team A?",
+   "options_plain_text": {
+    "a": "1.2",
+    "b": "6.4",
+    "c": "4.6",
+    "d": "1.8",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 53,
+   "status": "imported",
+   "source_id": "67372",
+   "source_url": "https://myschool.ng/classroom/mathematics/67372?exam_type=jamb&exam_year=2023",
+   "source_question_number": 53,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "A student is using a graduated cylinder to measure the volume of water and reports a reading of 18 mL. The teacher reports the value as 18.4 mL. What is the student's percent error?",
+   "options_plain_text": {
+    "a": "2.17%",
+    "b": "1.73%",
+    "c": "2.23%",
+    "d": "1.96%",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 54,
+   "status": "imported",
+   "source_id": "67377",
+   "source_url": "https://myschool.ng/classroom/mathematics/67377?exam_type=jamb&exam_year=2023",
+   "source_question_number": 54,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The difference between an exterior angle of (n - 1) sided regular polygon and an exterior angle of (n + 2) sided regular polygon is 6 ^o , then the value of \"n\" is",
+   "options_plain_text": {
+    "a": "11",
+    "b": "13",
+    "c": "12",
+    "d": "14",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 55,
+   "status": "imported",
+   "source_id": "67378",
+   "source_url": "https://myschool.ng/classroom/mathematics/67378?exam_type=jamb&exam_year=2023",
+   "source_question_number": 55,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Two dice are tossed. What is the probability that the total score is a prime number.",
+   "options_plain_text": {
+    "a": "\\frac{5}{12}",
+    "b": "\\frac{5}{9}",
+    "c": "\\frac{1}{6}",
+    "d": "\\frac{1}{3}",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 56,
+   "status": "imported",
+   "source_id": "67379",
+   "source_url": "https://myschool.ng/classroom/mathematics/67379?exam_type=jamb&exam_year=2023",
+   "source_question_number": 56,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/NAOuwQnbKhCOHJxkPHRRJU2Bubli4te1dVqWUWfk.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/jamb_2023_mathematics/Q56_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/jamb_2023_mathematics/Q56_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Find the volume of the composite solid above.",
+   "options_plain_text": {
+    "a": "2048 cm ^3",
+    "b": "2568 cm ^3",
+    "c": "2672 cm ^3",
+    "d": "1320 cm ^3",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 57,
+   "status": "imported",
+   "source_id": "67380",
+   "source_url": "https://myschool.ng/classroom/mathematics/67380?exam_type=jamb&exam_year=2023",
+   "source_question_number": 57,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Find the area and perimeter of a square whose length of diagonals is 20 \\sqrt2 cm.",
+   "options_plain_text": {
+    "a": "800 cm ^2 , 80 cm",
+    "b": "400 cm, 80 cm ^2",
+    "c": "80 cm, 800 cm ^2",
+    "d": "400 cm ^2 , 80 cm",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 58,
+   "status": "imported",
+   "source_id": "67381",
+   "source_url": "https://myschool.ng/classroom/mathematics/67381?exam_type=jamb&exam_year=2023",
+   "source_question_number": 58,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Bello buys an old bicycle for ₦9,200.00 and spends ₦1,500.00 on its repairs. If he sells the bicycle for ₦13,400.00, his gain percent is",
+   "options_plain_text": {
+    "a": "25.23%",
+    "b": "31.34%",
+    "c": "88.81%",
+    "d": "42.54%",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 59,
+   "status": "imported",
+   "source_id": "67382",
+   "source_url": "https://myschool.ng/classroom/mathematics/67382?exam_type=jamb&exam_year=2023",
+   "source_question_number": 59,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Evaluate \\frac{5}{8} - \\frac{3}{4} ÷ \\frac{5}{12} \\times \\frac{1}{4}",
+   "options_plain_text": {
+    "a": "- \\frac{3}{40}",
+    "b": "\\frac{3}{40}",
+    "c": "\\frac{7}{40}",
+    "d": "- \\frac{263}{40}",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 60,
+   "status": "imported",
+   "source_id": "67383",
+   "source_url": "https://myschool.ng/classroom/mathematics/67383?exam_type=jamb&exam_year=2023",
+   "source_question_number": 60,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "A rectangle has one side that is 6 cm shorter than the other. The area of the rectangle will increase by 68 cm ^2 if we add 2 cm to each side of the rectangle. Find the length of the shorter side.",
+   "options_plain_text": {
+    "a": "15 cm",
+    "b": "19 cm",
+    "c": "13 cm",
+    "d": "21 cm",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 61,
+   "status": "imported",
+   "source_id": "67384",
+   "source_url": "https://myschool.ng/classroom/mathematics/67384?exam_type=jamb&exam_year=2023",
+   "source_question_number": 61,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The second term of a geometric series is ^{-2}/_3 and its sum to infinity is ^3/_2 . Find its common ratio.",
+   "options_plain_text": {
+    "a": "^{-1}/_3",
+    "b": "2",
+    "c": "^{4}/_3",
+    "d": "^{2}/_9",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 62,
+   "status": "imported",
+   "source_id": "67385",
+   "source_url": "https://myschool.ng/classroom/mathematics/67385?exam_type=jamb&exam_year=2023",
+   "source_question_number": 62,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/2aIucRDBQZBXaXO9dINurPcRM8FxPIaKeXdxu2tt.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/jamb_2023_mathematics/Q62_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/jamb_2023_mathematics/Q62_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Find the value of the angle marked x in the diagram above",
+   "options_plain_text": {
+    "a": "60 ^0",
+    "b": "45 ^0",
+    "c": "90 ^0",
+    "d": "30 ^0",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 63,
+   "status": "imported",
+   "source_id": "67386",
+   "source_url": "https://myschool.ng/classroom/mathematics/67386?exam_type=jamb&exam_year=2023",
+   "source_question_number": 63,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The line 3y + 6x = 48 passes through the points A(-2, k) and B(4, 8). Find the value of k.",
+   "options_plain_text": {
+    "a": "16",
+    "b": "20",
+    "c": "8",
+    "d": "-2",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 64,
+   "status": "imported",
+   "source_id": "67387",
+   "source_url": "https://myschool.ng/classroom/mathematics/67387?exam_type=jamb&exam_year=2023",
+   "source_question_number": 64,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Tickets for the school play were priced at ₦520.00 each for adults and ₦250.00 each for kids. How many kids' tickets were sold if the total sales were ₦171,000.00 and there were 5 times as many adult tickets sold as children's tickets?",
+   "options_plain_text": {
+    "a": "20",
+    "b": "300",
+    "c": "50",
+    "d": "60",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 65,
+   "status": "imported",
+   "source_id": "67388",
+   "source_url": "https://myschool.ng/classroom/mathematics/67388?exam_type=jamb&exam_year=2023",
+   "source_question_number": 65,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Solve the logarithmic equation: log_2 (6 - x) = 3 - log_2 x",
+   "options_plain_text": {
+    "a": "x = 4 or 2",
+    "b": "x = -4 or -2",
+    "c": "x = -4 or 2",
+    "d": "x = 4 or -2",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 66,
+   "status": "imported",
+   "source_id": "67389",
+   "source_url": "https://myschool.ng/classroom/mathematics/67389?exam_type=jamb&exam_year=2023",
+   "source_question_number": 66,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/p8e2fPmBN5KV0iBs3mEzF1bR5Oi5zwmgx7KM85KX.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/jamb_2023_mathematics/Q66_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/jamb_2023_mathematics/Q66_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Calculate the area of the composite figure above.",
+   "options_plain_text": {
+    "a": "6048 m ^2",
+    "b": "3969 m ^2",
+    "c": "4628 m ^2",
+    "d": "5834 m ^2",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 67,
+   "status": "imported",
+   "source_id": "67390",
+   "source_url": "https://myschool.ng/classroom/mathematics/67390?exam_type=jamb&exam_year=2023",
+   "source_question_number": 67,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/NdYkqLFIYjPXvWMm3JNJJstGNctCogPaEBtUDaKW.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/jamb_2023_mathematics/Q67_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/jamb_2023_mathematics/Q67_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Find the value of x in the diagram above",
+   "options_plain_text": {
+    "a": "10 units",
+    "b": "15 units",
+    "c": "5 units",
+    "d": "20 units",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 68,
+   "status": "imported",
+   "source_id": "67391",
+   "source_url": "https://myschool.ng/classroom/mathematics/67391?exam_type=jamb&exam_year=2023",
+   "source_question_number": 68,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/1ImYK0mW2LqcON9rrW1oybK9jlLcOdY2zwql7ltr.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/jamb_2023_mathematics/Q68_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/jamb_2023_mathematics/Q68_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Which inequality describes the graph above?",
+   "options_plain_text": {
+    "a": "4y + 5x ≥ 20",
+    "b": "5y + 4x ≤ 20",
+    "c": "4y + 5x ≤ 20",
+    "d": "5y + 4x ≥ 20",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 69,
+   "status": "imported",
+   "source_id": "67392",
+   "source_url": "https://myschool.ng/classroom/mathematics/67392?exam_type=jamb&exam_year=2023",
+   "source_question_number": 69,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Find the volume of a cone which has a base radius of 5 cm and slant height of 13 cm.",
+   "options_plain_text": {
+    "a": "300\\pi cm ^3",
+    "b": "325\\pi cm ^3",
+    "c": "\\frac{325}{3}\\pi cm ^3",
+    "d": "100\\pi cm ^3",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 70,
+   "status": "imported",
+   "source_id": "67393",
+   "source_url": "https://myschool.ng/classroom/mathematics/67393?exam_type=jamb&exam_year=2023",
+   "source_question_number": 70,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/Tpxv7MwjFjgwxoPtdYr2xHa4vV8OZDeyc3goefQQ.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/jamb_2023_mathematics/Q70_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/jamb_2023_mathematics/Q70_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Study the given histogram above and answer the question that follows. What is the total number of students that scored at most 50 marks?",
+   "options_plain_text": {
+    "a": "380",
+    "b": "340",
+    "c": "360",
+    "d": "240",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 71,
+   "status": "imported",
+   "source_id": "67394",
+   "source_url": "https://myschool.ng/classroom/mathematics/67394?exam_type=jamb&exam_year=2023",
+   "source_question_number": 71,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The area of a trapezium is 200 cm ^2 . Its parallel sides are in the ratio 2 : 3 and the perpendicular distance between them is 16 cm. Find the length of each of the parallel sides.",
+   "options_plain_text": {
+    "a": "10 cm and 15 cm",
+    "b": "8 cm and 12 cm",
+    "c": "6 cm and 9 cm",
+    "d": "12 cm and 18 cm",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 72,
+   "status": "imported",
+   "source_id": "67395",
+   "source_url": "https://myschool.ng/classroom/mathematics/67395?exam_type=jamb&exam_year=2023",
+   "source_question_number": 72,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/EFvkph2zRnUUcI9kcO7mx9td08RHbSXCGFHa5hQY.png"
+   ],
+   "stem_image_local_path": "uploads/question_bank/jamb_2023_mathematics/Q72_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/jamb_2023_mathematics/Q72_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "PQRS is a cyclic quadrilateral. Find x + y",
+   "options_plain_text": {
+    "a": "50",
+    "b": "60",
+    "c": "15",
+    "d": "0",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 73,
+   "status": "imported",
+   "source_id": "67396",
+   "source_url": "https://myschool.ng/classroom/mathematics/67396?exam_type=jamb&exam_year=2023",
+   "source_question_number": 73,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "A student pilot was required to fly to an airport and then return as part of his flight training. The average speed to the airport was 120 km/h, and the average speed returning was 150 km/h. If the total flight time was 3 hours, calculate the distance between the two airports.",
+   "options_plain_text": {
+    "a": "270 km",
+    "b": "200 km",
+    "c": "360 km",
+    "d": "450 km",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 74,
+   "status": "imported",
+   "source_id": "67397",
+   "source_url": "https://myschool.ng/classroom/mathematics/67397?exam_type=jamb&exam_year=2023",
+   "source_question_number": 74,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The perimeter of an isosceles right-angled triangle is 2 meters. Find the length of its longer side.",
+   "options_plain_text": {
+    "a": "2 - \\sqrt2",
+    "b": "-4 + 3 \\sqrt2",
+    "c": "It cannot be determined",
+    "d": "-2 + 2 \\sqrt2 m",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 75,
+   "status": "imported",
+   "source_id": "67398",
+   "source_url": "https://myschool.ng/classroom/mathematics/67398?exam_type=jamb&exam_year=2023",
+   "source_question_number": 75,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "A ship sets sail from port A (86 ^o N, 56 ^o W) for port B (86 ^o N, 64 ^o W), which is close by. Find the distance the ship covered from port A to port B, correct to the nearest km. [Take \\pi = 3.142 and R = 6370 km]",
+   "options_plain_text": {
+    "a": "62 km",
+    "b": "97 km",
+    "c": "389 km",
+    "d": "931 km",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 76,
+   "status": "imported",
+   "source_id": "67399",
+   "source_url": "https://myschool.ng/classroom/mathematics/67399?exam_type=jamb&exam_year=2023",
+   "source_question_number": 76,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/LgZHyZml1wF9auEVGuzUKvz48kG4HiQ4NNeTfnTx.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/jamb_2023_mathematics/Q76_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/jamb_2023_mathematics/Q76_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Use the graph of sin (θ) above to estimate the value of θ when sin (θ) = -0.6 for 0^o ≤ θ ≤ 360^o",
+   "options_plain_text": {
+    "a": "θ = 223 ^o , 305 ^o",
+    "b": "θ = 210 ^o , 330 ^o",
+    "c": "θ = 185 ^o , 345 ^o",
+    "d": "θ = 218 ^o , 323 ^o",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 77,
+   "status": "imported",
+   "source_id": "67400",
+   "source_url": "https://myschool.ng/classroom/mathematics/67400?exam_type=jamb&exam_year=2023",
+   "source_question_number": 77,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "A circle has a radius of 13 cm with a chord 12 cm away from the centre of the circle. Calculate the length of the chord.",
+   "options_plain_text": {
+    "a": "16 cm",
+    "b": "8 cm",
+    "c": "5 cm",
+    "d": "10 cm",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 78,
+   "status": "imported",
+   "source_id": "67401",
+   "source_url": "https://myschool.ng/classroom/mathematics/67401?exam_type=jamb&exam_year=2023",
+   "source_question_number": 78,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Give the number of significant figures of the population of a town which has approximately 5,020,700 people",
+   "options_plain_text": {
+    "a": "7 significant figures",
+    "b": "3 significant figures",
+    "c": "4 significant figures",
+    "d": "5 significant figures",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 79,
+   "status": "imported",
+   "source_id": "67402",
+   "source_url": "https://myschool.ng/classroom/mathematics/67402?exam_type=jamb&exam_year=2023",
+   "source_question_number": 79,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "200 tickets were sold for a show. VIP tickets costs ₦1,200 and ₦700 for regular. Total amount realised from the sale of the tickets was ₦180,000. Find the number of VIP tickets sold and the the number of regular ticket sold.",
+   "options_plain_text": {
+    "a": "VIP = 80, Regular = 100",
+    "b": "VIP = 60, Regular = 120",
+    "c": "VIP = 60, Regular = 100",
+    "d": "VIP = 80, Regular = 120",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 80,
+   "status": "imported",
+   "source_id": "67405",
+   "source_url": "https://myschool.ng/classroom/mathematics/67405?exam_type=jamb&exam_year=2023",
+   "source_question_number": 80,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "It takes 12 men 8 hours a day to finish a piece of work in 4 days. In how many days will it take 4 men working 16 hours a day to complete the same piece of work?",
+   "options_plain_text": {
+    "a": "6 days",
+    "b": "8 days",
+    "c": "10 days",
+    "d": "12 days",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  }
+ ]
+}
