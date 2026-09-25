@@ -1,0 +1,1027 @@
+{
+ "import": "WAEC 2025 Agricultural Science",
+ "source_site": "myschool.ng",
+ "source_base_url": "https://myschool.ng/classroom/agricultural-science?exam_type=waec&exam_year=2025",
+ "collection_script": "collect_classroom.py --subject-slug agricultural-science --exam-type waec --year 2025",
+ "collected_at_utc": "2026-09-25 02:02 UTC",
+ "sql_file": "database/waec_2025_agricultural_science_question_bank.sql",
+ "classification": {
+  "subject_candidates": [
+   "Agricultural Science",
+   "Agriculture"
+  ],
+  "exam_body": "WAEC",
+  "exam_year": 2025,
+  "source_type": "exam_body",
+  "class_id": 0,
+  "topic_id": 0,
+  "recommended_class": "SSS3",
+  "question_category": "Agricultural Science",
+  "difficulty": "Medium (default, not rated)",
+  "note": "subject_id/exam_body_id resolved by name at import time; no IDs hardcoded"
+ },
+ "items": [
+  {
+   "item": 1,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77002?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77002,
+   "myschool_option_ids": [
+    291004,
+    291005,
+    291006,
+    291007
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 2,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77004?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77004,
+   "myschool_option_ids": [
+    291012,
+    291013,
+    291014,
+    291015
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 3,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77038?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77038,
+   "myschool_option_ids": [
+    291124,
+    291125,
+    291126,
+    291127
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 4,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77039?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77039,
+   "myschool_option_ids": [
+    291128,
+    291129,
+    291130,
+    291131
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/bIfLlSgNmRPjKyT4Kj2oKejFXKCfvrPMgzXVNedT.png",
+    "local_path": "uploads/question_bank/waec_2025_agricultural_science/Q4_diagram.png",
+    "sha256": "cedcd2c74afa9f88ba85ac9584323ae560ce483394f029d18bc59206590d74fa",
+    "bytes": 42281,
+    "format": "png",
+    "width": 400,
+    "height": 328
+   }
+  },
+  {
+   "item": 5,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77040?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77040,
+   "myschool_option_ids": [
+    291132,
+    291133,
+    291134,
+    291135
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/BXiCP5kCnUZZRHhfHTKML5t13TgPAYAFNAsMsLCo.png",
+    "local_path": "uploads/question_bank/waec_2025_agricultural_science/Q5_diagram.png",
+    "sha256": "cedcd2c74afa9f88ba85ac9584323ae560ce483394f029d18bc59206590d74fa",
+    "bytes": 42281,
+    "format": "png",
+    "width": 400,
+    "height": 328
+   }
+  },
+  {
+   "item": 6,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77041?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77041,
+   "myschool_option_ids": [
+    291136,
+    291137,
+    291138,
+    291139
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 7,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77042?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77042,
+   "myschool_option_ids": [
+    291140,
+    291141,
+    291142,
+    291143
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 8,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77043?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77043,
+   "myschool_option_ids": [
+    291144,
+    291145,
+    291146,
+    291147
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 9,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77044?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77044,
+   "myschool_option_ids": [
+    291148,
+    291149,
+    291150,
+    291151
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/rXEN9YcppwCeqlIksYecLJ2zXGZCvzTi4qGqLOKg.png",
+    "local_path": "uploads/question_bank/waec_2025_agricultural_science/Q9_diagram.png",
+    "sha256": "cf9858d71514a225aa3f992a4c0dd5f9814d9ac31e3a6a692352b45269d846cd",
+    "bytes": 47281,
+    "format": "png",
+    "width": 400,
+    "height": 265
+   }
+  },
+  {
+   "item": 10,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77045?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77045,
+   "myschool_option_ids": [
+    291152,
+    291153,
+    291154,
+    291155
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/Tu8QoboOG4uNYv6Fr681sWJ5tZx2JbomdQN6OSbE.png",
+    "local_path": "uploads/question_bank/waec_2025_agricultural_science/Q10_diagram.png",
+    "sha256": "cf9858d71514a225aa3f992a4c0dd5f9814d9ac31e3a6a692352b45269d846cd",
+    "bytes": 47281,
+    "format": "png",
+    "width": 400,
+    "height": 265
+   }
+  },
+  {
+   "item": 11,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77046?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77046,
+   "myschool_option_ids": [
+    291156,
+    291157,
+    291158,
+    291159
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/K7oQdqDorzRzX2fNK2PyZJI9jyQf30myjJkde1e7.png",
+    "local_path": "uploads/question_bank/waec_2025_agricultural_science/Q11_diagram.png",
+    "sha256": "cf9858d71514a225aa3f992a4c0dd5f9814d9ac31e3a6a692352b45269d846cd",
+    "bytes": 47281,
+    "format": "png",
+    "width": 400,
+    "height": 265
+   }
+  },
+  {
+   "item": 12,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77068?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77068,
+   "myschool_option_ids": [
+    291240,
+    291241,
+    291242,
+    291243
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 13,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77069?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77069,
+   "myschool_option_ids": [
+    291244,
+    291245,
+    291246,
+    291247
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 14,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77070?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77070,
+   "myschool_option_ids": [
+    291248,
+    291249,
+    291250,
+    291251
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 15,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77071?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77071,
+   "myschool_option_ids": [
+    291252,
+    291253,
+    291254,
+    291255
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 16,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77072?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77072,
+   "myschool_option_ids": [
+    291256,
+    291257,
+    291258,
+    291259
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 17,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77169?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77169,
+   "myschool_option_ids": [
+    291600,
+    291601,
+    291602,
+    291603
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 18,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77170?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77170,
+   "myschool_option_ids": [
+    291604,
+    291605,
+    291606,
+    291607
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 19,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77171?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77171,
+   "myschool_option_ids": [
+    291608,
+    291609,
+    291610,
+    291611
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 20,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77172?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77172,
+   "myschool_option_ids": [
+    291612,
+    291613,
+    291614,
+    291615
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 21,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77173?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77173,
+   "myschool_option_ids": [
+    291616,
+    291617,
+    291618,
+    291619
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 22,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77174?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77174,
+   "myschool_option_ids": [
+    291620,
+    291621,
+    291622,
+    291623
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 23,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77175?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77175,
+   "myschool_option_ids": [
+    291624,
+    291625,
+    291626,
+    291627
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 24,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77176?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77176,
+   "myschool_option_ids": [
+    291628,
+    291629,
+    291630,
+    291631
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 25,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77177?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77177,
+   "myschool_option_ids": [
+    291632,
+    291633,
+    291634,
+    291635
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 26,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77178?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77178,
+   "myschool_option_ids": [
+    291636,
+    291637,
+    291638,
+    291639
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 27,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77179?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77179,
+   "myschool_option_ids": [
+    291640,
+    291641,
+    291642,
+    291643
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 28,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77180?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77180,
+   "myschool_option_ids": [
+    291644,
+    291645,
+    291646,
+    291647
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 29,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77181?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77181,
+   "myschool_option_ids": [
+    291648,
+    291649,
+    291650,
+    291651
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/2w9YsHi33xM5REfmvf6X3ecLwh9r3VVQj8b0utDM.png",
+    "local_path": "uploads/question_bank/waec_2025_agricultural_science/Q29_diagram.png",
+    "sha256": "f9740772f4180b76c54961a4653a0e528d242263a93e45c21f5ef2cc70c4d939",
+    "bytes": 43716,
+    "format": "png",
+    "width": 400,
+    "height": 241
+   }
+  },
+  {
+   "item": 30,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77182?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77182,
+   "myschool_option_ids": [
+    291652,
+    291653,
+    291654,
+    291655
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/OGWY4XYlaXIpsBKQPEY9Sk5GogUQfL2YsQ5Od7zZ.png",
+    "local_path": "uploads/question_bank/waec_2025_agricultural_science/Q30_diagram.png",
+    "sha256": "f9740772f4180b76c54961a4653a0e528d242263a93e45c21f5ef2cc70c4d939",
+    "bytes": 43716,
+    "format": "png",
+    "width": 400,
+    "height": 241
+   }
+  },
+  {
+   "item": 31,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77199?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77199,
+   "myschool_option_ids": [
+    291736,
+    291737,
+    291738,
+    291739
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 32,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77200?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77200,
+   "myschool_option_ids": [
+    291740,
+    291741,
+    291742,
+    291743
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 33,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77201?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77201,
+   "myschool_option_ids": [
+    291744,
+    291745,
+    291746,
+    291747
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 34,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77202?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77202,
+   "myschool_option_ids": [
+    291748,
+    291749,
+    291750,
+    291751
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 35,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77203?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77203,
+   "myschool_option_ids": [
+    291752,
+    291753,
+    291754,
+    291755
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 36,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77204?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77204,
+   "myschool_option_ids": [
+    291760,
+    291761,
+    291762,
+    291763
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 37,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77205?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77205,
+   "myschool_option_ids": [
+    291764,
+    291765,
+    291766,
+    291767
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 38,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77206?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77206,
+   "myschool_option_ids": [
+    291768,
+    291769,
+    291770,
+    291771
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 39,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77207?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77207,
+   "myschool_option_ids": [
+    291772,
+    291773,
+    291774,
+    291775
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 40,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77208?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77208,
+   "myschool_option_ids": [
+    291776,
+    291777,
+    291778,
+    291779
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 41,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77215?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77215,
+   "myschool_option_ids": [
+    291800,
+    291801,
+    291802,
+    291803
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 42,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77216?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77216,
+   "myschool_option_ids": [
+    291804,
+    291805,
+    291806,
+    291807
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/cKnMITwdAxiT2ZfAiEXvtSb90YkbIdyqVJ2we3E5.png",
+    "local_path": "uploads/question_bank/waec_2025_agricultural_science/Q42_diagram.png",
+    "sha256": "5529f7921c2f982091c5c6130a6ec61b6da443e5c0192a6ef2ceeb062f1fd841",
+    "bytes": 37882,
+    "format": "png",
+    "width": 400,
+    "height": 263
+   }
+  },
+  {
+   "item": 43,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77217?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77217,
+   "myschool_option_ids": [
+    291808,
+    291809,
+    291810,
+    291811
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/ww4kua2llAg4H8gRVSkWP94yM7t11KS2q2s1oqeE.png",
+    "local_path": "uploads/question_bank/waec_2025_agricultural_science/Q43_diagram.png",
+    "sha256": "5529f7921c2f982091c5c6130a6ec61b6da443e5c0192a6ef2ceeb062f1fd841",
+    "bytes": 37882,
+    "format": "png",
+    "width": 400,
+    "height": 263
+   }
+  },
+  {
+   "item": 44,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77218?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77218,
+   "myschool_option_ids": [
+    291812,
+    291813,
+    291814,
+    291815
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 45,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77219?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77219,
+   "myschool_option_ids": [
+    291816,
+    291817,
+    291818,
+    291819
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 46,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77220?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77220,
+   "myschool_option_ids": [
+    291820,
+    291821,
+    291822,
+    291823
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 47,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77221?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77221,
+   "myschool_option_ids": [
+    291824,
+    291825,
+    291826,
+    291827
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 48,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77222?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77222,
+   "myschool_option_ids": [
+    291828,
+    291829,
+    291830,
+    291831
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 49,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77223?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77223,
+   "myschool_option_ids": [
+    291832,
+    291833,
+    291834,
+    291835
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 50,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77224?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77224,
+   "myschool_option_ids": [
+    291836,
+    291837,
+    291838,
+    291839
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 51,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77253?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77253,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 52,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77254?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77254,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 53,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77268?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77268,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 54,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77274?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77274,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 55,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77277?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77277,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 56,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77296?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77296,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 57,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77297?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77297,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (practical)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=practical"
+   ]
+  },
+  {
+   "item": 58,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77298?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77298,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (practical)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=practical"
+   ]
+  },
+  {
+   "item": 59,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77309?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77309,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (practical)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=practical"
+   ]
+  },
+  {
+   "item": 60,
+   "source_url": "https://myschool.ng/classroom/agricultural-science/77386?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77386,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (practical)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=practical"
+   ]
+  }
+ ]
+}
