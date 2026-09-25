@@ -1,0 +1,669 @@
+{
+ "import": "WAEC 2025 Geography",
+ "source_site": "myschool.ng",
+ "source_base_url": "https://myschool.ng/classroom/geography?exam_type=waec&exam_year=2025",
+ "collection_script": "collect_classroom.py --subject-slug geography --exam-type waec --year 2025",
+ "collected_at_utc": "2026-09-25 07:28 UTC",
+ "sql_file": "database/waec_2025_geography_question_bank.sql",
+ "classification": {
+  "subject_candidates": [
+   "Geography"
+  ],
+  "exam_body": "WAEC",
+  "exam_year": 2025,
+  "source_type": "exam_body",
+  "class_id": 0,
+  "topic_id": 0,
+  "recommended_class": "SSS3",
+  "question_category": "Geography",
+  "difficulty": "Medium (default, not rated)",
+  "note": "subject_id/exam_body_id resolved by name at import time; no IDs hardcoded"
+ },
+ "items": [
+  {
+   "item": 1,
+   "source_url": "https://myschool.ng/classroom/geography/77189?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77189,
+   "myschool_option_ids": [
+    291696,
+    291697,
+    291698,
+    291699
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/5DKjgmR4hT2EAXEtXJKkG9O0gDhzOrS8CppJ57Zs.png",
+    "local_path": "uploads/question_bank/waec_2025_geography/Q1_diagram.png",
+    "sha256": "1d28dcce8a5ce11027fe846af53e3dad457e83ea71edcf7a51429e76408072cb",
+    "bytes": 112189,
+    "format": "png",
+    "width": 379,
+    "height": 378
+   },
+   "answer_image": null
+  },
+  {
+   "item": 3,
+   "source_url": "https://myschool.ng/classroom/geography/77191?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77191,
+   "myschool_option_ids": [
+    291704,
+    291705,
+    291706,
+    291707
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/ApzqyFZpz2uTlD11mDs8ueb5U2Ml1KayfkQ0rvDM.png",
+    "local_path": "uploads/question_bank/waec_2025_geography/Q3_diagram.png",
+    "sha256": "1d28dcce8a5ce11027fe846af53e3dad457e83ea71edcf7a51429e76408072cb",
+    "bytes": 112189,
+    "format": "png",
+    "width": 379,
+    "height": 378
+   },
+   "answer_image": null
+  },
+  {
+   "item": 5,
+   "source_url": "https://myschool.ng/classroom/geography/77193?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77193,
+   "myschool_option_ids": [
+    291712,
+    291713,
+    291714,
+    291715
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/GYZ9XrJA17w97KZWEHPnAwn3IiaSXfcSYW60ghaf.png",
+    "local_path": "uploads/question_bank/waec_2025_geography/Q5_diagram.png",
+    "sha256": "1d28dcce8a5ce11027fe846af53e3dad457e83ea71edcf7a51429e76408072cb",
+    "bytes": 112189,
+    "format": "png",
+    "width": 379,
+    "height": 378
+   },
+   "answer_image": null
+  },
+  {
+   "item": 6,
+   "source_url": "https://myschool.ng/classroom/geography/77209?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77209,
+   "myschool_option_ids": [
+    291780,
+    291781,
+    291782,
+    291783
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/hXNTAlNlBtxAAyTHChcbk72rPEN8UmwOVJl28JTM.png",
+    "local_path": "uploads/question_bank/waec_2025_geography/Q6_diagram.png",
+    "sha256": "c5fcab69253ae35ea92ce13d60c4acd389d343769749fda353f48751c3beecec",
+    "bytes": 107321,
+    "format": "png",
+    "width": 315,
+    "height": 346
+   },
+   "answer_image": null
+  },
+  {
+   "item": 7,
+   "source_url": "https://myschool.ng/classroom/geography/77210?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77210,
+   "myschool_option_ids": [
+    291784,
+    291785,
+    291786,
+    291787
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/q19GTDh59rya0PSWhprifYv6uG94u7GCwPccQMpH.png",
+    "local_path": "uploads/question_bank/waec_2025_geography/Q7_diagram.png",
+    "sha256": "c5fcab69253ae35ea92ce13d60c4acd389d343769749fda353f48751c3beecec",
+    "bytes": 107321,
+    "format": "png",
+    "width": 315,
+    "height": 346
+   },
+   "answer_image": null
+  },
+  {
+   "item": 8,
+   "source_url": "https://myschool.ng/classroom/geography/77212?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77212,
+   "myschool_option_ids": [
+    291788,
+    291789,
+    291790,
+    291791
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/DW6vgQ8iU0fIpLrS4nExOf7M27W6sKGzkaVv1fvy.png",
+    "local_path": "uploads/question_bank/waec_2025_geography/Q8_diagram.png",
+    "sha256": "c5fcab69253ae35ea92ce13d60c4acd389d343769749fda353f48751c3beecec",
+    "bytes": 107321,
+    "format": "png",
+    "width": 315,
+    "height": 346
+   },
+   "answer_image": null
+  },
+  {
+   "item": 9,
+   "source_url": "https://myschool.ng/classroom/geography/77213?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77213,
+   "myschool_option_ids": [
+    291792,
+    291793,
+    291794,
+    291795
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/7C6f01IF6vOMwxRySsHjwdfyLWuSiEPXyrWVSK5l.png",
+    "local_path": "uploads/question_bank/waec_2025_geography/Q9_diagram.png",
+    "sha256": "50e4760eb555b578ace93b6431f523d8707e928582574a49f80936568d1e19a1",
+    "bytes": 111725,
+    "format": "png",
+    "width": 361,
+    "height": 373
+   },
+   "answer_image": null
+  },
+  {
+   "item": 10,
+   "source_url": "https://myschool.ng/classroom/geography/77214?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77214,
+   "myschool_option_ids": [
+    291796,
+    291797,
+    291798,
+    291799
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/oG3i3k8gqabYEkAYhhsVTTAcHjQvz7ByjlPw8TL6.png",
+    "local_path": "uploads/question_bank/waec_2025_geography/Q10_diagram.png",
+    "sha256": "6c6acb1d7904ccffbfdaee6b1601faa59f44c8445b427a6c9436d3cf5ff2ff17",
+    "bytes": 109864,
+    "format": "png",
+    "width": 311,
+    "height": 373
+   },
+   "answer_image": null
+  },
+  {
+   "item": 11,
+   "source_url": "https://myschool.ng/classroom/geography/77241?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77241,
+   "myschool_option_ids": [
+    291904,
+    291905,
+    291906,
+    291907
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/8L05GB9BWELNu1876pwjiKGan4vhBZKtK3uRSqdg.png",
+    "local_path": "uploads/question_bank/waec_2025_geography/Q11_diagram.png",
+    "sha256": "d175291487c461aa2190074e5f447a89a0fd1fed97f0278dfc4579bf0feb8536",
+    "bytes": 23030,
+    "format": "png",
+    "width": 400,
+    "height": 104
+   },
+   "answer_image": null
+  },
+  {
+   "item": 12,
+   "source_url": "https://myschool.ng/classroom/geography/77242?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77242,
+   "myschool_option_ids": [
+    291908,
+    291909,
+    291910,
+    291911
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/qSdYzhge0ow6kQDa0XZdrosd6ktGUifpp5k2DNmf.png",
+    "local_path": "uploads/question_bank/waec_2025_geography/Q12_diagram.png",
+    "sha256": "3964aa86f2d24fed59065eee00536732f36842a04b825b128f8ea72b88bb856b",
+    "bytes": 19946,
+    "format": "png",
+    "width": 400,
+    "height": 86
+   },
+   "answer_image": null
+  },
+  {
+   "item": 13,
+   "source_url": "https://myschool.ng/classroom/geography/77243?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77243,
+   "myschool_option_ids": [
+    291912,
+    291913,
+    291914,
+    291915
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/fLzenHjS4ZKOiPQqzf6rffooiAQoMV7tv4VmEAq1.png",
+    "local_path": "uploads/question_bank/waec_2025_geography/Q13_diagram.png",
+    "sha256": "16c93366463baf48d3807f1eb80ce931161d8a8e2cdc6b5b0f51ba474399cb5b",
+    "bytes": 19535,
+    "format": "png",
+    "width": 400,
+    "height": 79
+   },
+   "answer_image": null
+  },
+  {
+   "item": 14,
+   "source_url": "https://myschool.ng/classroom/geography/77244?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77244,
+   "myschool_option_ids": [
+    291916,
+    291917,
+    291918,
+    291919
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 15,
+   "source_url": "https://myschool.ng/classroom/geography/77245?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77245,
+   "myschool_option_ids": [
+    291920,
+    291921,
+    291922,
+    291923
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 17,
+   "source_url": "https://myschool.ng/classroom/geography/77289?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77289,
+   "myschool_option_ids": [
+    292072,
+    292073,
+    292074,
+    292075
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 18,
+   "source_url": "https://myschool.ng/classroom/geography/77290?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77290,
+   "myschool_option_ids": [
+    292076,
+    292077,
+    292078,
+    292079
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 19,
+   "source_url": "https://myschool.ng/classroom/geography/77635?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77635,
+   "myschool_option_ids": [
+    293262,
+    293263,
+    293264,
+    293265
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 20,
+   "source_url": "https://myschool.ng/classroom/geography/77636?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77636,
+   "myschool_option_ids": [
+    293266,
+    293267,
+    293268,
+    293269
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 21,
+   "source_url": "https://myschool.ng/classroom/geography/77637?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77637,
+   "myschool_option_ids": [
+    293270,
+    293271,
+    293272,
+    293273
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 22,
+   "source_url": "https://myschool.ng/classroom/geography/77638?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77638,
+   "myschool_option_ids": [
+    293274,
+    293275,
+    293276,
+    293277
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 23,
+   "source_url": "https://myschool.ng/classroom/geography/77639?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77639,
+   "myschool_option_ids": [
+    293278,
+    293279,
+    293280,
+    293281
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 24,
+   "source_url": "https://myschool.ng/classroom/geography/77640?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77640,
+   "myschool_option_ids": [
+    293282,
+    293283,
+    293284,
+    293285
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 25,
+   "source_url": "https://myschool.ng/classroom/geography/77641?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77641,
+   "myschool_option_ids": [
+    293286,
+    293287,
+    293288,
+    293289
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 26,
+   "source_url": "https://myschool.ng/classroom/geography/77642?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77642,
+   "myschool_option_ids": [
+    293290,
+    293291,
+    293292,
+    293293
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 27,
+   "source_url": "https://myschool.ng/classroom/geography/77643?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77643,
+   "myschool_option_ids": [
+    293294,
+    293295,
+    293296,
+    293297
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 28,
+   "source_url": "https://myschool.ng/classroom/geography/77644?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77644,
+   "myschool_option_ids": [
+    293298,
+    293299,
+    293300,
+    293301
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 29,
+   "source_url": "https://myschool.ng/classroom/geography/77645?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77645,
+   "myschool_option_ids": [
+    293302,
+    293303,
+    293304,
+    293305
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 30,
+   "source_url": "https://myschool.ng/classroom/geography/77646?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77646,
+   "myschool_option_ids": [
+    293306,
+    293307,
+    293308,
+    293309
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 31,
+   "source_url": "https://myschool.ng/classroom/geography/77647?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77647,
+   "myschool_option_ids": [
+    293310,
+    293311,
+    293312,
+    293313
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 32,
+   "source_url": "https://myschool.ng/classroom/geography/77662?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77662,
+   "myschool_option_ids": [
+    293374,
+    293375,
+    293376,
+    293377
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 33,
+   "source_url": "https://myschool.ng/classroom/geography/77663?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77663,
+   "myschool_option_ids": [
+    293378,
+    293379,
+    293380,
+    293381
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 34,
+   "source_url": "https://myschool.ng/classroom/geography/77664?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77664,
+   "myschool_option_ids": [
+    293382,
+    293383,
+    293384,
+    293385
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 2,
+   "source_url": "https://myschool.ng/classroom/geography/77190?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77190,
+   "status": "held_for_review",
+   "reasons": [
+    "correct flag != 1",
+    "no correct_option on individual page"
+   ]
+  },
+  {
+   "item": 4,
+   "source_url": "https://myschool.ng/classroom/geography/77192?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77192,
+   "status": "held_for_review",
+   "reasons": [
+    "correct flag != 1",
+    "no correct_option on individual page"
+   ]
+  },
+  {
+   "item": 16,
+   "source_url": "https://myschool.ng/classroom/geography/77288?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77288,
+   "status": "held_for_review",
+   "reasons": [
+    "correct flag != 1",
+    "no correct_option on individual page"
+   ]
+  }
+ ]
+}
