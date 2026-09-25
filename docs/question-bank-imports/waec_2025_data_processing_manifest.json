@@ -1,0 +1,765 @@
+{
+ "import": "WAEC 2025 Data Processing",
+ "source_site": "myschool.ng",
+ "source_base_url": "https://myschool.ng/classroom/data-processing?exam_type=waec&exam_year=2025",
+ "collection_script": "collect_classroom.py --subject-slug data-processing --exam-type waec --year 2025",
+ "collected_at_utc": "2026-09-25 07:22 UTC",
+ "sql_file": "database/waec_2025_data_processing_question_bank.sql",
+ "classification": {
+  "subject_candidates": [
+   "Data Processing"
+  ],
+  "exam_body": "WAEC",
+  "exam_year": 2025,
+  "source_type": "exam_body",
+  "class_id": 0,
+  "topic_id": 0,
+  "recommended_class": "SSS3",
+  "question_category": "Data Processing",
+  "difficulty": "Medium (default, not rated)",
+  "note": "subject_id/exam_body_id resolved by name at import time; no IDs hardcoded"
+ },
+ "items": [
+  {
+   "item": 1,
+   "source_url": "https://myschool.ng/classroom/data-processing/76955?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76955,
+   "myschool_option_ids": [
+    290852,
+    290853,
+    290854,
+    290855
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 2,
+   "source_url": "https://myschool.ng/classroom/data-processing/76956?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76956,
+   "myschool_option_ids": [
+    290856,
+    290857,
+    290858,
+    290859
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 3,
+   "source_url": "https://myschool.ng/classroom/data-processing/76957?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76957,
+   "myschool_option_ids": [
+    290860,
+    290861,
+    290862,
+    290863
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 4,
+   "source_url": "https://myschool.ng/classroom/data-processing/76958?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76958,
+   "myschool_option_ids": [
+    290864,
+    290865,
+    290866,
+    290867
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 5,
+   "source_url": "https://myschool.ng/classroom/data-processing/77032?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77032,
+   "myschool_option_ids": [
+    291100,
+    291101,
+    291102,
+    291103
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 6,
+   "source_url": "https://myschool.ng/classroom/data-processing/77033?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77033,
+   "myschool_option_ids": [
+    291104,
+    291105,
+    291106,
+    291107
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 7,
+   "source_url": "https://myschool.ng/classroom/data-processing/77034?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77034,
+   "myschool_option_ids": [
+    291108,
+    291109,
+    291110,
+    291111
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 8,
+   "source_url": "https://myschool.ng/classroom/data-processing/77035?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77035,
+   "myschool_option_ids": [
+    291112,
+    291113,
+    291114,
+    291115
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 9,
+   "source_url": "https://myschool.ng/classroom/data-processing/77036?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77036,
+   "myschool_option_ids": [
+    291116,
+    291117,
+    291118,
+    291119
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 10,
+   "source_url": "https://myschool.ng/classroom/data-processing/77037?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77037,
+   "myschool_option_ids": [
+    291120,
+    291121,
+    291122,
+    291123
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 11,
+   "source_url": "https://myschool.ng/classroom/data-processing/77047?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77047,
+   "myschool_option_ids": [
+    291160,
+    291161,
+    291162,
+    291163
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": {
+    "source_url": "https://myschool.ng/storage/classroom_answers/JI9FtfVFpLkh6nX1dVpX4nZbR8L1SnuJ0MVUNyDm.png",
+    "local_path": "uploads/question_bank/waec_2025_data_processing/Q11_answer_image.png",
+    "sha256": "fd36e958f9e260a4402ae37a8433988bda3521362791cb37a18398b5d282ca44",
+    "bytes": 12240,
+    "format": "png",
+    "width": 400,
+    "height": 154,
+    "role": "stem-referenced image hosted in the source answer section; embedded after manual page review"
+   }
+  },
+  {
+   "item": 12,
+   "source_url": "https://myschool.ng/classroom/data-processing/77048?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77048,
+   "myschool_option_ids": [
+    291164,
+    291165,
+    291166,
+    291167
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 13,
+   "source_url": "https://myschool.ng/classroom/data-processing/77049?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77049,
+   "myschool_option_ids": [
+    291168,
+    291169,
+    291170,
+    291171
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 14,
+   "source_url": "https://myschool.ng/classroom/data-processing/77050?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77050,
+   "myschool_option_ids": [
+    291172,
+    291173,
+    291174,
+    291175
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 15,
+   "source_url": "https://myschool.ng/classroom/data-processing/77051?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77051,
+   "myschool_option_ids": [
+    291176,
+    291177,
+    291178,
+    291179
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 16,
+   "source_url": "https://myschool.ng/classroom/data-processing/77052?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77052,
+   "myschool_option_ids": [
+    291180,
+    291181,
+    291182,
+    291183
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 17,
+   "source_url": "https://myschool.ng/classroom/data-processing/77054?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77054,
+   "myschool_option_ids": [
+    291184,
+    291185,
+    291186,
+    291187
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 18,
+   "source_url": "https://myschool.ng/classroom/data-processing/77055?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77055,
+   "myschool_option_ids": [
+    291188,
+    291189,
+    291190,
+    291191
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 19,
+   "source_url": "https://myschool.ng/classroom/data-processing/77056?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77056,
+   "myschool_option_ids": [
+    291192,
+    291193,
+    291194,
+    291195
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 20,
+   "source_url": "https://myschool.ng/classroom/data-processing/77057?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77057,
+   "myschool_option_ids": [
+    291196,
+    291197,
+    291198,
+    291199
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 21,
+   "source_url": "https://myschool.ng/classroom/data-processing/77062?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77062,
+   "myschool_option_ids": [
+    291216,
+    291217,
+    291218,
+    291219
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 22,
+   "source_url": "https://myschool.ng/classroom/data-processing/77063?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77063,
+   "myschool_option_ids": [
+    291220,
+    291221,
+    291222,
+    291223
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 23,
+   "source_url": "https://myschool.ng/classroom/data-processing/77064?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77064,
+   "myschool_option_ids": [
+    291224,
+    291225,
+    291226,
+    291227
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 24,
+   "source_url": "https://myschool.ng/classroom/data-processing/77065?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77065,
+   "myschool_option_ids": [
+    291228,
+    291229,
+    291230,
+    291231
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 25,
+   "source_url": "https://myschool.ng/classroom/data-processing/77066?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77066,
+   "myschool_option_ids": [
+    291232,
+    291233,
+    291234,
+    291235
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 26,
+   "source_url": "https://myschool.ng/classroom/data-processing/77067?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77067,
+   "myschool_option_ids": [
+    291236,
+    291237,
+    291238,
+    291239
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 27,
+   "source_url": "https://myschool.ng/classroom/data-processing/77073?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77073,
+   "myschool_option_ids": [
+    291260,
+    291261,
+    291262,
+    291263
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 28,
+   "source_url": "https://myschool.ng/classroom/data-processing/77074?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77074,
+   "myschool_option_ids": [
+    291264,
+    291265,
+    291266,
+    291267
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 29,
+   "source_url": "https://myschool.ng/classroom/data-processing/77097?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77097,
+   "myschool_option_ids": [
+    291344,
+    291345,
+    291346,
+    291347
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 30,
+   "source_url": "https://myschool.ng/classroom/data-processing/77098?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77098,
+   "myschool_option_ids": [
+    291348,
+    291349,
+    291350,
+    291351
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 31,
+   "source_url": "https://myschool.ng/classroom/data-processing/77099?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77099,
+   "myschool_option_ids": [
+    291352,
+    291353,
+    291354,
+    291355
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 32,
+   "source_url": "https://myschool.ng/classroom/data-processing/77100?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77100,
+   "myschool_option_ids": [
+    291356,
+    291357,
+    291358,
+    291359
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 33,
+   "source_url": "https://myschool.ng/classroom/data-processing/77101?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77101,
+   "myschool_option_ids": [
+    291360,
+    291361,
+    291362,
+    291363
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 34,
+   "source_url": "https://myschool.ng/classroom/data-processing/77102?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77102,
+   "myschool_option_ids": [
+    291364,
+    291365,
+    291366,
+    291367
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 35,
+   "source_url": "https://myschool.ng/classroom/data-processing/77103?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77103,
+   "myschool_option_ids": [
+    291368,
+    291369,
+    291370,
+    291371
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 36,
+   "source_url": "https://myschool.ng/classroom/data-processing/77104?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77104,
+   "myschool_option_ids": [
+    291372,
+    291373,
+    291374,
+    291375
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 37,
+   "source_url": "https://myschool.ng/classroom/data-processing/77105?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77105,
+   "myschool_option_ids": [
+    291376,
+    291377,
+    291378,
+    291379
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 38,
+   "source_url": "https://myschool.ng/classroom/data-processing/77108?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77108,
+   "myschool_option_ids": [
+    291380,
+    291381,
+    291382,
+    291383
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 39,
+   "source_url": "https://myschool.ng/classroom/data-processing/77109?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77109,
+   "myschool_option_ids": [
+    291384,
+    291385,
+    291386,
+    291387
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 40,
+   "source_url": "https://myschool.ng/classroom/data-processing/77110?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77110,
+   "myschool_option_ids": [
+    291388,
+    291389,
+    291390,
+    291391
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 41,
+   "source_url": "https://myschool.ng/classroom/data-processing/77464?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77464,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 42,
+   "source_url": "https://myschool.ng/classroom/data-processing/77465?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77465,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 43,
+   "source_url": "https://myschool.ng/classroom/data-processing/77466?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77466,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 44,
+   "source_url": "https://myschool.ng/classroom/data-processing/77469?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77469,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  }
+ ]
+}
