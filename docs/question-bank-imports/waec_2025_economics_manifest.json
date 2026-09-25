@@ -1,0 +1,570 @@
+{
+ "import": "WAEC 2025 Economics",
+ "source_site": "myschool.ng",
+ "source_base_url": "https://myschool.ng/classroom/economics?exam_type=waec&exam_year=2025",
+ "collection_script": "collect_classroom.py --subject-slug economics --exam-type waec --year 2025",
+ "collected_at_utc": "2026-09-25 01:44 UTC",
+ "sql_file": "database/waec_2025_economics_question_bank.sql",
+ "classification": {
+  "subject_candidates": [
+   "Economics"
+  ],
+  "exam_body": "WAEC",
+  "exam_year": 2025,
+  "source_type": "exam_body",
+  "class_id": 0,
+  "topic_id": 0,
+  "recommended_class": "SSS3",
+  "question_category": "Economics",
+  "difficulty": "Medium (default, not rated)",
+  "note": "subject_id/exam_body_id resolved by name at import time; no IDs hardcoded"
+ },
+ "items": [
+  {
+   "item": 51,
+   "source_url": "https://myschool.ng/classroom/economics/77551?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77551,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 52,
+   "source_url": "https://myschool.ng/classroom/economics/77553?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77553,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 53,
+   "source_url": "https://myschool.ng/classroom/economics/77556?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77556,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 54,
+   "source_url": "https://myschool.ng/classroom/economics/77558?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77558,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 55,
+   "source_url": "https://myschool.ng/classroom/economics/77560?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77560,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 56,
+   "source_url": "https://myschool.ng/classroom/economics/77564?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77564,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 57,
+   "source_url": "https://myschool.ng/classroom/economics/77567?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77567,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 58,
+   "source_url": "https://myschool.ng/classroom/economics/77568?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77568,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 1,
+   "source_url": "https://myschool.ng/classroom/economics/77255?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77255,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 2,
+   "source_url": "https://myschool.ng/classroom/economics/77256?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77256,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 3,
+   "source_url": "https://myschool.ng/classroom/economics/77257?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77257,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 4,
+   "source_url": "https://myschool.ng/classroom/economics/77258?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77258,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 5,
+   "source_url": "https://myschool.ng/classroom/economics/77259?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77259,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 6,
+   "source_url": "https://myschool.ng/classroom/economics/77260?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77260,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 7,
+   "source_url": "https://myschool.ng/classroom/economics/77261?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77261,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 8,
+   "source_url": "https://myschool.ng/classroom/economics/77262?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77262,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 9,
+   "source_url": "https://myschool.ng/classroom/economics/77263?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77263,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 10,
+   "source_url": "https://myschool.ng/classroom/economics/77264?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77264,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 11,
+   "source_url": "https://myschool.ng/classroom/economics/77265?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77265,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 12,
+   "source_url": "https://myschool.ng/classroom/economics/77266?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77266,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 13,
+   "source_url": "https://myschool.ng/classroom/economics/77267?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77267,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 14,
+   "source_url": "https://myschool.ng/classroom/economics/77269?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77269,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 15,
+   "source_url": "https://myschool.ng/classroom/economics/77270?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77270,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 16,
+   "source_url": "https://myschool.ng/classroom/economics/77271?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77271,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 17,
+   "source_url": "https://myschool.ng/classroom/economics/77272?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77272,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 18,
+   "source_url": "https://myschool.ng/classroom/economics/77273?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77273,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 19,
+   "source_url": "https://myschool.ng/classroom/economics/77275?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77275,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 20,
+   "source_url": "https://myschool.ng/classroom/economics/77276?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77276,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 21,
+   "source_url": "https://myschool.ng/classroom/economics/77329?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77329,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 22,
+   "source_url": "https://myschool.ng/classroom/economics/77333?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77333,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 23,
+   "source_url": "https://myschool.ng/classroom/economics/77338?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77338,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 24,
+   "source_url": "https://myschool.ng/classroom/economics/77342?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77342,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 25,
+   "source_url": "https://myschool.ng/classroom/economics/77344?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77344,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 26,
+   "source_url": "https://myschool.ng/classroom/economics/77353?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77353,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 27,
+   "source_url": "https://myschool.ng/classroom/economics/77358?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77358,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 28,
+   "source_url": "https://myschool.ng/classroom/economics/77361?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77361,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 29,
+   "source_url": "https://myschool.ng/classroom/economics/77365?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77365,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 30,
+   "source_url": "https://myschool.ng/classroom/economics/77368?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77368,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 31,
+   "source_url": "https://myschool.ng/classroom/economics/77372?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77372,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 32,
+   "source_url": "https://myschool.ng/classroom/economics/77373?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77373,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 33,
+   "source_url": "https://myschool.ng/classroom/economics/77375?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77375,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 34,
+   "source_url": "https://myschool.ng/classroom/economics/77378?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77378,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 35,
+   "source_url": "https://myschool.ng/classroom/economics/77382?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77382,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 36,
+   "source_url": "https://myschool.ng/classroom/economics/77385?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77385,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 37,
+   "source_url": "https://myschool.ng/classroom/economics/77388?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77388,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 38,
+   "source_url": "https://myschool.ng/classroom/economics/77395?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77395,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 39,
+   "source_url": "https://myschool.ng/classroom/economics/77398?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77398,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 40,
+   "source_url": "https://myschool.ng/classroom/economics/77401?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77401,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 41,
+   "source_url": "https://myschool.ng/classroom/economics/77405?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77405,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 42,
+   "source_url": "https://myschool.ng/classroom/economics/77410?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77410,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 43,
+   "source_url": "https://myschool.ng/classroom/economics/77414?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77414,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 44,
+   "source_url": "https://myschool.ng/classroom/economics/77419?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77419,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 45,
+   "source_url": "https://myschool.ng/classroom/economics/77422?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77422,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 46,
+   "source_url": "https://myschool.ng/classroom/economics/77426?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77426,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 47,
+   "source_url": "https://myschool.ng/classroom/economics/77429?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77429,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 48,
+   "source_url": "https://myschool.ng/classroom/economics/77431?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77431,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 49,
+   "source_url": "https://myschool.ng/classroom/economics/77437?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77437,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  },
+  {
+   "item": 50,
+   "source_url": "https://myschool.ng/classroom/economics/77440?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77440,
+   "status": "held_for_review",
+   "reasons": [
+    "duplicate of existing record in question_bank (2).sql (match: source-marker)"
+   ]
+  }
+ ]
+}
