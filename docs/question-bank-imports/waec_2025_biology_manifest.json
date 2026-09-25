@@ -1,0 +1,912 @@
+{
+ "import": "WAEC 2025 Biology",
+ "source_site": "myschool.ng",
+ "source_base_url": "https://myschool.ng/classroom/biology?exam_type=waec&exam_year=2025",
+ "collection_script": "collect_classroom.py --subject-slug biology --exam-type waec --year 2025",
+ "collected_at_utc": "2026-09-25 01:32 UTC",
+ "sql_file": "database/waec_2025_biology_question_bank.sql",
+ "classification": {
+  "subject_candidates": [
+   "Biology"
+  ],
+  "exam_body": "WAEC",
+  "exam_year": 2025,
+  "source_type": "exam_body",
+  "class_id": 0,
+  "topic_id": 0,
+  "recommended_class": "SSS3",
+  "question_category": "Biology",
+  "difficulty": "Medium (default, not rated)",
+  "note": "subject_id/exam_body_id resolved by name at import time; no IDs hardcoded"
+ },
+ "items": [
+  {
+   "item": 1,
+   "source_url": "https://myschool.ng/classroom/biology/77278?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77278,
+   "myschool_option_ids": [
+    292032,
+    292033,
+    292034,
+    292035
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 2,
+   "source_url": "https://myschool.ng/classroom/biology/77279?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77279,
+   "myschool_option_ids": [
+    292304,
+    292305,
+    292306,
+    292307
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/qo7IpPEVQ09TOuwII5rYgsFUnTjfuxhkWbXQUEfo.jpg",
+    "local_path": "uploads/question_bank/waec_2025_biology/Q2_diagram.jpg",
+    "sha256": "b07b0fb484af19ae6123d5ec7a90939b3f56b524b21649ed2b128cfb676c3b2e",
+    "bytes": 12739,
+    "format": "jpg",
+    "width": 400,
+    "height": 229
+   }
+  },
+  {
+   "item": 3,
+   "source_url": "https://myschool.ng/classroom/biology/77280?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77280,
+   "myschool_option_ids": [
+    292036,
+    292037,
+    292038,
+    292039
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/P7WIbrYcVd7iEeFotzNydn43tPyQUlhdI4LLXI4l.jpg",
+    "local_path": "uploads/question_bank/waec_2025_biology/Q3_diagram.jpg",
+    "sha256": "b07b0fb484af19ae6123d5ec7a90939b3f56b524b21649ed2b128cfb676c3b2e",
+    "bytes": 12739,
+    "format": "jpg",
+    "width": 400,
+    "height": 229
+   }
+  },
+  {
+   "item": 4,
+   "source_url": "https://myschool.ng/classroom/biology/77281?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77281,
+   "myschool_option_ids": [
+    292040,
+    292041,
+    292042,
+    292043
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/Q0pxJYoWr2zlFAk63hVBC2wuOMewoVL7LRWm0eTY.jpg",
+    "local_path": "uploads/question_bank/waec_2025_biology/Q4_diagram.jpg",
+    "sha256": "1fde2d0c94f2b1ade57dfe5083631b1abbe56214a39611cda2d5733626263c1d",
+    "bytes": 13394,
+    "format": "jpg",
+    "width": 400,
+    "height": 282
+   }
+  },
+  {
+   "item": 5,
+   "source_url": "https://myschool.ng/classroom/biology/77282?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77282,
+   "myschool_option_ids": [
+    292044,
+    292045,
+    292046,
+    292047
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/cj9adSNGZIoUb85njWuChqgG7gX6peiGxqLrD83N.jpg",
+    "local_path": "uploads/question_bank/waec_2025_biology/Q5_diagram.jpg",
+    "sha256": "1fde2d0c94f2b1ade57dfe5083631b1abbe56214a39611cda2d5733626263c1d",
+    "bytes": 13394,
+    "format": "jpg",
+    "width": 400,
+    "height": 282
+   }
+  },
+  {
+   "item": 6,
+   "source_url": "https://myschool.ng/classroom/biology/77283?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77283,
+   "myschool_option_ids": [
+    292048,
+    292049,
+    292050,
+    292051
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 7,
+   "source_url": "https://myschool.ng/classroom/biology/77284?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77284,
+   "myschool_option_ids": [
+    292052,
+    292053,
+    292054,
+    292055
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 8,
+   "source_url": "https://myschool.ng/classroom/biology/77285?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77285,
+   "myschool_option_ids": [
+    292056,
+    292057,
+    292058,
+    292059
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 9,
+   "source_url": "https://myschool.ng/classroom/biology/77286?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77286,
+   "myschool_option_ids": [
+    292060,
+    292061,
+    292062,
+    292063
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 10,
+   "source_url": "https://myschool.ng/classroom/biology/77287?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77287,
+   "myschool_option_ids": [
+    292064,
+    292065,
+    292066,
+    292067
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 11,
+   "source_url": "https://myschool.ng/classroom/biology/77319?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77319,
+   "myschool_option_ids": [
+    292156,
+    292157,
+    292158,
+    292159
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/6mbJkVfSUsGC9gCOOUqHLbFJaXRWj7OJp4IeXSbH.jpg",
+    "local_path": "uploads/question_bank/waec_2025_biology/Q11_diagram.jpg",
+    "sha256": "ffd28740cd6d333af3d2e64d8293f4cfa253a323092ca4668f560fff6119c056",
+    "bytes": 11294,
+    "format": "jpg",
+    "width": 400,
+    "height": 163
+   }
+  },
+  {
+   "item": 12,
+   "source_url": "https://myschool.ng/classroom/biology/77321?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77321,
+   "myschool_option_ids": [
+    292164,
+    292165,
+    292166,
+    292167
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 13,
+   "source_url": "https://myschool.ng/classroom/biology/77324?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77324,
+   "myschool_option_ids": [
+    292176,
+    292177,
+    292178,
+    292179
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 14,
+   "source_url": "https://myschool.ng/classroom/biology/77327?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77327,
+   "myschool_option_ids": [
+    292188,
+    292189,
+    292190,
+    292191
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 15,
+   "source_url": "https://myschool.ng/classroom/biology/77331?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77331,
+   "myschool_option_ids": [
+    292204,
+    292205,
+    292206,
+    292207
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 16,
+   "source_url": "https://myschool.ng/classroom/biology/77332?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77332,
+   "myschool_option_ids": [
+    292208,
+    292209,
+    292210,
+    292211
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 17,
+   "source_url": "https://myschool.ng/classroom/biology/77336?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77336,
+   "myschool_option_ids": [
+    292224,
+    292225,
+    292226,
+    292227
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 18,
+   "source_url": "https://myschool.ng/classroom/biology/77340?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77340,
+   "myschool_option_ids": [
+    292240,
+    292241,
+    292242,
+    292243
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 19,
+   "source_url": "https://myschool.ng/classroom/biology/77343?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77343,
+   "myschool_option_ids": [
+    292252,
+    292253,
+    292254,
+    292255
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 20,
+   "source_url": "https://myschool.ng/classroom/biology/77345?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77345,
+   "myschool_option_ids": [
+    292260,
+    292261,
+    292262,
+    292263
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 21,
+   "source_url": "https://myschool.ng/classroom/biology/77348?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77348,
+   "myschool_option_ids": [
+    292272,
+    292273,
+    292274,
+    292275
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 22,
+   "source_url": "https://myschool.ng/classroom/biology/77390?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77390,
+   "myschool_option_ids": [
+    292408,
+    292409,
+    292410,
+    292411
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/LpcJMNVFZpDiNt2S9oTgY9QnIskunxP9pQcYzSax.jpg",
+    "local_path": "uploads/question_bank/waec_2025_biology/Q22_diagram.jpg",
+    "sha256": "ffd28740cd6d333af3d2e64d8293f4cfa253a323092ca4668f560fff6119c056",
+    "bytes": 11294,
+    "format": "jpg",
+    "width": 400,
+    "height": 163
+   }
+  },
+  {
+   "item": 23,
+   "source_url": "https://myschool.ng/classroom/biology/77415?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77415,
+   "myschool_option_ids": [
+    292508,
+    292509,
+    292510,
+    292511
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/v1cYxKxugCoB1lQPKmrRwSj3By6SyaZzk8CyJLY4.jpg",
+    "local_path": "uploads/question_bank/waec_2025_biology/Q23_diagram.jpg",
+    "sha256": "7645572f78d6c21ac8531eda8fd69dea423abc96b6f830f3f2b818d5d43b7a52",
+    "bytes": 25734,
+    "format": "jpg",
+    "width": 400,
+    "height": 399
+   }
+  },
+  {
+   "item": 24,
+   "source_url": "https://myschool.ng/classroom/biology/77430?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77430,
+   "myschool_option_ids": [
+    292568,
+    292569,
+    292570,
+    292571
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/S6bkeuARDMHPe7H4girhKzVXzbdcV22jlPK6oTbH.jpg",
+    "local_path": "uploads/question_bank/waec_2025_biology/Q24_diagram.jpg",
+    "sha256": "7645572f78d6c21ac8531eda8fd69dea423abc96b6f830f3f2b818d5d43b7a52",
+    "bytes": 25734,
+    "format": "jpg",
+    "width": 400,
+    "height": 399
+   }
+  },
+  {
+   "item": 25,
+   "source_url": "https://myschool.ng/classroom/biology/77434?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77434,
+   "myschool_option_ids": [
+    292584,
+    292585,
+    292586,
+    292587
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 26,
+   "source_url": "https://myschool.ng/classroom/biology/77446?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77446,
+   "myschool_option_ids": [
+    292632,
+    292633,
+    292634,
+    292635
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 27,
+   "source_url": "https://myschool.ng/classroom/biology/77449?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77449,
+   "myschool_option_ids": [
+    292644,
+    292645,
+    292646,
+    292647
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 28,
+   "source_url": "https://myschool.ng/classroom/biology/77454?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77454,
+   "myschool_option_ids": [
+    292664,
+    292665,
+    292666,
+    292667
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 29,
+   "source_url": "https://myschool.ng/classroom/biology/77463?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77463,
+   "myschool_option_ids": [
+    292700,
+    292701,
+    292702,
+    292703
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/JlWmyeS7r0qPDFiE9e5j0ULsjiGLismFB61pkwwA.png",
+    "local_path": "uploads/question_bank/waec_2025_biology/Q29_diagram.png",
+    "sha256": "70a7c8c3d4269d63032025aface9d206b2d3945ddb62ad1082e13138badae072",
+    "bytes": 262876,
+    "format": "png",
+    "width": 400,
+    "height": 370
+   }
+  },
+  {
+   "item": 30,
+   "source_url": "https://myschool.ng/classroom/biology/77490?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77490,
+   "myschool_option_ids": [
+    292756,
+    292757,
+    292758,
+    292759
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/65tF3uw1WN7I3Q7KwRl4rSyGQ2RcQTRL512pwpbH.png",
+    "local_path": "uploads/question_bank/waec_2025_biology/Q30_diagram.png",
+    "sha256": "70a7c8c3d4269d63032025aface9d206b2d3945ddb62ad1082e13138badae072",
+    "bytes": 262876,
+    "format": "png",
+    "width": 400,
+    "height": 370
+   }
+  },
+  {
+   "item": 31,
+   "source_url": "https://myschool.ng/classroom/biology/77492?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77492,
+   "myschool_option_ids": [
+    292764,
+    292765,
+    292766,
+    292767
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 32,
+   "source_url": "https://myschool.ng/classroom/biology/77493?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77493,
+   "myschool_option_ids": [
+    292768,
+    292769,
+    292770,
+    292771
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 33,
+   "source_url": "https://myschool.ng/classroom/biology/77496?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77496,
+   "myschool_option_ids": [
+    292774,
+    292775,
+    292776,
+    292777
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 34,
+   "source_url": "https://myschool.ng/classroom/biology/77499?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77499,
+   "myschool_option_ids": [
+    292786,
+    292787,
+    292788,
+    292789
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 35,
+   "source_url": "https://myschool.ng/classroom/biology/77502?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77502,
+   "myschool_option_ids": [
+    292798,
+    292799,
+    292800,
+    292801
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 36,
+   "source_url": "https://myschool.ng/classroom/biology/77504?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77504,
+   "myschool_option_ids": [
+    292806,
+    292807,
+    292808,
+    292809
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 37,
+   "source_url": "https://myschool.ng/classroom/biology/77507?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77507,
+   "myschool_option_ids": [
+    292818,
+    292819,
+    292820,
+    292821
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 38,
+   "source_url": "https://myschool.ng/classroom/biology/77508?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77508,
+   "myschool_option_ids": [
+    292822,
+    292823,
+    292824,
+    292825
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 39,
+   "source_url": "https://myschool.ng/classroom/biology/77509?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77509,
+   "myschool_option_ids": [
+    292826,
+    292827,
+    292828,
+    292829
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 40,
+   "source_url": "https://myschool.ng/classroom/biology/77510?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77510,
+   "myschool_option_ids": [
+    292830,
+    292831,
+    292832,
+    292833
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 41,
+   "source_url": "https://myschool.ng/classroom/biology/77512?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77512,
+   "myschool_option_ids": [
+    292838,
+    292839,
+    292840,
+    292841
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 42,
+   "source_url": "https://myschool.ng/classroom/biology/77513?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77513,
+   "myschool_option_ids": [
+    292842,
+    292843,
+    292844,
+    292845
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 43,
+   "source_url": "https://myschool.ng/classroom/biology/77514?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77514,
+   "myschool_option_ids": [
+    292846,
+    292847,
+    292848,
+    292849
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 44,
+   "source_url": "https://myschool.ng/classroom/biology/77515?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77515,
+   "myschool_option_ids": [
+    292850,
+    292851,
+    292852,
+    292853
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 45,
+   "source_url": "https://myschool.ng/classroom/biology/77516?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77516,
+   "myschool_option_ids": [
+    292854,
+    292855,
+    292856,
+    292857
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/S8kRUrELZnXHbvGlz2S8IcKKiqLdYyi2x8RPycT3.jpg",
+    "local_path": "uploads/question_bank/waec_2025_biology/Q45_diagram.jpg",
+    "sha256": "56ccfa41cc8303191122c6d40cde6f2c22c8c17ae1cd44a7f9794b56c644769d",
+    "bytes": 21795,
+    "format": "jpg",
+    "width": 400,
+    "height": 335
+   }
+  },
+  {
+   "item": 46,
+   "source_url": "https://myschool.ng/classroom/biology/77518?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77518,
+   "myschool_option_ids": [
+    292862,
+    292863,
+    292864,
+    292865
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 47,
+   "source_url": "https://myschool.ng/classroom/biology/77532?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77532,
+   "myschool_option_ids": [
+    292914,
+    292915,
+    292916,
+    292917
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 48,
+   "source_url": "https://myschool.ng/classroom/biology/77533?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77533,
+   "myschool_option_ids": [
+    292918,
+    292919,
+    292920,
+    292921
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 49,
+   "source_url": "https://myschool.ng/classroom/biology/77534?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77534,
+   "myschool_option_ids": [
+    292922,
+    292923,
+    292924,
+    292925
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 50,
+   "source_url": "https://myschool.ng/classroom/biology/77535?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77535,
+   "myschool_option_ids": [
+    292926,
+    292927,
+    292928,
+    292929
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  }
+ ]
+}
