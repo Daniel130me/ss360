@@ -1,0 +1,1725 @@
+{
+ "source_exam_body": "JAMB",
+ "source_exam_year": 2024,
+ "source_subject": "Economics",
+ "listing_url": "https://myschool.ng/classroom/economics?exam_type=jamb&exam_year=2024",
+ "collected_at": "2026-09-25",
+ "triage": {
+  "discovered": 80,
+  "imported": 80,
+  "held_for_review": 0,
+  "duplicate_skipped": 0
+ },
+ "items": [
+  {
+   "item": 1,
+   "status": "imported",
+   "source_id": "70851",
+   "source_url": "https://myschool.ng/classroom/economics/70851?exam_type=jamb&exam_year=2024",
+   "source_question_number": 1,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "which of the following is not emphasized in a product possibility curve?",
+   "options_plain_text": {
+    "a": "scarcity of resources",
+    "b": "unemployment of labour",
+    "c": "inefficiency in the use of resources",
+    "d": "economic development",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 2,
+   "status": "imported",
+   "source_id": "70852",
+   "source_url": "https://myschool.ng/classroom/economics/70852?exam_type=jamb&exam_year=2024",
+   "source_question_number": 2,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "which of the following not among the objectives of opec?",
+   "options_plain_text": {
+    "a": "to stabilize the price of oil in the world market",
+    "b": "to established petroleum refineries in all member state",
+    "c": "to stabilize the revenue from oil to producing countries",
+    "d": "to make sure that oil flows to all the consuming countries",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 3,
+   "status": "imported",
+   "source_id": "70853",
+   "source_url": "https://myschool.ng/classroom/economics/70853?exam_type=jamb&exam_year=2024",
+   "source_question_number": 3,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "a market situation with few sellers and many buyers is called",
+   "options_plain_text": {
+    "a": "duopoly",
+    "b": "omonopoly",
+    "c": "perfect competition",
+    "d": "oligopoly",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 4,
+   "status": "imported",
+   "source_id": "70854",
+   "source_url": "https://myschool.ng/classroom/economics/70854?exam_type=jamb&exam_year=2024",
+   "source_question_number": 4,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "mpc + mps equals",
+   "options_plain_text": {
+    "a": "zero",
+    "b": "multiplier",
+    "c": "one",
+    "d": "aps",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 5,
+   "status": "imported",
+   "source_id": "70855",
+   "source_url": "https://myschool.ng/classroom/economics/70855?exam_type=jamb&exam_year=2024",
+   "source_question_number": 5,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "producers operating in a free market economy are more efficient as a result of",
+   "options_plain_text": {
+    "a": "the existence of competition",
+    "b": "government regulation of their activities",
+    "c": "the very few number of participants",
+    "d": "the commitment of the shareholders",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 6,
+   "status": "imported",
+   "source_id": "70856",
+   "source_url": "https://myschool.ng/classroom/economics/70856?exam_type=jamb&exam_year=2024",
+   "source_question_number": 6,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "in income determination theory, acceleration principles shows that",
+   "options_plain_text": {
+    "a": "investment is the causes, while income is the effects",
+    "b": "income and investment are both effects",
+    "c": "incomes is of on effect on investment",
+    "d": "income and investment are both causes",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 7,
+   "status": "imported",
+   "source_id": "70857",
+   "source_url": "https://myschool.ng/classroom/economics/70857?exam_type=jamb&exam_year=2024",
+   "source_question_number": 7,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the largest component of national income in developing countries consist of",
+   "options_plain_text": {
+    "a": "wages and salaries",
+    "b": "rent",
+    "c": "profit",
+    "d": "profit and rent",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 8,
+   "status": "imported",
+   "source_id": "70860",
+   "source_url": "https://myschool.ng/classroom/economics/70860?exam_type=jamb&exam_year=2024",
+   "source_question_number": 8,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "holding money to take care of contingencies is",
+   "options_plain_text": {
+    "a": "a precautionary motive",
+    "b": "a transactions motive",
+    "c": "an expansionary motive",
+    "d": "a speculative motive",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 9,
+   "status": "imported",
+   "source_id": "70861",
+   "source_url": "https://myschool.ng/classroom/economics/70861?exam_type=jamb&exam_year=2024",
+   "source_question_number": 9,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "in the long-run, a firm must shut down if its average revenue is",
+   "options_plain_text": {
+    "a": "greater than average cost",
+    "b": "equal to the average cost",
+    "c": "equal to the minimum average revenue is",
+    "d": "less than average variable cost",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 10,
+   "status": "imported",
+   "source_id": "70862",
+   "source_url": "https://myschool.ng/classroom/economics/70862?exam_type=jamb&exam_year=2024",
+   "source_question_number": 10,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the act of cultivating land and rearing of animal for man's use is",
+   "options_plain_text": {
+    "a": "forestry",
+    "b": "agriculture",
+    "c": "mono culture",
+    "d": "horticulture",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 11,
+   "status": "imported",
+   "source_id": "70863",
+   "source_url": "https://myschool.ng/classroom/economics/70863?exam_type=jamb&exam_year=2024",
+   "source_question_number": 11,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "in the event of bankruptcy, owners of joint-stock companies lose",
+   "options_plain_text": {
+    "a": "both company and private assets",
+    "b": "only the capital invested",
+    "c": "only their dividends",
+    "d": "their private properties",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 12,
+   "status": "imported",
+   "source_id": "70864",
+   "source_url": "https://myschool.ng/classroom/economics/70864?exam_type=jamb&exam_year=2024",
+   "source_question_number": 12,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the main disadvantages of deflationary policies is",
+   "options_plain_text": {
+    "a": "full employment in the country",
+    "b": "increasing cost of living",
+    "c": "unemployment in the country",
+    "d": "improved standard of living",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 13,
+   "status": "imported",
+   "source_id": "70865",
+   "source_url": "https://myschool.ng/classroom/economics/70865?exam_type=jamb&exam_year=2024",
+   "source_question_number": 13,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "if government in a fiscal year has its revenue receipts less than the expenditure, such country is having",
+   "options_plain_text": {
+    "a": "deficit budget",
+    "b": "favorable budget",
+    "c": "balanced budget",
+    "d": "surplus budget",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 14,
+   "status": "imported",
+   "source_id": "70866",
+   "source_url": "https://myschool.ng/classroom/economics/70866?exam_type=jamb&exam_year=2024",
+   "source_question_number": 14,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "a firm's average cost decreases in the long-run because of",
+   "options_plain_text": {
+    "a": "increasing returns to scale",
+    "b": "diminishing average returns",
+    "c": "decreasing average fixed cost",
+    "d": "decreasing marginal returns",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 15,
+   "status": "imported",
+   "source_id": "70867",
+   "source_url": "https://myschool.ng/classroom/economics/70867?exam_type=jamb&exam_year=2024",
+   "source_question_number": 15,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "what is the median term in the distribution below; 14, 13 29,15,13,17,12.",
+   "options_plain_text": {
+    "a": "14",
+    "b": "13",
+    "c": "15",
+    "d": "12",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 16,
+   "status": "imported",
+   "source_id": "70868",
+   "source_url": "https://myschool.ng/classroom/economics/70868?exam_type=jamb&exam_year=2024",
+   "source_question_number": 16,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the following are type of business organization except",
+   "options_plain_text": {
+    "a": "co-operative society",
+    "b": "partnership",
+    "c": "entrepreneurship",
+    "d": "public corporation",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 17,
+   "status": "imported",
+   "source_id": "70869",
+   "source_url": "https://myschool.ng/classroom/economics/70869?exam_type=jamb&exam_year=2024",
+   "source_question_number": 17,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/JKCn2HzwNRN2Nt7chTwkRJfCMIHJ06Pb8N4uWpAo.png"
+   ],
+   "stem_image_local_path": "uploads/question_bank/jamb_2024_economics/Q17_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/jamb_2024_economics/Q17_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "from the diagram below, moving from point a to b and from b to c is due to",
+   "options_plain_text": {
+    "a": "economic depression",
+    "b": "unemployment",
+    "c": "economic growth",
+    "d": "opportunity cost",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 18,
+   "status": "imported",
+   "source_id": "70870",
+   "source_url": "https://myschool.ng/classroom/economics/70870?exam_type=jamb&exam_year=2024",
+   "source_question_number": 18,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the contribution of petroleum to the economy of nigerian is most prominent in the area of",
+   "options_plain_text": {
+    "a": "revenue generation",
+    "b": "infrastructural development",
+    "c": "fuel provision",
+    "d": "employment generation",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 19,
+   "status": "imported",
+   "source_id": "70871",
+   "source_url": "https://myschool.ng/classroom/economics/70871?exam_type=jamb&exam_year=2024",
+   "source_question_number": 19,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "which of the following is not a feature of capitalism?",
+   "options_plain_text": {
+    "a": "free enterprise",
+    "b": "private ownership of property",
+    "c": "competition",
+    "d": "detailed economics planning",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 20,
+   "status": "imported",
+   "source_id": "70872",
+   "source_url": "https://myschool.ng/classroom/economics/70872?exam_type=jamb&exam_year=2024",
+   "source_question_number": 20,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "when an economy is having a balance of payment surplus the best alternative opened to it is to",
+   "options_plain_text": {
+    "a": "devalue its currency",
+    "b": "borrow from abroad",
+    "c": "promote imports into the country",
+    "d": "increase its foreign reserve",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 21,
+   "status": "imported",
+   "source_id": "70873",
+   "source_url": "https://myschool.ng/classroom/economics/70873?exam_type=jamb&exam_year=2024",
+   "source_question_number": 21,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "one of the function of united nation conference on trade and development (untad) is to",
+   "options_plain_text": {
+    "a": "transfer technology from developed to less developed countries",
+    "b": "increase share of less developed countries in world trade",
+    "c": "increase impact of developed countries over less developed countries",
+    "d": "make goods available in developed countries",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 22,
+   "status": "imported",
+   "source_id": "70874",
+   "source_url": "https://myschool.ng/classroom/economics/70874?exam_type=jamb&exam_year=2024",
+   "source_question_number": 22,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "wholesalers play an important in the distribution of goods and services because they",
+   "options_plain_text": {
+    "a": "are located very close to consumers",
+    "b": "pass information on from retailers to consumers",
+    "c": "sell in small units to consumers",
+    "d": "finance both producers and retailers",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 23,
+   "status": "imported",
+   "source_id": "70875",
+   "source_url": "https://myschool.ng/classroom/economics/70875?exam_type=jamb&exam_year=2024",
+   "source_question_number": 23,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "economics problems arise in all societies because",
+   "options_plain_text": {
+    "a": "the services of economists are not employed",
+    "b": "resource are not in adequate supply",
+    "c": "there is no proper planning",
+    "d": "resources are mismanaged by leaders",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 24,
+   "status": "imported",
+   "source_id": "70876",
+   "source_url": "https://myschool.ng/classroom/economics/70876?exam_type=jamb&exam_year=2024",
+   "source_question_number": 24,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "a downward sloping demand curve means that",
+   "options_plain_text": {
+    "a": "price must be lowered to sell more",
+    "b": "total revenue declines as price is lowered",
+    "c": "demand falls as output increases",
+    "d": "demand falls as output falls",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 25,
+   "status": "imported",
+   "source_id": "70878",
+   "source_url": "https://myschool.ng/classroom/economics/70878?exam_type=jamb&exam_year=2024",
+   "source_question_number": 25,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the bank established to finances project aimed at promoting economic and social development within the african continent is",
+   "options_plain_text": {
+    "a": "african bank for commerce and industry",
+    "b": "economic bank for african",
+    "c": "recovery fund bank for africa",
+    "d": "african development bank",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 26,
+   "status": "imported",
+   "source_id": "70879",
+   "source_url": "https://myschool.ng/classroom/economics/70879?exam_type=jamb&exam_year=2024",
+   "source_question_number": 26,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/MXLV3WfWCSO4vcymV5rLTXDF1rBorhHtEzwwhofc.png"
+   ],
+   "stem_image_local_path": "uploads/question_bank/jamb_2024_economics/Q26_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/jamb_2024_economics/Q26_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the diagram belwo, shows the relationship between",
+   "options_plain_text": {
+    "a": "minimum wage and unemployment",
+    "b": "equilibrium wage rate and philip curve",
+    "c": "w4 and w3",
+    "d": "wage rate and unemployment",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 27,
+   "status": "imported",
+   "source_id": "70880",
+   "source_url": "https://myschool.ng/classroom/economics/70880?exam_type=jamb&exam_year=2024",
+   "source_question_number": 27,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "which of these is not associated with the problem of internal trade?",
+   "options_plain_text": {
+    "a": "bargaining",
+    "b": "market trade unions",
+    "c": "lack of specialization",
+    "d": "natural barriers",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 28,
+   "status": "imported",
+   "source_id": "70881",
+   "source_url": "https://myschool.ng/classroom/economics/70881?exam_type=jamb&exam_year=2024",
+   "source_question_number": 28,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the middle value of an array figure arranged in descending order is referred to as the",
+   "options_plain_text": {
+    "a": "variance",
+    "b": "mean",
+    "c": "mode",
+    "d": "median",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 29,
+   "status": "imported",
+   "source_id": "70882",
+   "source_url": "https://myschool.ng/classroom/economics/70882?exam_type=jamb&exam_year=2024",
+   "source_question_number": 29,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "an exceptional demand curve can result from",
+   "options_plain_text": {
+    "a": "increase in price of raw materials",
+    "b": "change in taste of consumer",
+    "c": "increase in the size of the population",
+    "d": "expectation of future price increase",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 30,
+   "status": "imported",
+   "source_id": "70883",
+   "source_url": "https://myschool.ng/classroom/economics/70883?exam_type=jamb&exam_year=2024",
+   "source_question_number": 30,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "if the prices of a commodity increases from n8.00 to n10.00 and the demand decreases from 100 to 80 respectively, wha is the price elasticity of demand for the commodity?",
+   "options_plain_text": {
+    "a": "1",
+    "b": "0.8",
+    "c": "0.5",
+    "d": "1.5",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 31,
+   "status": "imported",
+   "source_id": "70884",
+   "source_url": "https://myschool.ng/classroom/economics/70884?exam_type=jamb&exam_year=2024",
+   "source_question_number": 31,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "a producer who can only influence the price of his product but cannot determine the quantity to be sold is referred to as",
+   "options_plain_text": {
+    "a": "duopoly",
+    "b": "monopolist",
+    "c": "monopsonist",
+    "d": "oligopoly",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 32,
+   "status": "imported",
+   "source_id": "70885",
+   "source_url": "https://myschool.ng/classroom/economics/70885?exam_type=jamb&exam_year=2024",
+   "source_question_number": 32,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "which of the following is not a factor that brings about changes in demand?",
+   "options_plain_text": {
+    "a": "the price of the good or service",
+    "b": "a change in real income",
+    "c": "government policy",
+    "d": "increase in population",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 33,
+   "status": "imported",
+   "source_id": "70886",
+   "source_url": "https://myschool.ng/classroom/economics/70886?exam_type=jamb&exam_year=2024",
+   "source_question_number": 33,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "a price floor is usually fixed",
+   "options_plain_text": {
+    "a": "above the equilibrium and causes surpluses",
+    "b": "below the equilibrium and causes surpluses",
+    "c": "above the equilibrium and causes shortage",
+    "d": "at the equilibrium and causes no shortage",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 34,
+   "status": "imported",
+   "source_id": "70887",
+   "source_url": "https://myschool.ng/classroom/economics/70887?exam_type=jamb&exam_year=2024",
+   "source_question_number": 34,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "if the price of commodity x rises and consumers shift to commodity y, then commodities x and y are",
+   "options_plain_text": {
+    "a": "inferior goods",
+    "b": "substitutes",
+    "c": "complements",
+    "d": "bought together",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 35,
+   "status": "imported",
+   "source_id": "70888",
+   "source_url": "https://myschool.ng/classroom/economics/70888?exam_type=jamb&exam_year=2024",
+   "source_question_number": 35,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the willingness of an individual backed up with purchasing power at a given time is",
+   "options_plain_text": {
+    "a": "effective demand",
+    "b": "demand",
+    "c": "desire",
+    "d": "utility",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 36,
+   "status": "imported",
+   "source_id": "70889",
+   "source_url": "https://myschool.ng/classroom/economics/70889?exam_type=jamb&exam_year=2024",
+   "source_question_number": 36,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the formular used by the expenditure approach to calculate national income is",
+   "options_plain_text": {
+    "a": "y=c+i+x-m-g",
+    "b": "y=c+i+g+x-m",
+    "c": "y=c+x-m-i+g",
+    "d": "y=c-i+x-m+g",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 37,
+   "status": "imported",
+   "source_id": "70890",
+   "source_url": "https://myschool.ng/classroom/economics/70890?exam_type=jamb&exam_year=2024",
+   "source_question_number": 37,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "if the marginal utility of commodity is equal to its price, then",
+   "options_plain_text": {
+    "a": "the market is not in equilibrium",
+    "b": "more of the commodity can be consumed",
+    "c": "total utility is also equal to its price",
+    "d": "the consumer is in equilibrium",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 38,
+   "status": "imported",
+   "source_id": "70891",
+   "source_url": "https://myschool.ng/classroom/economics/70891?exam_type=jamb&exam_year=2024",
+   "source_question_number": 38,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/OqnCw7Fx1d8VjS4sysqUjSfEeMf66iTSEUgwIPBN.png"
+   ],
+   "stem_image_local_path": "uploads/question_bank/jamb_2024_economics/Q38_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/jamb_2024_economics/Q38_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "from the diagram below, the equilibrium wage rate is",
+   "options_plain_text": {
+    "a": "l3",
+    "b": "l2",
+    "c": "w2",
+    "d": "w1",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 39,
+   "status": "imported",
+   "source_id": "70892",
+   "source_url": "https://myschool.ng/classroom/economics/70892?exam_type=jamb&exam_year=2024",
+   "source_question_number": 39,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "when combination of two goods which a consumer derive equal satisfaction is plotted on a graph, the graph is known as",
+   "options_plain_text": {
+    "a": "opportunity curve",
+    "b": "utility curve",
+    "c": "demand curve",
+    "d": "indifference curve",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 40,
+   "status": "imported",
+   "source_id": "70893",
+   "source_url": "https://myschool.ng/classroom/economics/70893?exam_type=jamb&exam_year=2024",
+   "source_question_number": 40,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the comparison of the standard of living between nigeria and ghana is best down through the use of",
+   "options_plain_text": {
+    "a": "gross national incomes",
+    "b": "per capita income",
+    "c": "net national income",
+    "d": "net disposable income",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 41,
+   "status": "imported",
+   "source_id": "70894",
+   "source_url": "https://myschool.ng/classroom/economics/70894?exam_type=jamb&exam_year=2024",
+   "source_question_number": 41,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the formular (n + 1)/2 is used to determine the",
+   "options_plain_text": {
+    "a": "median",
+    "b": "mean",
+    "c": "standard deviation",
+    "d": "mode",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 42,
+   "status": "imported",
+   "source_id": "70895",
+   "source_url": "https://myschool.ng/classroom/economics/70895?exam_type=jamb&exam_year=2024",
+   "source_question_number": 42,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "if the standard deviation of a set of numbers is 3.6, what is the variance?",
+   "options_plain_text": {
+    "a": "12.96",
+    "b": "12.69",
+    "c": "12.9",
+    "d": "12.98",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 43,
+   "status": "imported",
+   "source_id": "70896",
+   "source_url": "https://myschool.ng/classroom/economics/70896?exam_type=jamb&exam_year=2024",
+   "source_question_number": 43,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the following will occur when maximum price is fixed below the free market price except that",
+   "options_plain_text": {
+    "a": "black market will be encouraged",
+    "b": "excess demand will occur",
+    "c": "excess supply will occur",
+    "d": "rationing of commodities will occur",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 44,
+   "status": "imported",
+   "source_id": "70897",
+   "source_url": "https://myschool.ng/classroom/economics/70897?exam_type=jamb&exam_year=2024",
+   "source_question_number": 44,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "if the population of a school is 600 and 60% are in jss, how many students are in sss?",
+   "options_plain_text": {
+    "a": "244",
+    "b": "240",
+    "c": "224",
+    "d": "204",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 45,
+   "status": "imported",
+   "source_id": "70898",
+   "source_url": "https://myschool.ng/classroom/economics/70898?exam_type=jamb&exam_year=2024",
+   "source_question_number": 45,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the revolution of cassava from ordinary food crop to export crop will lead to",
+   "options_plain_text": {
+    "a": "increase in production of other crops",
+    "b": "increase in the prices of cassava products",
+    "c": "decrease in production of local starch",
+    "d": "decrease in production of cassava",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 46,
+   "status": "imported",
+   "source_id": "70899",
+   "source_url": "https://myschool.ng/classroom/economics/70899?exam_type=jamb&exam_year=2024",
+   "source_question_number": 46,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "when the total product starts falling, then the marginal product is",
+   "options_plain_text": {
+    "a": "increasing",
+    "b": "maximum",
+    "c": "zero",
+    "d": "negative",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 47,
+   "status": "imported",
+   "source_id": "70900",
+   "source_url": "https://myschool.ng/classroom/economics/70900?exam_type=jamb&exam_year=2024",
+   "source_question_number": 47,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the following are the objectives of agricultural policies in nigeria except a. provision of food b. provision of agricultural raw materials to industrial sectors c. increasing prices of agricultural inputs d. creation of rural employment",
+   "options_plain_text": {
+    "a": "provision of agricultural raw materials to industrial sectors",
+    "b": "creation of rural employment",
+    "c": "provision of food",
+    "d": "increasing prices of agricultural inputs",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 48,
+   "status": "imported",
+   "source_id": "70901",
+   "source_url": "https://myschool.ng/classroom/economics/70901?exam_type=jamb&exam_year=2024",
+   "source_question_number": 48,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the following can be used to improve a country's balance of payment except",
+   "options_plain_text": {
+    "a": "anti-dumping policies",
+    "b": "granting subsidies to export producers",
+    "c": "decreasing taxation on personal income",
+    "d": "increasing import duties",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 49,
+   "status": "imported",
+   "source_id": "70902",
+   "source_url": "https://myschool.ng/classroom/economics/70902?exam_type=jamb&exam_year=2024",
+   "source_question_number": 49,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "in the equation q = a - bp + e; q and p are ... variables respectively.",
+   "options_plain_text": {
+    "a": "independent and dependent",
+    "b": "dependent and independent",
+    "c": "independent and constant",
+    "d": "error term and independent",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 50,
+   "status": "imported",
+   "source_id": "70903",
+   "source_url": "https://myschool.ng/classroom/economics/70903?exam_type=jamb&exam_year=2024",
+   "source_question_number": 50,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "which of the following is not an objective of economic planning?",
+   "options_plain_text": {
+    "a": "equitable allocation of resources",
+    "b": "widening the income gap",
+    "c": "achieving economic growth",
+    "d": "creating employment",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 51,
+   "status": "imported",
+   "source_id": "70904",
+   "source_url": "https://myschool.ng/classroom/economics/70904?exam_type=jamb&exam_year=2024",
+   "source_question_number": 51,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the following determine the level of consumption except",
+   "options_plain_text": {
+    "a": "level of income",
+    "b": "the rate of taxes paid",
+    "c": "savings",
+    "d": "the political climate",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 52,
+   "status": "imported",
+   "source_id": "70905",
+   "source_url": "https://myschool.ng/classroom/economics/70905?exam_type=jamb&exam_year=2024",
+   "source_question_number": 52,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the following are problems of development planning in nigeria except",
+   "options_plain_text": {
+    "a": "inadequate capital",
+    "b": "under-population",
+    "c": "inadequate statistical data",
+    "d": "poor implementation of economic planning",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 53,
+   "status": "imported",
+   "source_id": "70906",
+   "source_url": "https://myschool.ng/classroom/economics/70906?exam_type=jamb&exam_year=2024",
+   "source_question_number": 53,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the system of farming which involves the use of a large hectare of land planted with economic crops is known as",
+   "options_plain_text": {
+    "a": "peasant farming",
+    "b": "tree planting",
+    "c": "plantation farming",
+    "d": "mechanized farming",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 54,
+   "status": "imported",
+   "source_id": "70907",
+   "source_url": "https://myschool.ng/classroom/economics/70907?exam_type=jamb&exam_year=2024",
+   "source_question_number": 54,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "at the equilibrium price,",
+   "options_plain_text": {
+    "a": "demand equates supply",
+    "b": "price is equal to demand only",
+    "c": "demand is less than supply",
+    "d": "demand is greater than supply",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 55,
+   "status": "imported",
+   "source_id": "70908",
+   "source_url": "https://myschool.ng/classroom/economics/70908?exam_type=jamb&exam_year=2024",
+   "source_question_number": 55,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "which of the following is a disadvantage of localization of industries?",
+   "options_plain_text": {
+    "a": "creating structural unemployment",
+    "b": "reducing cost of production",
+    "c": "encouraging the growth of skilled labour",
+    "d": "encouraging subsidiary industries",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 56,
+   "status": "imported",
+   "source_id": "70909",
+   "source_url": "https://myschool.ng/classroom/economics/70909?exam_type=jamb&exam_year=2024",
+   "source_question_number": 56,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "stock exchange market deals with",
+   "options_plain_text": {
+    "a": "sales of second hand securities",
+    "b": "sales of foreign exchange",
+    "c": "exchange of stock fish for stock",
+    "d": "exchange of treasury bills",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 57,
+   "status": "imported",
+   "source_id": "70910",
+   "source_url": "https://myschool.ng/classroom/economics/70910?exam_type=jamb&exam_year=2024",
+   "source_question_number": 57,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "which of the following is not a major role of opec in production, and marketing of petroleum?",
+   "options_plain_text": {
+    "a": "stabilizing oil prices putting a production ceiling",
+    "b": "refining of petroleum products in member countries",
+    "c": "raising the revenue of member countries from oil through price increase",
+    "d": "ensuring efficient and regular supply of oil to the two market",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 58,
+   "status": "imported",
+   "source_id": "70911",
+   "source_url": "https://myschool.ng/classroom/economics/70911?exam_type=jamb&exam_year=2024",
+   "source_question_number": 58,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the satisfaction derived from the consumption of a commodity is referred to as",
+   "options_plain_text": {
+    "a": "consumption",
+    "b": "production",
+    "c": "utility",
+    "d": "demand",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 59,
+   "status": "imported",
+   "source_id": "70912",
+   "source_url": "https://myschool.ng/classroom/economics/70912?exam_type=jamb&exam_year=2024",
+   "source_question_number": 59,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "an industry engaged in the extraction of raw materials and its conversion into semi-finished goods is called industry.",
+   "options_plain_text": {
+    "a": "mining",
+    "b": "manufacturing",
+    "c": "processing",
+    "d": "conversion",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 60,
+   "status": "imported",
+   "source_id": "70913",
+   "source_url": "https://myschool.ng/classroom/economics/70913?exam_type=jamb&exam_year=2024",
+   "source_question_number": 60,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "an industry operating in a perfect competitive market situation will maximum profit when",
+   "options_plain_text": {
+    "a": "dd < ss",
+    "b": "mc > ac",
+    "c": "mc = mr",
+    "d": "mc < ar",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 61,
+   "status": "imported",
+   "source_id": "70914",
+   "source_url": "https://myschool.ng/classroom/economics/70914?exam_type=jamb&exam_year=2024",
+   "source_question_number": 61,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "which of the following is not a function of marketing boards in nigeria?",
+   "options_plain_text": {
+    "a": "grading of farm produce",
+    "b": "importation of farm produce",
+    "c": "fixing of prices for farm produce",
+    "d": "marketing of farm produce",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 62,
+   "status": "imported",
+   "source_id": "70915",
+   "source_url": "https://myschool.ng/classroom/economics/70915?exam_type=jamb&exam_year=2024",
+   "source_question_number": 62,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "persistent fall in the general price level is known as",
+   "options_plain_text": {
+    "a": "deflation",
+    "b": "devaluation",
+    "c": "general price increase",
+    "d": "inflation",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 63,
+   "status": "imported",
+   "source_id": "70916",
+   "source_url": "https://myschool.ng/classroom/economics/70916?exam_type=jamb&exam_year=2024",
+   "source_question_number": 63,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "which of the following will not bring about an increase in labour force?",
+   "options_plain_text": {
+    "a": "decrease in death rate",
+    "b": "better medical services",
+    "c": "immigration",
+    "d": "emigration",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 64,
+   "status": "imported",
+   "source_id": "70917",
+   "source_url": "https://myschool.ng/classroom/economics/70917?exam_type=jamb&exam_year=2024",
+   "source_question_number": 64,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/nSQFPHPsI9QzEYMyL4tJuIkEOtV9iH9V79BEcbg2.png"
+   ],
+   "stem_image_local_path": "uploads/question_bank/jamb_2024_economics/Q64_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/jamb_2024_economics/Q64_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the diagram below represent",
+   "options_plain_text": {
+    "a": "business cycle",
+    "b": "national income",
+    "c": "inflationary gap",
+    "d": "circular flow of income",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 65,
+   "status": "imported",
+   "source_id": "70918",
+   "source_url": "https://myschool.ng/classroom/economics/70918?exam_type=jamb&exam_year=2024",
+   "source_question_number": 65,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/tmLMhASmkI6IGEjSZDrPCatxB3UIJYyKYFEXVfHG.png"
+   ],
+   "stem_image_local_path": "uploads/question_bank/jamb_2024_economics/Q65_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/jamb_2024_economics/Q65_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "what add funds to the circular flow?",
+   "options_plain_text": {
+    "a": "expenditure approach",
+    "b": "withdrawal",
+    "c": "leakages",
+    "d": "injection",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 66,
+   "status": "imported",
+   "source_id": "70919",
+   "source_url": "https://myschool.ng/classroom/economics/70919?exam_type=jamb&exam_year=2024",
+   "source_question_number": 66,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "economic problem arises as a result of",
+   "options_plain_text": {
+    "a": "money cost",
+    "b": "opportunity cost",
+    "c": "choice",
+    "d": "scarcity",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 67,
+   "status": "imported",
+   "source_id": "70920",
+   "source_url": "https://myschool.ng/classroom/economics/70920?exam_type=jamb&exam_year=2024",
+   "source_question_number": 67,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the following are rewards for factors of production except",
+   "options_plain_text": {
+    "a": "profit",
+    "b": "rent",
+    "c": "interest",
+    "d": "subsidy",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 68,
+   "status": "imported",
+   "source_id": "70921",
+   "source_url": "https://myschool.ng/classroom/economics/70921?exam_type=jamb&exam_year=2024",
+   "source_question_number": 68,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "when an increase in the price of a commodity lead to a fall in the demand for another, the demand for the two commodities are said to be",
+   "options_plain_text": {
+    "a": "competitive",
+    "b": "joint",
+    "c": "composite",
+    "d": "derived",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 69,
+   "status": "imported",
+   "source_id": "70922",
+   "source_url": "https://myschool.ng/classroom/economics/70922?exam_type=jamb&exam_year=2024",
+   "source_question_number": 69,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "which of the following is not a function of the imf?",
+   "options_plain_text": {
+    "a": "providing financial aid to members experiencing balance of payment difficulties",
+    "b": "promoting international monetary cooperation",
+    "c": "exchange rate stabilization",
+    "d": "assisting member countries in printing and issuing their currency",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 70,
+   "status": "imported",
+   "source_id": "70923",
+   "source_url": "https://myschool.ng/classroom/economics/70923?exam_type=jamb&exam_year=2024",
+   "source_question_number": 70,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "which of the following is not included in-measuring the national income through the income approach?",
+   "options_plain_text": {
+    "a": "profit earned by nitel plc",
+    "b": "profit earned by nigerian bottling company plc",
+    "c": "income earned by a bricklayer",
+    "d": "allowance given to an aged mother by a civil servant",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 71,
+   "status": "imported",
+   "source_id": "70979",
+   "source_url": "https://myschool.ng/classroom/economics/70979?exam_type=jamb&exam_year=2024",
+   "source_question_number": 71,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "if two bags of rice were sold for #1,250 a month ago and two weeks later, the same amount was used to procure one bag. this simply means that the value of money is",
+   "options_plain_text": {
+    "a": "constant",
+    "b": "fluctuating",
+    "c": "increasing",
+    "d": "decreasing",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 72,
+   "status": "imported",
+   "source_id": "70980",
+   "source_url": "https://myschool.ng/classroom/economics/70980?exam_type=jamb&exam_year=2024",
+   "source_question_number": 72,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the demand for factors of production is said to be",
+   "options_plain_text": {
+    "a": "joint",
+    "b": "complementary",
+    "c": "derived",
+    "d": "composite",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 73,
+   "status": "imported",
+   "source_id": "70981",
+   "source_url": "https://myschool.ng/classroom/economics/70981?exam_type=jamb&exam_year=2024",
+   "source_question_number": 73,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the trade-off between two commodities along the production possibility curve (ppc) shows",
+   "options_plain_text": {
+    "a": "transferable output",
+    "b": "unattainable combination",
+    "c": "scarcity principle",
+    "d": "opportunity cost principle",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 74,
+   "status": "imported",
+   "source_id": "70982",
+   "source_url": "https://myschool.ng/classroom/economics/70982?exam_type=jamb&exam_year=2024",
+   "source_question_number": 74,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "a major characteristics of a firm operating at a long-run equilibrium position is that",
+   "options_plain_text": {
+    "a": "average variable cost is fixed",
+    "b": "all costs can be varied",
+    "c": "only variable cost changes",
+    "d": "fixed cost can not be changed",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 75,
+   "status": "imported",
+   "source_id": "70983",
+   "source_url": "https://myschool.ng/classroom/economics/70983?exam_type=jamb&exam_year=2024",
+   "source_question_number": 75,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "an economy in which decision of what to produce is taken partly by private individuals and state is referred to as economy.",
+   "options_plain_text": {
+    "a": "communist",
+    "b": "mixed",
+    "c": "socialist",
+    "d": "capitalist",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 76,
+   "status": "imported",
+   "source_id": "70984",
+   "source_url": "https://myschool.ng/classroom/economics/70984?exam_type=jamb&exam_year=2024",
+   "source_question_number": 76,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "which of the following is not associated with minimum price legislation?",
+   "options_plain_text": {
+    "a": "wastages of resources",
+    "b": "excess supply",
+    "c": "excess demand",
+    "d": "unemployment",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 77,
+   "status": "imported",
+   "source_id": "70985",
+   "source_url": "https://myschool.ng/classroom/economics/70985?exam_type=jamb&exam_year=2024",
+   "source_question_number": 77,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "which of the following is the correct order in the chain of distribution?",
+   "options_plain_text": {
+    "a": "consumer -> distributor → retailer → producer",
+    "b": "producer → wholesaler → retailer → consumer",
+    "c": "retailer → consumer → producer → wholesaler",
+    "d": "producer → consumer → retailer → wholesaler",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 78,
+   "status": "imported",
+   "source_id": "70986",
+   "source_url": "https://myschool.ng/classroom/economics/70986?exam_type=jamb&exam_year=2024",
+   "source_question_number": 78,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the problem of \"how to produce\" in any economy is solved by",
+   "options_plain_text": {
+    "a": "combining capital and labour intensive methods of production",
+    "b": "adopting the least cost method of production",
+    "c": "using capital intensive method of production",
+    "d": "employing the services of a manager",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 79,
+   "status": "imported",
+   "source_id": "70987",
+   "source_url": "https://myschool.ng/classroom/economics/70987?exam_type=jamb&exam_year=2024",
+   "source_question_number": 79,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "under perfect competition, a profit maximizing firm will hire labour up to the point where the last unit of labor adds",
+   "options_plain_text": {
+    "a": "less to tr as to tc",
+    "b": "as much to tr as to tc",
+    "c": "more to tc than to tr",
+    "d": "less to tc than to tr",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  },
+  {
+   "item": 80,
+   "status": "imported",
+   "source_id": "70988",
+   "source_url": "https://myschool.ng/classroom/economics/70988?exam_type=jamb&exam_year=2024",
+   "source_question_number": 80,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "the use of tax and expenditure policy to regulate the economy is known as",
+   "options_plain_text": {
+    "a": "monetary policy",
+    "b": "physical measures",
+    "c": "deregulation",
+    "d": "fiscal policy",
+    "e": ""
+   },
+   "explanation_present": false,
+   "problems": []
+  }
+ ]
+}
