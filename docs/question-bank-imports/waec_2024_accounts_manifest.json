@@ -1,0 +1,938 @@
+{
+ "import": "WAEC 2024 Accounts",
+ "source_site": "myschool.ng",
+ "source_base_url": "https://myschool.ng/classroom/accounts-principles-of-accounts?exam_type=waec&exam_year=2024",
+ "collection_script": "collect_classroom.py --subject-slug accounts-principles-of-accounts --exam-type waec --year 2024",
+ "collected_at_utc": "2026-09-25 01:57 UTC",
+ "sql_file": "database/waec_2024_accounts_question_bank.sql",
+ "classification": {
+  "subject_candidates": [
+   "Principles of Accounts",
+   "Financial Accounting",
+   "Accounts",
+   "Accounting"
+  ],
+  "exam_body": "WAEC",
+  "exam_year": 2024,
+  "source_type": "exam_body",
+  "class_id": 0,
+  "topic_id": 0,
+  "recommended_class": "SSS3",
+  "question_category": "Principles of Accounts",
+  "difficulty": "Medium (default, not rated)",
+  "note": "subject_id/exam_body_id resolved by name at import time; no IDs hardcoded"
+ },
+ "items": [
+  {
+   "item": 1,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72716?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72716,
+   "myschool_option_ids": [
+    274484,
+    274485,
+    274486,
+    274487
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 2,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72719?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72719,
+   "myschool_option_ids": [
+    274496,
+    274497,
+    274498,
+    274499
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 3,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72720?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72720,
+   "myschool_option_ids": [
+    274500,
+    274501,
+    274502,
+    274503
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 5,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72726?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72726,
+   "myschool_option_ids": [
+    274520,
+    274521,
+    274522,
+    274523
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 6,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72728?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72728,
+   "myschool_option_ids": [
+    274528,
+    274529,
+    274530,
+    274531
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 7,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72730?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72730,
+   "myschool_option_ids": [
+    274532,
+    274533,
+    274534,
+    274535
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 8,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72731?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72731,
+   "myschool_option_ids": [
+    274536,
+    274537,
+    274538,
+    274539
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 9,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72733?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72733,
+   "myschool_option_ids": [
+    274540,
+    274541,
+    274542,
+    274543
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 10,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72734?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72734,
+   "myschool_option_ids": [
+    274544,
+    274545,
+    274546,
+    274547
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 11,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72735?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72735,
+   "myschool_option_ids": [
+    274548,
+    274549,
+    274550,
+    274551
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 12,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72736?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72736,
+   "myschool_option_ids": [
+    274552,
+    274553,
+    274554,
+    274555
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 13,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72737?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72737,
+   "myschool_option_ids": [
+    274556,
+    274557,
+    274558,
+    274559
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 14,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72738?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72738,
+   "myschool_option_ids": [
+    274560,
+    274561,
+    274562,
+    274563
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 15,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72739?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72739,
+   "myschool_option_ids": [
+    274564,
+    274565,
+    274566,
+    274567
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 16,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72741?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72741,
+   "myschool_option_ids": [
+    274572,
+    274573,
+    274574,
+    274575
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 17,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72742?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72742,
+   "myschool_option_ids": [
+    274576,
+    274577,
+    274578,
+    274579
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 18,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72743?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72743,
+   "myschool_option_ids": [
+    274580,
+    274581,
+    274582,
+    274583
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 19,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72746?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72746,
+   "myschool_option_ids": [
+    274592,
+    274593,
+    274594,
+    274595
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 20,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72747?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72747,
+   "myschool_option_ids": [
+    274596,
+    274597,
+    274598,
+    274599
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 21,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72753?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72753,
+   "myschool_option_ids": [
+    274620,
+    274621,
+    274622,
+    274623
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 22,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72754?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72754,
+   "myschool_option_ids": [
+    274624,
+    274625,
+    274626,
+    274627
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 23,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72755?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72755,
+   "myschool_option_ids": [
+    274628,
+    274629,
+    274630,
+    274631
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 24,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72756?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72756,
+   "myschool_option_ids": [
+    274632,
+    274633,
+    274634,
+    274635
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 25,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72758?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72758,
+   "myschool_option_ids": [
+    274640,
+    274641,
+    274642,
+    274643
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 26,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72759?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72759,
+   "myschool_option_ids": [
+    274644,
+    274645,
+    274646,
+    274647
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 27,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72760?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72760,
+   "myschool_option_ids": [
+    274648,
+    274649,
+    274650,
+    274651
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 28,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72762?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72762,
+   "myschool_option_ids": [
+    274656,
+    274657,
+    274658,
+    274659
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 29,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72763?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72763,
+   "myschool_option_ids": [
+    274660,
+    274661,
+    274662,
+    274663
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 30,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72765?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72765,
+   "myschool_option_ids": [
+    274668,
+    274669,
+    274670,
+    274671
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 31,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72766?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72766,
+   "myschool_option_ids": [
+    274672,
+    274673,
+    274674,
+    274675
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 32,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72767?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72767,
+   "myschool_option_ids": [
+    274676,
+    274677,
+    274678,
+    274679
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 33,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72768?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72768,
+   "myschool_option_ids": [
+    274680,
+    274681,
+    274682,
+    274683
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 34,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72769?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72769,
+   "myschool_option_ids": [
+    274684,
+    274685,
+    274686,
+    274687
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 35,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72770?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72770,
+   "myschool_option_ids": [
+    274688,
+    274689,
+    274690,
+    274691
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 36,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72777?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72777,
+   "myschool_option_ids": [
+    274716,
+    274717,
+    274718,
+    274719
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 37,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72778?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72778,
+   "myschool_option_ids": [
+    274720,
+    274721,
+    274722,
+    274723
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 38,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72779?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72779,
+   "myschool_option_ids": [
+    274724,
+    274725,
+    274726,
+    274727
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 39,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72780?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72780,
+   "myschool_option_ids": [
+    274728,
+    274729,
+    274730,
+    274731
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 40,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72781?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72781,
+   "myschool_option_ids": [
+    274732,
+    274733,
+    274734,
+    274735
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 41,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72782?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72782,
+   "myschool_option_ids": [
+    274736,
+    274737,
+    274738,
+    274739
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 42,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72783?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72783,
+   "myschool_option_ids": [
+    274740,
+    274741,
+    274742,
+    274743
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 43,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72784?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72784,
+   "myschool_option_ids": [
+    274744,
+    274745,
+    274746,
+    274747
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 44,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72785?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72785,
+   "myschool_option_ids": [
+    274748,
+    274749,
+    274750,
+    274751
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 45,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72786?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72786,
+   "myschool_option_ids": [
+    274752,
+    274753,
+    274754,
+    274755
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 46,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72787?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72787,
+   "myschool_option_ids": [
+    274756,
+    274757,
+    274758,
+    274759
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 47,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72788?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72788,
+   "myschool_option_ids": [
+    274760,
+    274761,
+    274762,
+    274763
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 48,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72789?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72789,
+   "myschool_option_ids": [
+    274764,
+    274765,
+    274766,
+    274767
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 49,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72790?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72790,
+   "myschool_option_ids": [
+    274768,
+    274769,
+    274770,
+    274771
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 50,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72791?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72791,
+   "myschool_option_ids": [
+    274772,
+    274773,
+    274774,
+    274775
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 4,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72724?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72724,
+   "status": "held_for_review",
+   "reasons": [
+    "correct flag != 1",
+    "no correct_option on individual page"
+   ]
+  },
+  {
+   "item": 51,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72796?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72796,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 52,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72797?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72797,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 53,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72798?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72798,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 54,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72799?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72799,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 55,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72803?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72803,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 56,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72805?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72805,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 57,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72808?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72808,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 58,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72810?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72810,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 59,
+   "source_url": "https://myschool.ng/classroom/accounts-principles-of-accounts/72825?exam_type=waec&exam_year=2024",
+   "myschool_question_id": 72825,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  }
+ ]
+}
