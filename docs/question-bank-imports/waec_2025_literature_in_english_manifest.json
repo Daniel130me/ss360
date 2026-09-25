@@ -1,0 +1,978 @@
+{
+ "import": "WAEC 2025 Literature in English",
+ "source_site": "myschool.ng",
+ "source_base_url": "https://myschool.ng/classroom/literature-in-english?exam_type=waec&exam_year=2025",
+ "collection_script": "collect_classroom.py --subject-slug literature-in-english --exam-type waec --year 2025",
+ "collected_at_utc": "2026-09-25 07:25 UTC",
+ "sql_file": "database/waec_2025_literature_in_english_question_bank.sql",
+ "classification": {
+  "subject_candidates": [
+   "Literature in English"
+  ],
+  "exam_body": "WAEC",
+  "exam_year": 2025,
+  "source_type": "exam_body",
+  "class_id": 0,
+  "topic_id": 0,
+  "recommended_class": "SSS3",
+  "question_category": "Literature in English",
+  "difficulty": "Medium (default, not rated)",
+  "note": "subject_id/exam_body_id resolved by name at import time; no IDs hardcoded"
+ },
+ "items": [
+  {
+   "item": 1,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77299?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77299,
+   "myschool_option_ids": [
+    292080,
+    292081,
+    292082,
+    292083
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 2,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77300?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77300,
+   "myschool_option_ids": [
+    292084,
+    292085,
+    292086,
+    292087
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 3,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77301?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77301,
+   "myschool_option_ids": [
+    292088,
+    292089,
+    292090,
+    292091
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 4,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77302?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77302,
+   "myschool_option_ids": [
+    292092,
+    292093,
+    292094,
+    292095
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 5,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77303?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77303,
+   "myschool_option_ids": [
+    292096,
+    292097,
+    292098,
+    292099
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 6,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77304?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77304,
+   "myschool_option_ids": [
+    292100,
+    292101,
+    292102,
+    292103
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 7,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77305?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77305,
+   "myschool_option_ids": [
+    292104,
+    292105,
+    292106,
+    292107
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 8,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77306?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77306,
+   "myschool_option_ids": [
+    292108,
+    292109,
+    292110,
+    292111
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 9,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77307?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77307,
+   "myschool_option_ids": [
+    292112,
+    292113,
+    292114,
+    292115
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 10,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77308?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77308,
+   "myschool_option_ids": [
+    292116,
+    292117,
+    292118,
+    292119
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 11,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77310?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77310,
+   "myschool_option_ids": [
+    292120,
+    292121,
+    292122,
+    292123
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 12,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77311?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77311,
+   "myschool_option_ids": [
+    292124,
+    292125,
+    292126,
+    292127
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 13,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77312?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77312,
+   "myschool_option_ids": [
+    292128,
+    292129,
+    292130,
+    292131
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 14,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77313?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77313,
+   "myschool_option_ids": [
+    292132,
+    292133,
+    292134,
+    292135
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 15,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77314?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77314,
+   "myschool_option_ids": [
+    292136,
+    292137,
+    292138,
+    292139
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 16,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77315?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77315,
+   "myschool_option_ids": [
+    292140,
+    292141,
+    292142,
+    292143
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 17,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77316?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77316,
+   "myschool_option_ids": [
+    292144,
+    292145,
+    292146,
+    292147
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 18,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77317?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77317,
+   "myschool_option_ids": [
+    292148,
+    292149,
+    292150,
+    292151
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 19,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77318?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77318,
+   "myschool_option_ids": [
+    292152,
+    292153,
+    292154,
+    292155
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 20,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77320?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77320,
+   "myschool_option_ids": [
+    292160,
+    292161,
+    292162,
+    292163
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 21,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77322?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77322,
+   "myschool_option_ids": [
+    292168,
+    292169,
+    292170,
+    292171
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 22,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77323?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77323,
+   "myschool_option_ids": [
+    292172,
+    292173,
+    292174,
+    292175
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 23,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77325?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77325,
+   "myschool_option_ids": [
+    292180,
+    292181,
+    292182,
+    292183
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 24,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77326?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77326,
+   "myschool_option_ids": [
+    292184,
+    292185,
+    292186,
+    292187
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 25,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77330?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77330,
+   "myschool_option_ids": [
+    292200,
+    292201,
+    292202,
+    292203
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 26,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77334?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77334,
+   "myschool_option_ids": [
+    292216,
+    292217,
+    292218,
+    292219
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 27,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77335?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77335,
+   "myschool_option_ids": [
+    292220,
+    292221,
+    292222,
+    292223
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 28,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77337?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77337,
+   "myschool_option_ids": [
+    292228,
+    292229,
+    292230,
+    292231
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 29,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77339?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77339,
+   "myschool_option_ids": [
+    292236,
+    292237,
+    292238,
+    292239
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 30,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77341?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77341,
+   "myschool_option_ids": [
+    292244,
+    292245,
+    292246,
+    292247
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 31,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77346?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77346,
+   "myschool_option_ids": [
+    292264,
+    292265,
+    292266,
+    292267
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 32,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77347?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77347,
+   "myschool_option_ids": [
+    292268,
+    292269,
+    292270,
+    292271
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 33,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77349?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77349,
+   "myschool_option_ids": [
+    292276,
+    292277,
+    292278,
+    292279
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 34,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77350?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77350,
+   "myschool_option_ids": [
+    292280,
+    292281,
+    292282,
+    292283
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 35,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77351?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77351,
+   "myschool_option_ids": [
+    292284,
+    292285,
+    292286,
+    292287
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 36,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77352?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77352,
+   "myschool_option_ids": [
+    292288,
+    292289,
+    292290,
+    292291
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 37,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77354?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77354,
+   "myschool_option_ids": [
+    292296,
+    292297,
+    292298,
+    292299
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 38,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77355?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77355,
+   "myschool_option_ids": [
+    292300,
+    292301,
+    292302,
+    292303
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 39,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77356?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77356,
+   "myschool_option_ids": [
+    292308,
+    292309,
+    292310,
+    292311
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 40,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77357?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77357,
+   "myschool_option_ids": [
+    292312,
+    292313,
+    292314,
+    292315
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 41,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77359?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77359,
+   "myschool_option_ids": [
+    292320,
+    292321,
+    292322,
+    292323
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 42,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77360?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77360,
+   "myschool_option_ids": [
+    292324,
+    292325,
+    292326,
+    292327
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 43,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77362?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77362,
+   "myschool_option_ids": [
+    292332,
+    292333,
+    292334,
+    292335
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 44,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77363?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77363,
+   "myschool_option_ids": [
+    292336,
+    292337,
+    292338,
+    292339
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 45,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77364?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77364,
+   "myschool_option_ids": [
+    292340,
+    292341,
+    292342,
+    292343
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 46,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77366?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77366,
+   "myschool_option_ids": [
+    292348,
+    292349,
+    292350,
+    292351
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 47,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77367?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77367,
+   "myschool_option_ids": [
+    292352,
+    292353,
+    292354,
+    292355
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 48,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77369?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77369,
+   "myschool_option_ids": [
+    292360,
+    292361,
+    292362,
+    292363
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 49,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77370?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77370,
+   "myschool_option_ids": [
+    292364,
+    292365,
+    292366,
+    292367
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 50,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77371?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77371,
+   "myschool_option_ids": [
+    292368,
+    292369,
+    292370,
+    292371
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null,
+   "answer_image": null
+  },
+  {
+   "item": 51,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77374?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77374,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 52,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77376?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77376,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 53,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77377?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77377,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 54,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77379?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77379,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 55,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77380?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77380,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 56,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77381?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77381,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 57,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77383?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77383,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 58,
+   "source_url": "https://myschool.ng/classroom/literature-in-english/77384?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77384,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "option tags not a-d: []",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  }
+ ]
+}
