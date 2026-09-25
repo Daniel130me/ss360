@@ -1,0 +1,988 @@
+{
+ "import": "WAEC 2025 Physics",
+ "source_site": "myschool.ng",
+ "source_base_url": "https://myschool.ng/classroom/physics?exam_type=waec&exam_year=2025",
+ "collection_script": "collect_classroom.py --subject-slug physics --exam-type waec --year 2025",
+ "collected_at_utc": "2026-09-25 01:13 UTC",
+ "sql_file": "database/waec_2025_physics_question_bank.sql",
+ "classification": {
+  "subject_candidates": [
+   "Physics"
+  ],
+  "exam_body": "WAEC",
+  "exam_year": 2025,
+  "source_type": "exam_body",
+  "class_id": 0,
+  "topic_id": 0,
+  "recommended_class": "SSS3",
+  "question_category": "Physics",
+  "difficulty": "Medium (default, not rated)",
+  "note": "subject_id/exam_body_id resolved by name at import time; no IDs hardcoded"
+ },
+ "items": [
+  {
+   "item": 1,
+   "source_url": "https://myschool.ng/classroom/physics/76329?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76329,
+   "myschool_option_ids": [
+    288479,
+    288480,
+    288481,
+    288482
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 2,
+   "source_url": "https://myschool.ng/classroom/physics/76330?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76330,
+   "myschool_option_ids": [
+    288483,
+    288484,
+    288485,
+    288486
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 3,
+   "source_url": "https://myschool.ng/classroom/physics/76331?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76331,
+   "myschool_option_ids": [
+    288487,
+    288488,
+    288489,
+    288490
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 4,
+   "source_url": "https://myschool.ng/classroom/physics/76332?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76332,
+   "myschool_option_ids": [
+    288491,
+    288492,
+    288493,
+    288494
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 5,
+   "source_url": "https://myschool.ng/classroom/physics/76333?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76333,
+   "myschool_option_ids": [
+    288495,
+    288496,
+    288497,
+    288498
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 6,
+   "source_url": "https://myschool.ng/classroom/physics/76334?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76334,
+   "myschool_option_ids": [
+    288499,
+    288500,
+    288501,
+    288502
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 7,
+   "source_url": "https://myschool.ng/classroom/physics/76335?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76335,
+   "myschool_option_ids": [
+    288503,
+    288504,
+    288505,
+    288506
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 8,
+   "source_url": "https://myschool.ng/classroom/physics/76336?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76336,
+   "myschool_option_ids": [
+    288507,
+    288508,
+    288509,
+    288510
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 9,
+   "source_url": "https://myschool.ng/classroom/physics/76337?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76337,
+   "myschool_option_ids": [
+    288511,
+    288512,
+    288513,
+    288514
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 10,
+   "source_url": "https://myschool.ng/classroom/physics/76338?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76338,
+   "myschool_option_ids": [
+    288515,
+    288516,
+    288517,
+    288518
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 11,
+   "source_url": "https://myschool.ng/classroom/physics/76339?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76339,
+   "myschool_option_ids": [
+    288519,
+    288520,
+    288521,
+    288522
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 12,
+   "source_url": "https://myschool.ng/classroom/physics/76351?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76351,
+   "myschool_option_ids": [
+    288563,
+    288564,
+    288565,
+    288566
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 13,
+   "source_url": "https://myschool.ng/classroom/physics/76352?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76352,
+   "myschool_option_ids": [
+    288567,
+    288568,
+    288569,
+    288570
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 14,
+   "source_url": "https://myschool.ng/classroom/physics/76353?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76353,
+   "myschool_option_ids": [
+    288571,
+    288572,
+    288573,
+    288574
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 15,
+   "source_url": "https://myschool.ng/classroom/physics/76354?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76354,
+   "myschool_option_ids": [
+    288575,
+    288576,
+    288577,
+    288578
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 16,
+   "source_url": "https://myschool.ng/classroom/physics/76355?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76355,
+   "myschool_option_ids": [
+    288579,
+    288580,
+    288581,
+    288582
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 17,
+   "source_url": "https://myschool.ng/classroom/physics/76357?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76357,
+   "myschool_option_ids": [
+    288587,
+    288588,
+    288589,
+    288590
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 18,
+   "source_url": "https://myschool.ng/classroom/physics/76360?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76360,
+   "myschool_option_ids": [
+    288595,
+    288596,
+    288597,
+    288598
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 19,
+   "source_url": "https://myschool.ng/classroom/physics/76361?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76361,
+   "myschool_option_ids": [
+    288599,
+    288600,
+    288601,
+    288602
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 20,
+   "source_url": "https://myschool.ng/classroom/physics/76363?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76363,
+   "myschool_option_ids": [
+    288607,
+    288608,
+    288609,
+    288610
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 21,
+   "source_url": "https://myschool.ng/classroom/physics/76365?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76365,
+   "myschool_option_ids": [
+    288615,
+    288616,
+    288617,
+    288618
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/fJE4PoRvSnaOvpSSjMZBRzt0T5cAikIetGw19cvo.png",
+    "local_path": "uploads/question_bank/waec_2025_physics/Q21_diagram.png",
+    "sha256": "416102882cfc23c2f9735e03178b68a7878e93d5951bd5435d746c16f07fc90a",
+    "bytes": 15302,
+    "format": "png",
+    "width": 400,
+    "height": 259
+   }
+  },
+  {
+   "item": 22,
+   "source_url": "https://myschool.ng/classroom/physics/76366?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76366,
+   "myschool_option_ids": [
+    288619,
+    288620,
+    288621,
+    288622
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/gxV6ZbjyX5Z2D97OsofzSF355dJH7EVXorxlTxR5.png",
+    "local_path": "uploads/question_bank/waec_2025_physics/Q22_diagram.png",
+    "sha256": "34f972814747ac1e29b4e154703341fca79bc6c770b6f6385a7bc9cb0cb17d67",
+    "bytes": 2086,
+    "format": "png",
+    "width": 390,
+    "height": 169
+   }
+  },
+  {
+   "item": 23,
+   "source_url": "https://myschool.ng/classroom/physics/76367?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76367,
+   "myschool_option_ids": [
+    288623,
+    288624,
+    288625,
+    288626
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 24,
+   "source_url": "https://myschool.ng/classroom/physics/76368?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76368,
+   "myschool_option_ids": [
+    288627,
+    288628,
+    288629,
+    288630
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 25,
+   "source_url": "https://myschool.ng/classroom/physics/76369?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76369,
+   "myschool_option_ids": [
+    288631,
+    288632,
+    288633,
+    288634
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 26,
+   "source_url": "https://myschool.ng/classroom/physics/76371?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76371,
+   "myschool_option_ids": [
+    288635,
+    288636,
+    288637,
+    288638
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 27,
+   "source_url": "https://myschool.ng/classroom/physics/76373?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76373,
+   "myschool_option_ids": [
+    288643,
+    288644,
+    288645,
+    288646
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 28,
+   "source_url": "https://myschool.ng/classroom/physics/76374?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76374,
+   "myschool_option_ids": [
+    288647,
+    288648,
+    288649,
+    288650
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 29,
+   "source_url": "https://myschool.ng/classroom/physics/76376?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76376,
+   "myschool_option_ids": [
+    288655,
+    288656,
+    288657,
+    288658
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 30,
+   "source_url": "https://myschool.ng/classroom/physics/76377?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76377,
+   "myschool_option_ids": [
+    288659,
+    288660,
+    288661,
+    288662
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 31,
+   "source_url": "https://myschool.ng/classroom/physics/76378?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76378,
+   "myschool_option_ids": [
+    288663,
+    288664,
+    288665,
+    288666
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 32,
+   "source_url": "https://myschool.ng/classroom/physics/76381?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76381,
+   "myschool_option_ids": [
+    288671,
+    288672,
+    288673,
+    288674
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 33,
+   "source_url": "https://myschool.ng/classroom/physics/76384?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76384,
+   "myschool_option_ids": [
+    288683,
+    288684,
+    288685,
+    288686
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 34,
+   "source_url": "https://myschool.ng/classroom/physics/76385?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76385,
+   "myschool_option_ids": [
+    288687,
+    288688,
+    288689,
+    288690
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 35,
+   "source_url": "https://myschool.ng/classroom/physics/76386?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76386,
+   "myschool_option_ids": [
+    288691,
+    288692,
+    288693,
+    288694
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 36,
+   "source_url": "https://myschool.ng/classroom/physics/76387?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76387,
+   "myschool_option_ids": [
+    288695,
+    288696,
+    288697,
+    288698
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 37,
+   "source_url": "https://myschool.ng/classroom/physics/76388?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76388,
+   "myschool_option_ids": [
+    288699,
+    288700,
+    288701,
+    288702
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 38,
+   "source_url": "https://myschool.ng/classroom/physics/76389?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76389,
+   "myschool_option_ids": [
+    288703,
+    288704,
+    288705,
+    288706
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/WqAAct3s6b41w2n2hiMmxb8eA8RwXhxeScD1UCGc.png",
+    "local_path": "uploads/question_bank/waec_2025_physics/Q38_diagram.png",
+    "sha256": "5357eea363ffce39f0d895cca04f6f33af87825ce127d4846748cb31e0d4ce63",
+    "bytes": 2316,
+    "format": "png",
+    "width": 340,
+    "height": 202
+   }
+  },
+  {
+   "item": 39,
+   "source_url": "https://myschool.ng/classroom/physics/76394?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76394,
+   "myschool_option_ids": [
+    288723,
+    288724,
+    288725,
+    288726
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 40,
+   "source_url": "https://myschool.ng/classroom/physics/76398?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76398,
+   "myschool_option_ids": [
+    288727,
+    288728,
+    288729,
+    288730
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/CxvcKnYiJVcMFA0UFGTpkkjZtItMvQGIY7OsHLt3.png",
+    "local_path": "uploads/question_bank/waec_2025_physics/Q40_diagram.png",
+    "sha256": "31f695b872c4f5f9ba67322d17ed64ca596b16de404c05db4458edd8975219c4",
+    "bytes": 123570,
+    "format": "png",
+    "width": 399,
+    "height": 204
+   }
+  },
+  {
+   "item": 41,
+   "source_url": "https://myschool.ng/classroom/physics/76399?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76399,
+   "myschool_option_ids": [
+    288731,
+    288732,
+    288733,
+    288734
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/26151C81FcuS5TjhSGtbzrGUMGTKLmIVdVb06wYN.png",
+    "local_path": "uploads/question_bank/waec_2025_physics/Q41_diagram.png",
+    "sha256": "ddbb76075df424c3cb4714b8c4c47796110b838f218a838bef46ea03dc8c5e95",
+    "bytes": 2566,
+    "format": "png",
+    "width": 376,
+    "height": 212
+   }
+  },
+  {
+   "item": 42,
+   "source_url": "https://myschool.ng/classroom/physics/76400?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76400,
+   "myschool_option_ids": [
+    288735,
+    288736,
+    288737,
+    288738
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 43,
+   "source_url": "https://myschool.ng/classroom/physics/76401?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76401,
+   "myschool_option_ids": [
+    288739,
+    288740,
+    288741,
+    288742
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 44,
+   "source_url": "https://myschool.ng/classroom/physics/76403?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76403,
+   "myschool_option_ids": [
+    288747,
+    288748,
+    288749,
+    288750
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/CsXkFWFvPoxkeWm4XVTmghjp3mIXyvRWnKInoU73.png",
+    "local_path": "uploads/question_bank/waec_2025_physics/Q44_diagram.png",
+    "sha256": "44e574840d70de446fc3eeb36d9002f84dbbaad992ab8bb6a0776ae1b8dcb730",
+    "bytes": 1478,
+    "format": "png",
+    "width": 357,
+    "height": 161
+   }
+  },
+  {
+   "item": 45,
+   "source_url": "https://myschool.ng/classroom/physics/76404?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76404,
+   "myschool_option_ids": [
+    288751,
+    288752,
+    288753,
+    288754
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 46,
+   "source_url": "https://myschool.ng/classroom/physics/76405?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76405,
+   "myschool_option_ids": [
+    288755,
+    288756,
+    288757,
+    288758
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/DFKzBWTGoMjFYKO1zRQLdTp0Kn3w53QEq4AQpaE3.png",
+    "local_path": "uploads/question_bank/waec_2025_physics/Q46_diagram.png",
+    "sha256": "3b768caa86f327b5b7489af27799f39f6626905af2d1a73e1065a936a6b6f70c",
+    "bytes": 9581,
+    "format": "png",
+    "width": 400,
+    "height": 110
+   }
+  },
+  {
+   "item": 47,
+   "source_url": "https://myschool.ng/classroom/physics/76406?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76406,
+   "myschool_option_ids": [
+    288759,
+    288760,
+    288761,
+    288762
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/0g5l8tT8YCjNcBvYC1pRInjTL5SrVijcXSfnf5rv.png",
+    "local_path": "uploads/question_bank/waec_2025_physics/Q47_diagram.png",
+    "sha256": "6a4bbe9c1572e4d31a3d66dc007cbda7319b8e57dbf11c54fc989f81bbce2a1a",
+    "bytes": 9226,
+    "format": "png",
+    "width": 319,
+    "height": 206
+   }
+  },
+  {
+   "item": 48,
+   "source_url": "https://myschool.ng/classroom/physics/76408?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76408,
+   "myschool_option_ids": [
+    288767,
+    288768,
+    288769,
+    288770
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/RGFmvGuU1LHUJMAXKFvOA1pnZpciqgyK6gjfAEEY.png",
+    "local_path": "uploads/question_bank/waec_2025_physics/Q48_diagram.png",
+    "sha256": "6a4bbe9c1572e4d31a3d66dc007cbda7319b8e57dbf11c54fc989f81bbce2a1a",
+    "bytes": 9226,
+    "format": "png",
+    "width": 319,
+    "height": 206
+   }
+  },
+  {
+   "item": 49,
+   "source_url": "https://myschool.ng/classroom/physics/76411?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76411,
+   "myschool_option_ids": [
+    288779,
+    288780,
+    288781,
+    288782
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": null
+  },
+  {
+   "item": 50,
+   "source_url": "https://myschool.ng/classroom/physics/76441?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76441,
+   "myschool_option_ids": [
+    288904,
+    288905,
+    288906,
+    288907
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "image": {
+    "source_url": "https://myschool.ng/storage/classroom/Vs2KQdRTT4B1PWEHYtYzIaC3BvlIZ5621PR362wK.png",
+    "local_path": "uploads/question_bank/waec_2025_physics/Q50_diagram.png",
+    "sha256": "ddbb76075df424c3cb4714b8c4c47796110b838f218a838bef46ea03dc8c5e95",
+    "bytes": 2566,
+    "format": "png",
+    "width": 376,
+    "height": 212
+   }
+  },
+  {
+   "item": 51,
+   "source_url": "https://myschool.ng/classroom/physics/76484?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76484,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 52,
+   "source_url": "https://myschool.ng/classroom/physics/76494?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76494,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 53,
+   "source_url": "https://myschool.ng/classroom/physics/76496?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76496,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 54,
+   "source_url": "https://myschool.ng/classroom/physics/76501?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76501,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (theory)",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=theory"
+   ]
+  },
+  {
+   "item": 55,
+   "source_url": "https://myschool.ng/classroom/physics/76565?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76565,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (practical)",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=practical"
+   ]
+  },
+  {
+   "item": 56,
+   "source_url": "https://myschool.ng/classroom/physics/76580?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76580,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (practical)",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=practical"
+   ]
+  },
+  {
+   "item": 57,
+   "source_url": "https://myschool.ng/classroom/physics/76605?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76605,
+   "status": "held_for_review",
+   "reasons": [
+    "0 options (practical)",
+    "correct flag != 1",
+    "no correct_option on individual page",
+    "type=practical"
+   ]
+  }
+ ]
+}
