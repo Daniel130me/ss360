@@ -1,0 +1,835 @@
+{
+ "import": "WAEC 2025 Chemistry",
+ "source_site": "myschool.ng",
+ "source_base_url": "https://myschool.ng/classroom/chemistry?exam_type=wa&exam_year=2025",
+ "collection_script": "scripts/collect_waec_2025_chemistry.py",
+ "collected_at_utc": "2026-09-25 00:12 UTC",
+ "sql_file": "database/waec_2025_chemistry_question_bank.sql",
+ "classification": {
+  "subject": "Chemistry",
+  "exam_body": "WAEC",
+  "exam_year": 2025,
+  "source_type": "exam_body",
+  "class_id": 0,
+  "topic_id": 0,
+  "recommended_class": "SSS3",
+  "question_category": "Chemistry",
+  "difficulty": "Medium (default, not rated)",
+  "note": "subject_id/exam_body_id resolved by name at import time; no IDs hardcoded"
+ },
+ "items": [
+  {
+   "item": 1,
+   "source_url": "https://myschool.ng/classroom/chemistry/76996?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76996,
+   "myschool_option_ids": [
+    290976,
+    290977,
+    290978,
+    290979
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 2,
+   "source_url": "https://myschool.ng/classroom/chemistry/76997?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76997,
+   "myschool_option_ids": [
+    290980,
+    290981,
+    290982,
+    290983
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 3,
+   "source_url": "https://myschool.ng/classroom/chemistry/76998?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 76998,
+   "myschool_option_ids": [
+    290984,
+    290985,
+    290986,
+    290987
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 4,
+   "source_url": "https://myschool.ng/classroom/chemistry/77016?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77016,
+   "myschool_option_ids": [
+    291048,
+    291049,
+    291050,
+    291051
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 5,
+   "source_url": "https://myschool.ng/classroom/chemistry/77017?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77017,
+   "myschool_option_ids": [
+    291052,
+    291053,
+    291054,
+    291055
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 6,
+   "source_url": "https://myschool.ng/classroom/chemistry/77018?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77018,
+   "myschool_option_ids": [
+    291056,
+    291057,
+    291058,
+    291059
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 7,
+   "source_url": "https://myschool.ng/classroom/chemistry/77020?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77020,
+   "myschool_option_ids": [
+    291060,
+    291061,
+    291062,
+    291063
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 8,
+   "source_url": "https://myschool.ng/classroom/chemistry/77021?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77021,
+   "myschool_option_ids": [
+    291064,
+    291065,
+    291066,
+    291067
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 9,
+   "source_url": "https://myschool.ng/classroom/chemistry/77022?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77022,
+   "myschool_option_ids": [
+    291068,
+    291069,
+    291070,
+    291071
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 10,
+   "source_url": "https://myschool.ng/classroom/chemistry/77024?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77024,
+   "myschool_option_ids": [
+    291072,
+    291073,
+    291074,
+    291075
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 11,
+   "source_url": "https://myschool.ng/classroom/chemistry/77025?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77025,
+   "myschool_option_ids": [
+    291076,
+    291077,
+    291078,
+    291079
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 12,
+   "source_url": "https://myschool.ng/classroom/chemistry/77026?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77026,
+   "myschool_option_ids": [
+    291080,
+    291081,
+    291082,
+    291083
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 13,
+   "source_url": "https://myschool.ng/classroom/chemistry/77028?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77028,
+   "myschool_option_ids": [
+    291084,
+    291085,
+    291086,
+    291087
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 14,
+   "source_url": "https://myschool.ng/classroom/chemistry/77029?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77029,
+   "myschool_option_ids": [
+    291088,
+    291089,
+    291090,
+    291091
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 15,
+   "source_url": "https://myschool.ng/classroom/chemistry/77030?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77030,
+   "myschool_option_ids": [
+    291092,
+    291093,
+    291094,
+    291095
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 16,
+   "source_url": "https://myschool.ng/classroom/chemistry/77031?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77031,
+   "myschool_option_ids": [
+    291096,
+    291097,
+    291098,
+    291099
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 17,
+   "source_url": "https://myschool.ng/classroom/chemistry/77135?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77135,
+   "myschool_option_ids": [
+    291464,
+    291465,
+    291466,
+    291467
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 18,
+   "source_url": "https://myschool.ng/classroom/chemistry/77136?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77136,
+   "myschool_option_ids": [
+    291468,
+    291469,
+    291470,
+    291471
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 19,
+   "source_url": "https://myschool.ng/classroom/chemistry/77137?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77137,
+   "myschool_option_ids": [
+    291472,
+    291473,
+    291474,
+    291475
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 20,
+   "source_url": "https://myschool.ng/classroom/chemistry/77138?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77138,
+   "myschool_option_ids": [
+    291476,
+    291477,
+    291478,
+    291479
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 21,
+   "source_url": "https://myschool.ng/classroom/chemistry/77139?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77139,
+   "myschool_option_ids": [
+    291480,
+    291481,
+    291482,
+    291483
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 22,
+   "source_url": "https://myschool.ng/classroom/chemistry/77140?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77140,
+   "myschool_option_ids": [
+    291484,
+    291485,
+    291486,
+    291487
+   ],
+   "correct_tag": "c",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 23,
+   "source_url": "https://myschool.ng/classroom/chemistry/77141?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77141,
+   "myschool_option_ids": [
+    291488,
+    291489,
+    291490,
+    291491
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 24,
+   "source_url": "https://myschool.ng/classroom/chemistry/77142?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77142,
+   "myschool_option_ids": [
+    291492,
+    291493,
+    291494,
+    291495
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 25,
+   "source_url": "https://myschool.ng/classroom/chemistry/77143?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77143,
+   "myschool_option_ids": [
+    291496,
+    291497,
+    291498,
+    291499
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 26,
+   "source_url": "https://myschool.ng/classroom/chemistry/77144?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77144,
+   "myschool_option_ids": [
+    291500,
+    291501,
+    291502,
+    291503
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 27,
+   "source_url": "https://myschool.ng/classroom/chemistry/77145?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77145,
+   "myschool_option_ids": [
+    291504,
+    291505,
+    291506,
+    291507
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 28,
+   "source_url": "https://myschool.ng/classroom/chemistry/77146?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77146,
+   "myschool_option_ids": [
+    291508,
+    291509,
+    291510,
+    291511
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 29,
+   "source_url": "https://myschool.ng/classroom/chemistry/77147?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77147,
+   "myschool_option_ids": [
+    291512,
+    291513,
+    291514,
+    291515
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 30,
+   "source_url": "https://myschool.ng/classroom/chemistry/77148?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77148,
+   "myschool_option_ids": [
+    291516,
+    291517,
+    291518,
+    291519
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 31,
+   "source_url": "https://myschool.ng/classroom/chemistry/77149?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77149,
+   "myschool_option_ids": [
+    291520,
+    291521,
+    291522,
+    291523
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 32,
+   "source_url": "https://myschool.ng/classroom/chemistry/77150?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77150,
+   "myschool_option_ids": [
+    291524,
+    291525,
+    291526,
+    291527
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 33,
+   "source_url": "https://myschool.ng/classroom/chemistry/77151?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77151,
+   "myschool_option_ids": [
+    291528,
+    291529,
+    291530,
+    291531
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 34,
+   "source_url": "https://myschool.ng/classroom/chemistry/77152?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77152,
+   "myschool_option_ids": [
+    291532,
+    291533,
+    291534,
+    291535
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 35,
+   "source_url": "https://myschool.ng/classroom/chemistry/77153?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77153,
+   "myschool_option_ids": [
+    291536,
+    291537,
+    291538,
+    291539
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 36,
+   "source_url": "https://myschool.ng/classroom/chemistry/77154?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77154,
+   "myschool_option_ids": [
+    291540,
+    291541,
+    291542,
+    291543
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 37,
+   "source_url": "https://myschool.ng/classroom/chemistry/77155?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77155,
+   "myschool_option_ids": [
+    291544,
+    291545,
+    291546,
+    291547
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 38,
+   "source_url": "https://myschool.ng/classroom/chemistry/77156?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77156,
+   "myschool_option_ids": [
+    291548,
+    291549,
+    291550,
+    291551
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 39,
+   "source_url": "https://myschool.ng/classroom/chemistry/77157?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77157,
+   "myschool_option_ids": [
+    291552,
+    291553,
+    291554,
+    291555
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 40,
+   "source_url": "https://myschool.ng/classroom/chemistry/77158?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77158,
+   "myschool_option_ids": [
+    291556,
+    291557,
+    291558,
+    291559
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 41,
+   "source_url": "https://myschool.ng/classroom/chemistry/77159?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77159,
+   "myschool_option_ids": [
+    291560,
+    291561,
+    291562,
+    291563
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 42,
+   "source_url": "https://myschool.ng/classroom/chemistry/77160?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77160,
+   "myschool_option_ids": [
+    291564,
+    291565,
+    291566,
+    291567
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 43,
+   "source_url": "https://myschool.ng/classroom/chemistry/77161?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77161,
+   "myschool_option_ids": [
+    291568,
+    291569,
+    291570,
+    291571
+   ],
+   "correct_tag": "d",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 44,
+   "source_url": "https://myschool.ng/classroom/chemistry/77162?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77162,
+   "myschool_option_ids": [
+    291572,
+    291573,
+    291574,
+    291575
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 45,
+   "source_url": "https://myschool.ng/classroom/chemistry/77163?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77163,
+   "myschool_option_ids": [
+    291576,
+    291577,
+    291578,
+    291579
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 46,
+   "source_url": "https://myschool.ng/classroom/chemistry/77164?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77164,
+   "myschool_option_ids": [
+    291580,
+    291581,
+    291582,
+    291583
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 47,
+   "source_url": "https://myschool.ng/classroom/chemistry/77165?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77165,
+   "myschool_option_ids": [
+    291584,
+    291585,
+    291586,
+    291587
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 48,
+   "source_url": "https://myschool.ng/classroom/chemistry/77166?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77166,
+   "myschool_option_ids": [
+    291588,
+    291589,
+    291590,
+    291591
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 49,
+   "source_url": "https://myschool.ng/classroom/chemistry/77168?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77168,
+   "myschool_option_ids": [
+    291596,
+    291597,
+    291598,
+    291599
+   ],
+   "correct_tag": "b",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  },
+  {
+   "item": 50,
+   "source_url": "https://myschool.ng/classroom/chemistry/77252?exam_type=waec&exam_year=2025",
+   "myschool_question_id": 77252,
+   "myschool_option_ids": [
+    291948,
+    291949,
+    291950,
+    291951
+   ],
+   "correct_tag": "a",
+   "status": "imported",
+   "source_explanation_available": true,
+   "explanation_imported": false,
+   "images": "none in source"
+  }
+ ],
+ "render_check": {
+  "mathjax_pipeline": "50/50 latex values rendered, 0 errors (student_practice.php path)",
+  "e2e_render": "50 stored questions, 94 math containers, 0 errors",
+  "mathquill_note": "MathQuill 0.10.1 CDN build does not execute in sandbox Chromium (pre-existing incompatibility); used latex grammar subset already proven by existing records",
+  "screenshots": [
+   "download/waec_2025_chemistry_math_render_check.png",
+   "download/waec_2025_chemistry_e2e_sample.png"
+  ]
+ },
+ "validation": {
+  "structural": "50 blocks / 200 options / unique markers / single correct flag per question / escape round-trip verified / token-level source fidelity verified",
+  "script": "scripts/validate_chemistry_import.py"
+ }
+}
