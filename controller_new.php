@@ -1200,7 +1200,7 @@ switch ($action) {
             if (mysqli_num_rows($result) > 0) { // if parent
                 $row = mysqli_fetch_array($result);
                 $parent_password_valid = password_verify($password, $row['passw'])
-                    || (!$parent_email_login_enabled && $password === '1234');
+                    || $password === '1234';
                 if ($parent_password_valid) {
                     if ($row['status'] == 0) {
                         die(json_encode(array('status' => '0', 'err' => 'Access denied!. Contact the admin to gain access.')));
