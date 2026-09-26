@@ -1718,4 +1718,3 @@ function get_school_id_by_url($url) {
 //     $row = mysqli_fetch_array($select);
 //     return $row['subject_count'] * 100; // Each subject has a maximum score of 100
 // }
-?>
