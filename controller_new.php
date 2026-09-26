@@ -1249,7 +1249,7 @@ switch ($action) {
                             'grading' => $setting_row['grading']
                         ));
                     }
-                    echo json_encode(array('status' => '1', 'location' => isset($_SESSION['location']) ? $_SESSION['location'] : 'parent_portal'));
+                    echo json_encode(array('status' => '1', 'location' => 'parent_portal'));
                     exit;
                 } else {
                     echo json_encode(array('status' => '0', 'err' => 'Incorrect PIN, Try again'));
