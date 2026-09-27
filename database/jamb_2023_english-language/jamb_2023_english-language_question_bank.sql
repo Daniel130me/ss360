@@ -119,7 +119,7 @@ WHERE @question_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM question_bank_optio
 SET @source_marker := 'JAMB 2023 English Language - Item 3 - Question 3';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @exam_body_id AND subject_id = @subject_id AND exam_year = 2023 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: JAMB 2023 English Language - Item 3 - Question 3</small></p><p><strong>JAMB 2023 English Language - Question 3</strong></p><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nDr. Samuel Johnson is also known as_____</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: JAMB 2023 English Language - Item 3 - Question 3</small></p><p><strong>JAMB 2023 English Language - Question 3</strong></p> From the novel; <strong>The Life Changer</strong><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nDr. Samuel Johnson is also known as_____</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 
@@ -383,7 +383,7 @@ WHERE @question_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM question_bank_optio
 SET @source_marker := 'JAMB 2023 English Language - Item 14 - Question 14';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @exam_body_id AND subject_id = @subject_id AND exam_year = 2023 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: JAMB 2023 English Language - Item 14 - Question 14</small></p><p><strong>JAMB 2023 English Language - Question 14</strong></p><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\n_________ is the euphemism use for Cheat notes.</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: JAMB 2023 English Language - Item 14 - Question 14</small></p><p><strong>JAMB 2023 English Language - Question 14</strong></p> From the novel; <strong>The Life Changer</strong><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\n_________ is the euphemism use for Cheat notes.</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 
@@ -407,7 +407,7 @@ WHERE @question_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM question_bank_optio
 SET @source_marker := 'JAMB 2023 English Language - Item 15 - Question 15';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @exam_body_id AND subject_id = @subject_id AND exam_year = 2023 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: JAMB 2023 English Language - Item 15 - Question 15</small></p><p><strong>JAMB 2023 English Language - Question 15</strong></p><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nwhy did Omar say he passed his SSCE by no means a small feat?</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: JAMB 2023 English Language - Item 15 - Question 15</small></p><p><strong>JAMB 2023 English Language - Question 15</strong></p> From the novel; <strong>The Life Changer</strong><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nwhy did Omar say he passed his SSCE by no means a small feat?</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 
@@ -479,7 +479,7 @@ WHERE @question_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM question_bank_optio
 SET @source_marker := 'JAMB 2023 English Language - Item 18 - Question 18';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @exam_body_id AND subject_id = @subject_id AND exam_year = 2023 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: JAMB 2023 English Language - Item 18 - Question 18</small></p><p><strong>JAMB 2023 English Language - Question 18</strong></p><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nWho among Salma&#39;s roommate was reserved and withdrawn yet generous to a fault?</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: JAMB 2023 English Language - Item 18 - Question 18</small></p><p><strong>JAMB 2023 English Language - Question 18</strong></p> From the novel; <strong>The Life Changer</strong><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nWho among Salma&#39;s roommate was reserved and withdrawn yet generous to a fault?</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 
@@ -671,7 +671,7 @@ WHERE @question_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM question_bank_optio
 SET @source_marker := 'JAMB 2023 English Language - Item 26 - Question 26';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @exam_body_id AND subject_id = @subject_id AND exam_year = 2023 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: JAMB 2023 English Language - Item 26 - Question 26</small></p><p><strong>JAMB 2023 English Language - Question 26</strong></p><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nUmmi is an Arabic word that is directly translated to mean_____</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: JAMB 2023 English Language - Item 26 - Question 26</small></p><p><strong>JAMB 2023 English Language - Question 26</strong></p> From the novel; <strong>The Life Changer</strong><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nUmmi is an Arabic word that is directly translated to mean_____</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 
@@ -743,7 +743,7 @@ WHERE @question_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM question_bank_optio
 SET @source_marker := 'JAMB 2023 English Language - Item 29 - Question 29';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @exam_body_id AND subject_id = @subject_id AND exam_year = 2023 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: JAMB 2023 English Language - Item 29 - Question 29</small></p><p><strong>JAMB 2023 English Language - Question 29</strong></p><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nIn Lafayette, before a stranger is hosted or accommodated, permission must be requested and granted by_______</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: JAMB 2023 English Language - Item 29 - Question 29</small></p><p><strong>JAMB 2023 English Language - Question 29</strong></p> From the novel; <strong>The Life Changer</strong><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nIn Lafayette, before a stranger is hosted or accommodated, permission must be requested and granted by_______</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 
@@ -911,7 +911,7 @@ WHERE @question_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM question_bank_optio
 SET @source_marker := 'JAMB 2023 English Language - Item 36 - Question 36';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @exam_body_id AND subject_id = @subject_id AND exam_year = 2023 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: JAMB 2023 English Language - Item 36 - Question 36</small></p><p><strong>JAMB 2023 English Language - Question 36</strong></p><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nSalma was looking more stunning on the last day of her exams because_______</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: JAMB 2023 English Language - Item 36 - Question 36</small></p><p><strong>JAMB 2023 English Language - Question 36</strong></p> From the novel; <strong>The Life Changer</strong><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nSalma was looking more stunning on the last day of her exams because_______</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 
@@ -935,7 +935,7 @@ WHERE @question_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM question_bank_optio
 SET @source_marker := 'JAMB 2023 English Language - Item 37 - Question 37';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @exam_body_id AND subject_id = @subject_id AND exam_year = 2023 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: JAMB 2023 English Language - Item 37 - Question 37</small></p><p><strong>JAMB 2023 English Language - Question 37</strong></p><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nWhy was it a double celebration for Ummi and members of her community when she gained admission into the university?</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: JAMB 2023 English Language - Item 37 - Question 37</small></p><p><strong>JAMB 2023 English Language - Question 37</strong></p> From the novel; <strong>The Life Changer</strong><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nWhy was it a double celebration for Ummi and members of her community when she gained admission into the university?</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 
@@ -1223,7 +1223,7 @@ WHERE @question_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM question_bank_optio
 SET @source_marker := 'JAMB 2023 English Language - Item 49 - Question 49';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @exam_body_id AND subject_id = @subject_id AND exam_year = 2023 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: JAMB 2023 English Language - Item 49 - Question 49</small></p><p><strong>JAMB 2023 English Language - Question 49</strong></p><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nAccording to the novel, which of these characters had a nasty experience on the account of using social media?</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: JAMB 2023 English Language - Item 49 - Question 49</small></p><p><strong>JAMB 2023 English Language - Question 49</strong></p> From the novel; <strong>The Life Changer</strong><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nAccording to the novel, which of these characters had a nasty experience on the account of using social media?</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 
@@ -1271,7 +1271,7 @@ WHERE @question_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM question_bank_optio
 SET @source_marker := 'JAMB 2023 English Language - Item 51 - Question 51';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @exam_body_id AND subject_id = @subject_id AND exam_year = 2023 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: JAMB 2023 English Language - Item 51 - Question 51</small></p><p><strong>JAMB 2023 English Language - Question 51</strong></p><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nBint was encouraged to take French at the primary level because _____</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: JAMB 2023 English Language - Item 51 - Question 51</small></p><p><strong>JAMB 2023 English Language - Question 51</strong></p> From the novel; <strong>The Life Changer</strong><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nBint was encouraged to take French at the primary level because _____</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 
@@ -1511,7 +1511,7 @@ WHERE @question_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM question_bank_optio
 SET @source_marker := 'JAMB 2023 English Language - Item 61 - Question 61';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @exam_body_id AND subject_id = @subject_id AND exam_year = 2023 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: JAMB 2023 English Language - Item 61 - Question 61</small></p><p><strong>JAMB 2023 English Language - Question 61</strong></p><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nWhat appellation was given to Talle for all his amazing show of personality.</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: JAMB 2023 English Language - Item 61 - Question 61</small></p><p><strong>JAMB 2023 English Language - Question 61</strong></p> From the novel; <strong>The Life Changer</strong><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nWhat appellation was given to Talle for all his amazing show of personality.</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 
@@ -1583,7 +1583,7 @@ WHERE @question_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM question_bank_optio
 SET @source_marker := 'JAMB 2023 English Language - Item 64 - Question 64';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @exam_body_id AND subject_id = @subject_id AND exam_year = 2023 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: JAMB 2023 English Language - Item 64 - Question 64</small></p><p><strong>JAMB 2023 English Language - Question 64</strong></p><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nWhose reticent nature while growing up earned him the title: &quot;The quiet one&quot;.?</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: JAMB 2023 English Language - Item 64 - Question 64</small></p><p><strong>JAMB 2023 English Language - Question 64</strong></p> From the novel; <strong>The Life Changer</strong><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nWhose reticent nature while growing up earned him the title: &quot;The quiet one&quot;.?</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 
@@ -1679,7 +1679,7 @@ WHERE @question_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM question_bank_optio
 SET @source_marker := 'JAMB 2023 English Language - Item 68 - Question 68';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @exam_body_id AND subject_id = @subject_id AND exam_year = 2023 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: JAMB 2023 English Language - Item 68 - Question 68</small></p><p><strong>JAMB 2023 English Language - Question 68</strong></p><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nSalma stayed at the most coveted and famous ______ hostel.</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: JAMB 2023 English Language - Item 68 - Question 68</small></p><p><strong>JAMB 2023 English Language - Question 68</strong></p> From the novel; <strong>The Life Changer</strong><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nSalma stayed at the most coveted and famous ______ hostel.</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 
@@ -1703,7 +1703,7 @@ WHERE @question_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM question_bank_optio
 SET @source_marker := 'JAMB 2023 English Language - Item 69 - Question 69';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @exam_body_id AND subject_id = @subject_id AND exam_year = 2023 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: JAMB 2023 English Language - Item 69 - Question 69</small></p><p><strong>JAMB 2023 English Language - Question 69</strong></p><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nWho called the attention of the district head when it was discovered that Talle buys more than he could consume from the supermarket?</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: JAMB 2023 English Language - Item 69 - Question 69</small></p><p><strong>JAMB 2023 English Language - Question 69</strong></p> From the novel; <strong>The Life Changer</strong><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nWho called the attention of the district head when it was discovered that Talle buys more than he could consume from the supermarket?</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 
@@ -1871,7 +1871,7 @@ WHERE @question_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM question_bank_optio
 SET @source_marker := 'JAMB 2023 English Language - Item 76 - Question 76';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @exam_body_id AND subject_id = @subject_id AND exam_year = 2023 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: JAMB 2023 English Language - Item 76 - Question 76</small></p><p><strong>JAMB 2023 English Language - Question 76</strong></p><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nHow old is Bint?</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: JAMB 2023 English Language - Item 76 - Question 76</small></p><p><strong>JAMB 2023 English Language - Question 76</strong></p> From the novel; <strong>The Life Changer</strong><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nHow old is Bint?</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 
@@ -2519,7 +2519,7 @@ WHERE @question_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM question_bank_optio
 SET @source_marker := 'JAMB 2023 English Language - Item 103 - Question 103';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @exam_body_id AND subject_id = @subject_id AND exam_year = 2023 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: JAMB 2023 English Language - Item 103 - Question 103</small></p><p><strong>JAMB 2023 English Language - Question 103</strong></p><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nWhat were Ummi&#39;s children waiting for when Bint narrates her encounter with Mr. Salihu?</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: JAMB 2023 English Language - Item 103 - Question 103</small></p><p><strong>JAMB 2023 English Language - Question 103</strong></p> From the novel; <strong>The Life Changer</strong><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nWhat were Ummi&#39;s children waiting for when Bint narrates her encounter with Mr. Salihu?</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 
@@ -2567,7 +2567,7 @@ WHERE @question_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM question_bank_optio
 SET @source_marker := 'JAMB 2023 English Language - Item 105 - Question 105';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @exam_body_id AND subject_id = @subject_id AND exam_year = 2023 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: JAMB 2023 English Language - Item 105 - Question 105</small></p><p><strong>JAMB 2023 English Language - Question 105</strong></p><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nWhere did the police apprehend Talle?</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: JAMB 2023 English Language - Item 105 - Question 105</small></p><p><strong>JAMB 2023 English Language - Question 105</strong></p> From the novel; <strong>The Life Changer</strong><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nWhere did the police apprehend Talle?</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 
@@ -2591,7 +2591,7 @@ WHERE @question_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM question_bank_optio
 SET @source_marker := 'JAMB 2023 English Language - Item 106 - Question 106';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @exam_body_id AND subject_id = @subject_id AND exam_year = 2023 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: JAMB 2023 English Language - Item 106 - Question 106</small></p><p><strong>JAMB 2023 English Language - Question 106</strong></p><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\n_____ was always on the first row during prayer at his office.</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: JAMB 2023 English Language - Item 106 - Question 106</small></p><p><strong>JAMB 2023 English Language - Question 106</strong></p> From the novel; <strong>The Life Changer</strong><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\n_____ was always on the first row during prayer at his office.</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 
@@ -2879,7 +2879,7 @@ WHERE @question_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM question_bank_optio
 SET @source_marker := 'JAMB 2023 English Language - Item 118 - Question 118';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @exam_body_id AND subject_id = @subject_id AND exam_year = 2023 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: JAMB 2023 English Language - Item 118 - Question 118</small></p><p><strong>JAMB 2023 English Language - Question 118</strong></p><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nWhy did Habib call Tomiwa instead of Salma that he gave a ride?</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: JAMB 2023 English Language - Item 118 - Question 118</small></p><p><strong>JAMB 2023 English Language - Question 118</strong></p> From the novel; <strong>The Life Changer</strong><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nWhy did Habib call Tomiwa instead of Salma that he gave a ride?</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 
@@ -2903,7 +2903,7 @@ WHERE @question_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM question_bank_optio
 SET @source_marker := 'JAMB 2023 English Language - Item 119 - Question 119';
 SET @existing_question_id := (SELECT id FROM question_bank WHERE source_type = 'exam_body' AND exam_body_id = @exam_body_id AND subject_id = @subject_id AND exam_year = 2023 AND question LIKE CONCAT('%', @source_marker, '%') ORDER BY id ASC LIMIT 1);
 INSERT INTO question_bank (question, subject_id, class_id, source_type, exam_body_id, exam_year, topic_id, difficulty, recommended_class, term_tag, question_category, explanation, review_status, quality_score, times_used, school_id, createdby, datecreated, deleted)
-SELECT '<p><small>Source: JAMB 2023 English Language - Item 119 - Question 119</small></p><p><strong>JAMB 2023 English Language - Question 119</strong></p><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nAda and Ngozi were from the Imo state and Benue state, while Salma and Tomiwa were from______ and ______.</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
+SELECT '<p><small>Source: JAMB 2023 English Language - Item 119 - Question 119</small></p><p><strong>JAMB 2023 English Language - Question 119</strong></p> From the novel; <strong>The Life Changer</strong><p>This question is based on &quot;The Life Changer&quot; novel.<br>\n<br>\nAda and Ngozi were from the Imo state and Benue state, while Salma and Tomiwa were from______ and ______.</p>', @subject_id, 0, 'exam_body', @exam_body_id, 2023, 0, 'Medium', 'SSS3', '', '', '', 'approved', 0, 0, 0, 0, NOW(), 0
 WHERE @existing_question_id IS NULL;
 SET @question_id := COALESCE(@existing_question_id, LAST_INSERT_ID());
 
