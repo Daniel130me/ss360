@@ -1,0 +1,1300 @@
+{
+ "source_exam_body": "WAEC",
+ "source_exam_year": 2024,
+ "source_subject": "Biology",
+ "listing_url": "https://myschool.ng/classroom/biology?exam_type=waec&exam_year=2024",
+ "collected_at": "2026-09-30 14:07:21 UTC",
+ "triage": {
+  "pages": 12,
+  "listing_items": 58,
+  "detail_fetched": 58,
+  "held": 8,
+  "imported": 50,
+  "skipped": 0,
+  "held_note": "Items 51-58 are WAEC theory/essay items (multi-part essay and specimen study prompts) without published options/answers"
+ },
+ "items": [
+  {
+   "item": 1,
+   "status": "imported",
+   "source_id": 71838,
+   "source_url": "https://myschool.ng/classroom/biology/71838?exam_type=waec&exam_year=2024",
+   "source_question_number": 1,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Which of the following organisms contains Chlorophyll in its cells?",
+   "options_plain_text": {
+    "a": "Caterpillar",
+    "b": "Paramecium",
+    "c": "Euglena",
+    "d": "Grasshopper"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 2,
+   "status": "imported",
+   "source_id": 71840,
+   "source_url": "https://myschool.ng/classroom/biology/71840?exam_type=waec&exam_year=2024",
+   "source_question_number": 2,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Species are groups of organisms that",
+   "options_plain_text": {
+    "a": "are of different origins and are always found together",
+    "a#2": "are of common origin but cannot interbreed freely",
+    "c": "have similar features and can interbreed freely",
+    "d": "resemble each other and occupy different niches"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 3,
+   "status": "imported",
+   "source_id": 71863,
+   "source_url": "https://myschool.ng/classroom/biology/71863?exam_type=waec&exam_year=2024",
+   "source_question_number": 3,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "&nbsp;A plant with short, vertical underground stem is a",
+   "options_plain_text": {
+    "a": "bulb",
+    "b": "corm",
+    "c": "rhizome",
+    "d": "tuber"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 4,
+   "status": "imported",
+   "source_id": 71865,
+   "source_url": "https://myschool.ng/classroom/biology/71865?exam_type=waec&exam_year=2024",
+   "source_question_number": 4,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/PC5dBQBYRaSZwnc1MuVaO4ZUHFrKtGW5v9snwEOG.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/waec_2024_biology/Q4_diagram.jpeg",
+   "stem_image_local_paths": [
+    "uploads/question_bank/waec_2024_biology/Q4_diagram.jpeg"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The diagram above&nbsp;is an illustration of a reproductive process in an organism. Study it and answer ques tions 4 and 5. The type of reproduction illustrated is",
+   "options_plain_text": {
+    "a": "budding",
+    "b": "binary fission",
+    "c": "grafting",
+    "d": "vegetative propagation"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 5,
+   "status": "imported",
+   "source_id": 71867,
+   "source_url": "https://myschool.ng/classroom/biology/71867?exam_type=waec&exam_year=2024",
+   "source_question_number": 5,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/d95I9rNYrebAFuz4MO8nHhTempwQ93sDMsBBzcDT.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/waec_2024_biology/Q5_diagram.jpeg",
+   "stem_image_local_paths": [
+    "uploads/question_bank/waec_2024_biology/Q5_diagram.jpeg"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The illustrated organism is capable of reproducing by",
+   "options_plain_text": {
+    "a": "sexual means only",
+    "b": "asexual means only",
+    "c": "vegetative propagation only",
+    "d": "sexual and asexual means"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 6,
+   "status": "imported",
+   "source_id": 71869,
+   "source_url": "https://myschool.ng/classroom/biology/71869?exam_type=waec&exam_year=2024",
+   "source_question_number": 6,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Which of the following organisms consists of unicellular cells joined to form a filament?&nbsp;",
+   "options_plain_text": {
+    "a": "Amoeba",
+    "b": "Spirogyra",
+    "c": "Euglena",
+    "d": "Chlamydomonas"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 7,
+   "status": "imported",
+   "source_id": 71871,
+   "source_url": "https://myschool.ng/classroom/biology/71871?exam_type=waec&exam_year=2024",
+   "source_question_number": 7,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "&nbsp;The structure in the cell that controls the movement of substances in and out of the cell is the",
+   "options_plain_text": {
+    "a": "cytoplasmic membrane",
+    "b": "nuclear membrane",
+    "c": "protoplasm",
+    "d": "endoplasm"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 8,
+   "status": "imported",
+   "source_id": 71873,
+   "source_url": "https://myschool.ng/classroom/biology/71873?exam_type=waec&exam_year=2024",
+   "source_question_number": 8,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The bursting of a red blood cell placed&nbsp; in a hypotonic solution is called&nbsp;",
+   "options_plain_text": {
+    "a": "crenation",
+    "b": "haemolysis",
+    "c": "plasmolysis",
+    "d": "cytolysis"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 9,
+   "status": "imported",
+   "source_id": 71876,
+   "source_url": "https://myschool.ng/classroom/biology/71876?exam_type=waec&exam_year=2024",
+   "source_question_number": 9,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The function of the root hair in plants is to&nbsp;",
+   "options_plain_text": {
+    "a": "absorb soil water by the process of osmosis.",
+    "b": "excrete water and mineral salts by simple diffusion.",
+    "c": "purify the soil for the plant.",
+    "d": "translocate manufactured food."
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 10,
+   "status": "imported",
+   "source_id": 71878,
+   "source_url": "https://myschool.ng/classroom/biology/71878?exam_type=waec&exam_year=2024",
+   "source_question_number": 10,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "If a germinating seed is attached horizontally to a revolving klinostat, what would be the effect on the seedling after three days? The&nbsp;",
+   "options_plain_text": {
+    "a": "plumule will curve vertically upward while the radicle will not show any curvature",
+    "b": "radicle will curve towards the ground while the plumule will not show any curvature.",
+    "c": "plumule and radicle will not show any curvature.",
+    "d": "plumule will curve vertically upwards while the radicle will curve towards the ground"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 11,
+   "status": "imported",
+   "source_id": 71880,
+   "source_url": "https://myschool.ng/classroom/biology/71880?exam_type=waec&exam_year=2024",
+   "source_question_number": 11,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The lumbar vertebra differs from the thoracic vertebra because it possesses a&nbsp;",
+   "options_plain_text": {
+    "a": "longer neural spine.",
+    "b": "wider neural canal.",
+    "c": "thicker centrum.",
+    "d": "shorter transverse process."
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 12,
+   "status": "imported",
+   "source_id": 71881,
+   "source_url": "https://myschool.ng/classroom/biology/71881?exam_type=waec&exam_year=2024",
+   "source_question_number": 12,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Which of the following blood vessels carries oxygenated blood into the heart?&nbsp;",
+   "options_plain_text": {
+    "a": "Pulmonary artery",
+    "b": "Anterior vena cava",
+    "c": "Pulmonary vein",
+    "d": "Posterior vena cava"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 13,
+   "status": "imported",
+   "source_id": 71883,
+   "source_url": "https://myschool.ng/classroom/biology/71883?exam_type=waec&exam_year=2024",
+   "source_question_number": 13,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Filtrates in the Bowman&#39;s capsule contain vitamins because&nbsp;",
+   "options_plain_text": {
+    "a": "they have low molecular weight.",
+    "b": "most of them are fat soluble.",
+    "c": "they cannot be reabsorbed into the blood.",
+    "d": "little amount is required by the blood."
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 14,
+   "status": "imported",
+   "source_id": 71884,
+   "source_url": "https://myschool.ng/classroom/biology/71884?exam_type=waec&exam_year=2024",
+   "source_question_number": 14,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The structures that contain grey matter and white matter are found in the&nbsp;",
+   "options_plain_text": {
+    "a": "reproductive system.",
+    "b": "nervous system.",
+    "c": "respiratory system.",
+    "d": "digestive system."
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 15,
+   "status": "imported",
+   "source_id": 71887,
+   "source_url": "https://myschool.ng/classroom/biology/71887?exam_type=waec&exam_year=2024",
+   "source_question_number": 15,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/0T4U5uOumRmLknF9nlo7mM6cFfwYoOV652B31kJY.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/waec_2024_biology/Q15_diagram.jpeg",
+   "stem_image_local_paths": [
+    "uploads/question_bank/waec_2024_biology/Q15_diagram.jpeg"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The diagram above&nbsp;is an illustration of sense organ in humans. Study it and answer questions 15 and 16.&nbsp; The part that protects the organ is labelled&nbsp;",
+   "options_plain_text": {
+    "a": "I",
+    "b": "II",
+    "c": "III",
+    "d": "IV"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 16,
+   "status": "imported",
+   "source_id": 71891,
+   "source_url": "https://myschool.ng/classroom/biology/71891?exam_type=waec&exam_year=2024",
+   "source_question_number": 16,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/uGcLpovDv6y4vqlNlVV6kn8xt5oItJT0LLdLcL2e.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/waec_2024_biology/Q16_diagram.jpeg",
+   "stem_image_local_paths": [
+    "uploads/question_bank/waec_2024_biology/Q16_diagram.jpeg"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The part labelled III is the&nbsp;",
+   "options_plain_text": {
+    "a": "iris.",
+    "b": "pupil",
+    "c": "sclera",
+    "d": "cornea"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 17,
+   "status": "imported",
+   "source_id": 71892,
+   "source_url": "https://myschool.ng/classroom/biology/71892?exam_type=waec&exam_year=2024",
+   "source_question_number": 17,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/Z2dskQAwINGwDEr75rfbuywRBiB2DgTkXX44KPSg.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/waec_2024_biology/Q17_diagram.jpeg",
+   "stem_image_local_paths": [
+    "uploads/question_bank/waec_2024_biology/Q17_diagram.jpeg"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The diagram above&nbsp;is an illustration of two plants P and Q. Arrows I, II and III illustrate the transfer of pollen grains among flowers of plants P and&nbsp; Q. Studly it and answer questions 17 and 18. The types of pollination illustrated as I,Il and III, respectively are&nbsp;",
+   "options_plain_text": {
+    "a": "cross, self and cross",
+    "b": "self, self and cross",
+    "c": "self, cross and self",
+    "d": "self, cross and cross"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 18,
+   "status": "imported",
+   "source_id": 71893,
+   "source_url": "https://myschool.ng/classroom/biology/71893?exam_type=waec&exam_year=2024",
+   "source_question_number": 18,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The condition necessary&nbsp;for reproduction to occur between plants P and Q after pollination is that plants P and Q&nbsp;should be&nbsp;",
+   "options_plain_text": {
+    "a": "of the same species.",
+    "b": "brightly coloured.",
+    "c": "well scented",
+    "d": "of different species."
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 19,
+   "status": "imported",
+   "source_id": 71894,
+   "source_url": "https://myschool.ng/classroom/biology/71894?exam_type=waec&exam_year=2024",
+   "source_question_number": 19,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/Q1SS8cEY7mC9CG1q38BNjEBmKgwpu1WpvjaZfCa2.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/waec_2024_biology/Q19_diagram.jpeg",
+   "stem_image_local_paths": [
+    "uploads/question_bank/waec_2024_biology/Q19_diagram.jpeg"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The diagram above illustrates a dry dehiscent fruit. Use it to answer questions 19 and 20.&nbsp; The agent of dispersal of the fruit is&nbsp;",
+   "options_plain_text": {
+    "a": "animal",
+    "b": "explosive mechanism",
+    "c": "water",
+    "d": "wind"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 20,
+   "status": "imported",
+   "source_id": 71895,
+   "source_url": "https://myschool.ng/classroom/biology/71895?exam_type=waec&exam_year=2024",
+   "source_question_number": 20,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The Parachute-like tuft of hairs developed from the&nbsp;",
+   "options_plain_text": {
+    "a": "pedicel",
+    "b": "petals",
+    "c": "receptacle",
+    "d": "sepals"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 21,
+   "status": "imported",
+   "source_id": 71896,
+   "source_url": "https://myschool.ng/classroom/biology/71896?exam_type=waec&exam_year=2024",
+   "source_question_number": 21,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Which of the following events does not occur in the light reaction stage of photosynthesis?",
+   "options_plain_text": {
+    "a": "Chlorophyll absorbs sunlight",
+    "b": "Carbon (IV) oxide combines with hydrogen",
+    "c": "Photolysis of water occurs",
+    "d": "Hydroxyl ions are produced"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 22,
+   "status": "imported",
+   "source_id": 71897,
+   "source_url": "https://myschool.ng/classroom/biology/71897?exam_type=waec&exam_year=2024",
+   "source_question_number": 22,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The rate of photosynthesis decreases in a wilted herbaceous plant because the&nbsp;",
+   "options_plain_text": {
+    "a": "enzymes in the leaf were denatured",
+    "b": "chlorophyll in the leaves was not broken down",
+    "c": "amount of light reaching the plant was reduced",
+    "d": "amount of carbon dioxide entering the leaf decrease."
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 23,
+   "status": "imported",
+   "source_id": 71898,
+   "source_url": "https://myschool.ng/classroom/biology/71898?exam_type=waec&exam_year=2024",
+   "source_question_number": 23,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "&nbsp;The element required for chlorophyll formation in plants is&nbsp;",
+   "options_plain_text": {
+    "a": "Iron",
+    "b": "Calcium",
+    "c": "Phosphorus",
+    "d": "Sulphur"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 24,
+   "status": "imported",
+   "source_id": 71899,
+   "source_url": "https://myschool.ng/classroom/biology/71899?exam_type=waec&exam_year=2024",
+   "source_question_number": 24,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The process of food digestion in mammals would&nbsp;&nbsp;",
+   "options_plain_text": {
+    "a": "make energy immediately available to the body",
+    "b": "promote growth and repair of tissues",
+    "c": "provide sufficient food materials within the body",
+    "d": "render food substances soluble and absorbable"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 25,
+   "status": "imported",
+   "source_id": 71900,
+   "source_url": "https://myschool.ng/classroom/biology/71900?exam_type=waec&exam_year=2024",
+   "source_question_number": 25,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Which of the following food substances would give a negative reaction with Benedict&#39;s reagent?",
+   "options_plain_text": {
+    "a": "Fructose",
+    "b": "Glucose",
+    "c": "Galactose",
+    "d": "Sucrose"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 26,
+   "status": "imported",
+   "source_id": 71901,
+   "source_url": "https://myschool.ng/classroom/biology/71901?exam_type=waec&exam_year=2024",
+   "source_question_number": 26,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Sunlight is the major source of&nbsp;",
+   "options_plain_text": {
+    "a": "Vitamin D",
+    "b": "vitamin C",
+    "c": "vitamin B",
+    "d": "vitamin A"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 27,
+   "status": "imported",
+   "source_id": 71902,
+   "source_url": "https://myschool.ng/classroom/biology/71902?exam_type=waec&exam_year=2024",
+   "source_question_number": 27,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Discouraging the use of poison to kill fish in a large water body is a way of",
+   "options_plain_text": {
+    "a": "impoverishing the people.",
+    "b": "conserving the fish species.",
+    "c": "allowing the fittest organism to survive",
+    "d": "making the fish adapt to their environment"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 28,
+   "status": "imported",
+   "source_id": 71903,
+   "source_url": "https://myschool.ng/classroom/biology/71903?exam_type=waec&exam_year=2024",
+   "source_question_number": 28,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The pathway through which nutrient are replenished and circulated in an ecosystem is called a",
+   "options_plain_text": {
+    "a": "cycle",
+    "b": "pyramid of energy",
+    "c": "pyramid of numbers",
+    "d": "Food chain"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 29,
+   "status": "imported",
+   "source_id": 71904,
+   "source_url": "https://myschool.ng/classroom/biology/71904?exam_type=waec&exam_year=2024",
+   "source_question_number": 29,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The illustration below is a food chain. Study it and answer questions 29 and 30. &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Grasses &rarr; Grasshoppers &rarr; Lizards &rarr; Hawks Which of the following statements is not correct about the food chain? The number of&nbsp;",
+   "options_plain_text": {
+    "a": "grasses eaten by grasshoppers is greater than the number of grasshoppers.",
+    "b": "grasses eaten by grasshoppers is fewer than the number of grasshoppers.",
+    "c": "grasshoppers eaten by lizards is greater than the number of lizards.",
+    "d": "lizards eaten by hawks is greater than the number of hawks."
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 30,
+   "status": "imported",
+   "source_id": 71905,
+   "source_url": "https://myschool.ng/classroom/biology/71905?exam_type=waec&exam_year=2024",
+   "source_question_number": 30,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Grasses &rarr; Grasshoppers&nbsp;&rarr; Lizards&nbsp; &rarr; Hawks If the individual species of organisms in the food chain are counted and arranged as a pyramid, the result would be a pyramid of&nbsp;",
+   "options_plain_text": {
+    "a": "numbers",
+    "b": "energy",
+    "c": "biomass",
+    "d": "biomes"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 31,
+   "status": "imported",
+   "source_id": 71906,
+   "source_url": "https://myschool.ng/classroom/biology/71906?exam_type=waec&exam_year=2024",
+   "source_question_number": 31,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Which of the following gases is released during the decomposition of organic matter?",
+   "options_plain_text": {
+    "a": "Carbon(II) oxide",
+    "b": "Sulphur (IV) oxide",
+    "c": "Hydrogen Sulphide",
+    "d": "Nitrous oxide"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 32,
+   "status": "imported",
+   "source_id": 71907,
+   "source_url": "https://myschool.ng/classroom/biology/71907?exam_type=waec&exam_year=2024",
+   "source_question_number": 32,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/uNxZY59GvhTV48V9TtBYEgmB83Tld5rEHBPmw10k.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/waec_2024_biology/Q32_diagram.jpeg",
+   "stem_image_local_paths": [
+    "uploads/question_bank/waec_2024_biology/Q32_diagram.jpeg"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The diagrams above are the illustrations of organisms from different habitat. Study them and answer questions 32 and 33. The structures labelled I are for&nbsp;",
+   "options_plain_text": {
+    "a": "Camouflage",
+    "b": "Chemical offence",
+    "c": "Physical defence",
+    "d": "Mimicry"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 33,
+   "status": "imported",
+   "source_id": 71908,
+   "source_url": "https://myschool.ng/classroom/biology/71908?exam_type=waec&exam_year=2024",
+   "source_question_number": 33,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/zmNBwgmGkbED9fKoOBBgTq1uVeYWMf1illYGl2kt.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/waec_2024_biology/Q33_diagram.jpeg",
+   "stem_image_local_paths": [
+    "uploads/question_bank/waec_2024_biology/Q33_diagram.jpeg"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Habitats of the organisms respectively are&nbsp;",
+   "options_plain_text": {
+    "a": "river and stream",
+    "b": "rainforest and stream",
+    "c": "pond and leaf litter",
+    "d": "garden and desert"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 34,
+   "status": "imported",
+   "source_id": 71909,
+   "source_url": "https://myschool.ng/classroom/biology/71909?exam_type=waec&exam_year=2024",
+   "source_question_number": 34,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "An environmental problem caused&nbsp;by Sulphur (IV) oxide is&nbsp;",
+   "options_plain_text": {
+    "a": "acid rain",
+    "b": "deforestation",
+    "c": "global warming",
+    "d": "Erosion"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 35,
+   "status": "imported",
+   "source_id": 71910,
+   "source_url": "https://myschool.ng/classroom/biology/71910?exam_type=waec&exam_year=2024",
+   "source_question_number": 35,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The phenomenon by which a farmland that is left to fallow for several years develops into a forest is called",
+   "options_plain_text": {
+    "a": "Succession",
+    "b": "afforestation",
+    "c": "population",
+    "d": "colonization"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 36,
+   "status": "imported",
+   "source_id": 71912,
+   "source_url": "https://myschool.ng/classroom/biology/71912?exam_type=waec&exam_year=2024",
+   "source_question_number": 36,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/nHzp9FIoqX2UtQGUJhvdCMJpcDDwOevjkm2lQqeG.png"
+   ],
+   "stem_image_local_path": "uploads/question_bank/waec_2024_biology/Q36_diagram.png",
+   "stem_image_local_paths": [
+    "uploads/question_bank/waec_2024_biology/Q36_diagram.png"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "A farmer planted many seeds on a small piece of land. The plants that germinated are as shown above. Which of the following effects would not be observed among the population of the plants?",
+   "options_plain_text": {
+    "a": "Rise in disease condition",
+    "b": "Death",
+    "c": "Mutualistic relationship",
+    "d": "Competition"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 37,
+   "status": "imported",
+   "source_id": 71914,
+   "source_url": "https://myschool.ng/classroom/biology/71914?exam_type=waec&exam_year=2024",
+   "source_question_number": 37,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/ARjAZEcCpitdWC3CJYLrNRFxyQv8HyvAiBzYCUk2.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/waec_2024_biology/Q37_diagram.jpeg",
+   "stem_image_local_paths": [
+    "uploads/question_bank/waec_2024_biology/Q37_diagram.jpeg"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The bar chart above shows the data of sources of energy used for cooking in a community. Study it and answer questions 37 and 38. The source of energy that is mostly used in the community is",
+   "options_plain_text": {
+    "a": "solar",
+    "b": "Kerosene",
+    "c": "coal",
+    "d": "wind"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 38,
+   "status": "imported",
+   "source_id": 71915,
+   "source_url": "https://myschool.ng/classroom/biology/71915?exam_type=waec&exam_year=2024",
+   "source_question_number": 38,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/909q4fQAKRkiaX3uV6DO3ICKZLXxVVjhG318DMAJ.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/waec_2024_biology/Q38_diagram.jpeg",
+   "stem_image_local_paths": [
+    "uploads/question_bank/waec_2024_biology/Q38_diagram.jpeg"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The two sources of energy that would mostly lead to pollution in the community&nbsp;are&nbsp;",
+   "options_plain_text": {
+    "a": "solar and kerosene",
+    "b": "coal and wind",
+    "c": "kerosene and coal",
+    "d": "solar and wind"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 39,
+   "status": "imported",
+   "source_id": 71916,
+   "source_url": "https://myschool.ng/classroom/biology/71916?exam_type=waec&exam_year=2024",
+   "source_question_number": 39,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "An individual found a strange bird that is tagged as an endangered specie. What should the individual do?",
+   "options_plain_text": {
+    "a": "Kill it",
+    "b": "Take it to an aquatic environment",
+    "c": "Return it to its natural habitat",
+    "d": "Sell it at a very high price"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 40,
+   "status": "imported",
+   "source_id": 71918,
+   "source_url": "https://myschool.ng/classroom/biology/71918?exam_type=waec&exam_year=2024",
+   "source_question_number": 40,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Which of the following traits is not inheritable? Ability to",
+   "options_plain_text": {
+    "a": "taste P.T.C",
+    "b": "roll the tongue",
+    "c": "move the ear",
+    "d": "roll the eyeball"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 41,
+   "status": "imported",
+   "source_id": 71919,
+   "source_url": "https://myschool.ng/classroom/biology/71919?exam_type=waec&exam_year=2024",
+   "source_question_number": 41,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Which of the following statements is correct about the ABO blood group system?",
+   "options_plain_text": {
+    "a": "Antigens are located on the surface of white blood cells",
+    "b": "Antibodies are located in the blood plasma",
+    "c": "Antibodies are located on the surface of the red blood cells",
+    "d": "Antigens are located in the blood plasma"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 42,
+   "status": "imported",
+   "source_id": 71920,
+   "source_url": "https://myschool.ng/classroom/biology/71920?exam_type=waec&exam_year=2024",
+   "source_question_number": 42,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "A woman with blood group A gives birth to a child with blood group O . Which of the following blood groups cannot belong to the father?",
+   "options_plain_text": {
+    "a": "B",
+    "b": "A",
+    "c": "AB",
+    "d": "O"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 43,
+   "status": "imported",
+   "source_id": 71922,
+   "source_url": "https://myschool.ng/classroom/biology/71922?exam_type=waec&exam_year=2024",
+   "source_question_number": 43,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/4DNF0yMUQXKuq3gyr0YXjo8G1qnBMX4l3x7b1p6k.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/waec_2024_biology/Q43_diagram.jpeg",
+   "stem_image_local_paths": [
+    "uploads/question_bank/waec_2024_biology/Q43_diagram.jpeg"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The diagram above is an illustration of genetic cross between two parents. The parental gametes I, II, III and IV gave rise to the offspring below. Study it and answer questions 43 and 44. Gametes&nbsp; I, II, III and IV, respectively&nbsp;are&nbsp;",
+   "options_plain_text": {
+    "a": "T,T,T and t",
+    "b": "T, t, t, and t",
+    "c": "T, T, t and t",
+    "d": "T, t, T and t"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 44,
+   "status": "imported",
+   "source_id": 71923,
+   "source_url": "https://myschool.ng/classroom/biology/71923?exam_type=waec&exam_year=2024",
+   "source_question_number": 44,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [
+    "https://myschool.ng/storage/classroom/wWqxrDZukETH2GoHkgPeJdhOc5Docgz5QP17nHkW.jpeg"
+   ],
+   "stem_image_local_path": "uploads/question_bank/waec_2024_biology/Q44_diagram.jpeg",
+   "stem_image_local_paths": [
+    "uploads/question_bank/waec_2024_biology/Q44_diagram.jpeg"
+   ],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Which of the following statements is correct about the cross?&nbsp;",
+   "options_plain_text": {
+    "a": "Both parents are heterozygous",
+    "b": "The male is not heterozygous",
+    "c": "The female is homozygous",
+    "d": "Both parents are homozygous"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 45,
+   "status": "imported",
+   "source_id": 71924,
+   "source_url": "https://myschool.ng/classroom/biology/71924?exam_type=waec&exam_year=2024",
+   "source_question_number": 45,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The physical appearance of an organism is described as its",
+   "options_plain_text": {
+    "a": "phenotype",
+    "b": "genotype",
+    "c": "allele",
+    "d": "chromosome"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 46,
+   "status": "imported",
+   "source_id": 71925,
+   "source_url": "https://myschool.ng/classroom/biology/71925?exam_type=waec&exam_year=2024",
+   "source_question_number": 46,
+   "correct_option": "d",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Mutation leads to evolution because it&nbsp;",
+   "options_plain_text": {
+    "a": "kills all organisms where it has occurred.",
+    "b": "gives rise to offspring having same characteristics as the parents",
+    "c": "does not confer adaptability to the offspring",
+    "d": "gives rise to new individuals that differ from their parents"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 47,
+   "status": "imported",
+   "source_id": 71927,
+   "source_url": "https://myschool.ng/classroom/biology/71927?exam_type=waec&exam_year=2024",
+   "source_question_number": 47,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "The male and female gametes which bear genes for inheritance in plants are located in the",
+   "options_plain_text": {
+    "a": "anthers and petals",
+    "b": "sepals and petals",
+    "c": "stamens and pistils",
+    "d": "stamens and petals"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 48,
+   "status": "imported",
+   "source_id": 71933,
+   "source_url": "https://myschool.ng/classroom/biology/71933?exam_type=waec&exam_year=2024",
+   "source_question_number": 48,
+   "correct_option": "b",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Which type of breeding is represented by industrial melanism in peppered moths?",
+   "options_plain_text": {
+    "a": "Artificial selection",
+    "b": "Natural selection",
+    "c": "Inbreeding",
+    "d": "Outbreeding"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 49,
+   "status": "imported",
+   "source_id": 71938,
+   "source_url": "https://myschool.ng/classroom/biology/71938?exam_type=waec&exam_year=2024",
+   "source_question_number": 49,
+   "correct_option": "c",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "In a test, a student paired some scientists with their famous work as shown below. Use it to answer questions 49 and 50. &nbsp; &nbsp; &nbsp; Scientist&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Famous work I.&nbsp; Charles Darwin&nbsp;&rarr;&nbsp; Preservation of some food with heat II. Gregor Mendel&nbsp;&rarr;&nbsp; Natural selection III. Jean Baptiste Lamarck&nbsp;&rarr; Inheritance of acquired characteristics IV. Louis Pasteur&nbsp;&rarr; Independent assortment of genes. The Scientists that are not correctly paired with their famous work are",
+   "options_plain_text": {
+    "a": "I and II only",
+    "b": "II and III only",
+    "c": "I, II and IV.",
+    "d": "II, III and IV."
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 50,
+   "status": "imported",
+   "source_id": 71944,
+   "source_url": "https://myschool.ng/classroom/biology/71944?exam_type=waec&exam_year=2024",
+   "source_question_number": 50,
+   "correct_option": "a",
+   "answer_signals_agree": true,
+   "stem_image_source_urls": [],
+   "stem_image_local_path": null,
+   "stem_image_local_paths": [],
+   "option_image_local_paths": {},
+   "stem_plain_text": "Which of the scientists were involved in the study of evolution? Scientist&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Famous work I.&nbsp; Charles Darwin&nbsp;&rarr;&nbsp; Preservation of some food with heat II. Gregor Mendel&nbsp;&rarr;&nbsp; Natural selection III. Jean Baptiste Lamarck&nbsp;&rarr; Inheritance of acquired characteristics IV. Louis Pasteur&nbsp;&rarr; Independent assortment of genes.",
+   "options_plain_text": {
+    "a": "I and III",
+    "b": "II and III",
+    "c": "I, II and IV",
+    "d": "II. III and IV"
+   },
+   "explanation_present": true,
+   "problems": [],
+   "notes": []
+  },
+  {
+   "item": 51,
+   "status": "held",
+   "source_id": 71963,
+   "source_url": "https://myschool.ng/classroom/biology/71963?exam_type=waec&exam_year=2024",
+   "source_question_number": 51,
+   "reason": "source item has no options/correct answer (theory/essay, not published as objective)",
+   "stem_plain_text": "(a)State one function each of the following parts of the nephron: (i) glomerulus (ii)Bowman&#39;s capsule (iii)proximal convoluted tubule (iv) distal convoluted tubule (b) Complete the table below. Or",
+   "stem_image_source_urls": []
+  },
+  {
+   "item": 52,
+   "status": "held",
+   "source_id": 71964,
+   "source_url": "https://myschool.ng/classroom/biology/71964?exam_type=waec&exam_year=2024",
+   "source_question_number": 52,
+   "reason": "source item has no options/correct answer (theory/essay, not published as objective)",
+   "stem_plain_text": "An individual ate a hot and large meal of cassava with salty groundnut soup. The individual was sweating profusely and did not drink water after the meal. (a) State one role each played by the followi",
+   "stem_image_source_urls": []
+  },
+  {
+   "item": 53,
+   "status": "held",
+   "source_id": 71965,
+   "source_url": "https://myschool.ng/classroom/biology/71965?exam_type=waec&exam_year=2024",
+   "source_question_number": 53,
+   "reason": "source item has no options/correct answer (theory/essay, not published as objective)",
+   "stem_plain_text": "(a)A piece of raw meat was left in an uncovered bowl for seven days. Use the information to answer questions 3(a) and 3(b) . &nbsp;(i) State four likely changes that would be observed in the meat. (ii",
+   "stem_image_source_urls": []
+  },
+  {
+   "item": 54,
+   "status": "held",
+   "source_id": 71966,
+   "source_url": "https://myschool.ng/classroom/biology/71966?exam_type=waec&exam_year=2024",
+   "source_question_number": 54,
+   "reason": "source item has no options/correct answer (theory/essay, not published as objective)",
+   "stem_plain_text": "a(i)Complete the table below by stating the type of cell division and the type of set of chromosomes for the listed cells. &nbsp; &nbsp; Cell Type of cell division set of chromosomes Onion cell &nbsp;",
+   "stem_image_source_urls": []
+  },
+  {
+   "item": 55,
+   "status": "held",
+   "source_id": 71967,
+   "source_url": "https://myschool.ng/classroom/biology/71967?exam_type=waec&exam_year=2024",
+   "source_question_number": 55,
+   "reason": "source item has no options/correct answer (theory/essay, not published as objective)",
+   "stem_plain_text": "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; SECTION B a(i)What is competition ? &nbsp;(ii)List two types of competition. &nbsp;(iii)List four factors that organ",
+   "stem_image_source_urls": []
+  },
+  {
+   "item": 56,
+   "status": "held",
+   "source_id": 71968,
+   "source_url": "https://myschool.ng/classroom/biology/71968?exam_type=waec&exam_year=2024",
+   "source_question_number": 56,
+   "reason": "source item has no options/correct answer (theory/essay, not published as objective)",
+   "stem_plain_text": "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; SECTION A Study specimens B, D and E and answer questions 1(a) to 1(f). (a) Name the phylum and",
+   "stem_image_source_urls": []
+  },
+  {
+   "item": 57,
+   "status": "held",
+   "source_id": 71980,
+   "source_url": "https://myschool.ng/classroom/biology/71980?exam_type=waec&exam_year=2024",
+   "source_question_number": 57,
+   "reason": "source item has no options/correct answer (theory/essay, not published as objective)",
+   "stem_plain_text": "Study specimens F, H and K and answer questions 2(a) to 2(d) . (a) State four functions of specimen H to the plant from which it was obtained. b(i) State one function each of specimen F and K to the p",
+   "stem_image_source_urls": []
+  },
+  {
+   "item": 58,
+   "status": "held",
+   "source_id": 71986,
+   "source_url": "https://myschool.ng/classroom/biology/71986?exam_type=waec&exam_year=2024",
+   "source_question_number": 58,
+   "reason": "source item has no options/correct answer (theory/essay, not published as objective)",
+   "stem_plain_text": "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; SECTION B Answer all the questions in this section Study specimens L, M, P, and Q and answer questions 3(a) to 3(d). (a) Na",
+   "stem_image_source_urls": []
+  }
+ ]
+}
